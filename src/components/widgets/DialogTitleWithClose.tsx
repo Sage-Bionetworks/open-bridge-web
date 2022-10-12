@@ -43,12 +43,7 @@ type DialogTitleWithCloseProps = {
   isSmallTitle?: boolean
 }
 
-const DialogTitleWithClose: FunctionComponent<DialogTitleWithCloseProps> = ({
-  onCancel,
-  icon,
-  title,
-  isSmallTitle,
-}) => {
+const DialogTitleWithClose: FunctionComponent<DialogTitleWithCloseProps> = ({onCancel, icon, title, isSmallTitle}) => {
   const classes = useStyles()
 
   return (
@@ -56,11 +51,7 @@ const DialogTitleWithClose: FunctionComponent<DialogTitleWithCloseProps> = ({
       {icon ? icon : <EditIcon />}
       <div>{title}</div>
 
-      <IconButton
-        aria-label="close"
-        className={classes.closeButton}
-        onClick={() => onCancel()}
-        size="large">
+      <IconButton aria-label="close" className={classes.closeButton} onClick={() => onCancel()} size="large">
         <CloseIcon />
       </IconButton>
     </DialogTitle>

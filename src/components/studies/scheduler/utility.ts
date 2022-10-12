@@ -7,9 +7,7 @@ export function getValueFromPeriodString(periodString: string): number {
   const num = periodString.match(numberPattern)
   return num ? Number(num[0]) : 0
 }
-export function getUnitFromPeriodString(
-  periodString: string
-): keyof typeof HDWMEnum {
+export function getUnitFromPeriodString(periodString: string): keyof typeof HDWMEnum {
   return periodString[periodString.length - 1] as keyof typeof HDWMEnum
 }
 
@@ -18,18 +16,14 @@ export function getUnitFromPeriodString(
 export function getFormattedTimeDateFromPeriodString(periodString: string) {
   const time = getValueFromPeriodString(periodString)
   const unit = getUnitFromPeriodString(periodString)
-  return time !== 1
-    ? `${time} ${HDWMEnum[unit]}`
-    : `${time} ${HDWMEnum[unit].slice(0, -1)}`
+  return time !== 1 ? `${time} ${HDWMEnum[unit]}` : `${time} ${HDWMEnum[unit].slice(0, -1)}`
 }
 
 export function getFormattedTimeDateFromTimePeriod(period: TimePeriod) {
   return `${period.value} ${HDWMEnum[period.unit]}`
 }
 
-export function getTimePeriodFromPeriodString(
-  periodString: string
-): TimePeriod {
+export function getTimePeriodFromPeriodString(periodString: string): TimePeriod {
   return {
     value: getValueFromPeriodString(periodString),
     unit: getUnitFromPeriodString(periodString),

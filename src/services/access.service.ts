@@ -12,13 +12,8 @@ const AccessService = {
   updateIndividualAccountRoles,
 }
 
-async function getAliasFromSynapseByEmail(
-  synapseEmailAddress: string
-): Promise<any> {
-  if (
-    synapseEmailAddress.indexOf('@synapse.org') === -1 &&
-    synapseEmailAddress.indexOf('@synapse.org') > -1
-  ) {
+async function getAliasFromSynapseByEmail(synapseEmailAddress: string): Promise<any> {
+  if (synapseEmailAddress.indexOf('@synapse.org') === -1 && synapseEmailAddress.indexOf('@synapse.org') > -1) {
     return Promise.reject({message: 'the email should be ...@synapse.org'})
   }
 
@@ -37,10 +32,7 @@ async function getAliasFromSynapseByEmail(
       lastName: string
     }
   }>(
-    constants.endpoints.synapseGetUserProfile.replace(
-      ':id',
-      principal.data.principalId
-    ),
+    constants.endpoints.synapseGetUserProfile.replace(':id', principal.data.principalId),
     'GET',
     {MASK: 0x1},
     undefined,
@@ -54,37 +46,20 @@ async function getAliasFromSynapseByEmail(
   }
 }
 
-async function getAccountsForOrg(
-  token: string,
-  orgId: string
-): Promise<OrgUser[]> {
-  const endpoint = constants.endpoints.getAccountsForOrg.replace(
-    ':orgId',
-    orgId
-  )
-  const result = await Utility.callEndpoint<{items: OrgUser[]}>(
-    endpoint,
-    'POST',
-    {},
-    token
-  )
+async function getAccountsForOrg(token: string, orgId: string): Promise<OrgUser[]> {
+  const endpoint = constants.endpoints.getAccountsForOrg.replace(':orgId', orgId)
+  const result = await Utility.callEndpoint<{items: OrgUser[]}>(endpoint, 'POST', {}, token)
 
   return result.data.items
 }
 
-async function getIndividualAccount(
-  token: string,
-  userId: string
-): Promise<OrgUser> {
+async function getIndividualAccount(token: string, userId: string): Promise<OrgUser> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
   const result = await Utility.callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
   return result.data
 }
 
-async function getDetailedAccountsForOrg(
-  token: string,
-  orgId: string
-): Promise<OrgUser[]> {
+async function getDetailedAccountsForOrg(token: string, orgId: string): Promise<OrgUser[]> {
   const accounts = await AccessService.getAccountsForOrg(token!, orgId)
   const promises = accounts.map(async account => {
     return await AccessService.getIndividualAccount(token!, account.id)
@@ -93,17 +68,9 @@ async function getDetailedAccountsForOrg(
   return result
 }
 
-async function deleteIndividualAccount(
-  token: string,
-  userId: string
-): Promise<OrgUser> {
+async function deleteIndividualAccount(token: string, userId: string): Promise<OrgUser> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
-  const result = await Utility.callEndpoint<OrgUser>(
-    endpoint,
-    'DELETE',
-    {},
-    token
-  )
+  const result = await Utility.callEndpoint<OrgUser>(endpoint, 'DELETE', {}, token)
   return result.data
 }
 
@@ -128,12 +95,7 @@ async function createIndividualAccount(
     clientData,
   }
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', '')
-  const result = await Utility.callEndpoint<any>(
-    endpoint,
-    'POST',
-    postData,
-    token
-  )
+  const result = await Utility.callEndpoint<any>(endpoint, 'POST', postData, token)
 
   return result.ok
 }
@@ -145,12 +107,7 @@ async function updateIndividualAccountRoles(
   updatedClientData?: LoggedInUserClientData
 ): Promise<any> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
-  const userResponse = await Utility.callEndpoint<OrgUser>(
-    endpoint,
-    'GET',
-    {},
-    token
-  )
+  const userResponse = await Utility.callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
 
   const data = userResponse.data
   const updatedUser = {
@@ -158,12 +115,7 @@ async function updateIndividualAccountRoles(
     roles,
     clientData: updatedClientData || data.clientData,
   }
-  const result = await Utility.callEndpoint<any>(
-    endpoint,
-    'POST',
-    updatedUser,
-    token
-  )
+  const result = await Utility.callEndpoint<any>(endpoint, 'POST', updatedUser, token)
   return result.data
 }
 

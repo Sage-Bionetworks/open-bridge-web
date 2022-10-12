@@ -12,31 +12,23 @@ import {
 } from '@typedefs/types'
 import moment from 'moment'
 import {jsonToCSV} from 'react-papaparse'
-import {
-  addParticipantById,
-  addParticipantByPhone,
-} from '../add/AddSingleParticipant'
+import {addParticipantById, addParticipantByPhone} from '../add/AddSingleParticipant'
 import ParticipantUtility, {ParticipantData} from '../participantUtility'
 
-const CSV_BY_ID_IMPORT_KEY: Map<keyof EditableParticipantData, string> =
-  new Map([
-    ['externalId', 'Participant ID'],
-    ['clientTimeZone', 'Participant Time Zone'],
-    ['note', 'Notes'],
-  ])
+const CSV_BY_ID_IMPORT_KEY: Map<keyof EditableParticipantData, string> = new Map([
+  ['externalId', 'Participant ID'],
+  ['clientTimeZone', 'Participant Time Zone'],
+  ['note', 'Notes'],
+])
 
-const CSV_BY_PHONE_IMPORT_KEY: Map<keyof EditableParticipantData, string> =
-  new Map([
-    ['phoneNumber', 'Phone#'],
-    ['externalId', 'Reference ID'],
-    ['clientTimeZone', 'Participant Time Zone'],
-    ['note', 'Notes'],
-  ])
+const CSV_BY_PHONE_IMPORT_KEY: Map<keyof EditableParticipantData, string> = new Map([
+  ['phoneNumber', 'Phone#'],
+  ['externalId', 'Reference ID'],
+  ['clientTimeZone', 'Participant Time Zone'],
+  ['note', 'Notes'],
+])
 
-const CSV_EXPORT_ADDITIONAL_KEYS: Map<
-  keyof ExtendedParticipantAccountSummary,
-  string
-> = new Map([
+const CSV_EXPORT_ADDITIONAL_KEYS: Map<keyof ExtendedParticipantAccountSummary, string> = new Map([
   ['healthCode', 'Health Code'],
   ['joinedDate', 'Joined'],
   ['dateWithdrawn', 'Withdrew'],
@@ -44,23 +36,16 @@ const CSV_EXPORT_ADDITIONAL_KEYS: Map<
 ])
 
 const getImportColumns = (isEnrolledById: boolean) => {
-  const columns = isEnrolledById
-    ? CSV_BY_ID_IMPORT_KEY
-    : CSV_BY_PHONE_IMPORT_KEY
+  const columns = isEnrolledById ? CSV_BY_ID_IMPORT_KEY : CSV_BY_PHONE_IMPORT_KEY
   return columns
 }
 
 const getExportColumns = (isEnrolledById: boolean) => {
-  const columns = isEnrolledById
-    ? CSV_BY_ID_IMPORT_KEY
-    : CSV_BY_PHONE_IMPORT_KEY
+  const columns = isEnrolledById ? CSV_BY_ID_IMPORT_KEY : CSV_BY_PHONE_IMPORT_KEY
   return new Map([...columns, ...CSV_EXPORT_ADDITIONAL_KEYS])
 }
 
-function getDownloadTemplateRow(
-  isEnrolledById: boolean,
-  scheduleEventIds: string[]
-): Record<string, string> {
+function getDownloadTemplateRow(isEnrolledById: boolean, scheduleEventIds: string[]): Record<string, string> {
   const columns = getImportColumns(isEnrolledById)
   let templateData: {[key: string]: string}[] = []
   columns.forEach((v, k) => {
@@ -80,11 +65,7 @@ function isImportFileValid(
   firstRow: object
 ): {isValid: boolean; requiredFields?: string; receivedFields?: string} {
   //expected columns
-  const templateKeys = Object.keys(
-    getDownloadTemplateRow(isEnrolledById, scheduleEventIds)
-  )
-    .sort()
-    .join(',')
+  const templateKeys = Object.keys(getDownloadTemplateRow(isEnrolledById, scheduleEventIds)).sort().join(',')
   //real columns - remove empty
   const keysString = Object.keys(firstRow)
     .sort()
@@ -92,9 +73,7 @@ function isImportFileValid(
     .join(',')
   const isValid = templateKeys === keysString
 
-  return isValid
-    ? {isValid}
-    : {isValid, requiredFields: templateKeys, receivedFields: keysString}
+  return isValid ? {isValid} : {isValid, requiredFields: templateKeys, receivedFields: keysString}
 }
 
 async function uploadCsvRow(
@@ -133,12 +112,7 @@ async function uploadCsvRow(
       throw new Error('phone is in invalid format')
     } else {
       const phone = Utility.makePhone(phoneNumber)
-      result = await addParticipantByPhone(
-        studyIdentifier,
-        token,
-        phone,
-        options
-      )
+      result = await addParticipantByPhone(studyIdentifier, token, phone, options)
     }
   }
   return result
@@ -149,9 +123,7 @@ const getJoinedEventDateString = (events?: ParticipantEvent[]) => {
     return ''
   }
   const joinedEvent = events?.find(event => event.eventId === JOINED_EVENT_ID)
-  return joinedEvent?.timestamp
-    ? new Date(joinedEvent.timestamp).toDateString()
-    : ''
+  return joinedEvent?.timestamp ? new Date(joinedEvent.timestamp).toDateString() : ''
 }
 
 async function getParticipantDataForDownload(
@@ -170,44 +142,34 @@ async function getParticipantDataForDownload(
       : selectedParticipantData
   //massage data
   const columns = getExportColumns(isEnrolledById)
-  const dateToString = (d?: Date | string): string =>
-    d ? new Date(d).toString() : ''
-  const transformedParticipantsData = participantsData.items.map(
-    (p: ExtendedParticipantAccountSummary) => {
-      const participant: Record<string, string | undefined> = {
-        [columns.get('externalId')!]: `'${ParticipantService.formatExternalId(
-          studyId,
-          p.externalIds[studyId] || ''
-        )}`,
-        [columns.get('healthCode')!]: `'${p.healthCode}`,
+  const dateToString = (d?: Date | string): string => (d ? new Date(d).toString() : '')
+  const transformedParticipantsData = participantsData.items.map((p: ExtendedParticipantAccountSummary) => {
+    const participant: Record<string, string | undefined> = {
+      [columns.get('externalId')!]: `'${ParticipantService.formatExternalId(studyId, p.externalIds[studyId] || '')}`,
+      [columns.get('healthCode')!]: `'${p.healthCode}`,
 
-        [columns.get('joinedDate')!]: getJoinedEventDateString(p.events),
+      [columns.get('joinedDate')!]: getJoinedEventDateString(p.events),
 
-        [columns.get('note')!]:
-          tab !== 'WITHDRAWN' ? p.note || '' : p.withdrawalNote,
-      }
-
-      if (tab === 'WITHDRAWN') {
-        participant[columns.get('dateWithdrawn')!] = dateToString(
-          p.dateWithdrawn
-        )
-      }
-      if (columns.get('phoneNumber')) {
-        participant[columns.get('phoneNumber')!] = p.phone?.nationalFormat
-      }
-      participant[columns.get('clientTimeZone')!] = p.clientTimeZone
-
-      scheduleEventIds?.forEach(eventId => {
-        const matchingEvent = p.events?.find(pEvt => pEvt.eventId === eventId)
-        participant[EventService.formatEventIdForDisplay(eventId)] =
-          matchingEvent?.timestamp
-            ? moment(matchingEvent?.timestamp).format('l')
-            : ''
-      })
-
-      return participant
+      [columns.get('note')!]: tab !== 'WITHDRAWN' ? p.note || '' : p.withdrawalNote,
     }
-  )
+
+    if (tab === 'WITHDRAWN') {
+      participant[columns.get('dateWithdrawn')!] = dateToString(p.dateWithdrawn)
+    }
+    if (columns.get('phoneNumber')) {
+      participant[columns.get('phoneNumber')!] = p.phone?.nationalFormat
+    }
+    participant[columns.get('clientTimeZone')!] = p.clientTimeZone
+
+    scheduleEventIds?.forEach(eventId => {
+      const matchingEvent = p.events?.find(pEvt => pEvt.eventId === eventId)
+      participant[EventService.formatEventIdForDisplay(eventId)] = matchingEvent?.timestamp
+        ? moment(matchingEvent?.timestamp).format('l')
+        : ''
+    })
+
+    return participant
+  })
 
   //csv and blob it
   const csvData = jsonToCSV(transformedParticipantsData)

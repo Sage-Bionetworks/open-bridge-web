@@ -10,19 +10,12 @@ import {Box, Button, Paper, styled} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useEnrollmentForParticipant} from '@services/enrollmentHooks'
 import {useEventsForUser} from '@services/eventHooks'
-import {
-  useGetParticipant,
-  useGetParticipantInfo,
-} from '@services/participantHooks'
+import {useGetParticipant, useGetParticipantInfo} from '@services/participantHooks'
 import ParticipantService from '@services/participants.service'
 import {useStudy} from '@services/studyHooks'
 import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
-import {
-  AdherenceDetailReport,
-  ParticipantEvent,
-  SessionDisplayInfo,
-} from '@typedefs/types'
+import {AdherenceDetailReport, ParticipantEvent, SessionDisplayInfo} from '@typedefs/types'
 import clsx from 'clsx'
 import moment from 'moment'
 import React, {FunctionComponent} from 'react'
@@ -72,9 +65,7 @@ const useStyles = makeStyles(theme => ({
 
 type AdherenceParticipantProps = {}
 
-const AdherenceParticipant: FunctionComponent<
-  AdherenceParticipantProps & RouteComponentProps
-> = () => {
+const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteComponentProps> = () => {
   const [isEditParticipant, setIsEditParticipant] = React.useState(false)
 
   let {id: studyId, userId: participantId} = useParams<{
@@ -82,16 +73,9 @@ const AdherenceParticipant: FunctionComponent<
     userId: string
   }>()
 
-  const {
-    data: adherenceReport,
-    error,
-    isLoading: isAdherenceLoading,
-  } = useAdherence(studyId, participantId)
+  const {data: adherenceReport, error, isLoading: isAdherenceLoading} = useAdherence(studyId, participantId)
 
-  const {data: participantRequestInfo} = useGetParticipantInfo(
-    studyId,
-    participantId
-  )
+  const {data: participantRequestInfo} = useGetParticipantInfo(studyId, participantId)
 
   const {data: participant} = useGetParticipant(studyId, participantId)
 
@@ -103,23 +87,15 @@ const AdherenceParticipant: FunctionComponent<
     isLoading: isEnrollmentLoading,
   } = useEnrollmentForParticipant(studyId, participantId)
 
-  const {
-    data: study,
-    error: studyError,
-    isLoading: isStudyLoading,
-  } = useStudy(studyId)
+  const {data: study, error: studyError, isLoading: isStudyLoading} = useStudy(studyId)
 
-  const [participantSessions, setParticipantSessions] = React.useState<
-    SessionDisplayInfo[]
-  >([])
+  const [participantSessions, setParticipantSessions] = React.useState<SessionDisplayInfo[]>([])
 
   React.useEffect(() => {
     if (adherenceReport) {
       // debugger
 
-      setParticipantSessions(
-        AdherenceUtility.getUniqueSessionsInfo(adherenceReport.weeks)
-      )
+      setParticipantSessions(AdherenceUtility.getUniqueSessionsInfo(adherenceReport.weeks))
     }
   }, [adherenceReport])
 
@@ -127,10 +103,7 @@ const AdherenceParticipant: FunctionComponent<
 
   const getBreadcrumbLinks = () => [
     {
-      url: `${constants.restrictedPaths.ADHERENCE_DATA.replace(
-        ':id',
-        studyId
-      )}?tab=ENROLLED`,
+      url: `${constants.restrictedPaths.ADHERENCE_DATA.replace(':id', studyId)}?tab=ENROLLED`,
 
       text: 'Active Participants',
     },
@@ -146,25 +119,16 @@ const AdherenceParticipant: FunctionComponent<
     if (!adherenceReport?.dateRange) {
       return ''
     }
-    const startDate = moment(adherenceReport.dateRange.startDate).format(
-      'MM/DD/yyyy'
-    )
+    const startDate = moment(adherenceReport.dateRange.startDate).format('MM/DD/yyyy')
 
-    const endDate = moment(adherenceReport.dateRange.endDate).format(
-      'MM/DD/yyyy'
-    )
+    const endDate = moment(adherenceReport.dateRange.endDate).format('MM/DD/yyyy')
     return `${startDate}-${endDate}`
   }
 
   return (
     <Box bgcolor="#F8F8F8" px={5}>
       <LoadingComponent
-        reqStatusLoading={
-          isStudyLoading ||
-          isAdherenceLoading ||
-          isEnrollmentLoading ||
-          !enrollment
-        }
+        reqStatusLoading={isStudyLoading || isAdherenceLoading || isEnrollmentLoading || !enrollment}
         variant="full">
         <Box px={3} py={2} display="flex" alignItems="center">
           <NonDraftHeaderFunctionComponent study={study} />
@@ -172,18 +136,12 @@ const AdherenceParticipant: FunctionComponent<
 
         <BreadCrumb links={getBreadcrumbLinks()}></BreadCrumb>
         <Paper className={classes.mainContainer} elevation={2}>
-          {adherenceReport?.progression === 'done' && (
-            <CelebrationBg className={classes.celebration} />
-          )}
+          {adherenceReport?.progression === 'done' && <CelebrationBg className={classes.celebration} />}
           <Box display="flex" alignItems="center" mb={2}>
             {' '}
             <PersonIcon />
             <MTBHeadingH4>
-              {ParticipantService.formatExternalId(
-                studyId,
-                adherenceReport?.participant?.externalId || '',
-                true
-              )}
+              {ParticipantService.formatExternalId(studyId, adherenceReport?.participant?.externalId || '', true)}
             </MTBHeadingH4>
           </Box>
           <Box mb={2}>
@@ -200,20 +158,13 @@ const AdherenceParticipant: FunctionComponent<
 
             <Box display="flex" mt={4} mb={2}>
               {participantSessions?.map(s => (
-                <SessionLegend
-                  key={s.sessionGuid}
-                  symbolKey={s.sessionSymbol}
-                  sessionName={s.sessionName}
-                />
+                <SessionLegend key={s.sessionGuid} symbolKey={s.sessionSymbol} sessionName={s.sessionName} />
               ))}
             </Box>
           </Box>
           {<AdherenceParticipantGrid adherenceReport={adherenceReport!} />}
           <Box display="flex">
-            <Button
-              className={classes.editEventDate}
-              variant="text"
-              onClick={() => setIsEditParticipant(true)}>
+            <Button className={classes.editEventDate} variant="text" onClick={() => setIsEditParticipant(true)}>
               <img src={EditIcon}></img>
               &nbsp;Edit Participant Events
             </Button>
@@ -221,30 +172,16 @@ const AdherenceParticipant: FunctionComponent<
               marginLeft="auto"
               className={clsx(
                 classes.cumulative,
-                !AdherenceUtility.isCompliant(
-                  adherenceReport?.adherencePercent
-                ) && classes.red
+                !AdherenceUtility.isCompliant(adherenceReport?.adherencePercent) && classes.red
               )}>
               Cumulative: &nbsp; &nbsp; &nbsp;
               <span
-                className={
-                  !AdherenceUtility.isCompliant(
-                    adherenceReport?.adherencePercent
-                  )
-                    ? classes.red
-                    : ''
-                }></span>
-              {adherenceReport?.progression === 'unstarted'
-                ? '-'
-                : `${adherenceReport?.adherencePercent} %`}
+                className={!AdherenceUtility.isCompliant(adherenceReport?.adherencePercent) ? classes.red : ''}></span>
+              {adherenceReport?.progression === 'unstarted' ? '-' : `${adherenceReport?.adherencePercent} %`}
             </Box>
           </Box>
           <BottomBox>
-            <EditParticipantNotes
-              participantId={participantId}
-              studyId={studyId}
-              enrollment={enrollment!}
-            />
+            <EditParticipantNotes participantId={participantId} studyId={studyId} enrollment={enrollment!} />
 
             <AdditionalAdherenceParticipantInfo
               participantRequestInfo={participantRequestInfo}

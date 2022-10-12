@@ -1,11 +1,5 @@
-import {
-  StyledFormControl,
-  StyledLabel14,
-} from '@components/surveys/widgets/SharedStyled'
-import {
-  StyledDropDown,
-  StyledDropDownItem,
-} from '@components/surveys/widgets/StyledDropDown'
+import {StyledFormControl, StyledLabel14} from '@components/surveys/widgets/SharedStyled'
+import {StyledDropDown, StyledDropDownItem} from '@components/surveys/widgets/StyledDropDown'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import {Box, MenuItem, OutlinedInput, styled} from '@mui/material'
 import {theme} from '@style/theme'
@@ -42,8 +36,7 @@ const ValueSelector: React.FunctionComponent<{
     MAX: {
       label: 'Max Value',
       labelId: 'maxValueLbl',
-      options:
-        scaleType === 'likert' ? [...Array(8).keys()] : [10, 20, 50, 100],
+      options: scaleType === 'likert' ? [...Array(8).keys()] : [10, 20, 50, 100],
     },
   }
 
@@ -104,10 +97,7 @@ const Scale: React.FunctionComponent<{
           type="MAX"
           scaleType={step.uiHint}
           gtValue={1}
-          value={
-            step.inputItem.formatOptions.maximumValue ||
-            (step.uiHint === 'likert' ? 7 : 100)
-          }
+          value={step.inputItem.formatOptions.maximumValue || (step.uiHint === 'likert' ? 7 : 100)}
           onChange={num =>
             onUpdateFormat({
               ...step.inputItem.formatOptions,

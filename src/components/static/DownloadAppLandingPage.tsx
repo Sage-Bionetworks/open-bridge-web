@@ -43,11 +43,7 @@ const DownloadAppLandingPage: React.FunctionComponent = () => {
   const classes = useStyles()
   return (
     <Box className={classes.container}>
-      <img
-        src={MTBLogoLarge}
-        alt="large mtb logo"
-        style={{width: '100px', height: '100px'}}
-      />
+      <img src={MTBLogoLarge} alt="large mtb logo" style={{width: '100px', height: '100px'}} />
       <Box className={classes.downloadText}>
         <strong>
           <i>App Download Instructions</i>
@@ -60,26 +56,20 @@ const DownloadAppLandingPage: React.FunctionComponent = () => {
         <br></br>
         <ol>
           <li>
-            To download the <strong>Mobile Toolbox App</strong>, search for
-            "Mobile Toolbox App" in your phone's app store or do one of the
-            following:
+            To download the <strong>Mobile Toolbox App</strong>, search for "Mobile Toolbox App" in your phone's app
+            store or do one of the following:
             <ul>
               <li className={classes.listText}>
-                If you're viewing this page from a laptop,{' '}
-                <strong>scan the QR code</strong> below with your phone's camera
-                to be directed to the app.
+                If you're viewing this page from a laptop, <strong>scan the QR code</strong> below with your phone's
+                camera to be directed to the app.
               </li>
               <li className={classes.listText}>
-                If you're viewing this page from the phone that you will be
-                using for the study, <strong>select your app store</strong>{' '}
-                below to be redirected to the iOS or Android app store.
+                If you're viewing this page from the phone that you will be using for the study,{' '}
+                <strong>select your app store</strong> below to be redirected to the iOS or Android app store.
               </li>
             </ul>
           </li>
-          <li>
-            To log into the app, your Research team will need to provide you
-            with a Study ID and Participant ID.
-          </li>
+          <li>To log into the app, your Research team will need to provide you with a Study ID and Participant ID.</li>
         </ol>
       </p>
 

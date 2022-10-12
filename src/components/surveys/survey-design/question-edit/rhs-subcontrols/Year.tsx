@@ -1,13 +1,6 @@
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
-import {
-  Box,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  styled,
-  Typography,
-} from '@mui/material'
+import {Box, FormControlLabel, Radio, RadioGroup, styled, Typography} from '@mui/material'
 import {theme} from '@style/theme'
 import {FormatOptionsYear, YearQuestion} from '@typedefs/surveys'
 import React from 'react'
@@ -53,14 +46,9 @@ const CONFIG = {
   },
 }
 
-const getLimitYearValue = (
-  type: 'MIN' | 'MAX',
-  formatOptions?: FormatOptionsYear
-): number | undefined => {
+const getLimitYearValue = (type: 'MIN' | 'MAX', formatOptions?: FormatOptionsYear): number | undefined => {
   const valueField = CONFIG[type].fields['VALUE']
-  return formatOptions?.[valueField]
-    ? parseInt(formatOptions[valueField]!.toString())
-    : undefined
+  return formatOptions?.[valueField] ? parseInt(formatOptions[valueField]!.toString()) : undefined
 }
 
 const getPFValue = (type: 'MAX' | 'MIN', fo?: FormatOptionsYear) => {

@@ -22,9 +22,7 @@ export type ErrorDisplayType = {
   children: ReactNode
 }
 
-const ErrorDisplay: FunctionComponent<
-  ErrorDisplayType & React.HTMLAttributes<HTMLElement>
-> = ({children, ...rest}) => {
+const ErrorDisplay: FunctionComponent<ErrorDisplayType & React.HTMLAttributes<HTMLElement>> = ({children, ...rest}) => {
   const classes = useStyles()
   return (
     <div className={classes.root} style={rest.style}>

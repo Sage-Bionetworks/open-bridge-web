@@ -1,17 +1,9 @@
 import Utility from '@helpers/utility'
 import {Box, CircularProgress, Paper} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import ParticipantService, {
-  formatExternalId,
-} from '@services/participants.service'
+import ParticipantService, {formatExternalId} from '@services/participants.service'
 import {latoFont} from '@style/theme'
-import {
-  EnrolledAccountRecord,
-  ParticipantAccountSummary,
-  ParticipantActivityType,
-  Phone,
-  Study,
-} from '@typedefs/types'
+import {EnrolledAccountRecord, ParticipantAccountSummary, ParticipantActivityType, Phone, Study} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {useEffect} from 'react'
 
@@ -58,23 +50,15 @@ type ParticipantDisplayType = {
   phone?: Phone
 }
 
-function formatIds(
-  studyId: string,
-  isEnrolledById: boolean,
-  participants: ParticipantDisplayType[]
-): string[] {
+function formatIds(studyId: string, isEnrolledById: boolean, participants: ParticipantDisplayType[]): string[] {
   return participants.map((participant: ParticipantDisplayType) => {
     if (isEnrolledById) {
-      return participant.externalId
-        ? formatExternalId(studyId, participant.externalId)
-        : 'unknown'
+      return participant.externalId ? formatExternalId(studyId, participant.externalId) : 'unknown'
     } else {
       if (participant.phone?.nationalFormat) {
         return participant.phone?.nationalFormat
       } else {
-        return participant.externalId
-          ? formatExternalId(studyId, participant.externalId)
-          : 'unknown'
+        return participant.externalId ? formatExternalId(studyId, participant.externalId) : 'unknown'
       }
     }
   })
@@ -91,50 +75,39 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
   token,
 }) => {
   const classes = useStyles()
-  const [participantData, setParticipantData] = React.useState<
-    ParticipantDisplayType[]
-  >([])
+  const [participantData, setParticipantData] = React.useState<ParticipantDisplayType[]>([])
   const [loadingData, setLoadingData] = React.useState(false)
 
   const setData = async () => {
     let finalResult: EnrolledAccountRecord[] = []
-    const resultEnrolled =
-      await ParticipantService.getEnrollmentByEnrollmentType(
-        study.identifier,
-        token,
-        'enrolled',
-        false
-      )
+    const resultEnrolled = await ParticipantService.getEnrollmentByEnrollmentType(
+      study.identifier,
+      token,
+      'enrolled',
+      false
+    )
     const enrolledNonTestParticipants = resultEnrolled.items
     finalResult = enrolledNonTestParticipants
     if (tab === 'TEST') {
-      const resultAll = await ParticipantService.getEnrollmentByEnrollmentType(
+      const resultAll = await ParticipantService.getEnrollmentByEnrollmentType(study.identifier, token, 'all', true)
+      const resultWithdrawn = await ParticipantService.getEnrollmentByEnrollmentType(
         study.identifier,
         token,
-        'all',
-        true
+        'withdrawn',
+        false
       )
-      const resultWithdrawn =
-        await ParticipantService.getEnrollmentByEnrollmentType(
-          study.identifier,
-          token,
-          'withdrawn',
-          false
-        )
       const allParticipants = resultAll.items
       const withdrawnNonTestParticipants = resultWithdrawn.items
       let testParticipants = allParticipants.filter(
         el =>
           enrolledNonTestParticipants.find(
-            participant =>
-              participant.participant.identifier === el.participant.identifier
+            participant => participant.participant.identifier === el.participant.identifier
           ) === undefined
       )
       testParticipants = testParticipants.filter(
         el =>
           withdrawnNonTestParticipants.find(
-            participant =>
-              participant.participant.identifier === el.participant.identifier
+            participant => participant.participant.identifier === el.participant.identifier
           ) === undefined
       )
       finalResult = testParticipants
@@ -177,17 +150,9 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
     )
   }
 
-  const selectedIds = formatIds(
-    study.identifier,
-    Utility.isSignInById(study.signInTypes),
-    participantData
-  )
+  const selectedIds = formatIds(study.identifier, Utility.isSignInById(study.signInTypes), participantData)
 
-  const idsWithErrorsList = formatIds(
-    study.identifier,
-    Utility.isSignInById(study.signInTypes),
-    participantData
-  )
+  const idsWithErrorsList = formatIds(study.identifier, Utility.isSignInById(study.signInTypes), participantData)
 
   if (participantsWithError.length === 0) {
     return (
@@ -196,37 +161,19 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
           <Box display="flex" flexDirection="column">
             <Box mb={1}>
               {mode === 'DELETE' && (
-                <>
-                  {' '}
-                  'Are you sure you would like to permanently remove the
-                  following participant(s):'
-                </>
+                <> 'Are you sure you would like to permanently remove the following participant(s):'</>
               )}
               {mode === 'SMS'
                 ? `You will be sending the following SMS to the following ${participantData.length} participant(s) listed below:`
                 : ''}
             </Box>
             {mode === 'SMS' && (
-              <Box
-                fontSize="15px"
-                fontStyle="italic"
-                width="90%"
-                alignSelf="center"
-                mb={1}>
-                Please get started by{' '}
-                <strong style={{textDecoration: 'underline'}}>
-                  downloading the app here
-                </strong>{' '}
-                and enter the following{' '}
-                <strong>Study ID: {study.identifier}</strong>.
+              <Box fontSize="15px" fontStyle="italic" width="90%" alignSelf="center" mb={1}>
+                Please get started by <strong style={{textDecoration: 'underline'}}>downloading the app here</strong>{' '}
+                and enter the following <strong>Study ID: {study.identifier}</strong>.
               </Box>
             )}
-            <Paper
-              className={clsx(
-                classes.idList,
-                mode === 'SMS' && classes.smsIdListContainer
-              )}
-              elevation={0}>
+            <Paper className={clsx(classes.idList, mode === 'SMS' && classes.smsIdListContainer)} elevation={0}>
               {selectedIds.map((id, index) => (
                 <span key={'selected-id' + index}>{id}</span>
               ))}
@@ -244,11 +191,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
     return (
       <Box className={classes.root}>
         The following participant(s) could not be removed:
-        <div
-          className={clsx(
-            classes.idList,
-            mode === 'SMS' && classes.smsIdListContainer
-          )}>
+        <div className={clsx(classes.idList, mode === 'SMS' && classes.smsIdListContainer)}>
           {idsWithErrorsList.map(id => (
             <span>{id}</span>
           ))}

@@ -3,10 +3,7 @@ import makeStyles from '@mui/styles/makeStyles'
 import DeleteIcon from '@mui/icons-material/Close'
 import clsx from 'clsx'
 import React from 'react'
-import {
-  AssessmentWindow as AssessmentWindowType,
-  HDWMEnum,
-} from '../../../types/scheduling'
+import {AssessmentWindow as AssessmentWindowType, HDWMEnum} from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
@@ -57,9 +54,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
 }: AssessmentWindowProps) => {
   const classes = useStyles()
   return (
-    <Paper
-      className={clsx(classes.root, errorText && classes.redBorder)}
-      elevation={2}>
+    <Paper className={clsx(classes.root, errorText && classes.redBorder)} elevation={2}>
       <Box position="relative">
         <Box className={classes.windowNumber}>{index + 1}.</Box>
         <IconButton

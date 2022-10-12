@@ -27,11 +27,7 @@ type MemberInviteProps = {
   onUpdate: Function
 }
 
-const MemberInvite: FunctionComponent<MemberInviteProps> = ({
-  index,
-  newOrgAccount,
-  onUpdate,
-}: MemberInviteProps) => {
+const MemberInvite: FunctionComponent<MemberInviteProps> = ({index, newOrgAccount, onUpdate}: MemberInviteProps) => {
   const classes = useStyles()
   const [email, setEmail] = React.useState(newOrgAccount.email)
   const [access, setAccess] = React.useState(newOrgAccount.access)
@@ -50,9 +46,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
         value={email || ''}
         placeholder="email@synapse.org"
         style={{fontFamily: latoFont}}></TextField>
-      {newOrgAccount.error && (
-        <ErrorDisplay>{newOrgAccount.error.toString()}</ErrorDisplay>
-      )}
+      {newOrgAccount.error && <ErrorDisplay>{newOrgAccount.error.toString()}</ErrorDisplay>}
 
       <AccessGrid
         access={access}

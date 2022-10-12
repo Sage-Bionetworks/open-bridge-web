@@ -8,11 +8,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import {styled} from '@mui/material/styles'
 import {latoFont} from '@style/theme'
-import {
-  ChoiceQuestion,
-  ChoiceQuestionChoice,
-  ChoiceSelectorType,
-} from '@typedefs/surveys'
+import {ChoiceQuestion, ChoiceQuestionChoice, ChoiceSelectorType} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
 
 const PhoneBottom = styled('div', {label: 'phoneBottom'})({
@@ -126,16 +122,9 @@ const OPTIONS = new Map<
 // 'other' option is disabled when the question type is integer
 const DisabledOtherMenuItem: FunctionComponent = () => {
   return (
-    <StyledMenuItem
-      height="120px"
-      key={'OTHER'}
-      nohover={true}
-      onClick={void 0}>
+    <StyledMenuItem height="120px" key={'OTHER'} nohover={true} onClick={void 0}>
       <Box height="100px" marginTop="16px">
-        <Typography sx={{opacity: 0.3, color: '#fff'}}>
-          {' '}
-          +Add "Other"
-        </Typography>
+        <Typography sx={{opacity: 0.3, color: '#fff'}}> +Add "Other"</Typography>
         <Box
           sx={{
             fontFamily: latoFont,
@@ -170,8 +159,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
     choices: ChoiceQuestionChoice[],
     newChoice: ChoiceQuestionChoice
   ): ChoiceQuestionChoice[] => {
-    const numbRegularQuestions =
-      SurveyUtils.getNumberOfRegularSelectChoices(choices)
+    const numbRegularQuestions = SurveyUtils.getNumberOfRegularSelectChoices(choices)
 
     choices.splice(numbRegularQuestions, 0, newChoice)
     return choices
@@ -185,10 +173,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
       let newChoices: ChoiceQuestionChoice[]
       const choiceQ = {text: c.defaultText, selectorType: c.selectorType}
       if (optionKey === 'ALL') {
-        newChoices = addAfterRegularQuestions(
-          [...(step.choices || [])],
-          choiceQ
-        )
+        newChoices = addAfterRegularQuestions([...(step.choices || [])], choiceQ)
       } else {
         // NONE is always the last
         newChoices = [...(step.choices || []), choiceQ]
@@ -201,9 +186,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
   }
 
   const addResponse = () => {
-    const numberOfChoices = SurveyUtils.getNumberOfRegularSelectChoices(
-      step.choices
-    )
+    const numberOfChoices = SurveyUtils.getNumberOfRegularSelectChoices(step.choices)
 
     const nextLetter = String.fromCharCode(numberOfChoices + 65)
     const text = `Choice ${nextLetter.toUpperCase()}`
@@ -213,10 +196,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
       value: step.baseType === 'string' ? text : numberOfChoices,
     }
 
-    const choices = addAfterRegularQuestions(
-      [...(step.choices || [])],
-      newChoice
-    )
+    const choices = addAfterRegularQuestions([...(step.choices || [])], newChoice)
 
     onChange({...step, choices})
   }
@@ -230,9 +210,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
       case 'ALL':
         return step.choices?.find(q => q.selectorType === 'all') !== undefined
       case 'NONE':
-        return (
-          step.choices?.find(q => q.selectorType === 'exclusive') !== undefined
-        )
+        return step.choices?.find(q => q.selectorType === 'exclusive') !== undefined
       case 'OTHER':
         return step.other !== undefined
       default: {
@@ -303,10 +281,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
             </StyledMenuItem>
           ))}
           {step.baseType === 'string' ? (
-            <StyledMenuItem
-              key="OTHER"
-              disabled={isDisabled('OTHER')}
-              onClick={() => addGenericResponse('OTHER')}>
+            <StyledMenuItem key="OTHER" disabled={isDisabled('OTHER')} onClick={() => addGenericResponse('OTHER')}>
               + Add "Other"
             </StyledMenuItem>
           ) : (

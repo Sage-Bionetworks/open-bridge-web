@@ -1,7 +1,4 @@
-import {
-  DisappearingInput,
-  FakeInput,
-} from '@components/surveys/widgets/SharedStyled'
+import {DisappearingInput, FakeInput} from '@components/surveys/widgets/SharedStyled'
 import {styled, Typography} from '@mui/material'
 import {Theme} from '@mui/system'
 import {latoFont, theme} from '@style/theme'

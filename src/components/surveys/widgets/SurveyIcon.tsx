@@ -85,19 +85,11 @@ type SurveyIconProps = {
   onSelected: () => void
 }
 
-const SurveyIcon: React.FunctionComponent<SurveyIconProps> = ({
-  name,
-  isSelected,
-  onSelected,
-}) => {
+const SurveyIcon: React.FunctionComponent<SurveyIconProps> = ({name, isSelected, onSelected}) => {
   return SURVEY_ICONS.has(name) ? (
     <IconContainer>
       <div className={isSelected ? 'selected' : ''} onClick={onSelected}>
-        <img
-          width="100%"
-          src={SURVEY_ICONS.get(name)?.img}
-          alt={SURVEY_ICONS.get(name)?.title}
-        />
+        <img width="100%" src={SURVEY_ICONS.get(name)?.img} alt={SURVEY_ICONS.get(name)?.title} />
       </div>
       <span>{SURVEY_ICONS.get(name)?.title}</span>
     </IconContainer>

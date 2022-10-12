@@ -20,9 +20,7 @@ const StyledButton = styled(Button)(({theme}) => ({
   },
 }))
 
-const SelectExtraActions: FunctionComponent<{onSort: (d: -1 | 1) => void}> = ({
-  onSort,
-}) => {
+const SelectExtraActions: FunctionComponent<{onSort: (d: -1 | 1) => void}> = ({onSort}) => {
   return (
     <Box
       sx={{

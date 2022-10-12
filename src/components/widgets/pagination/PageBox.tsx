@@ -28,19 +28,12 @@ type PageBoxProps = {
   index: number
 }
 
-const PageBox: React.FunctionComponent<PageBoxProps> = ({
-  isSelected,
-  pageNumber,
-  onPageSelected,
-  index,
-}) => {
+const PageBox: React.FunctionComponent<PageBoxProps> = ({isSelected, pageNumber, onPageSelected, index}) => {
   const classes = useStyles()
   return (
     <Button
       id={`pagebox-button-${index}`}
-      className={`${classes.pageBoxSurrounding} ${
-        isSelected ? classes.withBlackBorder : classes.withGrayBorder
-      }`}
+      className={`${classes.pageBoxSurrounding} ${isSelected ? classes.withBlackBorder : classes.withGrayBorder}`}
       onClick={() => onPageSelected(pageNumber - 1)}>
       {pageNumber}
     </Button>

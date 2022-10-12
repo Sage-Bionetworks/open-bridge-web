@@ -1,9 +1,6 @@
 import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
-import {
-  DisappearingInput,
-  FakeInput,
-} from '@components/surveys/widgets/SharedStyled'
+import {DisappearingInput, FakeInput} from '@components/surveys/widgets/SharedStyled'
 import {Box, styled, Typography, TypographyProps} from '@mui/material'
 import {latoFont, theme} from '@style/theme'
 import {
@@ -28,22 +25,17 @@ import PhoneDisplay from './PhoneDisplay'
 import RequiredToggle from './RequiredToggle'
 import SelectPhoneBottomMenu from './SelectPhoneBottomMenu'
 
-const OuterContainer = styled('div', {label: 'PhoneOuterContainer'})(
-  ({theme}) => ({
-    //backgroundColor: '#F8F8F8',
-    padding: theme.spacing(0, 5),
+const OuterContainer = styled('div', {label: 'PhoneOuterContainer'})(({theme}) => ({
+  //backgroundColor: '#F8F8F8',
+  padding: theme.spacing(0, 5),
 
-    margin: '0 auto',
-    position: 'relative',
-  })
-)
+  margin: '0 auto',
+  position: 'relative',
+}))
 
-const SkipQuestion = styled(
-  (props: TypographyProps) => <Typography {...props}>Skip question</Typography>,
-  {
-    label: 'skipQuestion',
-  }
-)(() => ({
+const SkipQuestion = styled((props: TypographyProps) => <Typography {...props}>Skip question</Typography>, {
+  label: 'skipQuestion',
+})(() => ({
   fontWeight: 400,
   fontSize: '12px',
   lineHeight: '18px',
@@ -129,32 +121,22 @@ function Factory(args: {
 }) {
   switch (args.q_type) {
     case 'SINGLE_SELECT': {
-      return (
-        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
-      )
+      return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
     }
 
     case 'MULTI_SELECT':
-      return (
-        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
-      )
+      return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
     case 'SLIDER':
     case 'LIKERT':
-      return (
-        <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
-      )
+      return <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
     case 'NUMERIC':
-      return (
-        <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
-      )
+      return <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
     case 'DURATION':
       return <TimeDuration />
     case 'TIME':
       return <TimeDuration type="TIME" />
     case 'YEAR':
-      return (
-        <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
-      )
+      return <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
 
     case 'FREE_TEXT':
       return (
@@ -170,14 +152,10 @@ function Factory(args: {
         />
       ) //<FreeText step={args.step} onChange={args.onChange} />
     case 'COMPLETION': {
-      return (
-        <Completion step={args.step as BaseStep} onChange={args.onChange} />
-      )
+      return <Completion step={args.step as BaseStep} onChange={args.onChange} />
     }
     case 'OVERVIEW': {
-      return (
-        <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
-      )
+      return <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
     }
     default:
       return <>nothing</>
@@ -217,16 +195,10 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   const questionId = step ? getQuestionId(step) : 0
 
   const shouldShowSkipButton = (): boolean => {
-    return (
-      globalSkipConfiguration === 'SKIP' ||
-      !step!.shouldHideActions?.includes('skip')
-    )
+    return globalSkipConfiguration === 'SKIP' || !step!.shouldHideActions?.includes('skip')
   }
 
-  const sortSelectChoices = (
-    choiceQ: ChoiceQuestion,
-    direction: 1 | -1
-  ): ChoiceQuestionChoice[] => {
+  const sortSelectChoices = (choiceQ: ChoiceQuestion, direction: 1 | -1): ChoiceQuestionChoice[] => {
     const qNum = SurveyUtils.getNumberOfRegularSelectChoices(choiceQ.choices)
     const sortableOptions = choiceQ.choices.splice(0, qNum)
     sortableOptions.sort((a, b) => {
@@ -241,12 +213,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
       return <></>
     }
     if (isSelectQuestion(questionId)) {
-      return (
-        <SelectPhoneBottomMenu
-          step={step as ChoiceQuestion}
-          onChange={s => onChange(s)}
-        />
-      )
+      return <SelectPhoneBottomMenu step={step as ChoiceQuestion} onChange={s => onChange(s)} />
     }
     if (step.type === 'overview') {
       return <StyledStartButton>Start</StyledStartButton>
@@ -273,9 +240,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
 
       {step && (
         <>
-          <PhoneDisplay
-            sx={{marginBottom: '20px', textAlign: 'left'}}
-            phoneBottom={getPhoneBottom()}>
+          <PhoneDisplay sx={{marginBottom: '20px', textAlign: 'left'}} phoneBottom={getPhoneBottom()}>
             <Box>
               {isDynamic && (
                 <>
@@ -290,9 +255,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                     id="subtitle"
                     value={step.subtitle || ''}
                     placeholder="Subtitle"
-                    onChange={e =>
-                      onChange({...step, subtitle: e.target.value})
-                    }
+                    onChange={e => onChange({...step, subtitle: e.target.value})}
                   />
 
                   <StyledH1

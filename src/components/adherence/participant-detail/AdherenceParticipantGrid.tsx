@@ -1,7 +1,4 @@
-import {
-  PlotDaysDisplay,
-  useGetPlotAndUnitWidth,
-} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
+import {PlotDaysDisplay, useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
@@ -60,9 +57,7 @@ type AdherenceParticipantGridProps = {
   adherenceReport: AdherenceDetailReport
 }
 
-const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({
-  startEventIds,
-}) => {
+const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({startEventIds}) => {
   const classes = useStyles()
   return (
     <>
@@ -70,9 +65,8 @@ const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({
         <div className={classes.eventRowForWeek}>
           <Box px={2}>
             <strong>{EventService.formatEventIdForDisplay(name)}</strong>
-            &nbsp; calendar date has not been defined for this participant.
-            Session(s) tied to this event will be displayed once date is
-            provided. Edit Participant Event Date below.
+            &nbsp; calendar date has not been defined for this participant. Session(s) tied to this event will be
+            displayed once date is provided. Edit Participant Event Date below.
           </Box>
         </div>
       ))}
@@ -83,63 +77,50 @@ const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/AdherenceUtils.java
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/SessionCompletionState.java
 
-const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> =
-  ({adherenceReport}) => {
-    const ref = React.useRef<HTMLDivElement>(null)
-    const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
-    const classes = {...useCommonStyles(), ...useStyles()}
+const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> = ({adherenceReport}) => {
+  const ref = React.useRef<HTMLDivElement>(null)
+  const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
+  const classes = {...useCommonStyles(), ...useStyles()}
 
-    const dayListingTitleStyle: React.CSSProperties = {
-      fontWeight: 'bold',
-      paddingLeft: '16px',
-      fontSize: '14px',
-      width: '235px',
-    }
+  const dayListingTitleStyle: React.CSSProperties = {
+    fontWeight: 'bold',
+    paddingLeft: '16px',
+    fontSize: '14px',
+    width: '235px',
+  }
 
-    const adHerenceLabelStyle: React.CSSProperties = {
-      top: '-7px',
-      lineHeight: '1',
-      width: `${dayWidthInPx}px`,
-      left: `${dayWidthInPx * 7}px`,
-    }
+  const adHerenceLabelStyle: React.CSSProperties = {
+    top: '-7px',
+    lineHeight: '1',
+    width: `${dayWidthInPx}px`,
+    left: `${dayWidthInPx * 7}px`,
+  }
 
-    return (
-      <div ref={ref} className={classes.adherenceGrid}>
-        <div className={classes.daysList} key={'day_list'}>
-          <PlotDaysDisplay
-            title="Day in Study"
-            titleStyle={dayListingTitleStyle}
-            unitWidth={dayWidthInPx}
-            endLabel={
-              <div
-                className={classes.adherenceLabel}
-                style={adHerenceLabelStyle}>
-                Adherence
-                <br />%
-              </div>
-            }
-          />
-        </div>
-        {adherenceReport.weeks.map((week, weekIndex) => (
-          <div
-            className={classes.eventRowForWeek}
-            key={`${'inner' + week.weekInStudy}_${weekIndex}`}>
-            <div
-              key={'eventRowForWeek' + weekIndex}
-              className={classes.eventRowForWeekSessions}>
-              <div key="sessions">
-                {week.rows.map((row, rowIndex) => (
-                  <div
-                    className={classes.eventRowForWeekSingleSession}
-                    id={'session' + row.label}>
-                    <div className={classes.startEventId} key={'wk_name'}>
-                      <RowLabel
-                        wkInStudy={week.weekInStudy}
-                        burstNum={row.studyBurstNum}
-                        sessionName={row.sessionName}
-                      />
-                    </div>
-                    {/*  <Tooltip title={row.label}>
+  return (
+    <div ref={ref} className={classes.adherenceGrid}>
+      <div className={classes.daysList} key={'day_list'}>
+        <PlotDaysDisplay
+          title="Day in Study"
+          titleStyle={dayListingTitleStyle}
+          unitWidth={dayWidthInPx}
+          endLabel={
+            <div className={classes.adherenceLabel} style={adHerenceLabelStyle}>
+              Adherence
+              <br />%
+            </div>
+          }
+        />
+      </div>
+      {adherenceReport.weeks.map((week, weekIndex) => (
+        <div className={classes.eventRowForWeek} key={`${'inner' + week.weekInStudy}_${weekIndex}`}>
+          <div key={'eventRowForWeek' + weekIndex} className={classes.eventRowForWeekSessions}>
+            <div key="sessions">
+              {week.rows.map((row, rowIndex) => (
+                <div className={classes.eventRowForWeekSingleSession} id={'session' + row.label}>
+                  <div className={classes.startEventId} key={'wk_name'}>
+                    <RowLabel wkInStudy={week.weekInStudy} burstNum={row.studyBurstNum} sessionName={row.sessionName} />
+                  </div>
+                  {/*  <Tooltip title={row.label}>
                       <div className={classes.sessionLegendIcon}>
                         <AdherenceSessionIcon
                           sessionSymbol={row.sessionSymbol || undefined}
@@ -148,51 +129,40 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                         </AdherenceSessionIcon>
                       </div>
                       </Tooltip>*/}
-                    <div
-                      id={'wk' + weekIndex + 'events'}
-                      className={classes.sessionWindows}>
-                      {[...new Array(7)].map((i, dayIndex) => (
-                        <DayDisplay
-                          key={dayIndex}
-                          entry={AdherenceUtility.getItemFromByDayEntries(
-                            week.byDayEntries,
-                            dayIndex,
-                            rowIndex
-                          )}
-                          isCompliant={AdherenceUtility.isCompliant(
-                            week.adherencePercent
-                          )}
-                          dayWidth={dayWidthInPx}
-                          sessionSymbol={row.sessionSymbol}
-                          numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(
-                            adherenceReport.weeks
-                          )}
-                          timeZone={adherenceReport.clientTimeZone}
-                        />
-                      ))}
-                    </div>
+                  <div id={'wk' + weekIndex + 'events'} className={classes.sessionWindows}>
+                    {[...new Array(7)].map((i, dayIndex) => (
+                      <DayDisplay
+                        key={dayIndex}
+                        entry={AdherenceUtility.getItemFromByDayEntries(week.byDayEntries, dayIndex, rowIndex)}
+                        isCompliant={AdherenceUtility.isCompliant(week.adherencePercent)}
+                        dayWidth={dayWidthInPx}
+                        sessionSymbol={row.sessionSymbol}
+                        numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(adherenceReport.weeks)}
+                        timeZone={adherenceReport.clientTimeZone}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
-              <div
-                key={'adherence'}
-                className={clsx(
-                  classes.adherenceDisplay,
-                  !AdherenceUtility.isCompliant(week.adherencePercent) &&
-                    adherenceReport.progression === 'in_progress' &&
-                    classes.red
-                )}>
-                {week.adherencePercent !== undefined &&
-                adherenceReport.progression !== 'unstarted'
-                  ? `${week.adherencePercent}%`
-                  : '-'}
-              </div>
+                </div>
+              ))}
+            </div>
+            <div
+              key={'adherence'}
+              className={clsx(
+                classes.adherenceDisplay,
+                !AdherenceUtility.isCompliant(week.adherencePercent) &&
+                  adherenceReport.progression === 'in_progress' &&
+                  classes.red
+              )}>
+              {week.adherencePercent !== undefined && adherenceReport.progression !== 'unstarted'
+                ? `${week.adherencePercent}%`
+                : '-'}
             </div>
           </div>
-        ))}
-        <UndefinedEvents startEventIds={adherenceReport.unsetEventIds} />
-      </div>
-    )
-  }
+        </div>
+      ))}
+      <UndefinedEvents startEventIds={adherenceReport.unsetEventIds} />
+    </div>
+  )
+}
 
 export default AdherenceParticipantGrid

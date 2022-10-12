@@ -120,11 +120,7 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
         checked={selectionType === 'ALL' || selectionType === 'PAGE'}
         indeterminate={selectionType === 'SOME'}
         onClick={() => {
-          if (
-            selectionType === 'ALL' ||
-            selectionType === 'PAGE' ||
-            selectionType === 'SOME'
-          ) {
+          if (selectionType === 'ALL' || selectionType === 'PAGE' || selectionType === 'SOME') {
             onDeselect()
           } else {
             setSelect('ALL')
@@ -136,24 +132,12 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleMenuClick}>
-        <div
-          className={clsx(
-            Boolean(menuAnchor) ? classes.arrowUp : classes.arrowDown
-          )}></div>
+        <div className={clsx(Boolean(menuAnchor) ? classes.arrowUp : classes.arrowDown)}></div>
       </Button>
-      <Menu
-        id="study-menu"
-        anchorEl={menuAnchor}
-        keepMounted
-        open={Boolean(menuAnchor)}
-        onClose={handleMenuClose}>
+      <Menu id="study-menu" anchorEl={menuAnchor} keepMounted open={Boolean(menuAnchor)} onClose={handleMenuClose}>
         {menuItems.map(item => (
-          <MenuItem
-            onClick={() => setSelect(item.value as SelectionType)}
-            key={item.value}>
-            <div className={classes.icon}>
-              {selectionType === item.value && <CheckIcon />}
-            </div>
+          <MenuItem onClick={() => setSelect(item.value as SelectionType)} key={item.value}>
+            <div className={classes.icon}>{selectionType === item.value && <CheckIcon />}</div>
             {item.label}
           </MenuItem>
         ))}

@@ -59,8 +59,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     border: 'none',
     backgroundColor: '#F2F2F2',
     height: 'auto',
-    boxShadow:
-      '0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12)',
+    boxShadow: '0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12)',
   },
   navIcon: {
     marginRight: theme.spacing(2),
@@ -134,74 +133,53 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
         }),
       }}>
       <Box textAlign="right" height="48px" bgcolor="#F2F2F2">
-        <IconButton
-          onClick={toggleDrawer}
-          className={classes.drawerButton}
-          size="large">
-          <img
-            style={{width: '12px', height: '22px'}}
-            src={open ? CloseIcon : OpenIcon}
-            alt="Close/Open Icon"></img>
+        <IconButton onClick={toggleDrawer} className={classes.drawerButton} size="large">
+          <img style={{width: '12px', height: '22px'}} src={open ? CloseIcon : OpenIcon} alt="Close/Open Icon"></img>
         </IconButton>
       </Box>
-      <ul
-        className={classes.list}
-        style={{pointerEvents: disabled ? 'none' : 'all'}}>
+      <ul className={classes.list} style={{pointerEvents: disabled ? 'none' : 'all'}}>
         {study &&
-          getStudyBuilderSections(StudyService.isStudyInDesign(study)).map(
-            (sectionLink, index) => (
-              <div
-                onMouseOver={() => setCurrentHoveredElement(index)}
-                onMouseOut={() => setCurrentHoveredElement(-1)}
-                key={sectionLink.path}>
-                <NavLink
-                  to={`/studies/builder/${study.identifier}/${sectionLink.path}`}
-                  style={{textDecoration: 'none'}}>
-                  <SideBarListItem
-                    key={sectionLink.path}
-                    isOpen={open}
-                    onClick={_.noop}
-                    isActive={sectionLink.path === currentSection}
-                    styleProps={classes.listItems}
-                    inStudyBuilder={true}>
-                    <div
-                      style={{display: 'flex', textDecoration: 'none'}}
+          getStudyBuilderSections(StudyService.isStudyInDesign(study)).map((sectionLink, index) => (
+            <div
+              onMouseOver={() => setCurrentHoveredElement(index)}
+              onMouseOut={() => setCurrentHoveredElement(-1)}
+              key={sectionLink.path}>
+              <NavLink to={`/studies/builder/${study.identifier}/${sectionLink.path}`} style={{textDecoration: 'none'}}>
+                <SideBarListItem
+                  key={sectionLink.path}
+                  isOpen={open}
+                  onClick={_.noop}
+                  isActive={sectionLink.path === currentSection}
+                  styleProps={classes.listItems}
+                  inStudyBuilder={true}>
+                  <div
+                    style={{display: 'flex', textDecoration: 'none'}}
+                    className={clsx(
+                      classes.navIconImageContainer,
+                      sectionLink.path === currentSection && !open && classes.listItemCollapsed
+                    )}>
+                    <img
+                      src={
+                        sectionLink.path === currentSection || index === currentHoveredElement
+                          ? sectionLink.hoverIcon
+                          : sectionLink.navIcon
+                      }
                       className={clsx(
-                        classes.navIconImageContainer,
-                        sectionLink.path === currentSection &&
-                          !open &&
-                          classes.listItemCollapsed
-                      )}>
-                      <img
-                        src={
-                          sectionLink.path === currentSection ||
-                          index === currentHoveredElement
-                            ? sectionLink.hoverIcon
-                            : sectionLink.navIcon
-                        }
-                        className={clsx(
-                          classes.navIcon,
-                          disabled &&
-                            sectionLink.path !== 'session-creator' &&
-                            classes.disabledElement
-                        )}
-                        alt={sectionLink.name}
-                      />
-                      <span
-                        style={{textDecoration: 'none'}}
-                        className={clsx(
-                          disabled &&
-                            sectionLink.path !== 'session-creator' &&
-                            classes.disabledElement
-                        )}>
-                        {sectionLink.name}
-                      </span>
-                    </div>
-                  </SideBarListItem>
-                </NavLink>
-              </div>
-            )
-          )}
+                        classes.navIcon,
+                        disabled && sectionLink.path !== 'session-creator' && classes.disabledElement
+                      )}
+                      alt={sectionLink.name}
+                    />
+                    <span
+                      style={{textDecoration: 'none'}}
+                      className={clsx(disabled && sectionLink.path !== 'session-creator' && classes.disabledElement)}>
+                      {sectionLink.name}
+                    </span>
+                  </div>
+                </SideBarListItem>
+              </NavLink>
+            </div>
+          ))}
       </ul>
     </Drawer>
   )

@@ -1,7 +1,4 @@
-import {
-  FakeInput,
-  StyledLabel12,
-} from '@components/surveys/widgets/SharedStyled'
+import {FakeInput, StyledLabel12} from '@components/surveys/widgets/SharedStyled'
 import {styled} from '@mui/material'
 import {theme} from '@style/theme'
 

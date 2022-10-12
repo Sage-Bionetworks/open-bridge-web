@@ -26,14 +26,15 @@ export interface SmallTextBoxProps {
   inputWidth?: number
 }
 
-const SmallTextBox: React.FunctionComponent<
-  SmallTextBoxProps & TextFieldProps
-> = ({isLessThanOneAllowed, inputWidth = 6, onChange, ...other}) => {
+const SmallTextBox: React.FunctionComponent<SmallTextBoxProps & TextFieldProps> = ({
+  isLessThanOneAllowed,
+  inputWidth = 6,
+  onChange,
+  ...other
+}) => {
   const classes = useStyles({width: inputWidth})
 
-  const change = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
+  const change = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     if (!onChange) {
       return
     }
@@ -45,8 +46,7 @@ const SmallTextBox: React.FunctionComponent<
 
     if (
       type === 'number' &&
-      (isNaN(Number.parseInt(e.target.value)) ||
-        (Number.parseInt(e.target.value) < 1 && !isLessThanOneAllowed))
+      (isNaN(Number.parseInt(e.target.value)) || (Number.parseInt(e.target.value) < 1 && !isLessThanOneAllowed))
     ) {
       return
     }
@@ -54,14 +54,7 @@ const SmallTextBox: React.FunctionComponent<
     onChange(e)
   }
 
-  return (
-    <TextField
-      className={classes.text}
-      {...other}
-      onChange={e => change(e)}
-      variant="outlined"
-    />
-  )
+  return <TextField className={classes.text} {...other} onChange={e => change(e)} variant="outlined" />
 }
 
 export default SmallTextBox

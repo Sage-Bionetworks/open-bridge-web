@@ -1,22 +1,9 @@
 import EditParticipantEventsForm from '@components/studies/participants/modify/EditParticipantEventsForm'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
-import {
-  DialogButtonPrimary,
-  DialogButtonSecondary,
-} from '@components/widgets/StyledComponents'
-import {
-  Alert,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-} from '@mui/material'
-import {
-  useEvents,
-  useEventsForUser,
-  useUpdateEventsForUser,
-} from '@services/eventHooks'
+import {DialogButtonPrimary, DialogButtonSecondary} from '@components/widgets/StyledComponents'
+import {Alert, CircularProgress, Dialog, DialogActions, DialogContent} from '@mui/material'
+import {useEvents, useEventsForUser, useUpdateEventsForUser} from '@services/eventHooks'
 import {ParticipantEvent} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 
@@ -33,9 +20,7 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
   clientTimeZone,
   onCloseDialog,
 }) => {
-  const [participantEvents, setParticipantEvents] = React.useState<
-    ParticipantEvent[]
-  >([])
+  const [participantEvents, setParticipantEvents] = React.useState<ParticipantEvent[]>([])
 
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
   const {data: events} = useEventsForUser(studyId, participantId)
@@ -46,21 +31,11 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
     }
   }, [events])
 
-  const {
-    isSuccess,
-    isError,
-    isIdle,
-    error,
-    mutate: updateEvents,
-  } = useUpdateEventsForUser()
+  const {isSuccess, isError, isIdle, error, mutate: updateEvents} = useUpdateEventsForUser()
 
   return (
     <Dialog open={true} maxWidth="sm" fullWidth scroll="body">
-      <DialogTitleWithClose
-        onCancel={onCloseDialog}
-        title="Edit Participant Event Date"
-        isSmallTitle={true}
-      />
+      <DialogTitleWithClose onCancel={onCloseDialog} title="Edit Participant Event Date" isSmallTitle={true} />
       <DialogContent>
         <EditParticipantEventsForm
           hideLoginEvent={true}
@@ -68,23 +43,13 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
           onChange={customEvents => {
             setParticipantEvents(customEvents)
           }}
-          customParticipantEvents={
-            participantEvents || ([] as ParticipantEvent[])
-          }
+          customParticipantEvents={participantEvents || ([] as ParticipantEvent[])}
         />
       </DialogContent>
-      {isError && (
-        <ErrorDisplay style={{padding: '0 24px'}}>
-          {(error as Error).message}
-        </ErrorDisplay>
-      )}
-      {!clientTimeZone && (
-        <Alert>You must select a time zone for this participant</Alert>
-      )}
+      {isError && <ErrorDisplay style={{padding: '0 24px'}}>{(error as Error).message}</ErrorDisplay>}
+      {!clientTimeZone && <Alert>You must select a time zone for this participant</Alert>}
       <DialogActions>
-        <DialogButtonSecondary onClick={onCloseDialog}>
-          Cancel
-        </DialogButtonSecondary>
+        <DialogButtonSecondary onClick={onCloseDialog}>Cancel</DialogButtonSecondary>
         <DialogButtonPrimary
           disabled={!clientTimeZone}
           onClick={() => {
@@ -93,9 +58,7 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
 
             //only update changes events
             const eventsToUpdate = updatedEvents.filter(ue => {
-              const matchedEvent = events?.customEvents.find(
-                e => e.eventId === ue.eventId
-              )
+              const matchedEvent = events?.customEvents.find(e => e.eventId === ue.eventId)
               return !matchedEvent || matchedEvent.timestamp !== ue.timestamp
             })
 

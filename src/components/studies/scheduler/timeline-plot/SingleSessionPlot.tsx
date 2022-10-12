@@ -34,10 +34,7 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
       }}></div>
   ))
   const sessionGraph = xCoords.map(({c: i, expiration}) => (
-    <Tooltip
-      title={expiration}
-      placement="top"
-      key={`session${i}_${unitPixelWidth * i}_${sessionIndex}_${lineNumber}`}>
+    <Tooltip title={expiration} placement="top" key={`session${i}_${unitPixelWidth * i}_${sessionIndex}_${lineNumber}`}>
       <div
         style={{
           position: 'absolute',
@@ -46,9 +43,7 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
           top: `${topOffset}px`,
           left: `${i * unitPixelWidth - 6}px`,
         }}>
-        <SessionIcon
-          symbolKey={sessionSymbol}
-          index={sessionIndex}></SessionIcon>
+        <SessionIcon symbolKey={sessionSymbol} index={sessionIndex}></SessionIcon>
       </div>
     </Tooltip>
   ))

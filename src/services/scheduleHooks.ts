@@ -12,14 +12,10 @@ const SCHEDULE_KEYS = {
   details: () => [...SCHEDULE_KEYS.all, 'detail'] as const,
   detail: (id: string | undefined) => [...SCHEDULE_KEYS.details(), id] as const,
   timeline: (id: string) => [...SCHEDULE_KEYS.detail(id), 'timeline'] as const,
-  detail_noresources: (id: string | undefined) =>
-    [...SCHEDULE_KEYS.detail(id), 'no_resources'] as const,
+  detail_noresources: (id: string | undefined) => [...SCHEDULE_KEYS.detail(id), 'no_resources'] as const,
 }
 
-export const useSchedule = (
-  studyId: string | undefined,
-  withResources: boolean = true
-) => {
+export const useSchedule = (studyId: string | undefined, withResources: boolean = true) => {
   const {token, appId} = useUserSessionDataState()
 
   return useQuery<Schedule | undefined, ExtendedError>(
@@ -56,28 +52,18 @@ export const useUpdateSchedule = () => {
       queryClient.cancelQueries(STUDY_KEYS.detail(props.studyId))
       // Snapshot the previous value
       const {studyId, schedule, action} = props
-      const previousSchedule = queryClient.getQueryData<Schedule>(
-        SCHEDULE_KEYS.detail(studyId)
-      )
+      const previousSchedule = queryClient.getQueryData<Schedule>(SCHEDULE_KEYS.detail(studyId))
 
       const newSchedule: Schedule = {
         ...schedule,
         version: (schedule.version || 0) + 1,
       }
-      queryClient.setQueryData<Schedule>(
-        SCHEDULE_KEYS.detail(studyId),
-        newSchedule
-      )
+      queryClient.setQueryData<Schedule>(SCHEDULE_KEYS.detail(studyId), newSchedule)
 
       return {previousSchedule}
     },
     onError: (err: Error, args, context) => {
-      console.log(
-        `%c Error updating schedule:  ${err.message}, Data: ${JSON.stringify(
-          args.schedule
-        )}`,
-        'color: red'
-      )
+      console.log(`%c Error updating schedule:  ${err.message}, Data: ${JSON.stringify(args.schedule)}`, 'color: red')
       throw err
     },
     onSettled: async (data, error, args) => {

@@ -40,11 +40,7 @@ const NonDraftHeaderFunctionComponent: FunctionComponent<{
     <div className={classes.root}>
       Study ID: {Utility.formatStudyId(study.identifier)}
       &nbsp;&nbsp;
-      <img
-        src={phaseIcon[displayPhase]}
-        style={{flexShrink: 0}}
-        alt={displayPhase}
-      />
+      <img src={phaseIcon[displayPhase]} style={{flexShrink: 0}} alt={displayPhase} />
     </div>
   )
 }

@@ -1,14 +1,8 @@
 import constants from '@typedefs/constants'
 import {rest} from 'msw'
 
-const getAllAccountsEndpoint = constants.endpoints.getAccountsForOrg.replace(
-  ':orgId',
-  'testMembership'
-)
-const getIndividualAccountEndpoint = constants.endpoints.bridgeAccount.replace(
-  ':id',
-  'testID'
-)
+const getAllAccountsEndpoint = constants.endpoints.getAccountsForOrg.replace(':orgId', 'testMembership')
+const getIndividualAccountEndpoint = constants.endpoints.bridgeAccount.replace(':id', 'testID')
 
 const endpoints = [
   rest.post(`*${getAllAccountsEndpoint}`, async (req, res, ctx) => {

@@ -109,10 +109,7 @@ export interface PassiveFeaturesProps {
   children: React.ReactNode
 }
 
-const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
-  id,
-  children,
-}) => {
+const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, children}) => {
   const classes = useStyles()
   const {data: study} = useStudy(id)
 
@@ -137,8 +134,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
     return <>...</>
   }
 
-  const features: BackgroundRecorders =
-    study.clientData.backgroundRecorders || {}
+  const features: BackgroundRecorders = study.clientData.backgroundRecorders || {}
 
   const PFSection = ({
     recorderType,
@@ -156,25 +152,12 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
     return (
       <div className={classes.section}>
         <Box display="flex" mb={5}>
-          <img
-            src={sensors[recorderType]!.img}
-            alt={sensors[recorderType]!.title}
-            style={{marginRight: 'auto'}}
-          />
-          <Box
-            display="flex"
-            alignItems="center"
-            flexDirection="row"
-            height="30px">
-            <span className={classes.featureHeading}>
-              {sensors[recorderType]!.title}
-            </span>
+          <img src={sensors[recorderType]!.img} alt={sensors[recorderType]!.title} style={{marginRight: 'auto'}} />
+          <Box display="flex" alignItems="center" flexDirection="row" height="30px">
+            <span className={classes.featureHeading}>{sensors[recorderType]!.title}</span>
             {!isReadOnly && (
               <div className={classes.toggle}>
-                <Switch
-                  color="primary"
-                  checked={value}
-                  onChange={e => callbackFn(e.target.checked)}></Switch>
+                <Switch color="primary" checked={value} onChange={e => callbackFn(e.target.checked)}></Switch>
               </div>
             )}
           </Box>
@@ -189,9 +172,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
           </thead>
           <tbody>
             <tr>
-              <td style={{width: '40%'}}>
-                {sensors[recorderType]!.description}
-              </td>
+              <td style={{width: '40%'}}>{sensors[recorderType]!.description}</td>
               <td style={{width: '20%'}}>{sensors[recorderType]!.frequency}</td>
               <td>{sensors[recorderType]!.burden}</td>
             </tr>
@@ -202,8 +183,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
   }
   const isReadOnly = !StudyService.isStudyInDesign(study)
   const displayMotionSection = !isReadOnly || (isReadOnly && features?.motion)
-  const displayMicrophoneSection =
-    !isReadOnly || (isReadOnly && features.microphone)
+  const displayMicrophoneSection = !isReadOnly || (isReadOnly && features.microphone)
   const displayWeatherSection = !isReadOnly || (isReadOnly && features?.weather)
   return (
     <>
@@ -217,20 +197,17 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
         ) : (
           <Box>
             <MTBHeadingH3 className={classes.intro}>
-              Mobile Toolbox lets you add optional contextual/sensor monitoring
-              to your study. This can be used to assess the impact of
-              environmental factors on test performance.
+              Mobile Toolbox lets you add optional contextual/sensor monitoring to your study. This can be used to
+              assess the impact of environmental factors on test performance.
             </MTBHeadingH3>
             <MTBHeadingH3 className={classes.intro}>
-              When adding monitoring, please consider the impact on the
-              participant's experience and potential added burden. Participants'
-              devices may perform differently based on their device type.
+              When adding monitoring, please consider the impact on the participant's experience and potential added
+              burden. Participants' devices may perform differently based on their device type.
             </MTBHeadingH3>
             <MTBHeadingH3 className={classes.intro}>
-              Participants can turn optional monitoring on/off at any time. You
-              may not receive any data if a participant opts-out or you may
-              receive incomplete data if a participant changes their opt-in
-              status during your study.
+              Participants can turn optional monitoring on/off at any time. You may not receive any data if a
+              participant opts-out or you may receive incomplete data if a participant changes their opt-in status
+              during your study.
             </MTBHeadingH3>
           </Box>
         )}

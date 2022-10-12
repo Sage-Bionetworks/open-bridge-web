@@ -15,22 +15,10 @@ import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
 import {PrevButton, SimpleTextInput} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  FormControl,
-  FormLabel,
-} from '@mui/material'
+import {Box, Button, Container, Divider, FormControl, FormLabel} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService from '@services/participants.service'
-import {
-  latoFont,
-  playfairDisplayFont,
-  poppinsFont,
-  ThemeType,
-} from '@style/theme'
+import {latoFont, playfairDisplayFont, poppinsFont, ThemeType} from '@style/theme'
 import {Assessment} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {useEffect} from 'react'
@@ -201,17 +189,11 @@ export interface PreviewProps {
   children?: React.ReactNode
 }
 
-const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
-  text,
-  img,
-}) => {
+const Reminder: React.FunctionComponent<{text: string; img: string}> = ({text, img}) => {
   const classes = useStyles()
   return (
     <Box textAlign="center" width="200px">
-      <img
-        className={classes.reminderOfUseIcon}
-        src={img}
-        alt="reminder of use"></img>
+      <img className={classes.reminderOfUseIcon} src={img} alt="reminder of use"></img>
       <p className={classes.reminderOfUseText}>{text}</p>
     </Box>
   )
@@ -223,9 +205,7 @@ const PreviewAssessments: React.FunctionComponent<{
   const classes = useStyles()
   const {data: schedule} = useSchedule(studyId)
 
-  const [uniqueAssessments, setUniqueAssessments] = React.useState<
-    Assessment[]
-  >([])
+  const [uniqueAssessments, setUniqueAssessments] = React.useState<Assessment[]>([])
 
   useEffect(() => {
     let allAssessments: Assessment[] = []
@@ -237,8 +217,7 @@ const PreviewAssessments: React.FunctionComponent<{
       allAssessments = allAssessments.concat(session.assessments)
     }
     const uniqueAssessments = allAssessments.reduce((arr, assessment) => {
-      const assessmentExists =
-        arr.find(el => el.title === assessment.title) !== undefined
+      const assessmentExists = arr.find(el => el.title === assessment.title) !== undefined
       if (assessmentExists) return arr
       return [...arr, assessment]
     }, [] as Assessment[])
@@ -248,36 +227,22 @@ const PreviewAssessments: React.FunctionComponent<{
   return (
     <>
       <Divider className={classes.divider} />
-      <Box
-        width="100%"
-        display="flex"
-        flexDirection="row"
-        justifyContent="space-between">
+      <Box width="100%" display="flex" flexDirection="row" justifyContent="space-between">
         <Box display="flex" flexDirection="row" alignItems="flex-start">
-          <img
-            src={SampleAssessmentDataImg}
-            className={classes.assessmentImg}
-            alt="sample assessment data"></img>
-          <Box className={classes.sampleAssessmentDataText}>
-            Sample Assessment Data
-          </Box>
+          <img src={SampleAssessmentDataImg} className={classes.assessmentImg} alt="sample assessment data"></img>
+          <Box className={classes.sampleAssessmentDataText}>Sample Assessment Data</Box>
         </Box>
         <Box width="300px">
           <p className={classes.assessmentsText}>
             There are no scores or data associated with this preview.
             <br />
             <br />
-            To view sample data from the assessments in your study, click on the
-            assessments below:{' '}
+            To view sample data from the assessments in your study, click on the assessments below:{' '}
           </p>
           {uniqueAssessments.map((assessment, index) => {
             return (
               <Box onClick={() => {}} mb={2}>
-                <AssessmentSmall
-                  hasHover={false}
-                  assessment={assessment}
-                  key={index}
-                />
+                <AssessmentSmall hasHover={false} assessment={assessment} key={index} />
               </Box>
             )
           })}
@@ -297,12 +262,10 @@ const PreviewIdGenerated: React.FunctionComponent<{
   const studyDemoIntro = (
     <>
       <MTBHeadingH2>Preview your study</MTBHeadingH2>
+      <p className={classes.reminderOfUseText}>Your draft study has been generated.</p>
       <p className={classes.reminderOfUseText}>
-        Your draft study has been generated.
-      </p>
-      <p className={classes.reminderOfUseText}>
-        Please download and/or open the <strong>Mobile Toolbox App</strong> and
-        login with the following credentials below.
+        Please download and/or open the <strong>Mobile Toolbox App</strong> and login with the following credentials
+        below.
       </p>
     </>
   )
@@ -311,19 +274,14 @@ const PreviewIdGenerated: React.FunctionComponent<{
     <>
       <MTBHeadingH1>Mobile Toolbox Assessment Demo</MTBHeadingH1>
       <p className={classes.reminderOfUseText}>
-        To try out our assessments from our library, please download the{' '}
-        <strong>Mobile Toolbox App</strong> and enter your personalized codes
-        below to log in.
+        To try out our assessments from our library, please download the <strong>Mobile Toolbox App</strong> and enter
+        your personalized codes below to log in.
       </p>{' '}
     </>
   )
 
   return (
-    <div
-      className={clsx(
-        classes.root,
-        isAssessmentDemo && classes.assessmentDemo
-      )}>
+    <div className={clsx(classes.root, isAssessmentDemo && classes.assessmentDemo)}>
       <Box width="548px" mx="auto">
         <Box display="flex" width="100%">
           {isAssessmentDemo ? (
@@ -342,10 +300,7 @@ const PreviewIdGenerated: React.FunctionComponent<{
               <img src={QrCode} width="95px" alt="qr code" />
             </Box>
             <div className={classes.storeButtons}>
-              <a
-                href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
-                target="_blank"
-                rel="noreferrer">
+              <a href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408" target="_blank" rel="noreferrer">
                 <img src={appStoreBtn} alt="app store" />
               </a>
               <a
@@ -356,8 +311,7 @@ const PreviewIdGenerated: React.FunctionComponent<{
               </a>
             </div>
             <p className={classes.reminderOfUseText}>
-              This login is only for preview purposes and allows you to view the
-              study as a participant would.
+              This login is only for preview purposes and allows you to view the study as a participant would.
             </p>
             <div className={classes.inputs}>
               <FormControl component="div">
@@ -407,80 +361,40 @@ const PreviewIntroScreen: React.FunctionComponent<{
 
   return (
     <>
-      <Box
-        className={clsx(
-          isAssessmentDemo
-            ? classes.tosContainerAssessment
-            : classes.tosContainerStudyDemo
-        )}>
-        <PrevButton
-          className={classes.tosButton}
-          variant="outlined"
-          color="primary"
-          onClick={() => {}}>
-          <img
-            className={classes.linkIcon}
-            src={LinkIcon}
-            alt="link icon"></img>
+      <Box className={clsx(isAssessmentDemo ? classes.tosContainerAssessment : classes.tosContainerStudyDemo)}>
+        <PrevButton className={classes.tosButton} variant="outlined" color="primary" onClick={() => {}}>
+          <img className={classes.linkIcon} src={LinkIcon} alt="link icon"></img>
           <Box className={classes.tosText}>
-            <a
-              style={{textDecoration: 'none'}}
-              href="/MTB-ToS-v2-210923.pdf"
-              target="_blank">
+            <a style={{textDecoration: 'none'}} href="/MTB-ToS-v2-210923.pdf" target="_blank">
               Full terms of service
             </a>
           </Box>
         </PrevButton>
       </Box>
 
-      <Container
-        maxWidth="md"
-        className={clsx(
-          classes.root,
-          isAssessmentDemo && classes.assessmentDemo
-        )}>
-        <Box
-          textAlign="center"
-          display="flex"
-          flexDirection="column"
-          alignItems="center">
-          <MTBHeadingH1 className={classes.reminderOfUseHeader}>
-            Reminder of use:
-          </MTBHeadingH1>
+      <Container maxWidth="md" className={clsx(classes.root, isAssessmentDemo && classes.assessmentDemo)}>
+        <Box textAlign="center" display="flex" flexDirection="column" alignItems="center">
+          <MTBHeadingH1 className={classes.reminderOfUseHeader}>Reminder of use:</MTBHeadingH1>
           <Box className={classes.remindersOfUseContainer}>
             {text.map((text, index) => (
               <Reminder key={index} text={text} img={icons[index]}></Reminder>
             ))}
           </Box>
           {!isAssessmentDemo && (
-            <Box
-              className={clsx(
-                classes.scheduleSessionReminderContainer,
-                classes.reminderOfUseText
-              )}>
+            <Box className={clsx(classes.scheduleSessionReminderContainer, classes.reminderOfUseText)}>
               <Box>
                 Please remember to customize your study schedule on&nbsp;
-                <img
-                  className={classes.scheduleSessionsIcon}
-                  src={ScheduleSessionsIcon}
-                  alt="schedule session"></img>
+                <img className={classes.scheduleSessionsIcon} src={ScheduleSessionsIcon} alt="schedule session"></img>
                 &nbsp;
-                <NavLink
-                  to={'scheduler'}
-                  className={classes.scheduleSessionsButton}>
+                <NavLink to={'scheduler'} className={classes.scheduleSessionsButton}>
                   Schedule Sessions
                 </NavLink>
                 &nbsp; page before previewing your app.
               </Box>
             </Box>
           )}
-          <ErrorBoundary
-            FallbackComponent={ErrorFallback}
-            onError={ErrorHandler}>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => onGetParticipantId()}>
+          <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+            <Button color="primary" variant="contained" onClick={() => onGetParticipantId()}>
               Continue
             </Button>
           </ErrorBoundary>
@@ -490,11 +404,7 @@ const PreviewIntroScreen: React.FunctionComponent<{
   )
 }
 
-const Preview: React.FunctionComponent<PreviewProps> = ({
-  id,
-  isAssessmentDemo,
-  children,
-}: PreviewProps) => {
+const Preview: React.FunctionComponent<PreviewProps> = ({id, isAssessmentDemo, children}: PreviewProps) => {
   const classes = useStyles()
   const {token, demoExternalId} = useUserSessionDataState()
 
@@ -515,10 +425,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
         }
         testExternalId = (demoExternalId || newId).split(':')[0]
       } else {
-        testExternalId = await ParticipantService.addPreviewTestParticipant(
-          id,
-          token!
-        )
+        testExternalId = await ParticipantService.addPreviewTestParticipant(id, token!)
       }
       setTestParticipantId(testExternalId)
     } catch (e) {
@@ -529,17 +436,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
   return (
     <>
       {!testParticipantId && (
-        <PreviewIntroScreen
-          isAssessmentDemo={isAssessmentDemo}
-          onGetParticipantId={() => getTestParticipantId()}
-        />
+        <PreviewIntroScreen isAssessmentDemo={isAssessmentDemo} onGetParticipantId={() => getTestParticipantId()} />
       )}
       {testParticipantId && (
         <>
-          <PreviewIdGenerated
-            isAssessmentDemo={isAssessmentDemo}
-            testParticipantId={testParticipantId}
-            studyId={id}>
+          <PreviewIdGenerated isAssessmentDemo={isAssessmentDemo} testParticipantId={testParticipantId} studyId={id}>
             {!isAssessmentDemo && false && <PreviewAssessments studyId={id} />}
           </PreviewIdGenerated>
           {!isAssessmentDemo && children}

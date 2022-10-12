@@ -1,12 +1,5 @@
 import TablePagination from '@components/widgets/pagination/TablePagination'
-import {
-  act,
-  cleanup,
-  queryByAttribute,
-  render,
-  RenderResult,
-  within,
-} from '@testing-library/react'
+import {act, cleanup, queryByAttribute, render, RenderResult, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {ProvideTheme} from '__test_utils/utils'
 
@@ -41,22 +34,13 @@ const renderParticipantTableGrid = () => {
         onPageSelectedChanged={onPageSelectedChanged}></TablePagination>
     </ProvideTheme>
   )
-  forward_to_end_button = getById(
-    participantTablePagination.container as HTMLElement,
-    'forward-to-end-button'
-  )!
-  forward_one_page_button = getById(
-    participantTablePagination.container as HTMLElement,
-    'forward-one-page-button'
-  )!
+  forward_to_end_button = getById(participantTablePagination.container as HTMLElement, 'forward-to-end-button')!
+  forward_one_page_button = getById(participantTablePagination.container as HTMLElement, 'forward-one-page-button')!
   backward_to_beginning_button = getById(
     participantTablePagination.container as HTMLElement,
     'back-to-beginning-button'
   )!
-  backward_one_page_button = getById(
-    participantTablePagination.container as HTMLElement,
-    'back-one-page-button'
-  )!
+  backward_one_page_button = getById(participantTablePagination.container as HTMLElement, 'back-one-page-button')!
 }
 
 // reset the variables
@@ -66,12 +50,7 @@ const resetVariables = (options: {
   numberOfPages?: number
   totalParticipants?: number
 }) => {
-  ;({
-    currentPage = 0,
-    pageSize = 25,
-    numberOfPages = 4,
-    totalParticipants = 100,
-  } = options)
+  ;({currentPage = 0, pageSize = 25, numberOfPages = 4, totalParticipants = 100} = options)
 }
 
 beforeEach(() => {
@@ -98,9 +77,7 @@ test('should page forward and backward buttons function correctly', async () => 
   // try to go back one page. nothing should happen
   expect(backward_one_page_button).toBeDisabled()
   // go forward one page
-  await act(
-    async () => await user.click(forward_one_page_button as HTMLElement)
-  )
+  await act(async () => await user.click(forward_one_page_button as HTMLElement))
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(1)
   onPageSelectedChanged.mockReset()
 
@@ -109,9 +86,7 @@ test('should page forward and backward buttons function correctly', async () => 
   resetVariables({currentPage: 2})
   renderParticipantTableGrid()
   // go back one page
-  await act(
-    async () => await user.click(backward_one_page_button as HTMLElement)
-  )
+  await act(async () => await user.click(backward_one_page_button as HTMLElement))
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(1)
   // go to the last page
   await act(async () => await user.click(forward_to_end_button as HTMLElement))
@@ -122,17 +97,14 @@ test('should page forward and backward buttons function correctly', async () => 
   onPageSelectedChanged.mockReset()
 
   expect(forward_one_page_button).toBeDisabled()
-  await act(
-    async () => await user.click(backward_to_beginning_button as HTMLElement)
-  )
+  await act(async () => await user.click(backward_to_beginning_button as HTMLElement))
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(0)
 })
 
 // test to see if the page changes as expected when page number is clicked
 test('should page change when page number is clicked', async () => {
   const user = userEvent.setup()
-  const btn =
-    participantTablePagination.container.querySelector('#pagebox-button-3')
+  const btn = participantTablePagination.container.querySelector('#pagebox-button-3')
   expect(btn!.textContent).toBe('4')
   await act(async () => await act(async () => await user.click(btn!)))
 
@@ -142,10 +114,7 @@ test('should page change when page number is clicked', async () => {
 // test to see if changing the page size results in correct behavior
 test('should changing page size result in correct behavior', async () => {
   const user = userEvent.setup()
-  const textField = getById(
-    participantTablePagination.container as HTMLElement,
-    'page-selector'
-  )
+  const textField = getById(participantTablePagination.container as HTMLElement, 'page-selector')
   const selectNode = textField?.parentNode?.querySelector('[role=button]')
 
   await act(async () => await user.click(selectNode!))

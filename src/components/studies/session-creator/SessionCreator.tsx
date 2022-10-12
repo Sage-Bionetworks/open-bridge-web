@@ -110,13 +110,10 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)
 
-  const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
-    []
-  )
+  const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>([])
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
 
-  const [isAddingAssessmentToSession, setIsAddingAssessmentToSession] =
-    useState(false)
+  const [isAddingAssessmentToSession, setIsAddingAssessmentToSession] = useState(false)
   const [activeSession, setActiveSession] = React.useState<string | undefined>()
   const {token} = useUserSessionDataState()
 
@@ -138,9 +135,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
 
   React.useEffect(() => {
     if (schedule?.sessions) {
-      setActiveSession(
-        schedule.sessions.length > 0 ? schedule.sessions[0].guid : undefined
-      )
+      setActiveSession(schedule.sessions.length > 0 ? schedule.sessions[0].guid : undefined)
     }
   }, [])
 
@@ -157,10 +152,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     }
   }
 
-  const updateAssessmentList = (
-    sessionId: string,
-    assessments: Assessment[]
-  ) => {
+  const updateAssessmentList = (sessionId: string, assessments: Assessment[]) => {
     sessionsUpdateFn({
       type: Types.UpdateAssessments,
       payload: {sessionId, assessments},
@@ -176,10 +168,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
 
     for (let i = 0; i < newAssessments.length; i++) {
       try {
-        const assessmentWithResources = await AssessmentService.getResource(
-          newAssessments[i],
-          token!
-        )
+        const assessmentWithResources = await AssessmentService.getResource(newAssessments[i], token!)
         assessments.push(assessmentWithResources)
       } catch (error) {
         handleError(error)
@@ -195,9 +184,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     setIsAssessmentDialogOpen(false)
   }
 
-  const getActiveSession = (
-    sessions: StudySession[]
-  ): StudySession | undefined => {
+  const getActiveSession = (sessions: StudySession[]): StudySession | undefined => {
     const session = sessions.find(session => session.guid === activeSession)
     return session
   }
@@ -207,12 +194,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   }
 
   if (!StudyService.isStudyInDesign(study)) {
-    return (
-      <ReadOnlySessionCreator
-        children={children}
-        sessions={schedule.sessions}
-      />
-    )
+    return <ReadOnlySessionCreator children={children} sessions={schedule.sessions} />
   }
 
   if (schedule?.sessions) {
@@ -220,17 +202,13 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
       <>
         <Box className={classes.root} key="sessions">
           {schedule.sessions.map((session, index) => (
-            <Paper
-              className={classes.sessionContainer}
-              key={session.guid! + '_' + index}>
+            <Paper className={classes.sessionContainer} key={session.guid! + '_' + index}>
               <SingleSessionContainer
                 key={session.guid}
                 sessionIndex={index}
                 studySession={session}
                 onShowAssessments={() => setIsAssessmentDialogOpen(true)}
-                onSetActiveSession={(sessionId: string) =>
-                  setActiveSession(sessionId)
-                }
+                onSetActiveSession={(sessionId: string) => setActiveSession(sessionId)}
                 onRemoveSession={(sessionId: string) =>
                   sessionsUpdateFn({
                     type: Types.RemoveSession,
@@ -244,9 +222,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                   })
                 }
                 onUpdateAssessmentList={updateAssessmentList}
-                numberOfSessions={
-                  schedule.sessions.length
-                }></SingleSessionContainer>
+                numberOfSessions={schedule.sessions.length}></SingleSessionContainer>
             </Paper>
           ))}
         </Box>
@@ -255,11 +231,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
             disabled={saveLoader}
             key={'new_session'}
             sessions={schedule.sessions}
-            onAddSession={(
-              sessions: StudySession[],
-              assessments: Assessment[],
-              name: string
-            ) =>
+            onAddSession={(sessions: StudySession[], assessments: Assessment[], name: string) =>
               sessionsUpdateFn({
                 type: Types.AddSession,
                 payload: {
@@ -298,16 +270,11 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
             <AssessmentSelector
               selectedAssessments={selectedAssessments}
               onUpdateAssessments={setSelectedAssessments}
-              activeSession={getActiveSession(
-                schedule.sessions
-              )}></AssessmentSelector>
+              activeSession={getActiveSession(schedule.sessions)}></AssessmentSelector>
           </DialogContent>
           {!isAddingAssessmentToSession && (
             <DialogActions>
-              <PrevButton
-                onClick={cancelAssessmentSelector}
-                color="primary"
-                variant="outlined">
+              <PrevButton onClick={cancelAssessmentSelector} color="primary" variant="outlined">
                 Cancel
               </PrevButton>
 
@@ -325,9 +292,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                   setSelectedAssessments([])
                   setIsAddingAssessmentToSession(false)
                 }}>
-                {!getActiveSession(schedule.sessions)
-                  ? 'Please select group and session'
-                  : `Add to Session`}
+                {!getActiveSession(schedule.sessions) ? 'Please select group and session' : `Add to Session`}
               </Button>
             </DialogActions>
           )}

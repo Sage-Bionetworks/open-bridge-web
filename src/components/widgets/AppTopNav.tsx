@@ -1,15 +1,7 @@
 import Logo from '@assets/logo_mtb.svg'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import MenuIcon from '@mui/icons-material/Menu'
-import {
-  Divider,
-  Drawer,
-  Hidden,
-  IconButton,
-  Menu,
-  MenuItem,
-  Paper,
-} from '@mui/material'
+import {Divider, Drawer, Hidden, IconButton, Menu, MenuItem, Paper} from '@mui/material'
 import Button from '@mui/material/Button'
 import Toolbar from '@mui/material/Toolbar'
 import makeStyles from '@mui/styles/makeStyles'
@@ -206,25 +198,13 @@ const MenuLinksRhs: FunctionComponent<
     isRightHandSide?: boolean
     setIsMobileOpen: Function
   }
-> = ({
-  routes,
-  sessionData,
-  className,
-  activeClassName,
-  children,
-  isRightHandSide,
-  setIsMobileOpen,
-}) => {
+> = ({routes, sessionData, className, activeClassName, children, isRightHandSide, setIsMobileOpen}) => {
   const classes = useStyles()
 
   function getClassName(routeName: String, isRightHandSide: boolean) {
     if (!isRightHandSide) return className
     if (routeName === 'CREATE ACCOUNT') {
-      return clsx(
-        className,
-        classes.drawerAuthOptions,
-        classes.createAccountLink
-      )
+      return clsx(className, classes.drawerAuthOptions, classes.createAccountLink)
     }
     if (routeName === 'Edit Profile' || routeName === 'Settings') {
       return clsx(className, classes.drawerProfileOptionsDisabled)
@@ -235,9 +215,7 @@ const MenuLinksRhs: FunctionComponent<
   let links: React.ReactNode[] = routes.map(route => {
     if (route.name === 'Edit Profile' || route.name === 'Settings') {
       return (
-        <div
-          key={`rhs_${route.name}`}
-          className={getClassName(route.name, isRightHandSide || false)}>
+        <div key={`rhs_${route.name}`} className={getClassName(route.name, isRightHandSide || false)}>
           {route.name}
         </div>
       )
@@ -265,12 +243,7 @@ const MenuLinksRhs: FunctionComponent<
   return <>{links}</>
 }
 
-const AppTopNav: FunctionComponent<AppTopNavProps> = ({
-  routes,
-  appId,
-  sessionData,
-  ...props
-}: AppTopNavProps) => {
+const AppTopNav: FunctionComponent<AppTopNavProps> = ({routes, appId, sessionData, ...props}: AppTopNavProps) => {
   const classes = useStyles()
   const location = useLocation()
 
@@ -288,19 +261,13 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     }
     let initial = sessionData.userName?.substr(0, 1)
     if (sessionData.firstName) {
-      initial = `${sessionData.firstName.substr(
-        0,
-        1
-      )}${sessionData.lastName?.substr(0, 1)}`
+      initial = `${sessionData.firstName.substr(0, 1)}${sessionData.lastName?.substr(0, 1)}`
     }
     return initial?.toUpperCase() || '?'
   }
   // Hide the app store download page and also the sign in page from the nav.
   routes = routes.filter(
-    route =>
-      route.name !== 'APP STORE' &&
-      route.name !== 'SIGN IN' &&
-      (!route.toggle || toggle[route.toggle!] === true)
+    route => route.name !== 'APP STORE' && route.name !== 'SIGN IN' && (!route.toggle || toggle[route.toggle!] === true)
   )
 
   const isLoginButtonDisabled = React.useMemo(() => {
@@ -323,17 +290,8 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
       </Hidden>
       <Hidden lgDown>
         <Paper className={classes.toolbarWrapper} elevation={0}>
-          <img
-            src={Logo}
-            key="Mobile Toolbox"
-            className={classes.toolbar}
-            alt="logo"
-          />
-          <Toolbar
-            component="nav"
-            variant="dense"
-            disableGutters
-            className={classes.toolbar}>
+          <img src={Logo} key="Mobile Toolbox" className={classes.toolbar} alt="logo" />
+          <Toolbar component="nav" variant="dense" disableGutters className={classes.toolbar}>
             <MenuLinks
               appId={appId}
               className={classes.toolbarLink}
@@ -342,11 +300,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
               setIsMobileOpen={setIsMobileOpen}
             />
           </Toolbar>
-          <Toolbar
-            component="nav"
-            variant="dense"
-            disableGutters
-            className={classes.toolbar}>
+          <Toolbar component="nav" variant="dense" disableGutters className={classes.toolbar}>
             {!sessionData && (
               <MenuLinksRhs
                 appId={appId}
@@ -370,14 +324,8 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
               </MenuLinksRhs>
             )}
             {sessionData && (
-              <div
-                onClick={event => setMenuAnchor(event.currentTarget)}
-                style={{paddingLeft: '8px'}}>
-                <div
-                  className={clsx(
-                    classes.userCircle,
-                    !!menuAnchor && classes.userCircleActive
-                  )}>
+              <div onClick={event => setMenuAnchor(event.currentTarget)} style={{paddingLeft: '8px'}}>
+                <div className={clsx(classes.userCircle, !!menuAnchor && classes.userCircleActive)}>
                   {getInitials()}
                 </div>
               </div>
@@ -399,9 +347,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           }}>
           <MobileDrawerMenuHeader
             setIsMobileOpen={setIsMobileOpen}
-            type={
-              sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'
-            }></MobileDrawerMenuHeader>
+            type={sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'}></MobileDrawerMenuHeader>
           <MenuLinks
             appId={appId}
             className={classes.drawerMenuItem}
@@ -420,12 +366,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             setIsMobileOpen={setIsMobileOpen}>
             <Logout
               element={
-                <Button
-                  variant="text"
-                  className={clsx(
-                    classes.drawerMenuItem,
-                    classes.drawerProfileOptions
-                  )}>
+                <Button variant="text" className={clsx(classes.drawerMenuItem, classes.drawerProfileOptions)}>
                   Sign out
                 </Button>
               }></Logout>
@@ -433,10 +374,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
               <Button
                 disabled={isLoginButtonDisabled}
                 variant="text"
-                className={clsx(
-                  classes.drawerAuthOptions,
-                  classes.drawerMenuItem
-                )}
+                className={clsx(classes.drawerAuthOptions, classes.drawerMenuItem)}
                 href={'/sign-in'}>
                 Log in
               </Button>
@@ -462,11 +400,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
         {routes
           .filter(r => r.isRhs)
           .map(route => (
-            <MenuItem
-              key={route.name}
-              disabled={
-                route.name === 'Edit Profile' || route.name === 'Settings'
-              }>
+            <MenuItem key={route.name} disabled={route.name === 'Edit Profile' || route.name === 'Settings'}>
               <NavLink to={route.path}>{route.name}</NavLink>
             </MenuItem>
           ))}

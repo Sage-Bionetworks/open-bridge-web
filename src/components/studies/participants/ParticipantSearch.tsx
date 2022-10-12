@@ -84,15 +84,9 @@ type ParticipantSearchProps = {
   tab?: ParticipantActivityType
 }
 
-const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
-  onReset,
-  onSearch,
-  isSearchById,
-  tab,
-}) => {
+const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({onReset, onSearch, isSearchById, tab}) => {
   const classes = useStyles()
-  const [isSearchingForParticipant, setIsSearchingForParticipant] =
-    React.useState(false)
+  const [isSearchingForParticipant, setIsSearchingForParticipant] = React.useState(false)
 
   // True if the user is currently trying to search for a particular particpant
   const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)
@@ -100,9 +94,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   const inputComponent = React.useRef<HTMLInputElement>(null)
 
   const handleSearchParticipantRequest = async () => {
-    const searchedValue = inputComponent.current?.value
-      ? inputComponent.current?.value
-      : ''
+    const searchedValue = inputComponent.current?.value ? inputComponent.current?.value : ''
     setIsSearchingUsingID(true)
     onSearch(searchedValue)
   }
@@ -121,9 +113,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   return isSearchingForParticipant ? (
     <div className={classes.inputRow}>
       <input
-        placeholder={
-          isSearchById ? "Participant's ID" : "Participant's Phone Number"
-        }
+        placeholder={isSearchById ? "Participant's ID" : "Participant's Phone Number"}
         onKeyDown={e => {
           if (e.key === ENTER_KEY) {
             handleSearchParticipantRequest()
@@ -141,10 +131,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
           className={classes.blackXIconButton}
           onClick={handleResetSearch}
           id="clear-participant-search-text-button">
-          <img
-            src={BlackXIcon}
-            className={classes.blackXIcon}
-            alt="black-x-icon"></img>
+          <img src={BlackXIcon} className={classes.blackXIcon} alt="black-x-icon"></img>
         </Button>
       )}
       <Button
@@ -161,10 +148,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
         setIsSearchingForParticipant(true)
       }}
       id="start-searching-for-participant-button">
-      <img
-        src={SearchIcon}
-        className={classes.buttonImage}
-        alt="seach-icon"></img>
+      <img src={SearchIcon} className={classes.buttonImage} alt="seach-icon"></img>
       Find Participant
     </Button>
   )

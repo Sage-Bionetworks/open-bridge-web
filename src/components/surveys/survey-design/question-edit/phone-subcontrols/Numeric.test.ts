@@ -30,9 +30,7 @@ test('renders the component without label', () => {
   const labelField = getLabelField()
   expect(labelField).toBeInTheDocument()
   expect(labelField).toHaveProperty('placeholder', 'Field Label')
-  expect(
-    screen.getByPlaceholderText('Field Label', {exact: false})
-  ).toBeInTheDocument()
+  expect(screen.getByPlaceholderText('Field Label', {exact: false})).toBeInTheDocument()
 })
 //test the component renders with field label
 test('renders the component with label', () => {

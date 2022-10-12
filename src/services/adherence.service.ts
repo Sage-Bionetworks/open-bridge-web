@@ -1,9 +1,4 @@
-import {
-  AdherenceDetailReport,
-  AdherenceStatistics,
-  AdherenceWeeklyReport,
-  ProgressionStatus,
-} from '@typedefs/types'
+import {AdherenceDetailReport, AdherenceStatistics, AdherenceWeeklyReport, ProgressionStatus} from '@typedefs/types'
 import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
@@ -26,9 +21,7 @@ async function getAdherenceForWeekForUsers(
   token: string
 ): Promise<AdherenceWeeklyReport[]> {
   const weeklyPromises = userIds.map(userId => {
-    const endpoint = constants.endpoints.adherenceUserWeekly
-      .replace(':studyId', studyId)
-      .replace(':userId', userId)
+    const endpoint = constants.endpoints.adherenceUserWeekly.replace(':studyId', studyId).replace(':userId', userId)
     return Utility.callEndpoint<any>(endpoint, 'GET', {}, token)
   })
 
@@ -36,22 +29,11 @@ async function getAdherenceForWeekForUsers(
   return result
 }
 
-async function getAdherenceStatsForWeek(
-  studyId: string,
-  token: string
-): Promise<AdherenceStatistics> {
-  const endpoint = constants.endpoints.adherenceStats.replace(
-    ':studyId',
-    studyId
-  )
+async function getAdherenceStatsForWeek(studyId: string, token: string): Promise<AdherenceStatistics> {
+  const endpoint = constants.endpoints.adherenceStats.replace(':studyId', studyId)
   const data = {adherenceThreshold: COMPLIANCE_THRESHOLD}
 
-  const result = await Utility.callEndpoint<AdherenceStatistics>(
-    endpoint,
-    'GET',
-    data,
-    token
-  )
+  const result = await Utility.callEndpoint<AdherenceStatistics>(endpoint, 'GET', data, token)
   return result.data
 }
 
@@ -79,10 +61,7 @@ async function getAdherenceForWeek(
   console.log('starting all')*/
   /* end of priming */
 
-  const endpoint = constants.endpoints.adherenceWeekly.replace(
-    ':studyId',
-    studyId
-  )
+  const endpoint = constants.endpoints.adherenceWeekly.replace(':studyId', studyId)
 
   const defaultFilters = {
     progressionFilters: ['in_progress', 'done'],
@@ -116,9 +95,7 @@ async function getAdherenceForParticipant(
   userId: string,
   token: string
 ): Promise<AdherenceDetailReport> {
-  const endpoint = constants.endpoints.adherenceDetail
-    .replace(':studyId', studyId)
-    .replace(':userId', userId)
+  const endpoint = constants.endpoints.adherenceDetail.replace(':studyId', studyId).replace(':userId', userId)
   const result = await Utility.callEndpoint<any>(endpoint, 'GET', {}, token)
   return result.data
 }

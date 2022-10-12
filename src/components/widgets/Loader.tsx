@@ -34,9 +34,7 @@ const LoadingComponent = ({
 }: LoadingComponentType) => {
   const classes = useStyles()
   return reqStatusLoading === 'PENDING' || reqStatusLoading === true ? (
-    <div
-      className={clsx(classes.root, variant === 'full' && classes.full)}
-      style={{...style}}>
+    <div className={clsx(classes.root, variant === 'full' && classes.full)} style={{...style}}>
       <CircularProgress size={loaderSize} />
     </div>
   ) : (

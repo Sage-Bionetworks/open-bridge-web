@@ -9,19 +9,10 @@ import makeStyles from '@mui/styles/makeStyles'
 import AccessService from '@services/access.service'
 import ParticipantService from '@services/participants.service'
 import {globals, poppinsFont} from '@style/theme'
-import {
-  LoggedInUserClientData,
-  OrgUser,
-  Study,
-  UserSessionData,
-} from '@typedefs/types'
+import {LoggedInUserClientData, OrgUser, Study, UserSessionData} from '@typedefs/types'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import AccessGrid, {
-  Access,
-  getAccessFromRoles,
-  getRolesFromAccess,
-} from './AccessGrid'
+import AccessGrid, {Access, getAccessFromRoles, getRolesFromAccess} from './AccessGrid'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -75,8 +66,7 @@ function getNameDisplay({
 
   synapseUserId,
 }: OrgUser): string {
-  const name =
-    firstName || lastName ? [firstName, lastName].join(' ') : synapseUserId
+  const name = firstName || lastName ? [firstName, lastName].join(' ') : synapseUserId
   return name
 }
 
@@ -106,9 +96,7 @@ const NameDisplay: FunctionComponent<any> = ({member, index}): JSX.Element => {
   )
 }
 
-const NameDisplayDetail: React.FunctionComponent<{member: OrgUser}> = ({
-  member,
-}) => {
+const NameDisplayDetail: React.FunctionComponent<{member: OrgUser}> = ({member}) => {
   const classes = useStyles()
   return (
     <Box style={{marginBottom: '40px', marginTop: '80px'}}>
@@ -140,9 +128,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
   const handleError = useErrorHandler()
 
-  const [currentMemberAccess, setCurrentMemberAccess] = React.useState<
-    {access: Access; member: OrgUser} | undefined
-  >()
+  const [currentMemberAccess, setCurrentMemberAccess] = React.useState<{access: Access; member: OrgUser} | undefined>()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
   const [updateError, setUpdateError] = React.useState('')
@@ -150,16 +136,9 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
   const getMembers = React.useCallback(
     async (orgMembership: string, token: string) => {
-      const members = await AccessService.getAccountsForOrg(
-        token!,
-        orgMembership!
-      )
+      const members = await AccessService.getAccountsForOrg(token!, orgMembership!)
       const meIndex = members.findIndex(m => m.id === id)
-      const result = [
-        members[meIndex],
-        ...members.slice(0, meIndex),
-        ...members.slice(meIndex + 1, members.length),
-      ]
+      const result = [members[meIndex], ...members.slice(0, meIndex), ...members.slice(meIndex + 1, members.length)]
       return result
     },
     [id]
@@ -195,33 +174,20 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     }
   }
 
-  const updateRolesForExistingAccount = async ({
-    member,
-    access,
-  }: {
-    member: OrgUser
-    access: Access
-  }) => {
+  const updateRolesForExistingAccount = async ({member, access}: {member: OrgUser; access: Access}) => {
     try {
       setUpdateError('')
       const roles = getRolesFromAccess(access)
       // this is patch for existing users
       let demoExternalId = member.clientData?.demoExternalId
       if (!demoExternalId) {
-        demoExternalId = await ParticipantService.signUpForAssessmentDemoStudy(
-          token!
-        )
+        demoExternalId = await ParticipantService.signUpForAssessmentDemoStudy(token!)
       }
 
       const clientData: LoggedInUserClientData = {
         demoExternalId,
       }
-      await AccessService.updateIndividualAccountRoles(
-        token!,
-        member.id,
-        roles,
-        clientData
-      )
+      await AccessService.updateIndividualAccountRoles(token!, member.id, roles, clientData)
       const result = await getMembers(orgMembership!, token!)
       setMembers(result)
     } catch (e) {
@@ -252,9 +218,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   return (
     <Box className={classes.root}>
       <Box className={classes.listing}>
-        <MTBHeadingH6>
-          Study ID: {Utility.formatStudyId(study.identifier)}{' '}
-        </MTBHeadingH6>
+        <MTBHeadingH6>Study ID: {Utility.formatStudyId(study.identifier)} </MTBHeadingH6>
         <MTBHeadingH1 style={{color: ' #FCFCFC'}}>{study.name}</MTBHeadingH1>
         <Loader reqStatusLoading={isAccessLoading}></Loader>
         <ul className={classes.list}>
@@ -264,10 +228,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                 key={member.id}
                 variant={'dark'}
                 isOpen={true}
-                isActive={
-                  member.id ===
-                  /*currentMemberId*/ currentMemberAccess?.member.id
-                }
+                isActive={member.id === /*currentMemberId*/ currentMemberAccess?.member.id}
                 onClick={() => updateAccess(member)}>
                 <div
                   style={{
@@ -291,10 +252,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
           <>
             <Box pl={10} position="relative" pb={10}>
               {updateError && (
-                <Alert
-                  variant="outlined"
-                  color="error"
-                  style={{marginTop: '8px'}}>
+                <Alert variant="outlined" color="error" style={{marginTop: '8px'}}>
                   {updateError}
                 </Alert>
               )}
@@ -324,9 +282,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                     aria-label="save changes"
                     color="primary"
                     variant="contained"
-                    onClick={() =>
-                      updateRolesForExistingAccount(currentMemberAccess!)
-                    }>
+                    onClick={() => updateRolesForExistingAccount(currentMemberAccess!)}>
                     Save changes
                   </Button>
                 </Box>
@@ -345,17 +301,13 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                 }}>
                 <div>
                   {updateError && (
-                    <Alert
-                      variant="outlined"
-                      color="error"
-                      style={{marginBottom: '8px'}}>
+                    <Alert variant="outlined" color="error" style={{marginBottom: '8px'}}>
                       {updateError}
                     </Alert>
                   )}
 
                   <strong>
-                    Are you sure you would like to permanently delete{' '}
-                    {getNameDisplay(currentMemberAccess!.member)}
+                    Are you sure you would like to permanently delete {getNameDisplay(currentMemberAccess!.member)}
                   </strong>
                 </div>
               </ConfirmationDialog>

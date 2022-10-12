@@ -22,10 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export interface NotificationTimeProps {
   notifyAt: keyof typeof NotificationTimeAtEnum
   offset?: string
-  onChange: (arg: {
-    offset: string | undefined
-    notifyAt: keyof typeof NotificationTimeAtEnum
-  }) => void
+  onChange: (arg: {offset: string | undefined; notifyAt: keyof typeof NotificationTimeAtEnum}) => void
   isFollowUp: boolean
   isMultiday: boolean
   windowStartTime?: string
@@ -41,32 +38,18 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
 }: NotificationTimeProps) => {
   const classes = useStyles()
   const [hasOffset, setHasOffset] = React.useState(offset !== undefined)
-  const [daysForMultidayOffset, setDaysForMultidayOffset] = React.useState<
-    number | undefined
-  >()
-  const [timeForMultidayOffset, setTimeForMultidayOffset] = React.useState<
-    string | undefined
-  >()
+  const [daysForMultidayOffset, setDaysForMultidayOffset] = React.useState<number | undefined>()
+  const [timeForMultidayOffset, setTimeForMultidayOffset] = React.useState<string | undefined>()
 
-  function changeMultidayOffset({
-    days,
-    time,
-  }: {
-    days: number | undefined
-    time: string | undefined
-  }) {
+  function changeMultidayOffset({days, time}: {days: number | undefined; time: string | undefined}) {
     setDaysForMultidayOffset(days)
     setTimeForMultidayOffset(time)
 
     let periodMinutes = 0
     //convert it to the offset from the start of the window
     if (time) {
-      const windowStartPeriodMinutes = moment
-        .duration(`PT${windowStartTime?.replace(':', 'H')}M`)
-        .asMinutes()
-      const timeOffsetPeriodMinutes = moment
-        .duration(`PT${time?.replace(':', 'H')}M`)
-        .asMinutes()
+      const windowStartPeriodMinutes = moment.duration(`PT${windowStartTime?.replace(':', 'H')}M`).asMinutes()
+      const timeOffsetPeriodMinutes = moment.duration(`PT${time?.replace(':', 'H')}M`).asMinutes()
       periodMinutes = timeOffsetPeriodMinutes - windowStartPeriodMinutes
     }
     const durationFirstPass = moment.duration({
@@ -94,10 +77,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
       return offset
     }
     const parsedOffset = moment.duration(offset)
-    if (
-      parsedOffset.days() ||
-      (parsedOffset.minutes() && parsedOffset.hours())
-    ) {
+    if (parsedOffset.days() || (parsedOffset.minutes() && parsedOffset.hours())) {
       const result = `PT${parsedOffset.asMinutes()}M`
       return result
     }
@@ -114,23 +94,17 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
       parsedOffset.subtract(daysOffset, 'd')
       //get the window start time as duration
       const offsetMinutes = parsedOffset.asMinutes()
-      const windowStartPeriodMinutes = moment
-        .duration(`PT${windowStartTime?.replace(':', 'H')}M`)
-        .asMinutes()
+      const windowStartPeriodMinutes = moment.duration(`PT${windowStartTime?.replace(':', 'H')}M`).asMinutes()
 
       //round minutes to 15
-      const offsetTimeMinutes =
-        Math.round((windowStartPeriodMinutes + offsetMinutes) / 15) * 15
+      const offsetTimeMinutes = Math.round((windowStartPeriodMinutes + offsetMinutes) / 15) * 15
 
       var offsetTime = moment.duration(offsetTimeMinutes, 'minute')
       //if there is days overflow when you add the interval + start time
 
       setDaysForMultidayOffset(daysOffset + offsetTime.days())
       setTimeForMultidayOffset(
-        `${offsetTime.hours().toString().padStart(2, '0')}:${offsetTime
-          .minutes()
-          .toString()
-          .padStart(2, '0')}`
+        `${offsetTime.hours().toString().padStart(2, '0')}:${offsetTime.minutes().toString().padStart(2, '0')}`
       )
     }
   }, [offset, isMultiday])
@@ -146,20 +120,13 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   }
 
   const initialWindow = (
-    <SchedulingFormSection
-      label={'Notify participant:'}
-      variant="small"
-      border={false}>
+    <SchedulingFormSection label={'Notify participant:'} variant="small" border={false}>
       <RadioGroup
         aria-label="Session Starts On"
         name="startDate"
         value={hasOffset}
         onChange={e => toggleOffsetForInitialNotification(e.target.value)}>
-        <FormControlLabel
-          value={false}
-          control={<Radio />}
-          label="at start of window"
-        />
+        <FormControlLabel value={false} control={<Radio />} label="at start of window" />
         <FormControlLabel
           control={
             <>
@@ -187,10 +154,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   )
 
   const followUpSingleDay = (
-    <SchedulingFormSection
-      label={'Send a reminder notification:'}
-      variant="small"
-      border={false}>
+    <SchedulingFormSection label={'Send a reminder notification:'} variant="small" border={false}>
       <Duration
         onChange={e => {
           onChange({notifyAt: notifyAt, offset: e.target.value})
@@ -228,10 +192,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     </SchedulingFormSection>
   )
   const followUpMultiDay = (
-    <SchedulingFormSection
-      label={'Send a reminder notification:'}
-      variant="small"
-      border={false}>
+    <SchedulingFormSection label={'Send a reminder notification:'} variant="small" border={false}>
       <SmallTextBox
         type="number"
         isLessThanOneAllowed={false}
@@ -259,11 +220,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     </SchedulingFormSection>
   )
 
-  return isFollowUp
-    ? isMultiday
-      ? followUpMultiDay
-      : followUpSingleDay
-    : initialWindow
+  return isFollowUp ? (isMultiday ? followUpMultiDay : followUpSingleDay) : initialWindow
 }
 
 export default NotificationTime

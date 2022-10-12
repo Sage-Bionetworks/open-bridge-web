@@ -90,28 +90,16 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
   const classes = useStyles()
 
   return (
-    <Paper
-      className={clsx(
-        classes.root,
-        !hasHover && 'no-hover',
-        isDragging && 'dragging'
-      )}>
+    <Paper className={clsx(classes.root, !hasHover && 'no-hover', isDragging && 'dragging')}>
       <Box className={classes.card}>
-        <AssessmentImage
-          variant="small"
-          resources={assessment.resources}
-          name={assessment.title}></AssessmentImage>
+        <AssessmentImage variant="small" resources={assessment.resources} name={assessment.title}></AssessmentImage>
       </Box>
       <div className={classes.text}>
         <div className={classes.hoverImage}> &#9776;</div>
         <span className={classes.title}>
           {assessment.title}
 
-          {!isHideDuration && (
-            <div className={classes.duration}>
-              {assessment.minutesToComplete} min
-            </div>
-          )}
+          {!isHideDuration && <div className={classes.duration}>{assessment.minutesToComplete} min</div>}
         </span>
         {children}
       </div>

@@ -53,35 +53,20 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
 
   switch (variant) {
     case 'small': {
-      image = (
-        <img
-          src={screen?.url || DefaultImg}
-          alt={name}
-          height="100%"
-          style={smallVariantProperties}
-        />
-      )
+      image = <img src={screen?.url || DefaultImg} alt={name} height="100%" style={smallVariantProperties} />
       break
     }
     case 'detail': {
       image = (
         <div className={classes.detailImageContainer}>
-          <img
-            src={screen?.url || DefaultImg}
-            alt={name}
-            height="100%"
-            style={smallVariantProperties}
-          />
+          <img src={screen?.url || DefaultImg} alt={name} height="100%" style={smallVariantProperties} />
         </div>
       )
       break
     }
     default: {
       image = (
-        <CardMedia
-          className={classes.media}
-          image={screen?.url || DefaultImg}
-          title={name}>
+        <CardMedia className={classes.media} image={screen?.url || DefaultImg} title={name}>
           {children}
         </CardMedia>
       )

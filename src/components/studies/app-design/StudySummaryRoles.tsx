@@ -8,15 +8,9 @@ type StudySummaryRoleProps = {
   className?: string
 }
 
-const StudySummaryRoles: React.FunctionComponent<StudySummaryRoleProps> = ({
-  type,
-  name,
-  className,
-}) => {
+const StudySummaryRoles: React.FunctionComponent<StudySummaryRoleProps> = ({type, name, className}) => {
   return (
-    <Box
-      className={className}
-      style={{wordWrap: 'break-word', textAlign: 'left'}}>
+    <Box className={className} style={{wordWrap: 'break-word', textAlign: 'left'}}>
       <MTBHeadingH4>{name}</MTBHeadingH4>
       {type}
     </Box>

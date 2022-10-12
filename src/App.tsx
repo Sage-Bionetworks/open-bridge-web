@@ -1,10 +1,5 @@
 import {FeatureToggleProvider} from '@helpers/FeatureToggle'
-import {
-  CssBaseline,
-  StyledEngineProvider,
-  ThemeProvider,
-  Typography,
-} from '@mui/material'
+import {CssBaseline, StyledEngineProvider, ThemeProvider, Typography} from '@mui/material'
 import {createTheme, Theme} from '@mui/material/styles'
 import {deepmerge} from '@mui/utils'
 import React, {useEffect, useRef} from 'react'
@@ -14,10 +9,7 @@ import {BrowserRouter as Router, Redirect} from 'react-router-dom'
 import AuthenticatedApp from './AuthenticatedApp'
 import {ErrorFallback, ErrorHandler} from './components/widgets/ErrorHandler'
 import Loader from './components/widgets/Loader'
-import {
-  useUserSessionDataDispatch,
-  useUserSessionDataState,
-} from './helpers/AuthContext'
+import {useUserSessionDataDispatch, useUserSessionDataState} from './helpers/AuthContext'
 import Utility from './helpers/utility'
 import UserService from './services/user.service'
 import {cssVariables, theme} from './style/theme'
@@ -44,11 +36,7 @@ const attemptLogin = async (code: string): Promise<LoggedInUserData> => {
   try {
     console.log('trying to log in')
     const env = Utility.getOauthEnvironment()
-    const loggedIn = await UserService.loginOauth(
-      code,
-      env.redirect,
-      env.vendor
-    )
+    const loggedIn = await UserService.loginOauth(code, env.redirect, env.vendor)
 
     return loggedIn.data
   } catch (e) {
@@ -153,13 +141,10 @@ function App() {
 
           <Router basename={process.env.PUBLIC_URL}>
             <QueryClientProvider client={queryClient}>
-              <ErrorBoundary
-                FallbackComponent={ErrorFallback}
-                onError={ErrorHandler}>
+              <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
                 {redirect && <Redirect to={redirect}></Redirect>}
                 {/*  <React.StrictMode>*/}
-                <FeatureToggleProvider
-                  featureToggles={{'SURVEY BUILDER': true}}>
+                <FeatureToggleProvider featureToggles={{'SURVEY BUILDER': true}}>
                   {sessionData.id ? (
                     <AuthenticatedApp />
                   ) : (
