@@ -12,7 +12,7 @@ import { DivContainer } from '../survey-design/left-panel/QuestionTypeDisplay'
 const position = { x: 0, y: 0 };
 
 
-const StyledQuestionTitle = styled('div', { label: 'StyledQuestionTitle' })<{
+const StyledQuestionTitle = styled('div', { label: 'StyledQuestionTitle', shouldForwardProp: prop => prop !== 'unconnected' })<{
   unconnected?: boolean
 }>(({ theme, unconnected }) => ({
   '&.title': {
