@@ -68,7 +68,7 @@ export type ChoiceQuestionChoice = {
   icon?: string
 }
 
-export interface Instruction extends BaseStep { }
+export interface Instruction extends BaseStep {}
 export type ControlType =
   | 'radio'
   | 'checkbox'
@@ -147,13 +147,13 @@ export interface BaseStep {
   identifier: string //'step1',
   controlType?: ControlType
   type:
-  | 'overview'
-  | 'completion'
-  | 'unkonwn'
-  | 'instruction'
-  | 'simpleQuestion'
-  //| 'multipleInputQuestion'
-  | 'choiceQuestion'
+    | 'overview'
+    | 'completion'
+    | 'unkonwn'
+    | 'instruction'
+    | 'simpleQuestion'
+    //| 'multipleInputQuestion'
+    | 'choiceQuestion'
   //   | 'comboBoxQuestion' //otherInputItem
   title: string //Instruction Step 1',
   subtitle?: string
@@ -162,7 +162,7 @@ export interface BaseStep {
   footnote?: string //'This is a footnote.',
   image?: /*ImageAnimated | ImageFetchable |*/ ImageResource
   shouldHideActions?: ActionButtonName[]
-  actions?: { goForward?: ActionButton; cancel?: ActionButton }
+  actions?: {goForward?: ActionButton; cancel?: ActionButton}
 }
 
 export type Step = Question | Instruction
@@ -183,7 +183,7 @@ export type InterruptionHandlingType = {
   canSaveForLater: boolean
 }
 export type SurveyConfig = {
-  webConfig?: { skipOption?: WebUISkipOptions }
+  webConfig?: {skipOption?: WebUISkipOptions}
   type: string //'assessment',
   interruptionHandling?: InterruptionHandlingType
   identifier: string //'foo',
@@ -196,7 +196,7 @@ export type SurveyConfig = {
   estimatedMinutes?: number //4,
   icon?: string //'fooIcon', ALINA TODO where is it coming from
   footnote?: string //This is a footnote.',
-  actions?: { goForward: ActionButton; cancel: ActionButton }
+  actions?: {goForward: ActionButton; cancel: ActionButton}
   shouldHideActions?: ActionButtonName[] //['goBackward']
   progressMarkers?: string[] //['step1','step2'],
   steps: Step[]

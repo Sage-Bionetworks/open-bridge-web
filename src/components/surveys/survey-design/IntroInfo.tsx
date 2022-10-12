@@ -1,7 +1,7 @@
-import { ReactComponent as SaveIcon } from '@assets/surveys/actions/save.svg'
-import { ReactComponent as PauseIcon } from '@assets/surveys/pause.svg'
+import {ReactComponent as SaveIcon} from '@assets/surveys/actions/save.svg'
+import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import { useUserSessionDataState } from '@helpers/AuthContext'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import UtilityObject from '@helpers/utility'
 import CheckIcon from '@mui/icons-material/Check'
 
@@ -15,53 +15,53 @@ import {
   Radio,
   RadioGroup,
   TextField,
-  Typography
+  Typography,
 } from '@mui/material'
-import { styled } from '@mui/material/styles'
-import { latoFont, poppinsFont, theme } from '@style/theme'
+import {styled} from '@mui/material/styles'
+import {latoFont, poppinsFont, theme} from '@style/theme'
 import {
   ActionButtonName,
   BaseStep,
   InterruptionHandlingType,
   Survey,
-  WebUISkipOptions
+  WebUISkipOptions,
 } from '@typedefs/surveys'
-import { Assessment } from '@typedefs/types'
+import {Assessment} from '@typedefs/types'
 import React from 'react'
-import { RouteComponentProps, withRouter } from 'react-router-dom'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { SimpleTextInput } from '../../widgets/StyledComponents'
-import { ActionButton, StyledCheckbox } from '../widgets/SharedStyled'
+import {SimpleTextInput} from '../../widgets/StyledComponents'
+import {ActionButton, StyledCheckbox} from '../widgets/SharedStyled'
 import QUESTIONS from './left-panel/QuestionConfigs'
 
-const IntroContainer = styled('div', { label: 'IntroContainer' })(({ theme }) => ({
+const IntroContainer = styled('div', {label: 'IntroContainer'})(({theme}) => ({
   backgroundColor: '#f8f8f8',
   width: '100%',
   padding: theme.spacing(8, 31),
 }))
 
-const StyledInputLabel = styled('label')(({ theme }) => ({
+const StyledInputLabel = styled('label')(({theme}) => ({
   fontFamily: poppinsFont,
   fontWeight: 600,
   fontSize: '18px',
   marginBottom: theme.spacing(1),
 }))
 
-const StyledFormControl = styled(FormControl)(({ theme }) => ({
+const StyledFormControl = styled(FormControl)(({theme}) => ({
   marginBottom: theme.spacing(5),
   display: 'flex',
   width: '520px',
 }))
 
-const HelpText = styled('span')(({ theme }) => ({
+const HelpText = styled('span')(({theme}) => ({
   fontFamily: latoFont,
   fontSize: '15px',
   fontStyle: 'italic',
   fontWeight: 400,
 }))
 
-const AutoCompleteText = styled(TextField)(({ theme }) => ({
+const AutoCompleteText = styled(TextField)(({theme}) => ({
   border: '1px solid black',
   marginTop: 0,
 
@@ -87,15 +87,15 @@ const AutoCompleteText = styled(TextField)(({ theme }) => ({
   },
 }))
 
-const QuestionSettings = styled('div', { label: 'QuestionSettings' })(
-  ({ theme }) => ({
+const QuestionSettings = styled('div', {label: 'QuestionSettings'})(
+  ({theme}) => ({
     width: '345px',
     height: '171px',
     marginBottom: theme.spacing(4),
     padding: theme.spacing(3),
 
     textAlign: 'left',
-    '& span': { fontSize: '14px', fontFamily: poppinsFont },
+    '& span': {fontSize: '14px', fontFamily: poppinsFont},
     '& .MuiRadio-root': {
       padding: theme.spacing(0.5, 1.5),
     },
@@ -103,8 +103,8 @@ const QuestionSettings = styled('div', { label: 'QuestionSettings' })(
     backgroundColor: ' #FFF',
   })
 )
-const PauseMenuSettings = styled('div', { label: 'PauseMenuSettings' })(
-  ({ theme }) => ({
+const PauseMenuSettings = styled('div', {label: 'PauseMenuSettings'})(
+  ({theme}) => ({
     backgroundColor: '#fff',
     maxWidth: '550px',
     marginBottom: theme.spacing(6),
@@ -112,8 +112,8 @@ const PauseMenuSettings = styled('div', { label: 'PauseMenuSettings' })(
   })
 )
 
-const CanSaveSettings = styled('div', { label: 'CanSaveSettings' })(
-  ({ theme }) => ({
+const CanSaveSettings = styled('div', {label: 'CanSaveSettings'})(
+  ({theme}) => ({
     width: 'auto',
     height: 'auto',
 
@@ -127,13 +127,13 @@ const CanSaveSettings = styled('div', { label: 'CanSaveSettings' })(
   })
 )
 
-const StyledInput = styled(SimpleTextInput)(({ theme }) => ({
+const StyledInput = styled(SimpleTextInput)(({theme}) => ({
   marginRight: theme.spacing(3),
   marginBottom: '0 !important',
 }))
 
-const StyledBottomRadio = styled('div', { label: 'StyledBottomRadio' })(
-  ({ theme }) => ({
+const StyledBottomRadio = styled('div', {label: 'StyledBottomRadio'})(
+  ({theme}) => ({
     marginBottom: theme.spacing(3),
     '& strong': {
       marginBottom: theme.spacing(1),
@@ -141,17 +141,22 @@ const StyledBottomRadio = styled('div', { label: 'StyledBottomRadio' })(
   })
 )
 
-const SaveButton: React.FunctionComponent<{ assessment?: Assessment, onClick: () => void }> = ({ assessment, onClick }) => {
+const SaveButton: React.FunctionComponent<{
+  assessment?: Assessment
+  onClick: () => void
+}> = ({assessment, onClick}) => {
   const isDisabled = !assessment?.title || !assessment?.minutesToComplete
-  return !assessment?.guid ? (<Button
-    variant="contained"
-    color="primary"
-    key="saveButton"
-    onClick={onClick}
-    disabled={isDisabled}>
-    Title Page
-  </Button>) : (
-    <Box sx={{ width: '400px', position: 'fixed', right: 0, bottom: '10px' }}>
+  return !assessment?.guid ? (
+    <Button
+      variant="contained"
+      color="primary"
+      key="saveButton"
+      onClick={onClick}
+      disabled={isDisabled}>
+      Title Page
+    </Button>
+  ) : (
+    <Box sx={{width: '400px', position: 'fixed', right: 0, bottom: '10px'}}>
       <ActionButton
         startIcon={<SaveIcon />}
         variant="text"
@@ -159,7 +164,8 @@ const SaveButton: React.FunctionComponent<{ assessment?: Assessment, onClick: ()
         onClick={onClick}>
         Save Changes
       </ActionButton>
-    </Box>)
+    </Box>
+  )
 }
 
 export interface IntroInfoProps {
@@ -216,7 +222,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
     onUpdate,
   }: IntroInfoProps) => {
     const newSurveyId = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
-    const { orgMembership } = useUserSessionDataState()
+    const {orgMembership} = useUserSessionDataState()
     const [skip, setSkip] = React.useState<WebUISkipOptions | undefined>(
       'CUSTOMIZE'
     )
@@ -267,7 +273,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
     ) => {
       setHasObjectChanged(true)
       if (key !== 'reviewIdentifier') {
-        setInterruptionHandling(prev => ({ ...prev, [key]: value }))
+        setInterruptionHandling(prev => ({...prev, [key]: value}))
       } else {
         if (value) {
           setInterruptionHandling(prev => ({
@@ -276,7 +282,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
           }))
         } else {
           setInterruptionHandling(prev => {
-            const { reviewIdentifier, ...rest } = prev
+            const {reviewIdentifier, ...rest} = prev
 
             return rest
           })
@@ -306,7 +312,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
     return (
       <IntroContainer>
         <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
-          {({ onConfirm, onCancel }) => (
+          {({onConfirm, onCancel}) => (
             <ConfirmationDialog
               isOpen={hasObjectChanged}
               type={'NAVIGATE'}
@@ -324,11 +330,11 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
             <StyledInput
               className="compact"
               id="survey_name"
-              sx={{ '& input': { width: '250px' } }}
+              sx={{'& input': {width: '250px'}}}
               value={basicInfo?.title}
               onChange={e =>
                 updateState(() =>
-                  setBasicInfo(prev => ({ ...prev, title: e.target.value }))
+                  setBasicInfo(prev => ({...prev, title: e.target.value}))
                 )
               }
             />
@@ -348,7 +354,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
             <StyledInput
               className="compact"
               id="duration"
-              sx={{ width: '60px' }}
+              sx={{width: '60px'}}
               onChange={e =>
                 updateState(() =>
                   setBasicInfo(prev => ({
@@ -380,7 +386,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
             }>
             <FormControlLabel
               value="SKIP"
-              sx={{ mt: theme.spacing(1.5) }}
+              sx={{mt: theme.spacing(1.5)}}
               control={<Radio />}
               label="Allow partcipants to skip"
             />
@@ -399,7 +405,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
         <StyledFormControl>
           <FormControlLabel
             value="SKIP"
-            sx={{ mt: theme.spacing(1.5) }}
+            sx={{mt: theme.spacing(1.5)}}
             control={
               <StyledCheckbox
                 checked={!hideBack}
@@ -409,7 +415,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
               />
             }
             label={
-              <Typography sx={{ fontFamily: poppinsFont, fontWeight: '14px' }}>
+              <Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>
                 Allow participants to <strong>navigate back</strong>
                 <br /> to previous question
               </Typography>
@@ -419,7 +425,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
         <PauseMenuSettings>
           <StyledInputLabel
             htmlFor="skip"
-            sx={{ marginBottom: theme.spacing(1), display: 'flex' }}>
+            sx={{marginBottom: theme.spacing(1), display: 'flex'}}>
             {' '}
             <PauseIcon />
             &nbsp;&nbsp; Pause Menu Settings
@@ -431,12 +437,12 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
           </Typography>
           <StyledFormControl>
             <FormControlLabel
-              sx={{ mt: theme.spacing(1.5) }}
+              sx={{mt: theme.spacing(1.5)}}
               control={
-                <CheckIcon sx={{ marginRight: '16px', marginLeft: '8px' }} />
+                <CheckIcon sx={{marginRight: '16px', marginLeft: '8px'}} />
               }
               label={
-                <Typography sx={{ fontFamily: poppinsFont, fontSize: '14px' }}>
+                <Typography sx={{fontFamily: poppinsFont, fontSize: '14px'}}>
                   <strong> Resume (always present)</strong>
                   <br />
                   Returns participant to the screen before selecting Pause.
@@ -446,7 +452,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
 
             <FormControlLabel
               value={interruptionHandling.reviewIdentifier}
-              sx={{ mt: theme.spacing(1.5) }}
+              sx={{mt: theme.spacing(1.5)}}
               control={
                 <StyledCheckbox
                   checked={interruptionHandling.reviewIdentifier !== undefined}
@@ -459,7 +465,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
                 />
               }
               label={
-                <Typography sx={{ fontFamily: poppinsFont, fontSize: '14px' }}>
+                <Typography sx={{fontFamily: poppinsFont, fontSize: '14px'}}>
                   <strong>Review Instructions</strong> <br /> Displays the Title
                   Page message to participant for review.
                 </Typography>
@@ -467,7 +473,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
             />
 
             <FormControlLabel
-              sx={{ mt: theme.spacing(1.5), fontSize: '14px' }}
+              sx={{mt: theme.spacing(1.5), fontSize: '14px'}}
               control={
                 <StyledCheckbox
                   checked={interruptionHandling.canSkip}
@@ -477,7 +483,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
                 />
               }
               label={
-                <Typography sx={{ fontFamily: poppinsFont, fontSize: '14px' }}>
+                <Typography sx={{fontFamily: poppinsFont, fontSize: '14px'}}>
                   <strong>Skip this activity</strong>
                   <br />
                   Allows participant to skip the activity this one time. Survey
@@ -499,7 +505,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
               }>
               <FormControlLabel
                 value="true"
-                sx={{ mt: theme.spacing(1.5), alignItems: 'flex-start' }}
+                sx={{mt: theme.spacing(1.5), alignItems: 'flex-start'}}
                 control={<Radio />}
                 label={
                   <StyledBottomRadio>
@@ -510,7 +516,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
                 }
               />
               <FormControlLabel
-                sx={{ alignItems: 'flex-start' }}
+                sx={{alignItems: 'flex-start'}}
                 value="false"
                 control={<Radio />}
                 label={
@@ -532,7 +538,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
               it with.
             </HelpText>
           </StyledInputLabel>
-          { }
+          {}
           <Autocomplete
             multiple
             area-aria-label="survey tags"
@@ -540,7 +546,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
             options={[]}
             freeSolo
             onChange={(e, v) =>
-              updateState(() => setBasicInfo(prev => ({ ...prev, tags: v })))
+              updateState(() => setBasicInfo(prev => ({...prev, tags: v})))
             }
             value={[...basicInfo.tags]}
             renderTags={(value: string[], getTagProps) =>
@@ -548,7 +554,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
                 <Chip
                   variant="outlined"
                   label={option}
-                  {...getTagProps({ index })}
+                  {...getTagProps({index})}
                 />
               ))
             }
@@ -563,10 +569,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
           />
         </StyledFormControl>
 
-        <SaveButton assessment={basicInfo} onClick={() =>
-          triggerUpdate()
-        } />
-
+        <SaveButton assessment={basicInfo} onClick={() => triggerUpdate()} />
       </IntroContainer>
     )
   }

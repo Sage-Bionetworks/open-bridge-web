@@ -1,5 +1,5 @@
 import constants from '@typedefs/constants'
-import { rest } from 'msw'
+import {rest} from 'msw'
 import SurveyAssessment from '__test_utils/mocks/surveyAssessment'
 import * as Assessments from '../mocks/assessments'
 import AssessmentConfig from '../mocks/surveySampleA'
@@ -32,32 +32,18 @@ const endpoints = [
     }
   ),
 
-
   // get single local assessmsent
-  rest.get(
-    `*${constants.endpoints.assessment}`,
-    (req, res, ctx) => {
-      //  console.log('REQ1', req)
-      return res(
-        ctx.json(SurveyAssessment),
-        ctx.status(200)
-      )
-    }
-  ),
+  rest.get(`*${constants.endpoints.assessment}`, (req, res, ctx) => {
+    //  console.log('REQ1', req)
+    return res(ctx.json(SurveyAssessment), ctx.status(200))
+  }),
 
   // get local assessment config
-  rest.get(
-    `*${constants.endpoints.assessment}/config`,
-    (req, res, ctx) => {
-      //   console.log('REQCONFIG', req)
-      //  console.log({ config: { ...AssessmentConfig } })
-      return res(
-        ctx.json({ config: { ...AssessmentConfig } }),
-        ctx.status(200)
-      )
-    }
-  ),
-
+  rest.get(`*${constants.endpoints.assessment}/config`, (req, res, ctx) => {
+    //   console.log('REQCONFIG', req)
+    //  console.log({ config: { ...AssessmentConfig } })
+    return res(ctx.json({config: {...AssessmentConfig}}), ctx.status(200))
+  }),
 
   //get local assessments
   rest.get(
@@ -65,7 +51,6 @@ const endpoints = [
     (req, res, ctx) => {
       //   console.log('REQ', req)
       return res(
-
         ctx.json({
           items: [...Assessments.LocalAssessmentsMTB],
         }),
@@ -74,7 +59,6 @@ const endpoints = [
       )
     }
   ),
-
 
   //update local assessment
   rest.post(

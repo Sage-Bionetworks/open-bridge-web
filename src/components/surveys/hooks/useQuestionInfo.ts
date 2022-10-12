@@ -1,9 +1,14 @@
-import { ChoiceQuestion, Question, Step } from "@typedefs/surveys"
-import React from "react"
-import { QuestionTypeKey } from "../survey-design/left-panel/QuestionConfigs"
-import SurveyUtils from "../SurveyUtils"
+import {ChoiceQuestion, Question, Step} from '@typedefs/surveys'
+import React from 'react'
+import {QuestionTypeKey} from '../survey-design/left-panel/QuestionConfigs'
+import SurveyUtils from '../SurveyUtils'
 
-export type ExtendedStepInfo = { step: Step, stepType: QuestionTypeKey, index: number, isLast: boolean }
+export type ExtendedStepInfo = {
+  step: Step
+  stepType: QuestionTypeKey
+  index: number
+  isLast: boolean
+}
 
 function getStepType(step: Step): QuestionTypeKey {
   if (step.type === 'instruction') {
@@ -48,14 +53,20 @@ function getStepType(step: Step): QuestionTypeKey {
 }
 
 const useQuestionInfo = (step: Step, steps: Step[]): ExtendedStepInfo => {
-
-  const [extendedStep, setExtendedStep] = React.useState<ExtendedStepInfo>({ step, stepType: 'INSTRUCTION', index: 0, isLast: false })
+  const [extendedStep, setExtendedStep] = React.useState<ExtendedStepInfo>({
+    step,
+    stepType: 'INSTRUCTION',
+    index: 0,
+    isLast: false,
+  })
 
   React.useEffect(() => {
     const stepType = getStepType(step)
-    const { index, isLast } = SurveyUtils.getSequentialQuestionIndex(step.identifier, steps)
-    setExtendedStep({ step, stepType, index, isLast })
-
+    const {index, isLast} = SurveyUtils.getSequentialQuestionIndex(
+      step.identifier,
+      steps
+    )
+    setExtendedStep({step, stepType, index, isLast})
   }, [step, steps])
 
   return extendedStep

@@ -1,23 +1,22 @@
 import ConfirmationDialog, {
-  ConfirmationDialogType
+  ConfirmationDialogType,
 } from '@components/widgets/ConfirmationDialog'
-import { MTBHeading } from '@components/widgets/Headings'
+import {MTBHeading} from '@components/widgets/Headings'
 import Loader from '@components/widgets/Loader'
-import { useUserSessionDataState } from '@helpers/AuthContext'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import { Box, Button, Container, Divider, Menu, MenuItem } from '@mui/material'
+import {Box, Button, Container, Divider, Menu, MenuItem} from '@mui/material'
 import Link from '@mui/material/Link'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
-import { useStudies, useUpdateStudyInList } from '@services/studyHooks'
-import { latoFont } from '@style/theme'
+import {useStudies, useUpdateStudyInList} from '@services/studyHooks'
+import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
-import { AdminRole, DisplayStudyPhase, Study, StudyPhase } from '@typedefs/types'
-import React, { FunctionComponent } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { Redirect, RouteComponentProps } from 'react-router-dom'
+import {AdminRole, DisplayStudyPhase, Study, StudyPhase} from '@typedefs/types'
+import React, {FunctionComponent} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {Redirect, RouteComponentProps} from 'react-router-dom'
 import StudyCard from './StudyCard'
-
 
 type StudyListOwnProps = {}
 
@@ -164,8 +163,8 @@ function getStudyLink(sectionStatus: DisplayStudyPhase, studyId: string) {
     link = Utility.isPathAllowed(studyId, links.builder)
       ? links.builder
       : Utility.isPathAllowed(studyId, links.participants)
-        ? links.participants
-        : undefined
+      ? links.participants
+      : undefined
   } else {
     link = Utility.isPathAllowed(studyId, links.participants)
       ? links.participants
@@ -213,19 +212,19 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
       <Box className={classes.cardGrid}>
         {displayStudies.map((study, index) => (
           <Link
-            style={{ textDecoration: 'none' }}
+            style={{textDecoration: 'none'}}
             key={study.identifier || index}
             variant="body2"
             onClick={() =>
               study.identifier === '...'
                 ? ''
-                : onStudyCardClick({ ...study }, 'VIEW')
+                : onStudyCardClick({...study}, 'VIEW')
             }
             underline="hover">
             <StudyCard
               study={study}
               onRename={(newName: string) => {
-                onStudyCardClick({ ...study, name: newName }, 'RENAME')
+                onStudyCardClick({...study, name: newName}, 'RENAME')
               }}
               isRename={renameStudyId === study.identifier}
               onSetAnchor={(e: HTMLElement) => {
@@ -244,10 +243,9 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 }
 
 const StudyList: FunctionComponent<StudyListProps> = () => {
-
   const handleError = useErrorHandler()
 
-  const { roles } = useUserSessionDataState()
+  const {roles} = useUserSessionDataState()
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     study: Study
     anchorEl: HTMLElement
@@ -302,7 +300,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     //if study is provided -- we are duplicating
 
     if (study) {
-      mutateAsync({ study, action: 'COPY' }).then(e => {
+      mutateAsync({study, action: 'COPY'}).then(e => {
         const newStudy = e[0]
         if (newStudy) {
           setHighlightedStudyId(newStudy.identifier)
@@ -326,7 +324,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
       mutateAsync({
         action: 'CREATE',
-        study: { ...newStudy, name: newStudy.name },
+        study: {...newStudy, name: newStudy.name},
       }).then(studies => {
         if (studies[0]) {
           navigateToStudy(studies[0])
@@ -342,7 +340,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         study.identifier
       )
 
-
       setRedirectLink(l)
     }
   }
@@ -351,14 +348,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     handleMenuClose()
     switch (type) {
       case 'RENAME':
-        await mutate({ action: 'RENAME', study: { ...study, name: study.name } })
+        await mutate({action: 'RENAME', study: {...study, name: study.name}})
         setRenameStudyId('')
 
         return
       case 'WITHDRAW':
       case 'CLOSE':
       case 'DELETE':
-        await mutate({ action: type, study })
+        await mutate({action: type, study})
         return
 
       case 'DUPLICATE':
@@ -452,7 +449,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             studies.length > 0 &&
             statusFilters.map((status, index) => (
               <Box
-                style={{ paddingBottom: index < 3 ? '24px' : '0' }}
+                style={{paddingBottom: index < 3 ? '24px' : '0'}}
                 key={status}>
                 <StudySublist
                   userRoles={roles}
@@ -462,7 +459,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   onStudyCardClick={(s: Study, action: StudyAction, e: any) => {
                     switch (action) {
                       case 'ANCHOR':
-                        setMenuAnchor({ study: s, anchorEl: e })
+                        setMenuAnchor({study: s, anchorEl: e})
                         break
                       case 'VIEW':
                         handleMenuClose()
@@ -496,7 +493,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               }}
               open={Boolean(menuAnchor.anchorEl)}
               onClose={handleMenuClose}
-              classes={{ paper: classes.paper, list: classes.list }}>
+              classes={{paper: classes.paper, list: classes.list}}>
               <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>
                 View
               </MenuItem>

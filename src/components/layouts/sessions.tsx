@@ -1,7 +1,7 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import SomeIcon from '@mui/icons-material/FaceOutlined'
-import { Box } from '@mui/material'
+import {Box} from '@mui/material'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -11,14 +11,14 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { RouteComponentProps } from 'react-router-dom'
+import React, {FunctionComponent} from 'react'
+import {RouteComponentProps} from 'react-router-dom'
 import {
   MTBHeadingH1,
   MTBHeadingH2,
   MTBHeadingH3,
   MTBHeadingH4,
-  MTBHeadingH5
+  MTBHeadingH5,
 } from '../widgets/Headings'
 
 const drawerWidth = 212
@@ -98,12 +98,9 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-
 const cards = [1, 2, 3, 4, 5]
 
-const SessionsLayout: FunctionComponent<RouteComponentProps> = ({
-
-}) => {
+const SessionsLayout: FunctionComponent<RouteComponentProps> = ({}) => {
   const classes = useStyles()
 
   const [open, setOpen] = React.useState(false)

@@ -28,10 +28,10 @@ const constants = {
   },
 
   environments: [
-    { value: 'local', label: 'Local' },
-    { value: 'develop', label: 'Development' },
-    { value: 'staging', label: 'Staging' },
-    { value: 'production', label: 'Production' },
+    {value: 'local', label: 'Local'},
+    {value: 'develop', label: 'Development'},
+    {value: 'staging', label: 'Staging'},
+    {value: 'production', label: 'Production'},
   ],
   org_roles: ['org_admin', 'study_designer', 'study_coordinator'] as const,
 

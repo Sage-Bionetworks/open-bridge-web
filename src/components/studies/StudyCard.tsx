@@ -155,7 +155,9 @@ const CardBottom: FunctionComponent<{
     study.identifier,
     0,
     5,
-    {progressionFilters: ['in_progress']}
+    {
+      progressionFilters: ['in_progress'],
+    }
   )
 
   return (

@@ -1,20 +1,21 @@
 import UtilityObject from '@helpers/utility'
-import { Box, styled } from '@mui/material'
-import { latoFont } from '@style/theme'
-import { ChoiceQuestion, Step } from '@typedefs/surveys'
-import { Edge, MarkerType, Node } from 'reactflow'
+import {Box, styled} from '@mui/material'
+import {latoFont} from '@style/theme'
+import {ChoiceQuestion, Step} from '@typedefs/surveys'
+import {Edge, MarkerType, Node} from 'reactflow'
 import QUESTIONS, {
-  getQuestionId
+  getQuestionId,
 } from '../survey-design/left-panel/QuestionConfigs'
-import { DivContainer } from '../survey-design/left-panel/QuestionTypeDisplay'
+import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 
+const position = {x: 0, y: 0}
 
-const position = { x: 0, y: 0 };
-
-
-const StyledQuestionTitle = styled('div', { label: 'StyledQuestionTitle', shouldForwardProp: prop => prop !== 'unconnected' })<{
+const StyledQuestionTitle = styled('div', {
+  label: 'StyledQuestionTitle',
+  shouldForwardProp: prop => prop !== 'unconnected',
+})<{
   unconnected?: boolean
-}>(({ theme, unconnected }) => ({
+}>(({theme, unconnected}) => ({
   '&.title': {
     fontSize: '12px',
     position: 'absolute',
@@ -37,10 +38,12 @@ function createNode(
   isUnconnected: boolean
 ): Node {
   const label = (
-    <div style={{ position: 'relative' }}>
+    <div style={{position: 'relative'}}>
       <DivContainer>
         {QUESTIONS.get(getQuestionId(q))?.img}
-        {(q.type !== 'completion' && q.type !== 'overview') && <Box>{qSequentialIndex}</Box>}
+        {q.type !== 'completion' && q.type !== 'overview' && (
+          <Box>{qSequentialIndex}</Box>
+        )}
         <StyledQuestionTitle className="title" unconnected={isUnconnected}>
           {q.title}
         </StyledQuestionTitle>
@@ -50,9 +53,8 @@ function createNode(
 
   return {
     id: q.identifier,
-    data: { label: label },
-    position
-
+    data: {label: label},
+    position,
   }
 }
 
@@ -64,8 +66,11 @@ function createEdge(i1: string, i2: string, isDisconnected?: boolean): Edge {
     type: 'smoothstep',
     animated: !!isDisconnected,
 
-    style: { stroke: isDisconnected ? 'red' : 'black' },
-    markerEnd: { type: MarkerType.ArrowClosed, color: !!isDisconnected ? 'red' : 'black' },
+    style: {stroke: isDisconnected ? 'red' : 'black'},
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: !!isDisconnected ? 'red' : 'black',
+    },
   }
 }
 
@@ -117,12 +122,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
   const edges: Edge[] = []
   let error: Error | undefined = undefined
 
-  function addNode(
-    q: ChoiceQuestion,
-    index: number,
-    error: Error | undefined
-  ) {
-
+  function addNode(q: ChoiceQuestion, index: number, error: Error | undefined) {
     const node = createNode(q, index, false)
     nodes.push(node)
     let nextQs = getChildNodes(questions, q)
@@ -140,12 +140,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
         const indexOfNode = nodes.findIndex(q1 => q1.id === child.identifier)
 
         if (indexOfNode === -1) {
-          addNode(
-            child,
-            qIndex,
-            error
-          )
-
+          addNode(child, qIndex, error)
         }
       }
     }
@@ -157,7 +152,6 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
   const nodeIds = nodes.map(n => n.id)
 
   const disconnectedQs = questions.filter(q => !nodeIds.includes(q.identifier))
-
 
   disconnectedQs.forEach((dq, i) => {
     const qIndex = questions.findIndex(q1 => q1.identifier === dq.identifier)
@@ -176,7 +170,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
     }
   })
 
-  return { nodes, edges, error }
+  return {nodes, edges, error}
 }
 
 //function detect cycles in a graph using DFS
@@ -240,7 +234,7 @@ export const getEdgesFromSteps = (questions: ChoiceQuestion[]) => {
 
   addEdge(questions[0], undefined)
 
-  return { edges, error }
+  return {edges, error}
 }
 
 export default getNodes

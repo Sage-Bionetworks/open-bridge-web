@@ -1,16 +1,16 @@
 import {
   StyledCheckbox,
-  StyledFormControl
+  StyledFormControl,
 } from '@components/surveys/widgets/SharedStyled'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
 import {
   SimpleTextInput,
-  SimpleTextLabel
+  SimpleTextLabel,
 } from '@components/widgets/StyledComponents'
-import { Box, FormControlLabel, Typography } from '@mui/material'
-import { poppinsFont, theme } from '@style/theme'
-import { FormatOptionsInteger, NumericQuestion } from '@typedefs/surveys'
-import React, { ChangeEvent } from 'react'
+import {Box, FormControlLabel, Typography} from '@mui/material'
+import {poppinsFont, theme} from '@style/theme'
+import {FormatOptionsInteger, NumericQuestion} from '@typedefs/surveys'
+import React, {ChangeEvent} from 'react'
 
 const ValueSelector: React.FunctionComponent<{
   value?: number
@@ -19,7 +19,7 @@ const ValueSelector: React.FunctionComponent<{
   type: 'MIN' | 'MAX'
 
   onChange: (value: number) => void
-}> = ({ value, type, isDisabled, hasError, onChange }) => {
+}> = ({value, type, isDisabled, hasError, onChange}) => {
   const CONFIG = {
     MIN: {
       label: 'Min Value',
@@ -33,13 +33,13 @@ const ValueSelector: React.FunctionComponent<{
 
   return (
     <>
-      <StyledFormControl sx={{ marginRight: theme.spacing(2) }} mb={1}>
+      <StyledFormControl sx={{marginRight: theme.spacing(2)}} mb={1}>
         <SimpleTextLabel htmlFor={CONFIG[type].labelId}>
           {CONFIG[type].label}
         </SimpleTextLabel>
 
         <SimpleTextInput
-          sx={{ width: '80px' }}
+          sx={{width: '80px'}}
           id={CONFIG[type].labelId}
           error={hasError}
           value={value ?? ''}
@@ -58,13 +58,13 @@ const ValueSelector: React.FunctionComponent<{
 const Numeric: React.FunctionComponent<{
   step: NumericQuestion
   onChange: (step: NumericQuestion) => void
-}> = ({ step, onChange }) => {
+}> = ({step, onChange}) => {
   const [rangeDisabled, setRangeDisabled] = React.useState(
     step.inputItem.formatOptions?.minimumValue === undefined &&
-    step.inputItem.formatOptions?.maximumValue === undefined
+      step.inputItem.formatOptions?.maximumValue === undefined
   )
   const [range, setRange] = React.useState<
-    { min?: number; max?: number } | undefined
+    {min?: number; max?: number} | undefined
   >({
     min: step.inputItem.formatOptions?.minimumValue,
     max: step.inputItem.formatOptions?.maximumValue,
@@ -72,11 +72,11 @@ const Numeric: React.FunctionComponent<{
   const [error, setError] = React.useState('')
 
   const onUpdateFormat = (fm?: FormatOptionsInteger) => {
-    const inputItem = { ...step.inputItem, formatOptions: fm }
-    onChange({ ...step, inputItem })
+    const inputItem = {...step.inputItem, formatOptions: fm}
+    onChange({...step, inputItem})
   }
 
-  const validate = (range: { min?: number; max?: number }) => {
+  const validate = (range: {min?: number; max?: number}) => {
     if (range.min === undefined || range.max === undefined) {
       return true
     }
@@ -101,7 +101,7 @@ const Numeric: React.FunctionComponent<{
   return (
     <>
       <FormControlLabel
-        sx={{ mt: theme.spacing(1.5) }}
+        sx={{mt: theme.spacing(1.5)}}
         control={
           <StyledCheckbox
             checked={rangeDisabled}
@@ -109,7 +109,7 @@ const Numeric: React.FunctionComponent<{
           />
         }
         label={
-          <Typography sx={{ fontFamily: poppinsFont, fontWeight: '14px' }}>
+          <Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>
             No min and max validation!
           </Typography>
         }
@@ -124,14 +124,14 @@ const Numeric: React.FunctionComponent<{
           value={range?.min}
           hasError={!!error}
           onChange={num => {
-            const isValid = validate({ min: num, max: range?.max })
+            const isValid = validate({min: num, max: range?.max})
             if (isValid) {
               onUpdateFormat({
                 ...step.inputItem.formatOptions,
                 minimumValue: num,
               })
             }
-            setRange(prev => ({ ...(prev || {}), min: num }))
+            setRange(prev => ({...(prev || {}), min: num}))
           }}
         />
         <ValueSelector
@@ -139,14 +139,14 @@ const Numeric: React.FunctionComponent<{
           isDisabled={rangeDisabled}
           value={range?.max}
           onChange={num => {
-            const isValid = validate({ min: range?.min, max: num })
+            const isValid = validate({min: range?.min, max: num})
             if (isValid) {
               onUpdateFormat({
                 ...step.inputItem.formatOptions,
                 maximumValue: num,
               })
             }
-            setRange(prev => ({ ...(prev || {}), max: num }))
+            setRange(prev => ({...(prev || {}), max: num}))
           }}
         />
       </Box>

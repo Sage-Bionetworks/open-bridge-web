@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { default as constants, default as CONSTANTS } from '../types/constants'
+import {useState} from 'react'
+import {default as constants, default as CONSTANTS} from '../types/constants'
 import {
   AdminRole,
   OauthEnvironment,
@@ -7,7 +7,7 @@ import {
   Response,
   SignInType,
   StringDictionary,
-  UserSessionData
+  UserSessionData,
 } from '../types/types'
 
 type RestMethod = 'POST' | 'GET' | 'DELETE'
@@ -23,7 +23,7 @@ function makeRequest(
     xhr.open(method, url)
     xhr.onload = function () {
       if ((this.status >= 200 && this.status < 300) || this.status === 412) {
-        resolve({ status: this.status, response: xhr.response, ok: true })
+        resolve({status: this.status, response: xhr.response, ok: true})
       } else {
         reject({
           status: this.status,
@@ -66,9 +66,9 @@ const callEndpointXHR = async <T>(
     body = undefined
   }
   return makeRequest(method, endpoint, body, token).then(
-    ({ status, response, ok }) => {
+    ({status, response, ok}) => {
       const result = JSON.parse(response)
-      return { status: status, data: result, ok: ok }
+      return {status: status, data: result, ok: ok}
     },
     error => {
       throw error
@@ -123,7 +123,7 @@ const callEndpoint = async <T>(
     //alert(JSON.stringify(result, null, 2))
     throw result
   }
-  return { status: response.status, data: result, ok: response.ok }
+  return {status: response.status, data: result, ok: response.ok}
 }
 
 const getSession = (): UserSessionData | undefined => {
@@ -183,7 +183,7 @@ const redirectToSynapseLogin = () => {
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
   let code: URL | null | string = new URL(window.location.href)
   // in test environment the searchParams isn't defined
-  const { searchParams } = code
+  const {searchParams} = code
 
   if (!searchParams?.get('code')) {
     let state = new Date().getTime().toString(32)
@@ -384,7 +384,7 @@ if (studyId.length !== 6) return studyId
 async function getAllPages<T>(
   fn: Function,
   args: any[]
-): Promise<{ items: T[]; total: number }> {
+): Promise<{items: T[]; total: number}> {
   const pageSize = 50
   const result = await fn(...args, pageSize, 0)
   const pages = Math.ceil(result.total / pageSize)
@@ -392,7 +392,7 @@ async function getAllPages<T>(
     return result
   }
 
-  const queries: Promise<{ items: T[]; total: number }>[] = []
+  const queries: Promise<{items: T[]; total: number}>[] = []
   for (let i = 0; i < pages; i++) {
     queries.push(fn(...args, pageSize, i * pageSize))
   }
@@ -400,7 +400,7 @@ async function getAllPages<T>(
     const allItems1 = result.map(i => i.items as T[])
     const allItems = allItems1.flat()
 
-    return { items: allItems, total: result[0].total }
+    return {items: allItems, total: result[0].total}
   })
 }
 function capitalize(s: string) {
@@ -453,7 +453,6 @@ function areObjectsEqual(obj1: any, obj2: any) {
     // if (obj1 instanceof Number && obj2 instanceof Number) {
     //   return obj1.toString() === obj2.toString()
 
-
     // if (obj1 instanceof Boolean && obj2 instanceof Boolean) {
     //   return obj1.toString() === obj2.toString()
 
@@ -477,12 +476,7 @@ function areObjectsEqual(obj1: any, obj2: any) {
   }
 
   return true
-
 }
-
-
-
-
 
 const UtilityObject = {
   areArraysEqual,

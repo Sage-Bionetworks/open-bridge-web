@@ -2,9 +2,9 @@ import MTBLogoLarge from '@assets/mtb_logo_large.svg'
 import appStoreBtn from '@assets/preview/appStoreBtn.png'
 import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
 import QrCode from '@assets/qr_code.png'
-import { Box } from '@mui/material'
+import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import { latoFont, playfairDisplayFont, theme } from '@style/theme'
+import {latoFont, playfairDisplayFont, theme} from '@style/theme'
 import React from 'react'
 
 const useStyles = makeStyles(theme => ({
@@ -46,7 +46,7 @@ const DownloadAppLandingPage: React.FunctionComponent = () => {
       <img
         src={MTBLogoLarge}
         alt="large mtb logo"
-        style={{ width: '100px', height: '100px' }}
+        style={{width: '100px', height: '100px'}}
       />
       <Box className={classes.downloadText}>
         <strong>
@@ -83,24 +83,27 @@ const DownloadAppLandingPage: React.FunctionComponent = () => {
         </ol>
       </p>
 
-      <Box sx={{
-        margin: theme.spacing(2),
-        padding: theme.spacing(2),
-        textAlign: "center",
-        bgcolor: "white"
-      }} >
+      <Box
+        sx={{
+          margin: theme.spacing(2),
+          padding: theme.spacing(2),
+          textAlign: 'center',
+          bgcolor: 'white',
+        }}>
         <img src={QrCode} width="130px" alt="QR code" />
       </Box>
       <Box my={3}>
         <a
-          style={{ marginRight: '24px' }}
+          style={{marginRight: '24px'}}
           href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
-          target="_blank" rel="noreferrer">
+          target="_blank"
+          rel="noreferrer">
           <img src={appStoreBtn} alt="ios app store button"></img>
         </a>
         <a
           href="https://play.google.com/store/apps/details?id=org.sagebionetworks.research.mobiletoolbox.app"
-          target="_blank" rel="noreferrer">
+          target="_blank"
+          rel="noreferrer">
           <img src={googlePlayBtn} alt="google play store"></img>
         </a>
       </Box>

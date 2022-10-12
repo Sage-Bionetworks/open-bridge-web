@@ -17,7 +17,9 @@ describe('participants.service', () => {
         'study123',
         'token123',
         ['p123'],
-        { firstName: 'NewName' }
+        {
+          firstName: 'NewName',
+        }
       )
       const name = participant.firstName
 
@@ -40,7 +42,10 @@ describe('participants.service', () => {
         'study123',
         'token123',
         ['p123'],
-        { firstName: 'NewName', note: 'My Note' }
+        {
+          firstName: 'NewName',
+          note: 'My Note',
+        }
       )
       const name = participant.firstName
 
@@ -63,7 +68,9 @@ describe('participants.service', () => {
         'study123',
         'token123',
         ['p123', 'p456'],
-        { clientTimeZone: 'America/New_York' }
+        {
+          clientTimeZone: 'America/New_York',
+        }
       )
 
       expect(result.length).toBe(2)

@@ -373,15 +373,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             : TAB_ICONS_UNFOCUS[index]
                         }
                         style={{marginRight: '6px'}}></img>
-                      <div>
-                        {`${tabDef.label} ${
-                          tab === tabDef.type
-                            ? data
-                              ? `(${data.total})`
-                              : '(...)'
-                            : ''
-                        }`}
-                      </div>
+                      <div>{`${tabDef.label} ${
+                        tab === tabDef.type
+                          ? data
+                            ? `(${data.total})`
+                            : '(...)'
+                          : ''
+                      }`}</div>
                     </Box>
                   }
                 />

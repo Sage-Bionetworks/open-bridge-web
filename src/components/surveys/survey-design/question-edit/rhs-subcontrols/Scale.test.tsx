@@ -32,8 +32,6 @@ function setUp(step: ScaleQuestion = QUESTION) {
   const component = render(
     <Likert step={step} onChange={step => onChange(step)} />
   )
-  const btn = component.getAllByRole('button')
-
   const buttons = {
     setMinVal: component.getByRole('button', {name: /min/i}),
     setMaxVal: component.getByRole('button', {name: /max /i}),
@@ -49,7 +47,7 @@ const onChange = jest.fn()
 afterEach(cleanup)
 
 test('show the setting correctly', async () => {
-  const {component, buttons, inputs} = setUp()
+  const {buttons, inputs} = setUp()
   expect(buttons.setMinVal).toHaveTextContent('1')
   expect(buttons.setMaxVal).toHaveTextContent('7')
   expect(inputs.setMinLabel).toHaveValue('Not at all')

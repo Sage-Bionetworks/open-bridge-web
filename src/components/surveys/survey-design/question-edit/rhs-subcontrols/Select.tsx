@@ -1,17 +1,17 @@
-import { ReactComponent as AlertIcon } from '@assets/alert_icon.svg'
-import { ReactComponent as GenerateId } from '@assets/surveys/actions/generate_id.svg'
+import {ReactComponent as AlertIcon} from '@assets/alert_icon.svg'
+import {ReactComponent as GenerateId} from '@assets/surveys/actions/generate_id.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import {
   StyledFormControl,
-  StyledLabel14
+  StyledLabel14,
 } from '@components/surveys/widgets/SharedStyled'
 import {
   StyledDropDown,
-  StyledDropDownItem
+  StyledDropDownItem,
 } from '@components/surveys/widgets/StyledDropDown'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
-import { SimpleTextInput } from '@components/widgets/StyledComponents'
+import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import UtilityObject from '@helpers/utility'
 import {
   Box,
@@ -19,19 +19,19 @@ import {
   MenuItem,
   OutlinedInput,
   styled,
-  Typography
+  Typography,
 } from '@mui/material'
-import { SelectChangeEvent } from '@mui/material/Select'
-import { theme } from '@style/theme'
+import {SelectChangeEvent} from '@mui/material/Select'
+import {theme} from '@style/theme'
 import {
   ChoiceQuestion,
   ChoiceQuestionChoice,
-  QuestionDataType
+  QuestionDataType,
 } from '@typedefs/surveys'
 import React from 'react'
-import QUESTIONS, { QuestionTypeKey } from '../../left-panel/QuestionConfigs'
+import QUESTIONS, {QuestionTypeKey} from '../../left-panel/QuestionConfigs'
 
-const ValueTable = styled('table')(({ theme }) => ({
+const ValueTable = styled('table')(({theme}) => ({
   width: '100%',
   borderSpacing: 0,
 
@@ -49,7 +49,7 @@ const ValueTable = styled('table')(({ theme }) => ({
 const PairingTableHeading: React.FunctionComponent<{
   answerDataType: QuestionDataType
   isSingleChoice?: boolean
-}> = ({ answerDataType, isSingleChoice }) => {
+}> = ({answerDataType, isSingleChoice}) => {
   const mapping = {
     number: [],
     boolean: [],
@@ -92,14 +92,15 @@ const ChoiceValueInputRow: React.FunctionComponent<{
   choice: ChoiceQuestionChoice
   allValues: (string | number | boolean | undefined)[]
   onChange: (e: string) => void
-}> = ({ choice, onChange, allValues }) => {
+}> = ({choice, onChange, allValues}) => {
   const isDefault = !SurveyUtils.isSpecialSelectChoice(choice)
 
   const firstCell = (
-    <div style={{ display: 'flex' }}>
-      {choice.text}{!isDefault && (
+    <div style={{display: 'flex'}}>
+      {choice.text}
+      {!isDefault && (
         <InfoCircleWithToolTip
-          style={{ marginLeft: '4px' }}
+          style={{marginLeft: '4px'}}
           tooltipDescription={
             choice.selectorType === 'all'
               ? 'Selects all responses'
@@ -119,7 +120,7 @@ const ChoiceValueInputRow: React.FunctionComponent<{
   )
   if (!isDefault) {
     inputCell = (
-      <div style={{ padding: ' 0 8px' }}>
+      <div style={{padding: ' 0 8px'}}>
         {choice.selectorType === 'all'
           ? allValues.filter(v => v !== undefined).join(', ')
           : 'empty array'}
@@ -129,7 +130,8 @@ const ChoiceValueInputRow: React.FunctionComponent<{
 
   return (
     <tr>
-      <td>{firstCell}</td> <td> &rarr;</td><td style={{ width: '60px' }}>{inputCell}</td>
+      <td>{firstCell}</td> <td> &rarr;</td>
+      <td style={{width: '60px'}}>{inputCell}</td>
     </tr>
   )
 }
@@ -143,7 +145,7 @@ function generateValue(choice: ChoiceQuestionChoice, setTo?: number) {
 const Select: React.FunctionComponent<{
   step: ChoiceQuestion
   onChange: (step: ChoiceQuestion) => void
-}> = ({ step, onChange }) => {
+}> = ({step, onChange}) => {
   const selectTypeOptions: QuestionTypeKey[] = ['MULTI_SELECT', 'SINGLE_SELECT']
   const [isTypeConversionWarning, setIsTypeConversionWarning] =
     React.useState(false)
@@ -154,7 +156,7 @@ const Select: React.FunctionComponent<{
     event: SelectChangeEvent<QuestionTypeKey>
   ) => {
     const {
-      target: { value },
+      target: {value},
     } = event
 
     const isSwitchedToSingleSelect =
@@ -178,7 +180,7 @@ const Select: React.FunctionComponent<{
         setIsTypeConversionWarning(true)
         return
       }
-      const updatedStep = { ...step }
+      const updatedStep = {...step}
       updatedStep.baseType = value as typeof step.baseType
       let choices = [...step.choices]
       //switch from string to integer -- number them
@@ -194,7 +196,7 @@ const Select: React.FunctionComponent<{
         }
       }
 
-      onChange({ ...updatedStep, choices })
+      onChange({...updatedStep, choices})
     }
   }
 
@@ -209,7 +211,7 @@ const Select: React.FunctionComponent<{
           //@ts-ignore
           onChange={handleSelectTypeChange}
           input={<OutlinedInput />}
-          inputProps={{ 'aria-label': 'Question Type:' }}>
+          inputProps={{'aria-label': 'Question Type:'}}>
           {selectTypeOptions.map(opt => (
             <MenuItem value={opt.toString()} key={opt.toString()}>
               <StyledDropDownItem>
@@ -231,7 +233,7 @@ const Select: React.FunctionComponent<{
           //@ts-ignore
           onChange={e => handleDataTypeChange(e.target.value)}
           input={<OutlinedInput />}
-          inputProps={{ 'aria-label': 'Set Response Value Pairing:' }}>
+          inputProps={{'aria-label': 'Set Response Value Pairing:'}}>
           {answerDataTypeOptions.map(opt => (
             <MenuItem value={opt.toString()} key={opt.toString()}>
               <StyledDropDownItem>
@@ -247,10 +249,10 @@ const Select: React.FunctionComponent<{
         isSingleChoice={step.singleChoice}
       />
 
-      <Box sx={{ backgroundColor: '#fff', padding: theme.spacing(2, 1.5) }}>
+      <Box sx={{backgroundColor: '#fff', padding: theme.spacing(2, 1.5)}}>
         {step.baseType === 'string' && (
           <Button
-            sx={{ marginRight: 0, float: 'right' }}
+            sx={{marginRight: 0, float: 'right'}}
             disabled={
               step.surveyRules?.find(r => r.matchingAnswer !== undefined) !==
               undefined
@@ -273,7 +275,7 @@ const Select: React.FunctionComponent<{
             <tr>
               <th>Response</th>
               <th></th>
-              <th style={{ width: '60px' }}>
+              <th style={{width: '60px'}}>
                 Value={UtilityObject.capitalize(step.baseType)}
               </th>
             </tr>
@@ -285,16 +287,16 @@ const Select: React.FunctionComponent<{
                 allValues={step.choices.map(c => c.value)}
                 onChange={val => {
                   const choices = step.choices.map((c, i) =>
-                    i === index ? { ...c, value: val } : c
+                    i === index ? {...c, value: val} : c
                   )
-                  onChange({ ...step, choices })
+                  onChange({...step, choices})
                 }}
               />
             ))}
             {step.other && (
               <tr>
                 <td>{step.other.fieldLabel || 'Other'}</td> <td> &rarr;</td>
-                <td style={{ width: '60px', padding: '0 8px' }}>custom text</td>
+                <td style={{width: '60px', padding: '0 8px'}}>custom text</td>
               </tr>
             )}
           </tbody>

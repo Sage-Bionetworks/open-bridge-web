@@ -63,7 +63,7 @@ test('show the min and max values/labels correctly', () => {
       maximumLabel: 'MAX',
     },
   }
-  const {component} = setUp({...QUESTION, inputItem: newInput})
+  setUp({...QUESTION, inputItem: newInput})
   expect(screen.queryByText('1')).toBeInTheDocument()
   expect(screen.queryByText('7')).toBeInTheDocument()
   expect(screen.queryByText('0')).toBeInTheDocument()

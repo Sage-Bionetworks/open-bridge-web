@@ -72,13 +72,17 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
       studyId,
       0,
       5,
-      {progressionFilters: ['in_progress']}
+      {
+        progressionFilters: ['in_progress'],
+      }
     )
     const {data: adherenceWeeklyDoneCount} = useAdherenceForWeek(
       studyId,
       0,
       5,
-      {progressionFilters: ['done']}
+      {
+        progressionFilters: ['done'],
+      }
     )
 
     const {data: fullAdherenceWeeklyReport} = useAdherenceForWeek(

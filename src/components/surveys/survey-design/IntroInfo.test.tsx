@@ -145,7 +145,7 @@ describe('<IntroInfo/>', () => {
 
     test('save button should have "title page" text and be disabled if there is no survey name or duration', () => {
       renderComponent(undefined, true)
-      const radios = getSurveyQuestionSettings()
+
       const surveyName = screen.getByRole('textbox', {name: /survey name/i})
       const minutes = screen.getByRole('textbox', {
         name: /how long will this survey take/i,

@@ -3,18 +3,18 @@ import AlertBanner from '@components/widgets/AlertBanner'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
 import UtilityObject from '@helpers/utility'
-import { Box, Button, CircularProgress, Dialog, styled } from '@mui/material'
+import {Box, Button, CircularProgress, Dialog, styled} from '@mui/material'
 import {
   useSurveyAssessment,
   useSurveyConfig,
   useUpdateSurveyAssessment,
   useUpdateSurveyConfig,
-  useUpdateSurveyResource
+  useUpdateSurveyResource,
 } from '@services/assessmentHooks'
-import { ChoiceQuestion, Question, Step, Survey } from '@typedefs/surveys'
-import { Assessment } from '@typedefs/types'
-import React, { FunctionComponent } from 'react'
-import { useIsFetching, useIsMutating } from 'react-query'
+import {ChoiceQuestion, Question, Step, Survey} from '@typedefs/surveys'
+import {Assessment} from '@typedefs/types'
+import React, {FunctionComponent} from 'react'
+import {useIsFetching, useIsMutating} from 'react-query'
 import {
   Redirect,
   Route,
@@ -22,7 +22,7 @@ import {
   Switch,
   useHistory,
   useLocation,
-  useParams
+  useParams,
 } from 'react-router-dom'
 // default styling
 
@@ -30,66 +30,82 @@ import NavigationPrompt from 'react-router-navigation-prompt'
 import IntroInfo from './IntroInfo'
 import AddQuestionMenu from './left-panel/AddQuestionMenu'
 import LeftPanel from './left-panel/LeftPanel'
-import QUESTIONS, { QuestionTypeKey } from './left-panel/QuestionConfigs'
+import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
 import QuestionEditPhone from './question-edit/QuestionEditPhone'
 import QuestionEditRhs from './question-edit/QuestionEditRhs'
 import QuestionEditToolbar from './question-edit/QuestionEditToolbar'
 
-const SurveyDesignContainerBox = styled(Box, { label: 'SurveyDesignContainerBox' })(({ theme }) => ({
+const SurveyDesignContainerBox = styled(Box, {
+  label: 'SurveyDesignContainerBox',
+})(({theme}) => ({
   position: 'relative',
   display: 'flex',
   minHeight: 'calc(100vh - 70px)',
 }))
 
-const CentralContainer = styled('div', { label: 'PhoneContainer' })(({ theme }) => ({
-  textAlign: 'center',
-  position: 'relative',
-  height: '100%',
-  flexGrow: 1,
-  backgroundColor: '#fff',
-  padding: theme.spacing(0, 3, 0, 2),
-}))
+const CentralContainer = styled('div', {label: 'PhoneContainer'})(
+  ({theme}) => ({
+    textAlign: 'center',
+    position: 'relative',
+    height: '100%',
+    flexGrow: 1,
+    backgroundColor: '#fff',
+    padding: theme.spacing(0, 3, 0, 2),
+  })
+)
 
-const RightContainer = styled('div', { label: 'RightContainer' })(({ theme }) => ({
+const RightContainer = styled('div', {label: 'RightContainer'})(({theme}) => ({
   height: '100%',
   backgroundColor: '#f8f8f8',
-
 }))
 
-const AddQuestion = styled('div')(({ theme }) => ({
+const AddQuestion = styled('div')(({theme}) => ({
   borderTop: '1px solid #f2f2f2',
   display: 'flex',
 }))
+
+function getQuestionIndexFromSearchString(search?: string): number | undefined {
+  const qValue = new URLSearchParams(search)?.get('q')
+  const qNum = parseInt(qValue || '')
+  return isNaN(qNum) ? undefined : qNum
+}
 
 type SurveyDesignOwnProps = {}
 
 type SurveyDesignProps = SurveyDesignOwnProps & RouteComponentProps
 
-const ErrorBanner: React.FunctionComponent<{ errors: (Error | null)[] }> = ({ errors }) => {
+const ErrorBanner: React.FunctionComponent<{errors: (Error | null)[]}> = ({
+  errors,
+}) => {
   const [show, setShow] = React.useState<boolean>(false)
   React.useEffect(() => {
-    setShow(errors.some((e) => e !== null))
+    setShow(errors.some(e => e !== null))
   }, [errors])
   return (
     <>
-      {errors.filter(e => !!e).map((e, i) => (
-        <AlertBanner
-          backgroundColor={BannerInfo.bannerMap.get('error')!.bgColor}
-          textColor={BannerInfo.bannerMap.get('error')!.textColor}
-          onClose={() => { setShow(false) }}
-          isVisible={show}
-          icon={BannerInfo.bannerMap.get('error')!.icon[0]}
-          isSelfClosing={true}
-          displayBottomOfPage={false}
-          displayText={e!.message}></AlertBanner>
-      ))}
+      {errors
+        .filter(e => !!e)
+        .map((e, i) => (
+          <AlertBanner
+            backgroundColor={BannerInfo.bannerMap.get('error')!.bgColor}
+            textColor={BannerInfo.bannerMap.get('error')!.textColor}
+            onClose={() => {
+              setShow(false)
+            }}
+            isVisible={show}
+            icon={BannerInfo.bannerMap.get('error')!.icon[0]}
+            isSelfClosing={true}
+            displayBottomOfPage={false}
+            displayText={e!.message}></AlertBanner>
+        ))}
     </>
   )
 }
 
-const SaveIndicator: React.FunctionComponent<{ numOfMutations: number, hasObjectChanged?: boolean }> = ({ numOfMutations, hasObjectChanged }) => {
-
-
+const SaveIndicator: React.FunctionComponent<{
+  numOfMutations: number
+  hasObjectChanged?: boolean
+}> = ({numOfMutations, hasObjectChanged}) => {
   const [loader, setLoader] = React.useState(numOfMutations)
   const [showChanged, setShowChanged] = React.useState(hasObjectChanged)
   React.useEffect(() => {
@@ -103,24 +119,29 @@ const SaveIndicator: React.FunctionComponent<{ numOfMutations: number, hasObject
     setShowChanged(hasObjectChanged)
   }, [hasObjectChanged])
 
-  return (<Box sx={{ position: 'absolute', width: '263px', height: '50px', left: 'calc(50% - 135px)', top: '10px', fontSize: '12px' }}>
-    {loader > 0 ? <CircularProgress size={'30px'} /> : showChanged && <>Unsaved changes....</>}
-  </Box>)
+  return (
+    <Box
+      sx={{
+        position: 'absolute',
+        width: '263px',
+        height: '50px',
+        left: 'calc(50% - 135px)',
+        top: '10px',
+        fontSize: '12px',
+      }}>
+      {loader > 0 ? (
+        <CircularProgress size={'30px'} />
+      ) : (
+        showChanged && <>Unsaved changes....</>
+      )}
+    </Box>
+  )
 }
 
-
-
 const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
-  let { id: surveyGuid } = useParams<{
+  let {id: surveyGuid} = useParams<{
     id: string
   }>()
-
-  const getQuestionIndexFromSearchString = (): //  search: string
-    number | undefined => {
-    const qValue = new URLSearchParams(location.search)?.get('q')
-    const qNum = parseInt(qValue || '')
-    return isNaN(qNum) ? undefined : qNum
-  }
 
   const isNewSurvey = () => surveyGuid === ':id'
 
@@ -131,25 +152,27 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
   const [currentStepIndex, setCurrentStepIndex] = React.useState<
     number | undefined
-  >(getQuestionIndexFromSearchString())
+  >(getQuestionIndexFromSearchString(location.search))
   const numOfMutations = useIsMutating()
   const numOfFecheds = useIsFetching()
 
   //rq get and modify data hooks
-  const { data: _assessment } = useSurveyAssessment(
+  const {data: _assessment} = useSurveyAssessment(
     true,
     isNewSurvey() ? undefined : surveyGuid
   )
-  const { data: _survey } = useSurveyConfig(
+  const {data: _survey} = useSurveyConfig(
     isNewSurvey() ? undefined : surveyGuid
   )
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
 
-  const { mutate: mutateAssessment, error: errorAssessmentUpdate } = useUpdateSurveyAssessment()
-  const { mutate: mutateSurvey, mutateAsync: mutateSurveyAsync, error: errorSurveyUpdate } = useUpdateSurveyConfig()
-  const { mutate: mutateResource, error: errorResourceUpdate, } = useUpdateSurveyResource()
+  const {mutate: mutateAssessment, error: errorAssessmentUpdate} =
+    useUpdateSurveyAssessment()
+  const {mutate: mutateSurvey, error: errorSurveyUpdate} =
+    useUpdateSurveyConfig()
+  const {mutate: mutateResource, error: errorResourceUpdate} =
+    useUpdateSurveyResource()
   const [debugOpen, setDebugOpen] = React.useState(false)
-
 
   //effects to populate local copies
 
@@ -168,7 +191,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   }, [_survey])
 
   React.useEffect(() => {
-    setCurrentStepIndex(getQuestionIndexFromSearchString())
+    setCurrentStepIndex(getQuestionIndexFromSearchString(location.search))
   }, [location])
 
   // fns used  to subcomponent callbackss
@@ -178,7 +201,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       if (!r) {
         throw new Error('no resource')
       }
-      return mutateResource({ assessment, resource: r })
+      return mutateResource({assessment, resource: r})
     }
   }
 
@@ -187,35 +210,39 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     survey: Survey,
     action: 'UPDATE' | 'CREATE'
   ) => {
-    mutateAssessment({ assessment: asmnt, action }, {
-      onSuccess: (assessment: Assessment) => {
-        mutateSurvey({ guid: assessment.guid!, survey }, {
-          onSuccess: () => {
-            if (action === 'CREATE') {
-              history.push(`/surveys/${assessment.guid}/design/question?q=0`)
+    mutateAssessment(
+      {assessment: asmnt, action},
+      {
+        onSuccess: (assessment: Assessment) => {
+          mutateSurvey(
+            {guid: assessment.guid!, survey},
+            {
+              onSuccess: () => {
+                if (action === 'CREATE') {
+                  history.push(
+                    `/surveys/${assessment.guid}/design/question?q=0`
+                  )
+                }
+              },
             }
-          }
-        })
-      },
-    })
-
+          )
+        },
+      }
+    )
   }
-
 
   //saves current configuration and goes to a give step number
   // (doesn't wait for update to succeed)
   const navigateStep = (stepNum: number) => {
-
     if (hasObjectChanged) {
-      mutateSurvey({ guid: surveyGuid, survey: survey! })
+      mutateSurvey({guid: surveyGuid, survey: survey!})
     }
     //need a 'tick' for mutations to start
-    setTimeout(() => history.push(`/surveys/${surveyGuid}/design/question?q=${stepNum}`),
-      100)
-
+    setTimeout(
+      () => history.push(`/surveys/${surveyGuid}/design/question?q=${stepNum}`),
+      100
+    )
   }
-
-
 
   const updateCurrentStep = (step: Step, stepIndex?: number) => {
     if (!survey) {
@@ -236,12 +263,10 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
   }
 
-
   const getCurrentStep = () =>
     currentStepIndex !== undefined
       ? survey?.config.steps[currentStepIndex]
       : undefined
-
 
   const updateAllStepsAndSave = (steps: Step[], fn?: () => void) => {
     const updatedSurvey = {
@@ -252,9 +277,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       },
     }
     setSurvey(updatedSurvey)
-    mutateSurvey({ guid: surveyGuid, survey: updatedSurvey }, { onSuccess: fn })
+    mutateSurvey({guid: surveyGuid, survey: updatedSurvey}, {onSuccess: fn})
   }
-
 
   const deleteCurrentStepAndSave = () => {
     let steps = [...survey!.config.steps]
@@ -280,7 +304,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     })
   }
 
-
   // adding the step from left menu
   const addStepWithDefaultConfig = (title: QuestionTypeKey) => {
     if (!survey) {
@@ -289,7 +312,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     const id = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
     const q = QUESTIONS.get(title)
     if (q && q.default) {
-      const newStep: Step = { ...q.default } as Step
+      const newStep: Step = {...q.default} as Step
       newStep.identifier = `${newStep.identifier}_${id}`
       //if we are adding first step, also add completion
       addStepToTheEndAndSave(newStep)
@@ -297,7 +320,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   }
 
   const duplicateCurrentStep = async () => {
-    const newStep: Question = { ...getCurrentStep()! }
+    const newStep: Question = {...getCurrentStep()!}
     const id = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
     const identifier = newStep.identifier.split('_')
     identifier[identifier.length - 1] = id
@@ -305,11 +328,9 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     addStepToTheEndAndSave(newStep)
   }
 
-
   const save = () => {
-    mutateSurvey({ guid: surveyGuid, survey: survey! })
+    mutateSurvey({guid: surveyGuid, survey: survey!})
   }
-
 
   //for display the line above the current question
   const getSurveyProgress = () => {
@@ -349,12 +370,12 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     return dependentSteps
   }
 
-
-
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
-      <NavigationPrompt when={hasObjectChanged && numOfMutations === 0} key='nav_prompt'>
-        {({ onConfirm, onCancel }) => (
+      <NavigationPrompt
+        when={hasObjectChanged && numOfMutations === 0}
+        key="nav_prompt">
+        {({onConfirm, onCancel}) => (
           <ConfirmationDialog
             isOpen={true}
             type={'NAVIGATE'}
@@ -365,7 +386,9 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       </NavigationPrompt>
       <Button onClick={() => setDebugOpen(true)}>Open survey 2JSON</Button>
 
-      <ErrorBanner errors={[errorAssessmentUpdate, errorSurveyUpdate, errorResourceUpdate]} />
+      <ErrorBanner
+        errors={[errorAssessmentUpdate, errorSurveyUpdate, errorResourceUpdate]}
+      />
 
       <SurveyDesignContainerBox>
         {/* LEFT PANEL*/}
@@ -384,12 +407,14 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
         </LeftPanel>
         {/* CEDNTRAL PHONE AREA*/}
 
-        <Box display='flex' flexGrow={1} justifyContent='space-between'>
+        <Box display="flex" flexGrow={1} justifyContent="space-between">
           <Switch>
             <Route path={`/surveys/:id/design/question`}>
               <CentralContainer>
-
-                <SaveIndicator numOfMutations={numOfMutations + numOfFecheds} hasObjectChanged={hasObjectChanged} />
+                <SaveIndicator
+                  numOfMutations={numOfMutations + numOfFecheds}
+                  hasObjectChanged={hasObjectChanged}
+                />
                 {survey && (
                   <QuestionEditPhone
                     isDynamic={isDynamicStep()}

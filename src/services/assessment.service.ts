@@ -1,7 +1,7 @@
 import Utility from '@helpers/utility'
 import constants from '@typedefs/constants'
-import { Survey } from '@typedefs/surveys'
-import { Assessment, AssessmentResource, ExtendedError } from '@typedefs/types'
+import {Survey} from '@typedefs/surveys'
+import {Assessment, AssessmentResource, ExtendedError} from '@typedefs/types'
 
 /* AG: BOTH survey and assessments would include arb/mtb tag, but surveys would include survey tag while other assessments won't*/
 const ASSESSMENT_APP_TAG = {
@@ -186,7 +186,6 @@ async function duplicateAssessment(
     modifiedOn: undefined,
     deleted: undefined,
     version: 0,
-
   }
   const configCopy = {config: {...sourceConfig.config, identifier}}
 

@@ -1,9 +1,9 @@
 import BlackXIcon from '@assets/black_x_icon.svg'
 import Logo from '@assets/logo_mtb.svg'
 import makeStyles from '@mui/styles/makeStyles'
-import { latoFont } from '@style/theme'
+import {latoFont} from '@style/theme'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import {NavLink} from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   blackXIcon: {
@@ -43,7 +43,7 @@ type MobileDrawHeaderProps = {
 }
 
 const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> =
-  ({ setIsMobileOpen, type }) => {
+  ({setIsMobileOpen, type}) => {
     const classes = useStyles()
     const logo = <img className={classes.logoImage} src={Logo} alt="Logo" />
     const logoElement =
@@ -59,7 +59,8 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> =
         <a
           target="_blank"
           href="https://www.mobiletoolbox.org"
-          className={classes.mobileToolBarLink} rel="noreferrer">
+          className={classes.mobileToolBarLink}
+          rel="noreferrer">
           {logo}
         </a>
       )

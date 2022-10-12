@@ -1,11 +1,11 @@
-import { ReactComponent as PauseIcon } from '@assets/surveys/pause.svg'
+import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import {
   DisappearingInput,
-  FakeInput
+  FakeInput,
 } from '@components/surveys/widgets/SharedStyled'
-import { Box, styled, Typography, TypographyProps } from '@mui/material'
-import { latoFont, theme } from '@style/theme'
+import {Box, styled, Typography, TypographyProps} from '@mui/material'
+import {latoFont, theme} from '@style/theme'
 import {
   BaseStep,
   ChoiceQuestion,
@@ -13,10 +13,10 @@ import {
   NumericQuestion,
   ScaleQuestion,
   Step,
-  WebUISkipOptions
+  WebUISkipOptions,
 } from '@typedefs/surveys'
-import { FunctionComponent } from 'react'
-import { getQuestionId, QuestionTypeKey } from '../left-panel/QuestionConfigs'
+import {FunctionComponent} from 'react'
+import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
 import Completion from './phone-subcontrols/Completion'
 import Numeric from './phone-subcontrols/Numeric'
 import Scale from './phone-subcontrols/Scale'
@@ -28,17 +28,21 @@ import PhoneDisplay from './PhoneDisplay'
 import RequiredToggle from './RequiredToggle'
 import SelectPhoneBottomMenu from './SelectPhoneBottomMenu'
 
-const OuterContainer = styled('div', { label: 'PhoneOuterContainer' })(({ theme }) => ({
-  //backgroundColor: '#F8F8F8',
-  padding: theme.spacing(0, 5),
+const OuterContainer = styled('div', {label: 'PhoneOuterContainer'})(
+  ({theme}) => ({
+    //backgroundColor: '#F8F8F8',
+    padding: theme.spacing(0, 5),
 
-  margin: '0 auto',
-  position: 'relative',
-}))
+    margin: '0 auto',
+    position: 'relative',
+  })
+)
 
 const SkipQuestion = styled(
   (props: TypographyProps) => <Typography {...props}>Skip question</Typography>,
-  { label: 'skipQuestion' }
+  {
+    label: 'skipQuestion',
+  }
 )(() => ({
   fontWeight: 400,
   fontSize: '12px',
@@ -52,7 +56,7 @@ const PhoneTop = styled('div')(() => ({
   justifyContent: 'space-between',
 }))
 
-const StyledP2 = styled(DisappearingInput, { label: 'StyledP2' })(({ theme }) => ({
+const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
   fontFamily: latoFont,
   fontWeight: 400,
   fontSize: '12px',
@@ -63,7 +67,7 @@ const StyledP2 = styled(DisappearingInput, { label: 'StyledP2' })(({ theme }) =>
   },
 }))
 
-const StyledH1 = styled(DisappearingInput, { label: 'StyledH1' })(({ theme }) => ({
+const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
   fontFamily: latoFont,
 
   fontWeight: 700,
@@ -78,7 +82,7 @@ const StyledH1 = styled(DisappearingInput, { label: 'StyledH1' })(({ theme }) =>
 const ScrollableArea = styled('div', {
   label: 'ScrollableArea',
   shouldForwardProp: prop => prop !== 'height',
-})<{ height: number }>(({ theme, height }) => ({
+})<{height: number}>(({theme, height}) => ({
   height: `${height}px`,
   marginLeft: '-10px',
   marginRight: '-10px',
@@ -89,7 +93,7 @@ const ScrollableArea = styled('div', {
   flexDirection: 'column',
 }))
 
-const StyledStartButton = styled('div')(({ theme }) => ({
+const StyledStartButton = styled('div')(({theme}) => ({
   height: theme.spacing(5),
   lineHeight: theme.spacing(5),
   cursor: 'default',
@@ -182,7 +186,7 @@ function Factory(args: {
 
 const PhoneProgressLine: FunctionComponent<{
   completionProgress: number
-}> = ({ completionProgress }) => {
+}> = ({completionProgress}) => {
   return (
     <Box
       sx={{
@@ -270,7 +274,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
       {step && (
         <>
           <PhoneDisplay
-            sx={{ marginBottom: '20px', textAlign: 'left' }}
+            sx={{marginBottom: '20px', textAlign: 'left'}}
             phoneBottom={getPhoneBottom()}>
             <Box>
               {isDynamic && (
@@ -287,7 +291,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                     value={step.subtitle || ''}
                     placeholder="Subtitle"
                     onChange={e =>
-                      onChange({ ...step, subtitle: e.target.value })
+                      onChange({...step, subtitle: e.target.value})
                     }
                   />
 
@@ -296,7 +300,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                     id="title"
                     value={step.title || ''}
                     placeholder="Title"
-                    onChange={e => onChange({ ...step, title: e.target.value })}
+                    onChange={e => onChange({...step, title: e.target.value})}
                   />
                 </>
               )}
@@ -309,15 +313,15 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                     multiline={true}
                     value={step.detail || ''}
                     placeholder="Description"
-                    sx={{ marginBottom: theme.spacing(2.5) }}
-                    onChange={e => onChange({ ...step, detail: e.target.value })}
+                    sx={{marginBottom: theme.spacing(2.5)}}
+                    onChange={e => onChange({...step, detail: e.target.value})}
                   />
                 )}
 
                 {
                   <Factory
                     {...{
-                      step: { ...step },
+                      step: {...step},
                       onChange: onChange,
                       q_type: getQuestionId(step),
                     }}></Factory>

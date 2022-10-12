@@ -161,9 +161,9 @@ const BlackBorderDropdown: React.FunctionComponent<
 
   const searchableDropdown = (
     <Box>
-      <Box style={{fontSize: '14px', fontFamily: poppinsFont}}>
-        {`${controlLabel || ''}${isRequired ? '*' : ''}`}
-      </Box>
+      <Box style={{fontSize: '14px', fontFamily: poppinsFont}}>{`${
+        controlLabel || ''
+      }${isRequired ? '*' : ''}`}</Box>
       <Autocomplete
         value={{value: value, label: value}}
         id={id}
