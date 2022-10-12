@@ -1,8 +1,8 @@
-import {ReactComponent as CloseStudy} from '@assets/dialogs/close_study.svg'
-import {ReactComponent as WithdrawStudy} from '@assets/dialogs/withdraw_study.svg'
-import {ReactComponent as Delete} from '@assets/trash.svg'
+import { ReactComponent as CloseStudy } from '@assets/dialogs/close_study.svg'
+import { ReactComponent as WithdrawStudy } from '@assets/dialogs/withdraw_study.svg'
+import { ReactComponent as Delete } from '@assets/trash.svg'
 import CloseIcon from '@mui/icons-material/Close'
-import {IconButton} from '@mui/material'
+import { IconButton } from '@mui/material'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -10,8 +10,8 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import makeStyles from '@mui/styles/makeStyles'
-import {latoFont, poppinsFont} from '@style/theme'
-import {FunctionComponent} from 'react'
+import { latoFont, poppinsFont } from '@style/theme'
+import { FunctionComponent } from 'react'
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {},
@@ -118,7 +118,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   const classes = useStyles()
   const navigateBody = (
     <div>
-      Looks like you have some unsaved Changes.
+      Looks like you have some <strong>unsaved changes</strong>.
       <br /> Are you sure you want to leave?
     </div>
   )
@@ -145,7 +145,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
       scroll="paper"
       className={classes.dialogTitle}
       sx={{
-        '& .MuiPaper-root': {width: type === 'CLOSE_STUDY' ? '362px' : width},
+        '& .MuiPaper-root': { width: type === 'CLOSE_STUDY' ? '362px' : width },
       }}>
       <DialogTitle id="alert-dialog-title" className={classes.title}>
         {getImage()}

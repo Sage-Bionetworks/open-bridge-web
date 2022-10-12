@@ -182,7 +182,7 @@ const LeftPanel: React.FunctionComponent<{
   surveyId?: string
   surveyConfig?: SurveyConfig
   currentStepIndex?: number
-  onUpdateSteps: (s: Step[]) => void
+  onReorderSteps: (s: Step[]) => void
   onNavigateStep: (id: number) => void
 }> = ({
   guid,
@@ -191,7 +191,7 @@ const LeftPanel: React.FunctionComponent<{
   surveyId,
   currentStepIndex,
   onNavigateStep,
-  onUpdateSteps,
+  onReorderSteps,
 }) => {
 
     const onDragEnd = (result: DropResult) => {
@@ -210,7 +210,7 @@ const LeftPanel: React.FunctionComponent<{
         resultDesinationIndex
       )
 
-      onUpdateSteps(items)
+      onReorderSteps(items)
     }
     return (
       <Container id="left">
