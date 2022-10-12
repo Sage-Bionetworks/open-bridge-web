@@ -1,9 +1,9 @@
 import makeStyles from '@mui/styles/makeStyles'
-import { useAssessmentsWithResources } from '@services/assessmentHooks'
-import { FunctionComponent, useState } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { Link, RouteComponentProps } from 'react-router-dom'
-import { Assessment } from '../../types/types'
+import {useAssessmentsWithResources} from '@services/assessmentHooks'
+import {FunctionComponent, useState} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {Link, RouteComponentProps} from 'react-router-dom'
+import {Assessment} from '../../types/types'
 import Loader from '../widgets/Loader'
 import AssessmentCard from './AssessmentCard'
 import AssessmentLibraryWrapper from './AssessmentLibraryWrapper'
@@ -31,11 +31,11 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
     Assessment[] | undefined
   >(undefined)
 
-  const { data, isError, error, status, isLoading } = useAssessmentsWithResources(
+  const {data, isError, error, status, isLoading} = useAssessmentsWithResources(
     false,
     false
   )
-  const { data: surveys } = useAssessmentsWithResources(false, true)
+  const {data: surveys} = useAssessmentsWithResources(false, true)
 
   if (isError) {
     handleError(error!)
@@ -51,7 +51,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
         <AssessmentLibraryWrapper
           assessments={data.assessments}
           assessmentsType="OTHER"
-          onChangeAssessmentsType={() => { }}
+          onChangeAssessmentsType={() => {}}
           onChangeTags={
             (assessments: Assessment[]) =>
               setFilteredAssessments(assessments) /*setFilterTags(tags)*/
