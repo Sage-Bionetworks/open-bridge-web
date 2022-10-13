@@ -233,6 +233,7 @@ const QUESTIONS = new Map<
         title: 'New Question',
         inputItem: {
           type: 'year',
+          placeholder: 'YYYY',
           formatOptions: {
             minimumYear: 1900,
             allowFuture: false,
