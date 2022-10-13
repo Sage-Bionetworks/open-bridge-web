@@ -73,7 +73,7 @@ const Numeric: React.FunctionComponent<{
   }
 
   React.useEffect(() => {
-    setError(!range || validate(range) ? '' : 'Max value should be less than min value')
+    setError(!range || validate(range) ? '' : 'Max value should be greater than min value')
   }, [range])
 
   const changeRangeDisabled = (val: boolean) => {
@@ -90,7 +90,7 @@ const Numeric: React.FunctionComponent<{
       <FormControlLabel
         sx={{mt: theme.spacing(1.5)}}
         control={<StyledCheckbox checked={rangeDisabled} onChange={e => changeRangeDisabled(e.target.checked)} />}
-        label={<Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>No min and max validation!</Typography>}
+        label={<Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>No min and max validation</Typography>}
       />
       <Box
         sx={{

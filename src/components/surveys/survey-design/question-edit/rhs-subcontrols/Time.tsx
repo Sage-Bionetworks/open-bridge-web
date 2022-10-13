@@ -124,7 +124,7 @@ const Time: React.FunctionComponent<{
       <FormControlLabel
         sx={{mt: theme.spacing(1.5)}}
         control={<StyledCheckbox checked={rangeDisabled} onChange={e => changeRangeDisabled(e.target.checked)} />}
-        label={<Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>No min and max validation!</Typography>}
+        label={<Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>No min and max validation</Typography>}
       />
       <Box
         sx={{

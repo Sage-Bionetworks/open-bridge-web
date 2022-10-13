@@ -331,7 +331,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
-      <NavigationPrompt when={hasObjectChanged && numOfMutations === 0} key="nav_prompt">
+      <NavigationPrompt when={hasObjectChanged && !numOfMutations} key="nav_prompt">
         {({onConfirm, onCancel}) => (
           <ConfirmationDialog isOpen={true} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
         )}
