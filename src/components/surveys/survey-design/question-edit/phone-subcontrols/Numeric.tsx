@@ -44,15 +44,17 @@ const Numeric: React.FunctionComponent<{
   return (
     <StyledContainer>
       <StyledLabel
-        area-label={step.inputItem.fieldLabel}
+        area-label="fieldLabel"
         sx={{fontWeight: 'bold'}}
-        id={step.inputItem.fieldLabel}
+        id="fieldLabel"
         value={step.inputItem.fieldLabel}
         placeholder="Field Label"
         onChange={e => updateStep({...step.inputItem, fieldLabel: e.target.value})}
       />
       <SimpleTextInput
         sx={{width: '80px'}}
+        area-label="min"
+        disabled={step.inputItem.type === 'integer'}
         placeholder={step.inputItem.placeholder}
         onChange={e => updateStep({...step.inputItem, placeholder: e.target.value})}></SimpleTextInput>
     </StyledContainer>
