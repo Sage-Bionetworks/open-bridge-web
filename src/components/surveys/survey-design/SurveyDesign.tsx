@@ -12,7 +12,7 @@ import {
   useUpdateSurveyResource,
 } from '@services/assessmentHooks'
 import {ChoiceQuestion, Question, Step, Survey} from '@typedefs/surveys'
-import {Assessment} from '@typedefs/types'
+import {Assessment, ExtendedError} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useIsFetching, useIsMutating} from 'react-query'
 import {Redirect, Route, RouteComponentProps, Switch, useHistory, useLocation, useParams} from 'react-router-dom'
@@ -64,8 +64,14 @@ type SurveyDesignOwnProps = {}
 
 type SurveyDesignProps = SurveyDesignOwnProps & RouteComponentProps
 
-const ErrorBanner: React.FunctionComponent<{errors: (Error | null)[]}> = ({errors}) => {
+const ErrorBanner: React.FunctionComponent<{errors: (ExtendedError | null)[]}> = ({errors}) => {
   const [show, setShow] = React.useState<boolean>(false)
+  const login = (
+    <Button variant="text" sx={{color: '#fff', fontSize: '14px'}} onClick={e => UtilityObject.redirectToSynapseLogin()}>
+      Please sign in here.
+    </Button>
+  )
+  console.log(errors)
   React.useEffect(() => {
     setShow(errors.some(e => e !== null))
   }, [errors])
@@ -82,9 +88,10 @@ const ErrorBanner: React.FunctionComponent<{errors: (Error | null)[]}> = ({error
             }}
             isVisible={show}
             icon={BannerInfo.bannerMap.get('error')!.icon[0]}
-            isSelfClosing={true}
+            isSelfClosing={e!.statusCode != 401}
             displayBottomOfPage={false}
-            displayText={e!.message}></AlertBanner>
+            displayText={e!.statusCode === 401 ? login : e!.message}
+          />
         ))}
     </>
   )
