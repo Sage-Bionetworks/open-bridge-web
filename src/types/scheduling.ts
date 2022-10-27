@@ -61,6 +61,7 @@ export type ScheduleNotification = {
   notifyAt: keyof typeof NotificationTimeAtEnum //notifyAt
   offset?: string //ReminderIntervalType //remindAt
   interval?: string //reminderPeriod?
+  allowSnooze?: boolean
   messages: NotificationMessage[] //messages
 }
 

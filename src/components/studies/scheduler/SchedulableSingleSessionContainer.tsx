@@ -13,7 +13,9 @@ import {
   StudySession,
 } from '@typedefs/scheduling'
 import _ from 'lodash'
-import moment from 'moment'
+
+import dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
 import React, {FunctionComponent} from 'react'
 import AssessmentWindow from './AssessmentWindow'
 import EndDate from './EndDate'
@@ -22,6 +24,7 @@ import NotificationWindow from './NotificationWindow'
 import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
+dayjs.extend(duration)
 
 export const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
@@ -143,7 +146,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       if (!window.expiration) {
         return true
       } else {
-        const expirationHours = moment.duration(window.expiration).asHours()
+        const expirationHours = dayjs.duration(window.expiration).asHours()
         return expirationHours > 24
       }
     })
