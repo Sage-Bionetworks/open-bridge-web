@@ -6,7 +6,7 @@ import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import {useStudy} from '../../../services/studyHooks'
+import {useStudy, useUpdateStudyDetail} from '../../../services/studyHooks'
 import {latoFont, poppinsFont, ThemeType} from '../../../style/theme'
 import {SignInType, Study} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
@@ -160,8 +160,12 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
 }: EnrollmentTypeSelectorProps) => {
   const classes = useStyles()
   const {data: study} = useStudy(id)
+  const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
+
   const [hasObjectChanged] = React.useState(false)
-  const onUpdate = async (updatedStudy: Study) => {}
+  const onUpdate = async (updatedStudy: Study) => {
+    await mutateStudy({study: updatedStudy})
+  }
 
   const updateStudy = (signInTypes: SignInType[], isGenerateIds?: boolean) => {
     if (!study) {
