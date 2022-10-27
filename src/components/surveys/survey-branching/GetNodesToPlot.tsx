@@ -125,13 +125,18 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
       for (let child of nextQs) {
         //find sequential index of the quesiton
         const qIndex = questions.findIndex(q1 => q1.identifier === child.identifier)
-        const edge = createEdge(q.identifier, child.identifier)
-        edges.push(edge)
+
         //add child node
         const indexOfNode = nodes.findIndex(q1 => q1.id === child.identifier)
 
         if (indexOfNode === -1) {
           addNode(child, qIndex, error)
+        }
+        //add edge
+        const indexOfEdge = edges.findIndex(e => e.source === q.identifier && e.target === child.identifier)
+        if (indexOfEdge === -1) {
+          const edge = createEdge(q.identifier, child.identifier)
+          edges.push(edge)
         }
       }
     }

@@ -11,7 +11,7 @@ import {
   RadioGroup,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import React, {useEffect} from 'react'
 import {NavLink, Redirect} from 'react-router-dom'
 import Alert_Icon from '../../../assets/alert_icon.svg'
@@ -120,7 +120,7 @@ export const getDateWithTimeZone = (date: Date) => {
 }
 
 export const getFormattedDate = (date: Date | null) => {
-  return date ? moment(date).format('YYYY-MM-DD') : ''
+  return date ? dayjs(date).format('YYYY-MM-DD') : ''
 }
 
 type ContactRoleTypes = 'irb' | 'principal_investigator' | 'study_support' | 'sponsor'

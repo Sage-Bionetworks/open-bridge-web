@@ -1,7 +1,10 @@
 import {Box, FormControlLabel, Radio, RadioGroup, Theme} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
-import moment from 'moment'
+
+import dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
+
 import React from 'react'
 import {MHDsEnum, NotificationTimeAtEnum} from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
@@ -9,6 +12,8 @@ import SmallTextBox from '../../widgets/SmallTextBox'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
 import {getDropdownTimeItems} from './utility'
+
+dayjs.extend(duration)
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,15 +53,15 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     let periodMinutes = 0
     //convert it to the offset from the start of the window
     if (time) {
-      const windowStartPeriodMinutes = moment.duration(`PT${windowStartTime?.replace(':', 'H')}M`).asMinutes()
-      const timeOffsetPeriodMinutes = moment.duration(`PT${time?.replace(':', 'H')}M`).asMinutes()
+      const windowStartPeriodMinutes = dayjs.duration(`PT${windowStartTime?.replace(':', 'H')}M`).asMinutes()
+      const timeOffsetPeriodMinutes = dayjs.duration(`PT${time?.replace(':', 'H')}M`).asMinutes()
       periodMinutes = timeOffsetPeriodMinutes - windowStartPeriodMinutes
     }
-    const durationFirstPass = moment.duration({
+    const durationFirstPass = dayjs.duration({
       minutes: periodMinutes,
       days: days,
     })
-    const durationWithoutNegatives = moment.duration({
+    const durationWithoutNegatives = dayjs.duration({
       days: durationFirstPass.days(),
       hours: durationFirstPass.hours(),
       minutes: durationFirstPass.minutes(),
@@ -76,7 +81,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     if (isMultiday) {
       return offset
     }
-    const parsedOffset = moment.duration(offset)
+    const parsedOffset = dayjs.duration(offset)
     if (parsedOffset.days() || (parsedOffset.minutes() && parsedOffset.hours())) {
       const result = `PT${parsedOffset.asMinutes()}M`
       return result
@@ -87,19 +92,19 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   React.useEffect(() => {
     if (offset) {
       //get the offset
-      const parsedOffset = moment.duration(offset)
+      const parsedOffset = dayjs.duration(offset)
 
       //get and remove the days
       const daysOffset = parsedOffset.days()
       parsedOffset.subtract(daysOffset, 'd')
       //get the window start time as duration
       const offsetMinutes = parsedOffset.asMinutes()
-      const windowStartPeriodMinutes = moment.duration(`PT${windowStartTime?.replace(':', 'H')}M`).asMinutes()
+      const windowStartPeriodMinutes = dayjs.duration(`PT${windowStartTime?.replace(':', 'H')}M`).asMinutes()
 
       //round minutes to 15
       const offsetTimeMinutes = Math.round((windowStartPeriodMinutes + offsetMinutes) / 15) * 15
 
-      var offsetTime = moment.duration(offsetTimeMinutes, 'minute')
+      var offsetTime = dayjs.duration(offsetTimeMinutes, 'minute')
       //if there is days overflow when you add the interval + start time
 
       setDaysForMultidayOffset(daysOffset + offsetTime.days())

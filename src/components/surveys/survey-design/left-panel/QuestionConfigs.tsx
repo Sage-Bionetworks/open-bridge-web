@@ -125,7 +125,7 @@ const QUESTIONS = new Map<
     {
       img: <MultiSelect />,
 
-      title: 'Multi-select',
+      title: 'Multi-Select',
       default: {
         type: 'choiceQuestion',
         identifier: 'multiChoiceQ',

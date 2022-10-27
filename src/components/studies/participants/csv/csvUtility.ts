@@ -10,10 +10,14 @@ import {
   ParticipantEvent,
   SelectionType,
 } from '@typedefs/types'
-import moment from 'moment'
+import dayjs from 'dayjs'
+import LocalizedFormat from 'dayjs/plugin/localizedFormat'
+
 import {jsonToCSV} from 'react-papaparse'
 import {addParticipantById, addParticipantByPhone} from '../add/AddSingleParticipant'
 import ParticipantUtility, {ParticipantData} from '../participantUtility'
+
+dayjs.extend(LocalizedFormat)
 
 const CSV_BY_ID_IMPORT_KEY: Map<keyof EditableParticipantData, string> = new Map([
   ['externalId', 'Participant ID'],
@@ -164,7 +168,7 @@ async function getParticipantDataForDownload(
     scheduleEventIds?.forEach(eventId => {
       const matchingEvent = p.events?.find(pEvt => pEvt.eventId === eventId)
       participant[EventService.formatEventIdForDisplay(eventId)] = matchingEvent?.timestamp
-        ? moment(matchingEvent?.timestamp).format('l')
+        ? dayjs(matchingEvent?.timestamp).format('l')
         : ''
     })
 

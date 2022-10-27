@@ -122,8 +122,8 @@ export type Assessment = {
   labels?: string[]
   identifier: string
   revision: number
-  osName: 'Android' | 'iPhone OS' | 'Both' | 'Universal' //iPhone OS"
-  ownerId: string //sage-bionetworks"
+  osName?: 'Android' | 'iPhone OS' | 'Both' | 'Universal' //iPhone OS"
+  ownerId?: string //sage-bionetworks"
   title: string
 
   createdOn?: string
@@ -137,7 +137,7 @@ export type Assessment = {
   summary?: string
   tags: string[]
 
-  version: number
+  version?: number
   validationStatus?: string
   minutesToComplete?: number
   resources?: AssessmentResource[]

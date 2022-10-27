@@ -77,7 +77,6 @@ const ChoiceValueInputRow: React.FunctionComponent<{
   onChange: (e: string) => void
 }> = ({choice, onChange, allValues}) => {
   const isDefault = !SurveyUtils.isSpecialSelectChoice(choice)
-
   const firstCell = (
     <div style={{display: 'flex'}}>
       {choice.text}
@@ -119,7 +118,6 @@ const Select: React.FunctionComponent<{
   const selectTypeOptions: QuestionTypeKey[] = ['MULTI_SELECT', 'SINGLE_SELECT']
   const [isTypeConversionWarning, setIsTypeConversionWarning] = React.useState(false)
   const answerDataTypeOptions: QuestionDataType[] = ['integer', 'string']
-  console.log('rules', step.surveyRules)
 
   const handleSelectTypeChange = (event: SelectChangeEvent<QuestionTypeKey>) => {
     const {

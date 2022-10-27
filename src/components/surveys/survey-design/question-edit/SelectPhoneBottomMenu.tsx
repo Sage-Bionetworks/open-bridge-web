@@ -73,6 +73,9 @@ const StyledMenuItem = styled(MenuItem, {label: 'StyledMenuItem'})<{
     backgroundColor: nohover ? '#565656' : '#848484',
     cursor: nohover ? 'default' : 'pointer',
   },
+  '&.Mui-disabled': {
+    opacity: 1,
+  },
 }))
 
 const Label = styled('label')({
@@ -122,7 +125,7 @@ const OPTIONS = new Map<
 // 'other' option is disabled when the question type is integer
 const DisabledOtherMenuItem: FunctionComponent = () => {
   return (
-    <StyledMenuItem height="120px" key={'OTHER'} nohover={true} onClick={void 0}>
+    <StyledMenuItem height="120px" key={'OTHER'} nohover={true} onClick={void 0} disabled={true}>
       <Box height="100px" marginTop="16px">
         <Typography sx={{opacity: 0.3, color: '#fff'}}> +Add "Other"</Typography>
         <Box
@@ -232,12 +235,12 @@ const SelectPhoneBottomMenu: FunctionComponent<{
 
   return (
     <PhoneBottom>
-      {/*  <PhoneBottomDiv id="phoneBottom">*/}
-      <Button variant="text">
-        <Label sx={{color: '#2A2A2A'}} onClick={() => addResponse()}>
-          {' '}
-          + Add Response{' '}
-        </Label>
+      <Button
+        variant="text"
+        onClick={() => {
+          addResponse()
+        }}>
+        <Label sx={{color: '#2A2A2A'}}> + Add Response </Label>
       </Button>
 
       <SideMenu sx={{borderRadius: anchorEl ? '0' : '0px 0 25px 0'}}>
@@ -289,7 +292,6 @@ const SelectPhoneBottomMenu: FunctionComponent<{
           )}
         </StyledMenu>
       </SideMenu>
-      {/*</PhoneBottomDiv>*/}
     </PhoneBottom>
   )
 }

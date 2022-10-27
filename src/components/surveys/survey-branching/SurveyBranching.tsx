@@ -8,13 +8,9 @@ import React, {FunctionComponent} from 'react'
 import 'reactflow/dist/style.css'
 
 import ReactFlow, {
-  addEdge,
-  applyEdgeChanges,
   applyNodeChanges,
-  Connection,
   ConnectionLineType,
   Edge,
-  EdgeChange,
   FitViewOptions,
   Node,
   NodeChange,
@@ -136,11 +132,6 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     (changes: NodeChange[]) => setNodes(nds => applyNodeChanges(changes, nds)),
     [setNodes]
   )
-  const onEdgesChange = React.useCallback(
-    (changes: EdgeChange[]) => setEdges(eds => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  )
-  const onConnect = React.useCallback((connection: Connection) => setEdges(eds => addEdge(connection, eds)), [setEdges])
 
   const {data: _survey} = useSurveyConfig(surveyGuid)
 
@@ -154,7 +145,6 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
 
   React.useEffect(() => {
     if (survey) {
-      console.log('repanting')
       const plotWidth = width || 0
       const result = getNodes(survey?.config.steps as ChoiceQuestion[], plotWidth)
       if (result.error) {
@@ -180,6 +170,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
 
   const changeBranching = (steps: ChoiceQuestion[]) => {
     setHasObjectChanged(true)
+
     setSurvey({
       ...survey,
       config: {...survey!.config, steps: steps},
@@ -238,9 +229,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
               edges={edges}
               onNodeClick={onNodeClick}
               onNodesChange={onNodesChange}
-              // onEdgesChange={onEdgesChange}
               preventScrolling={false}
-              //  onConnect={onConnect}
               connectionLineType={ConnectionLineType.SmoothStep}
               fitView={false}
               fitViewOptions={fitViewOptions}

@@ -1,6 +1,11 @@
 import {HDWMEnum, Schedule, TimePeriod} from '@typedefs/scheduling'
 import {StringDictionary} from '@typedefs/types'
-import moment from 'moment'
+import dayjs from 'dayjs'
+
+import arraySupport from 'dayjs/plugin/arraySupport'
+import LocalizedFormat from 'dayjs/plugin/localizedFormat'
+dayjs.extend(arraySupport)
+dayjs.extend(LocalizedFormat)
 
 export function getValueFromPeriodString(periodString: string): number {
   var numberPattern = /\d+/g
@@ -32,12 +37,13 @@ export function getTimePeriodFromPeriodString(periodString: string): TimePeriod 
 
 export function getDropdownTimeItems(): StringDictionary<string> {
   const menuItems: StringDictionary<string> = {}
-  const date = moment([2021, 1, 1, 8])
+
+  const date = dayjs([2021, 1, 1, 8])
   menuItems[date.format('HH:mm')] = date.format('LT')
 
   for (let i = 0; i < 95; i++) {
-    date.add(15, 'm')
-    menuItems[date.format('HH:mm')] = date.format('LT')
+    let newDate = date.add(15 * i, 'm')
+    menuItems[newDate.format('HH:mm')] = newDate.format('LT')
   }
   return menuItems
 }

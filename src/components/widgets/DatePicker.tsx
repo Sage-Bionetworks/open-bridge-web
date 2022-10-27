@@ -1,6 +1,6 @@
 // pick a date util library
-import AdapterMoment from '@mui/lab/AdapterMoment'
 import DesktopDatePicker from '@mui/lab/DesktopDatePicker'
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 //import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import {FormControl, TextField} from '@mui/material'
@@ -37,7 +37,7 @@ const DatePicker2: FunctionComponent<DatePickerProps> = ({onChange, value, label
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterMoment}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <FormControl>
         <SimpleTextLabel htmlFor={id}>{label}</SimpleTextLabel>
         <DesktopDatePicker

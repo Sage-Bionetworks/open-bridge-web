@@ -17,7 +17,7 @@ import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
 import {AdherenceDetailReport, ParticipantEvent, SessionDisplayInfo} from '@typedefs/types'
 import clsx from 'clsx'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
@@ -119,9 +119,9 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
     if (!adherenceReport?.dateRange) {
       return ''
     }
-    const startDate = moment(adherenceReport.dateRange.startDate).format('MM/DD/yyyy')
+    const startDate = dayjs(adherenceReport.dateRange.startDate).format('MM/DD/YYYY')
 
-    const endDate = moment(adherenceReport.dateRange.endDate).format('MM/DD/yyyy')
+    const endDate = dayjs(adherenceReport.dateRange.endDate).format('MM/DD/YYYY')
     return `${startDate}-${endDate}`
   }
 

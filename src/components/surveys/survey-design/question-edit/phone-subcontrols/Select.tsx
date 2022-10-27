@@ -93,7 +93,7 @@ const SelectOption: FunctionComponent<{
 
       <div>
         {provided !== undefined && <DraggableIcon />}
-        <IconButton onClick={() => onDelete(title)} sx={{padding: 0, marginLeft: '4px'}}>
+        <IconButton onClick={() => onDelete(title)} sx={{padding: 0, marginLeft: '4px'}} title="delete">
           <ClearIcon fontSize="small" />
         </IconButton>
       </div>
@@ -155,8 +155,6 @@ const Select: React.FunctionComponent<{
   }
 
   const renameOption = (newName: string, index: number, selectorType?: ChoiceSelectorType) => {
-    console.log('chaning to ', newName)
-
     if (stepData.choices) {
       const newChoices = [...stepData.choices]
       if ((index > -1 && selectorType) || (index === -1 && !selectorType)) {
@@ -175,7 +173,6 @@ const Select: React.FunctionComponent<{
   }
 
   const renameOtherOption = (newName: string) => {
-    console.log('chaning to ', newName)
     //if index === -1 we are dealing with the 'other
 
     onChange({

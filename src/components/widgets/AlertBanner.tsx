@@ -48,7 +48,7 @@ const useStyles = makeStyles<ThemeType>((theme: ThemeType) => ({
 type AlertBannerProps = {
   onClose: Function
   isVisible: boolean
-  displayText: string
+  displayText: string | React.ReactNode
   displayBottomOfPage?: boolean
   backgroundColor: string
   textColor: string

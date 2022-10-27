@@ -2,10 +2,13 @@ import ClockIcon from '@assets/clock.svg'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
-import moment from 'moment'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+
 import React from 'react'
 import {useStyles as SharedSchedulerStyles} from '../Scheduler'
 import {getFormattedTimeDateFromPeriodString} from '../utility'
+dayjs.extend(customParseFormat)
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -47,7 +50,7 @@ const ReadOnlyAssessmentWindow: React.FunctionComponent<ReadOnlyAssessmentWindow
 }) => {
   const classes = useStyles()
   const sharedSchedulerStyles = SharedSchedulerStyles()
-  const start = moment(startTime, 'HH:mm').format('h:mm a')
+  const start = dayjs(startTime, 'HH:mm').format('h:mm a')
   return (
     <Box className={classes.container}>
       <Box className={classes.topLevel}>

@@ -4,7 +4,7 @@ import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {theme} from '@style/theme'
 import {AdherenceSessionInfo, ProgressionStatus} from '@typedefs/types'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
 import {useCommonStyles} from '../styles'
 
@@ -80,7 +80,7 @@ const NoRows: FunctionComponent<NoRowsProps> = ({dayPxWidth, nextActivity, compl
     upNext = nextActivity.studyBurstNum
       ? `Week ${nextActivity.weekInStudy}/Burst ${nextActivity.studyBurstNum}`
       : `Week ${nextActivity.weekInStudy}/Burst ${nextActivity.sessionName}`
-    upNext = `${upNext} on ${moment(nextActivity.startDate).format('MM/DD/YYYY')}`
+    upNext = `${upNext} on ${dayjs(nextActivity.startDate).format('MM/DD/YYYY')}`
   }
 
   return (

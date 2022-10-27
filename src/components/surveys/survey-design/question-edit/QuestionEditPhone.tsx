@@ -191,7 +191,6 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   isDynamic,
   onChange,
 }) => {
-  console.log('QuestionEditPhone render', step, globalSkipConfiguration)
   const questionId = step ? getQuestionId(step) : 0
 
   const shouldShowSkipButton = (): boolean => {

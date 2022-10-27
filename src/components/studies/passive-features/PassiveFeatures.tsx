@@ -5,7 +5,7 @@ import {MTBHeadingH3} from '@components/widgets/Headings'
 import {Box, Switch} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
-import {useStudy} from '@services/studyHooks'
+import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
 import {latoFont, ThemeType} from '@style/theme'
 import {BackgroundRecorders} from '@typedefs/types'
 import React from 'react'
@@ -113,6 +113,12 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
   const classes = useStyles()
   const {data: study} = useStudy(id)
 
+  const {mutateAsync: mutateStudy, data} = useUpdateStudyDetail()
+
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+
+  const [saveLoader, setSaveLoader] = React.useState(false)
+
   const onUpdate = async (recorders: BackgroundRecorders) => {
     if (!study) {
       return
@@ -123,6 +129,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
 
     updatedStudy.clientData.backgroundRecorders = recorders
     try {
+      const result = await mutateStudy({study: updatedStudy})
     } catch (e) {
       alert(e)
     } finally {

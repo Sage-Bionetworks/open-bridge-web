@@ -6,7 +6,8 @@ import {
   SessionDisplayInfo,
 } from '@typedefs/types'
 import _ from 'lodash'
-import moment from 'moment'
+
+import dayjs from 'dayjs'
 
 function getMaxNumberOfTimeWindows(streams: (AdherenceDetailReportWeek | AdherenceWeeklyReport)[]): number {
   const maxNumberOfWindowsInStreams = streams.map(stream => {
@@ -64,7 +65,7 @@ function getUniqueSessionsInfo(items: AdherenceWeeklyReport[] | AdherenceDetailR
 }
 
 function getDateForDisplay(date?: string) {
-  return date ? moment(date).format('MM/DD/YYYY') : 'Event date is not defined'
+  return date ? dayjs(date).format('MM/DD/YYYY') : 'Event date is not defined'
 }
 
 function getItemFromByDayEntries(byDayEntries: AdherenceByDayEntries, dayIndex: number, rowIndex: number) {
