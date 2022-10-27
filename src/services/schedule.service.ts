@@ -13,7 +13,6 @@ import {
   TimelineScheduleItem,
   TimePeriod,
 } from '../types/scheduling'
-import {Assessment} from '../types/types'
 import AssessmentService from './assessment.service'
 import EventService, {
   BURST_EVENT_PATTERN,
@@ -142,12 +141,11 @@ async function addAssessmentResourcesToSchedule(
   token: string,
   schedule: Schedule
 ): Promise<Schedule> {
-  //try from storage first
-  const localA = sessionStorage.getItem('AssessmentResources')
-
-  const assessmentData = localA
-    ? (JSON.parse(localA) as {assessments: Assessment[]; tags: string[]})
-    : await AssessmentService.getAssessmentsWithResources(appId, token)
+  //agendel: get fresh -- don't use local storage
+  const assessmentData = await AssessmentService.getAssessmentsWithResources(
+    appId,
+    token
+  )
   schedule.sessions.forEach(session => {
     const assmntWithResources = session.assessments?.map(assmnt => {
       assmnt.resources = assessmentData.assessments.find(
@@ -177,9 +175,10 @@ async function getSchedule(
   if (!schedule) {
     return undefined
   }
-  return addResources
-    ? addAssessmentResourcesToSchedule(appId, token, schedule.data)
+  const result = addResources
+    ? await addAssessmentResourcesToSchedule(appId, token, schedule.data)
     : schedule.data
+  return result
 }
 
 async function getTimeline(

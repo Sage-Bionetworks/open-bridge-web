@@ -1,9 +1,9 @@
 import {Box, Paper} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
+import {Assessment} from '@typedefs/types'
 import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
-import {Assessment} from '../../types/types'
+import {FunctionComponent} from 'react'
 import AssessmentImage from './AssessmentImage'
 
 const useStyles = makeStyles(theme =>
@@ -51,13 +51,14 @@ const useStyles = makeStyles(theme =>
     },
     title: {
       fontSize: '12px',
+      overflowWrap: 'break-word',
     },
     text: {
       padding: theme.spacing(1),
       paddingRight: theme.spacing(3),
       backgroundColor: '#E0E0E0',
       position: 'relative',
-
+      overflow: 'hidden',
       flexGrow: 1,
       textAlign: 'left',
     },

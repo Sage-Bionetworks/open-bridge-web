@@ -56,7 +56,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
             (assessments: Assessment[]) =>
               setFilteredAssessments(assessments) /*setFilterTags(tags)*/
           }>
-          {surveys?.assessments &&
+          {/*    {surveys?.assessments &&
             (surveys?.assessments).map((a, index) => (
               <Link
                 to={`${match.url}/${a.guid}`}
@@ -67,7 +67,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
                   assessment={a}
                   key={a.guid}></AssessmentCard>
               </Link>
-            ))}
+            ))}*/}
           {(filteredAssessments || data.assessments).map((a, index) => (
             <Link
               to={`${match.url}/${a.guid}`}
