@@ -39,8 +39,8 @@ import {
   ParticipantEvent,
   SelectionType,
 } from '@typedefs/types'
+import dayjs from 'dayjs'
 import _ from 'lodash'
-import moment from 'moment'
 import React, {FunctionComponent, ReactNode, SyntheticEvent} from 'react'
 import Pluralize from 'react-pluralize'
 import {Link} from 'react-router-dom'
@@ -212,7 +212,7 @@ function getPhone(params: GridValueGetterParams) {
   } else return ''
 }
 function getDate(value: GridCellValue) {
-  return value && moment(value.toString()).isValid() ? moment(value.toString()).format('MM/DD/YYYY') : undefined
+  return value && dayjs(value.toString()).isValid() ? dayjs(value.toString()).format('MM/DD/YYYY') : undefined
 }
 
 function getJoinedDateWithIcons(params: GridValueGetterParams) {

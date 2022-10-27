@@ -2,7 +2,7 @@ import {ReactComponent as CheckBlue} from '@assets/adherence/round_check_blue.sv
 import {Box, styled, Typography} from '@mui/material'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import {ParticipantClientData, ParticipantRequestInfo} from '@typedefs/types'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import ClientDeviceMap from '../clientDevices'
 
 const Table = styled('table')(({theme}) => ({
@@ -61,7 +61,7 @@ const AdditionalAdherenceParticipantInfo: React.FunctionComponent<AdditionalAdhe
   participantClientData,
 }) => {
   return (
-    <Box width="30%">
+    <Box width="35%">
       {participantClientData?.availability && (
         <StyledSection>
           <StyledHeader>Availability</StyledHeader>
@@ -97,7 +97,7 @@ const AdditionalAdherenceParticipantInfo: React.FunctionComponent<AdditionalAdhe
           <Table>
             <thead>
               <tr>
-                <Th>Last signed in with: </Th>
+                <Th sx={{width: '200px'}}>Last signed in with: </Th>
 
                 <Th>OS Version:</Th>
                 <Th> App Version:</Th>
@@ -105,7 +105,7 @@ const AdditionalAdherenceParticipantInfo: React.FunctionComponent<AdditionalAdhe
             </thead>
             <tbody>
               <tr>
-                <Td>{moment(participantRequestInfo.signedInOn).format('MM/DD/yyy @ h:mm a')}</Td>
+                <Td>{dayjs(participantRequestInfo.signedInOn).format('MM/DD/YYYY @ h:mma')}</Td>
                 <Td>
                   {participantRequestInfo.clientInfo.osName} {participantRequestInfo.clientInfo.osVersion}
                 </Td>

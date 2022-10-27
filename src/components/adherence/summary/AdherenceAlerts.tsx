@@ -13,7 +13,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import {latoFont} from '@style/theme'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
 
 type AdherenceAlertsProps = {
@@ -179,7 +179,7 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
               <li key={index}>
                 <div>{TypeIcons.get(alert.type)}</div>
                 <div>
-                  <DateSpan>{moment(alert.timestamp).format('MMM Do, YYYY @ h:mm:ss a')}</DateSpan>
+                  <DateSpan>{dayjs(alert.timestamp).format('MMM Do, YYYY @ h:mm:ss a')}</DateSpan>
 
                   <TextSpan>{alert.text}</TextSpan>
                 </div>

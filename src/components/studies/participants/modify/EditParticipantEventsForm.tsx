@@ -5,8 +5,8 @@ import EventService from '@services/event.service'
 import {ExtendedScheduleEventObject, TIMELINE_RETRIEVED_EVENT} from '@services/schedule.service'
 import {ParticipantEvent} from '@typedefs/types'
 import clsx from 'clsx'
-import moment from 'moment'
-import React, {FunctionComponent} from 'react'
+import dayjs from 'dayjs'
+import {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   eventField: {
@@ -126,7 +126,7 @@ const ReadOnlyDate: FunctionComponent<{
   value?: Date | null
 }> = ({eo, index, value}) => {
   const classes = useStyles()
-  var displayValue = value ? moment(value).format('MM/DD/YYYY') : '--'
+  var displayValue = value ? dayjs(value).format('MM/DD/YYYY') : '--'
   return (
     <div className="MuiFormControl-root">
       <label>
@@ -176,7 +176,7 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
       console.log(EventService.getBurstNumberFromEventId(e.eventId))
       const newEvent: ParticipantEvent = {
         eventId: e.eventId,
-        timestamp: moment(newBurstEvent.timestamp!)
+        timestamp: dayjs(newBurstEvent.timestamp!)
           .add((EventService.getBurstNumberFromEventId(e.eventId) - 1) * (e.interval?.value || 0), 'week')
           .toDate(),
       }

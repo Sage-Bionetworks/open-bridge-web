@@ -12,7 +12,7 @@ import makeStyles from '@mui/styles/makeStyles'
 import {ThemeType} from '@style/theme'
 import {Study} from '@typedefs/types'
 import clsx from 'clsx'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
 import {useAdherenceForWeek} from './adherenceHooks'
 
@@ -130,7 +130,7 @@ const cancelPropagation = (e: React.MouseEvent) => {
 }
 
 const getFormattedDate = (date: Date) => {
-  return moment(date).format('MMM D, YYYY @ h:mma')
+  return dayjs(date).format('MMM D, YYYY @ h:mma')
 }
 
 const CardBottom: FunctionComponent<{

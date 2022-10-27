@@ -1,6 +1,6 @@
-import moment from 'moment-timezone'
+import BlackBorderDropdown from '@components/widgets/BlackBorderDropdown'
+import timezoneList from '@helpers/timezones.json'
 import React from 'react'
-import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 
 type TimezoneInfoType = {
   label: string
@@ -13,7 +13,7 @@ const TimezoneDropdown: React.FunctionComponent<{
   onValueChange: (val: string) => void
 }> = ({currentValue, onValueChange, isRequired}) => {
   function getAllTimezones() {
-    const timezoneNames = moment.tz.names()
+    const timezoneNames = timezoneList.timezones as string[]
     const filtered = timezoneNames.filter(el => el.includes('America'))
     const timezoneInfoArray: TimezoneInfoType[] = filtered.map(data => {
       return {

@@ -1,10 +1,9 @@
 import SelectWithEnum from '@components/widgets/SelectWithEnum'
 import SmallTextBox from '@components/widgets/SmallTextBox'
 import Utility from '@helpers/utility'
+import ClearIcon from '@mui/icons-material/HighlightOff'
 import {IconButton, StandardTextFieldProps} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import ClearIcon from '@mui/icons-material/HighlightOff'
-import moment from 'moment'
 import React from 'react'
 import {getValueFromPeriodString} from './utility'
 
@@ -129,7 +128,7 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
         label={placeHolder}
         sourceData={unitData}
         id={unitLabel.replace(' ', '')}
-        onChange={e => changeValue(num, e.target.value as moment.unitOfTime.Base)}
+        onChange={e => changeValue(num, e.target.value as string)}
         style={selectWidth ? {width: `${selectWidth}px`} : {width: '100px'}}></SelectWithEnum>
       {isShowClear && (
         <IconButton className={classes.clear} onClick={_e => onChange({target: {value: undefined}})} size="large">
