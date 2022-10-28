@@ -61,12 +61,20 @@ function getDeviceName(deviceType: string): string {
 const AdditionalAdherenceParticipantInfo: React.FunctionComponent<AdditionalAdherenceParticipantInfoProps> =
   ({participantRequestInfo, participantClientData}) => {
     return (
-      <Box width="30%">
+      <Box width="35%">
         {participantClientData?.availability && (
           <StyledSection>
             <StyledHeader>Availability</StyledHeader>
             {participantClientData?.availability?.wake}(wake) -{' '}
             {participantClientData?.availability?.bed}(bed)
+          </StyledSection>
+        )}
+        {participantClientData?.baselineCompleteDate && (
+          <StyledSection>
+            <StyledHeader>Baseline Testing Completion</StyledHeader>
+            {moment(participantClientData?.baselineCompleteDate).format(
+              'MM/DD/YYYY  hh:mm:ss'
+            )}
           </StyledSection>
         )}
 

@@ -298,6 +298,7 @@ export type ParticipantClientData = {
     wake: string // "09:30",
     bed: string //"17:30"
   }
+  baselineCompleteDate: string // "10/04/2022 11:45:35"
   earnings: string[] /* [
       "$6.00",
       "$29.00"]*/
