@@ -144,8 +144,7 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
       {alerts && (
         <Box>
           <Box>
-            <List
-              sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}>
+            <List sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}>
               {[0, 1, 2, 3].map(value => {
                 const labelId = `checkbox-list-label-${value}`
 
@@ -158,10 +157,7 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
                       </IconButton>
                     }
                     disablePadding>
-                    <ListItemButton
-                      role={undefined}
-                      onClick={handleToggle(value)}
-                      dense>
+                    <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
                       <ListItemIcon>
                         <Checkbox
                           edge="start"
@@ -171,10 +167,7 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
                           inputProps={{'aria-labelledby': labelId}}
                         />
                       </ListItemIcon>
-                      <ListItemText
-                        id={labelId}
-                        primary={`Line item ${value + 1}`}
-                      />
+                      <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
                     </ListItemButton>
                   </ListItem>
                 )
@@ -186,9 +179,7 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
               <li key={index}>
                 <div>{TypeIcons.get(alert.type)}</div>
                 <div>
-                  <DateSpan>
-                    {dayjs(alert.timestamp).format('MMM Do, YYYY @ h:mm:ss a')}
-                  </DateSpan>
+                  <DateSpan>{dayjs(alert.timestamp).format('MMM Do, YYYY @ h:mm:ss a')}</DateSpan>
 
                   <TextSpan>{alert.text}</TextSpan>
                 </div>
@@ -199,11 +190,7 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
                     checkedIcon={<CheckGreen />}
                     checked={alert.done || false}
                     onChange={e => {
-                      setAlerts(prev =>
-                        prev?.map((a, i) =>
-                          index === i ? {...alert, done: e.target.checked} : a
-                        )
-                      )
+                      setAlerts(prev => prev?.map((a, i) => (index === i ? {...alert, done: e.target.checked} : a)))
                     }}
                   />
                 </div>

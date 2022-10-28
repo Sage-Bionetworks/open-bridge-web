@@ -87,18 +87,11 @@ const SelectableAssessment: FunctionComponent<{
   value: Assessment[]
 }> = ({assessment, index, isDisabled, onUpdateAssessments, value}) => {
   const classes = useStyles()
-  const toggleAssessment = (
-    event: React.MouseEvent<HTMLElement>,
-    selectedAssessments: Assessment[]
-  ) => {
+  const toggleAssessment = (event: React.MouseEvent<HTMLElement>, selectedAssessments: Assessment[]) => {
     onUpdateAssessments(selectedAssessments)
   }
   return (
-    <ToggleButtonGroup
-      value={value}
-      onChange={toggleAssessment}
-      aria-label={assessment.title}
-      key={assessment.guid}>
+    <ToggleButtonGroup value={value} onChange={toggleAssessment} aria-label={assessment.title} key={assessment.guid}>
       <ToggleButton
         aria-label="bold"
         value={assessment}
@@ -108,10 +101,7 @@ const SelectableAssessment: FunctionComponent<{
           selected: classes.toggleASelected,
           disabled: classes.toggleADisabled,
         }}>
-        <AssessmentCard
-          index={index}
-          assessment={assessment}
-          key={assessment.guid}></AssessmentCard>
+        <AssessmentCard index={index} assessment={assessment} key={assessment.guid}></AssessmentCard>
         <div className={classes.overlay}>
           <div className={classes.overlayBackdrop}></div>
           <div className={classes.overlayBg}>
@@ -130,11 +120,8 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
 }: AssessmentSelectorProps) => {
   const classes = useStyles()
   const surveyToggle = useFeatureToggles<FeatureToggles>()
-  const [filteredAssessments, setFilteredAssessments] = useState<
-    Assessment[] | undefined
-  >(undefined)
-  const [assessmentsType, setAssessmentsType] =
-    React.useState<AssessmentsType>('OTHER')
+  const [filteredAssessments, setFilteredAssessments] = useState<Assessment[] | undefined>(undefined)
+  const [assessmentsType, setAssessmentsType] = React.useState<AssessmentsType>('OTHER')
   const {data, isLoading, status} = useAssessmentsWithResources(false, false)
   const {data: surveys} = useAssessmentsWithResources(false, true)
 
@@ -142,17 +129,10 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
     return <>No Data </>
   }
 
-  const isAssessmentInSession = (
-    session: StudySession,
-    assessmentId: string
-  ): boolean =>
-    session.assessments?.find(item => item.originGuid === assessmentId) !==
-    undefined
+  const isAssessmentInSession = (session: StudySession, assessmentId: string): boolean =>
+    session.assessments?.find(item => item.originGuid === assessmentId) !== undefined
   const getAssessments = () => {
-    if (
-      (assessmentsType === 'OTHER' && !data) ||
-      (assessmentsType === 'SURVEY' && !surveys)
-    ) {
+    if ((assessmentsType === 'OTHER' && !data) || (assessmentsType === 'SURVEY' && !surveys)) {
       return []
     }
     if (assessmentsType === 'OTHER') {
@@ -170,20 +150,14 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
             assessmentsType={assessmentsType}
             assessments={data.assessments}
             onChangeAssessmentsType={t => setAssessmentsType(t)}
-            onChangeTags={
-              (assessments: Assessment[]) =>
-                setFilteredAssessments(assessments) /*setFilterTags(tags)*/
-            }>
+            onChangeTags={(assessments: Assessment[]) => setFilteredAssessments(assessments) /*setFilterTags(tags)*/}>
             {getAssessments().map((a, index) => (
               <SelectableAssessment
                 value={selectedAssessments}
                 assessment={a}
                 index={index}
                 onUpdateAssessments={a => onUpdateAssessments(a)}
-                isDisabled={
-                  !activeSession ||
-                  isAssessmentInSession(activeSession, a.guid!)
-                }
+                isDisabled={!activeSession || isAssessmentInSession(activeSession, a.guid!)}
               />
             ))}
           </AssessmentLibraryWrapper>

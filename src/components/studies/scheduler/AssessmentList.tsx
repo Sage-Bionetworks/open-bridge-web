@@ -70,14 +70,9 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
       <SessionIcon index={order} symbolKey={symbol}>
         <span>{name}</span>
       </SessionIcon>
-      <Box
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="flex-end">
+      <Box display="flex" flexDirection="row" alignItems="center" justifyContent="flex-end">
         {totalTime} min &nbsp;&nbsp;
-        <ClockIcon
-          style={{fontSize: '18px', verticalAlign: 'middle'}}></ClockIcon>
+        <ClockIcon style={{fontSize: '18px', verticalAlign: 'middle'}}></ClockIcon>
       </Box>
     </Box>
   )
@@ -100,13 +95,9 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
 }: AssessmentListProps): JSX.Element => {
   const classes = useStyles()
 
-  const [isGroupAssessments, setIsGroupAssessments] = React.useState(
-    performanceOrder !== 'participant_choice'
-  )
+  const [isGroupAssessments, setIsGroupAssessments] = React.useState(performanceOrder !== 'participant_choice')
 
-  const [assessmentsToDisplay, setAssessentsToDisplay] = React.useState<
-    AssessmentDisplayType[]
-  >([])
+  const [assessmentsToDisplay, setAssessentsToDisplay] = React.useState<AssessmentDisplayType[]>([])
 
   React.useEffect(() => {
     if (!studySession.assessments) {
@@ -124,9 +115,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
     if (performanceOrder === 'randomized') {
       const shuffledAssesments = shuffle([...assessments])
       for (const assessmentInfo of assessments) {
-        const newIndex = shuffledAssesments.findIndex(
-          el => el.assessmentIndex === assessmentInfo.assessmentIndex
-        )
+        const newIndex = shuffledAssesments.findIndex(el => el.assessmentIndex === assessmentInfo.assessmentIndex)
         const indexChanged = newIndex - assessmentInfo.assessmentIndex
         assessmentInfo.translateY = indexChanged * 96 + indexChanged * 8
         assessmentInfo.realIndex = newIndex
@@ -165,8 +154,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
     />
   ) : (
     <Box fontSize="14px" fontFamily={latoFont}>
-      {performanceOrderList.find(el => el.value === performanceOrder)?.label ||
-        ''}
+      {performanceOrderList.find(el => el.value === performanceOrder)?.label || ''}
     </Box>
   )
 
@@ -188,11 +176,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
               key={studySession.guid! + assessmentInfo.assessment.guid + index}
               style={{
                 opacity:
-                  performanceOrder !== 'participant_choice' &&
-                  assessmentInfo.realIndex !== 0 &&
-                  !isReadOnly
-                    ? 0.3
-                    : 1,
+                  performanceOrder !== 'participant_choice' && assessmentInfo.realIndex !== 0 && !isReadOnly ? 0.3 : 1,
                 transform: `translateY(${assessmentInfo.translateY}px)`,
                 transitionDuration: '0.4s',
               }}>
@@ -210,11 +194,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
             labelPlacement="start"
             className={classes.order}
             control={assessmentOrderElement}
-            label={
-              <Box className={classes.assessmentOrderText}>
-                Assessment Order:
-              </Box>
-            }
+            label={<Box className={classes.assessmentOrderText}>Assessment Order:</Box>}
           />
         </FormGroup>
       )}

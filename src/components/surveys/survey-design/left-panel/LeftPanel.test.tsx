@@ -7,12 +7,7 @@ import LeftPanel from './LeftPanel'
 const onUpdateStep = jest.fn()
 const onNavigateStep = jest.fn()
 
-function renderControl(
-  location: string,
-  guid: string,
-  surveyId: string,
-  surveyConfig?: SurveyConfig
-) {
+function renderControl(location: string, guid: string, surveyId: string, surveyConfig?: SurveyConfig) {
   return render(
     <MemoryRouter initialEntries={[location]}>
       <LeftPanel
@@ -40,12 +35,7 @@ test('renders left panel for new survey without questions', () => {
 })
 
 test('renders left panel for survey with questions with completion screen ', async () => {
-  const app = renderControl(
-    'surveys/12345/design/title',
-    '12345',
-    'sur01',
-    surveySample
-  )
+  const app = renderControl('surveys/12345/design/title', '12345', 'sur01', surveySample)
 
   const buttons = app.getAllByRole('button')
 

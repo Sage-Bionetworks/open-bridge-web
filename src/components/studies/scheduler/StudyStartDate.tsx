@@ -66,18 +66,11 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         name="day1"
         value={startEventId}
         onChange={e => onChange(e.target.value as string)}
-        className={clsx(
-          isIntro && classes.inIntroRadioGroup,
-          !isIntro && classes.notInIntroRadioGroup
-        )}>
+        className={clsx(isIntro && classes.inIntroRadioGroup, !isIntro && classes.notInIntroRadioGroup)}>
         <FormControlLabel
           value={options[0]}
           control={<Radio />}
-          label={
-            isIntro
-              ? 'After participant signs into the app'
-              : 'Right after completion of onboarding session'
-          }
+          label={isIntro ? 'After participant signs into the app' : 'Right after completion of onboarding session'}
         />
         <FormControlLabel
           value={options[1]}
@@ -89,9 +82,8 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
                 <div>Clinic Visit 1</div>
                 <Box className={classes.descriptionText}>
                   <i>
-                    By choosing this option, you can define a unique start date
-                    for each participant in the Participant Manager tab after
-                    your study has launched.
+                    By choosing this option, you can define a unique start date for each participant in the Participant
+                    Manager tab after your study has launched.
                   </i>
                 </Box>
               </Box>

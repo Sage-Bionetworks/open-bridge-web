@@ -1,6 +1,4 @@
-import ConfirmationDialog, {
-  ConfirmationDialogType,
-} from '@components/widgets/ConfirmationDialog'
+import ConfirmationDialog, {ConfirmationDialogType} from '@components/widgets/ConfirmationDialog'
 import {MTBHeading} from '@components/widgets/Headings'
 import Loader from '@components/widgets/Loader'
 import {useUserSessionDataState} from '@helpers/AuthContext'
@@ -33,14 +31,7 @@ type StudySublistProps = {
   } | null
 }
 
-type StudyAction =
-  | 'DELETE'
-  | 'ANCHOR'
-  | 'DUPLICATE'
-  | 'RENAME'
-  | 'VIEW'
-  | 'WITHDRAW'
-  | 'CLOSE'
+type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME' | 'VIEW' | 'WITHDRAW' | 'CLOSE'
 
 const studyCardWidth = '290'
 
@@ -166,9 +157,7 @@ function getStudyLink(sectionStatus: DisplayStudyPhase, studyId: string) {
       ? links.participants
       : undefined
   } else {
-    link = Utility.isPathAllowed(studyId, links.participants)
-      ? links.participants
-      : undefined
+    link = Utility.isPathAllowed(studyId, links.participants) ? links.participants : undefined
   }
   return link ? link.replace(':id', studyId) : '#'
 }
@@ -183,9 +172,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.sectionStatus === status)!
-  const displayStudies = studies.filter(study =>
-    item.studyStatus.includes(study.phase)
-  )
+  const displayStudies = studies.filter(study => item.studyStatus.includes(study.phase))
 
   if (!displayStudies.length) {
     return <></>
@@ -215,11 +202,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             style={{textDecoration: 'none'}}
             key={study.identifier || index}
             variant="body2"
-            onClick={() =>
-              study.identifier === '...'
-                ? ''
-                : onStudyCardClick({...study}, 'VIEW')
-            }
+            onClick={() => (study.identifier === '...' ? '' : onStudyCardClick({...study}, 'VIEW'))}
             underline="hover">
             <StudyCard
               study={study}
@@ -232,9 +215,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               }}
               isNewlyAddedStudy={highlightedStudyId === study.identifier}
               section={item.sectionStatus}
-              isMenuOpen={
-                menuAnchor?.study?.identifier === study.identifier
-              }></StudyCard>
+              isMenuOpen={menuAnchor?.study?.identifier === study.identifier}></StudyCard>
           </Link>
         ))}
       </Box>
@@ -259,29 +240,16 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     setIsConfirmDialogOpen(undefined)
     setMenuAnchor(null)
   }
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<
-    ConfirmationDialogType | undefined
-  >(undefined)
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<ConfirmationDialogType | undefined>(undefined)
 
   const [statusFilters, setStatusFilters] = React.useState<DisplayStudyPhase[]>(
     sections.map(section => section.sectionStatus)
   )
-  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
-    string | null
-  >(null)
+  const [highlightedStudyId, setHighlightedStudyId] = React.useState<string | null>(null)
   const [redirectLink, setRedirectLink] = React.useState('')
-  const {
-    data: studies,
-    error: studyError,
-    isLoading: isStudyLoading,
-  } = useStudies()
+  const {data: studies, error: studyError, isLoading: isStudyLoading} = useStudies()
 
-  const {
-    mutate,
-    mutateAsync,
-    isLoading: isStudyUpdating,
-    variables: mutateData,
-  } = useUpdateStudyInList()
+  const {mutate, mutateAsync, isLoading: isStudyUpdating, variables: mutateData} = useUpdateStudyInList()
   if (studyError) {
     handleError(studyError)
   }
@@ -335,10 +303,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const navigateToStudy = (study?: Study) => {
     if (study) {
-      const l = getStudyLink(
-        StudyService.getDisplayStatusForStudyPhase(study.phase),
-        study.identifier
-      )
+      const l = getStudyLink(StudyService.getDisplayStatusForStudyPhase(study.phase), study.identifier)
 
       setRedirectLink(l)
     }
@@ -376,26 +341,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }
 
   if (!studies && !isStudyLoading) {
-    return (
-      <div>
-        You currently have no studies created. To begin, please click on Create
-        New Study.
-      </div>
-    )
+    return <div>You currently have no studies created. To begin, please click on Create New Study.</div>
   }
 
-  const getPhase = () =>
-    !menuAnchor
-      ? undefined
-      : StudyService.getDisplayStatusForStudyPhase(menuAnchor.study.phase)
+  const getPhase = () => (!menuAnchor ? undefined : StudyService.getDisplayStatusForStudyPhase(menuAnchor.study.phase))
 
   return (
     <Loader
-      reqStatusLoading={
-        isStudyLoading ||
-        !studies ||
-        (isStudyUpdating && mutateData?.action === 'CREATE')
-      }
+      reqStatusLoading={isStudyLoading || !studies || (isStudyUpdating && mutateData?.action === 'CREATE')}
       variant="full">
       <Box className={classes.root}>
         <Container maxWidth="lg" className={classes.studyContainer}>
@@ -420,9 +373,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                     onClick={() => setStatusFilters([section.sectionStatus])}
                     style={{
                       color: 'inherit',
-                      fontWeight: isSelectedFilter(section.sectionStatus)
-                        ? 'bolder'
-                        : 'normal',
+                      fontWeight: isSelectedFilter(section.sectionStatus) ? 'bolder' : 'normal',
                       fontFamily: 'Poppins',
                     }}>
                     {section.filterTitle}
@@ -431,12 +382,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               ))}
             </ul>
             <Button
-              disabled={
-                !Utility.isPathAllowed(
-                  'any',
-                  constants.restrictedPaths.STUDY_BUILDER
-                )
-              }
+              disabled={!Utility.isPathAllowed('any', constants.restrictedPaths.STUDY_BUILDER)}
               variant="contained"
               onClick={() => createStudy()}
               className={classes.createStudyButton}>
@@ -448,9 +394,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           {studies &&
             studies.length > 0 &&
             statusFilters.map((status, index) => (
-              <Box
-                style={{paddingBottom: index < 3 ? '24px' : '0'}}
-                key={status}>
+              <Box style={{paddingBottom: index < 3 ? '24px' : '0'}} key={status}>
                 <StudySublist
                   userRoles={roles}
                   studies={studies!}
@@ -494,9 +438,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               open={Boolean(menuAnchor.anchorEl)}
               onClose={handleMenuClose}
               classes={{paper: classes.paper, list: classes.list}}>
-              <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>
-                View
-              </MenuItem>
+              <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>View</MenuItem>
               {(getPhase() === 'DRAFT' || getPhase() === 'LIVE') && (
                 <MenuItem
                   onClick={() => {
@@ -507,25 +449,15 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                 </MenuItem>
               )}
 
-              <MenuItem
-                onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
-                Duplicate
-              </MenuItem>
+              <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>Duplicate</MenuItem>
 
               {(getPhase() === 'DRAFT' || getPhase() === 'WITHDRAWN') && (
-                <MenuItem onClick={() => setIsConfirmDialogOpen('DELETE')}>
-                  Delete
-                </MenuItem>
+                <MenuItem onClick={() => setIsConfirmDialogOpen('DELETE')}>Delete</MenuItem>
               )}
 
               {getPhase() === 'LIVE' && [
-                <MenuItem
-                  onClick={() => setIsConfirmDialogOpen('WITHDRAW_STUDY')}>
-                  Withdraw Study
-                </MenuItem>,
-                <MenuItem onClick={() => setIsConfirmDialogOpen('CLOSE_STUDY')}>
-                  Close Study
-                </MenuItem>,
+                <MenuItem onClick={() => setIsConfirmDialogOpen('WITHDRAW_STUDY')}>Withdraw Study</MenuItem>,
+                <MenuItem onClick={() => setIsConfirmDialogOpen('CLOSE_STUDY')}>Close Study</MenuItem>,
               ]}
             </Menu>
           )}
@@ -542,15 +474,11 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             }}>
             <div>
               <p>
-                By withdrawing this study, you are closing it early and can no
-                longer enroll future participants. Data collection from existing
-                participants will stop.
+                By withdrawing this study, you are closing it early and can no longer enroll future participants. Data
+                collection from existing participants will stop.
               </p>
 
-              <p>
-                {' '}
-                Are you sure you would like to stop the following study early:
-              </p>
+              <p> Are you sure you would like to stop the following study early:</p>
               <p>
                 <strong>{menuAnchor?.study.name}</strong>
               </p>
@@ -572,9 +500,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             }}>
             <div>
               <p>
-                By closing this study, you are stopping enrollment of new
-                participants and data collection from existing participants will
-                stop.
+                By closing this study, you are stopping enrollment of new participants and data collection from existing
+                participants will stop.
               </p>
               <p>
                 <strong>This action cannot be undone.</strong>
@@ -597,8 +524,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               onAction(menuAnchor!.study, 'DELETE')
             }}>
             <div>
-              Are you sure you would like to permanently delete:{' '}
-              <p>{menuAnchor?.study.name}</p>
+              Are you sure you would like to permanently delete: <p>{menuAnchor?.study.name}</p>
             </div>
           </ConfirmationDialog>
         </Container>

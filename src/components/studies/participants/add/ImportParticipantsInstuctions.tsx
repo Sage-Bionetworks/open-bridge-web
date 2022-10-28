@@ -31,15 +31,10 @@ const ImportParticipantsInstructions: FunctionComponent<{
   scheduleEventIds: string[]
 }> = ({children, isEnrolledById, scheduleEventIds}) => {
   const classes = useStyles()
-  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
-    string | undefined
-  >(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<string | undefined>(undefined)
 
   const createDownloadTemplate = async () => {
-    const templateData = CsvUtility.getDownloadTemplateRow(
-      isEnrolledById,
-      scheduleEventIds
-    )
+    const templateData = CsvUtility.getDownloadTemplateRow(isEnrolledById, scheduleEventIds)
     //csv and blob it
     const csvData = jsonToCSV([templateData])
     const blob = new Blob([csvData], {
@@ -91,8 +86,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
   return (
     <Box>
       <p>
-        To add <strong>new participants</strong> to your study, we will need the
-        following information by columns:
+        To add <strong>new participants</strong> to your study, we will need the following information by columns:
       </p>
       {recList}
       Your file should match this template:
@@ -113,8 +107,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
           <u>Participant Import Template</u>
         </strong>
       </ParticipantDownloadTrigger>
-      *Required info. Please include only <strong>new participants</strong> in
-      the .csv.
+      *Required info. Please include only <strong>new participants</strong> in the .csv.
       <p>&nbsp;</p>
       <Box mx="auto" my={2} textAlign="center">
         {children}

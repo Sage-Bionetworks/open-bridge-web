@@ -1,33 +1,16 @@
 import {ReactComponent as AlertIcon} from '@assets/alert_icon.svg'
 import {ReactComponent as GenerateId} from '@assets/surveys/actions/generate_id.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
-import {
-  StyledFormControl,
-  StyledLabel14,
-} from '@components/surveys/widgets/SharedStyled'
-import {
-  StyledDropDown,
-  StyledDropDownItem,
-} from '@components/surveys/widgets/StyledDropDown'
+import {StyledFormControl, StyledLabel14} from '@components/surveys/widgets/SharedStyled'
+import {StyledDropDown, StyledDropDownItem} from '@components/surveys/widgets/StyledDropDown'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import UtilityObject from '@helpers/utility'
-import {
-  Box,
-  Button,
-  MenuItem,
-  OutlinedInput,
-  styled,
-  Typography,
-} from '@mui/material'
+import {Box, Button, MenuItem, OutlinedInput, styled, Typography} from '@mui/material'
 import {SelectChangeEvent} from '@mui/material/Select'
 import {theme} from '@style/theme'
-import {
-  ChoiceQuestion,
-  ChoiceQuestionChoice,
-  QuestionDataType,
-} from '@typedefs/surveys'
+import {ChoiceQuestion, ChoiceQuestionChoice, QuestionDataType} from '@typedefs/surveys'
 import React from 'react'
 import QUESTIONS, {QuestionTypeKey} from '../../left-panel/QuestionConfigs'
 
@@ -100,29 +83,18 @@ const ChoiceValueInputRow: React.FunctionComponent<{
       {!isDefault && (
         <InfoCircleWithToolTip
           style={{marginLeft: '4px'}}
-          tooltipDescription={
-            choice.selectorType === 'all'
-              ? 'Selects all responses'
-              : 'Deselects all responses'
-          }
+          tooltipDescription={choice.selectorType === 'all' ? 'Selects all responses' : 'Deselects all responses'}
           variant="info"
         />
       )}
     </div>
   )
 
-  let inputCell = (
-    <SimpleTextInput
-      value={choice.value}
-      onChange={e => onChange(e.target.value)}
-    />
-  )
+  let inputCell = <SimpleTextInput value={choice.value} onChange={e => onChange(e.target.value)} />
   if (!isDefault) {
     inputCell = (
       <div style={{padding: ' 0 8px'}}>
-        {choice.selectorType === 'all'
-          ? allValues.filter(v => v !== undefined).join(', ')
-          : 'empty array'}
+        {choice.selectorType === 'all' ? allValues.filter(v => v !== undefined).join(', ') : 'empty array'}
       </div>
     )
   }
@@ -136,9 +108,7 @@ const ChoiceValueInputRow: React.FunctionComponent<{
 }
 
 function generateValue(choice: ChoiceQuestionChoice, setTo?: number) {
-  return SurveyUtils.isSpecialSelectChoice(choice)
-    ? choice.value
-    : setTo ?? choice.text.replaceAll(' ', '_')
+  return SurveyUtils.isSpecialSelectChoice(choice) ? choice.value : setTo ?? choice.text.replaceAll(' ', '_')
 }
 
 const Select: React.FunctionComponent<{
@@ -146,19 +116,15 @@ const Select: React.FunctionComponent<{
   onChange: (step: ChoiceQuestion) => void
 }> = ({step, onChange}) => {
   const selectTypeOptions: QuestionTypeKey[] = ['MULTI_SELECT', 'SINGLE_SELECT']
-  const [isTypeConversionWarning, setIsTypeConversionWarning] =
-    React.useState(false)
+  const [isTypeConversionWarning, setIsTypeConversionWarning] = React.useState(false)
   const answerDataTypeOptions: QuestionDataType[] = ['integer', 'string']
 
-  const handleSelectTypeChange = (
-    event: SelectChangeEvent<QuestionTypeKey>
-  ) => {
+  const handleSelectTypeChange = (event: SelectChangeEvent<QuestionTypeKey>) => {
     const {
       target: {value},
     } = event
 
-    const isSwitchedToSingleSelect =
-      !step.singleChoice && value === 'SINGLE_SELECT'
+    const isSwitchedToSingleSelect = !step.singleChoice && value === 'SINGLE_SELECT'
 
     onChange({
       ...step,
@@ -169,10 +135,7 @@ const Select: React.FunctionComponent<{
     })
   }
 
-  const handleDataTypeChange = (
-    value: typeof step.baseType,
-    shouldForceChange?: boolean
-  ) => {
+  const handleDataTypeChange = (value: typeof step.baseType, shouldForceChange?: boolean) => {
     if (value !== step.baseType) {
       if (value === 'integer' && !shouldForceChange && step.other) {
         setIsTypeConversionWarning(true)
@@ -242,19 +205,13 @@ const Select: React.FunctionComponent<{
         </StyledDropDown>
       </StyledFormControl>
 
-      <PairingTableHeading
-        answerDataType={step.baseType}
-        isSingleChoice={step.singleChoice}
-      />
+      <PairingTableHeading answerDataType={step.baseType} isSingleChoice={step.singleChoice} />
 
       <Box sx={{backgroundColor: '#fff', padding: theme.spacing(2, 1.5)}}>
         {step.baseType === 'string' && (
           <Button
             sx={{marginRight: 0, float: 'right'}}
-            disabled={
-              step.surveyRules?.find(r => r.matchingAnswer !== undefined) !==
-              undefined
-            }
+            disabled={step.surveyRules?.find(r => r.matchingAnswer !== undefined) !== undefined}
             onClick={() =>
               onChange({
                 ...step,
@@ -273,9 +230,7 @@ const Select: React.FunctionComponent<{
             <tr>
               <th>Response</th>
               <th></th>
-              <th style={{width: '60px'}}>
-                Value={UtilityObject.capitalize(step.baseType)}
-              </th>
+              <th style={{width: '60px'}}>Value={UtilityObject.capitalize(step.baseType)}</th>
             </tr>
 
             {step.choices?.map((choice, index) => (
@@ -284,9 +239,7 @@ const Select: React.FunctionComponent<{
                 choice={choice}
                 allValues={step.choices.map(c => c.value)}
                 onChange={val => {
-                  const choices = step.choices.map((c, i) =>
-                    i === index ? {...c, value: val} : c
-                  )
+                  const choices = step.choices.map((c, i) => (i === index ? {...c, value: val} : c))
                   onChange({...step, choices})
                 }}
               />
@@ -314,9 +267,8 @@ const Select: React.FunctionComponent<{
         }}>
         <div>
           <p>
-            Setting your Response Value Pairing to Integer will remove "Other"
-            from this question because it is based on custom text and cannot be
-            defined as an integer.
+            Setting your Response Value Pairing to Integer will remove "Other" from this question because it is based on
+            custom text and cannot be defined as an integer.
           </p>
           <p>Are you sure you would like to proceed?</p>
         </div>

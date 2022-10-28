@@ -51,13 +51,8 @@ const ParticipantManagerPlaceholder: React.FunctionComponent = () => {
   return (
     <Box className={classes.container}>
       <Box className={classes.innerContainer}>
-        <img
-          className={classes.rocketIcon}
-          src={RocketIcon}
-          alt=" Please check back after your study launches"></img>
-        <Box className={classes.text}>
-          Please check back after your study launches.
-        </Box>
+        <img className={classes.rocketIcon} src={RocketIcon} alt=" Please check back after your study launches"></img>
+        <Box className={classes.text}>Please check back after your study launches.</Box>
         <Box className={clsx(classes.text, classes.bottomText)}>
           This tab will be available once your study is officially live.
         </Box>

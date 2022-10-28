@@ -16,9 +16,7 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('@helpers/AuthContext')
 
-const mockedAuth = useUserSessionDataState as jest.Mocked<
-  typeof useUserSessionDataState
->
+const mockedAuth = useUserSessionDataState as jest.Mocked<typeof useUserSessionDataState>
 mockedAuth.useUserSessionDataState.mockImplementation(() => loggedInSessionData)
 
 //render the component
@@ -30,10 +28,7 @@ const renderComponent = (props: any) => {
   const queryClient = new QueryClient()
   const user = userEvent.setup()
   const element = render(
-    <MemoryRouter
-      initialEntries={[
-        '/surveys/xY3Th7-sifB2JLCyBxAnxRLh/design/question?q=5',
-      ]}>
+    <MemoryRouter initialEntries={['/surveys/xY3Th7-sifB2JLCyBxAnxRLh/design/question?q=5']}>
       <ProvideTheme>
         <QueryClientProvider client={queryClient}>
           <SurveyDesign {...props} />

@@ -76,11 +76,7 @@ dagreGraph.setDefaultEdgeLabel(() => ({}))
 const nodeWidth = 70
 const nodeHeight = 60
 
-const getLayoutedElements = (
-  nodes: Node[],
-  edges: Edge[],
-  direction = 'LR'
-) => {
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => {
   const isHorizontal = direction === 'LR'
   dagreGraph.setGraph({rankdir: direction, marginy: 40})
 
@@ -122,9 +118,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   const [survey, setSurvey] = React.useState<Survey | undefined>()
   const [error, setError] = React.useState('')
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
-  const [currentStepIndex, setCurrentStepIndex] = React.useState<
-    number | undefined
-  >(-1)
+  const [currentStepIndex, setCurrentStepIndex] = React.useState<number | undefined>(-1)
   const [isHideInput, setIsHideInput] = React.useState(true)
 
   const [nodes, setNodes] = React.useState<Node[]>([])
@@ -152,15 +146,11 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   React.useEffect(() => {
     if (survey) {
       const plotWidth = width || 0
-      const result = getNodes(
-        survey?.config.steps as ChoiceQuestion[],
-        plotWidth
-      )
+      const result = getNodes(survey?.config.steps as ChoiceQuestion[], plotWidth)
       if (result.error) {
         setError(result.error)
       } else {
-        const {nodes: layoutedNodes, edges: layoutedEdges} =
-          getLayoutedElements(result.nodes, result.edges)
+        const {nodes: layoutedNodes, edges: layoutedEdges} = getLayoutedElements(result.nodes, result.edges)
         setNodes([...layoutedNodes])
         setEdges([...layoutedEdges])
       }
@@ -188,9 +178,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   }
 
   const onNodeClick = (x: any, node: Node) => {
-    const qIndex = survey!.config.steps!.findIndex(
-      q => q.identifier === node.id
-    )
+    const qIndex = survey!.config.steps!.findIndex(q => q.identifier === node.id)
     if (qIndex < survey!.config.steps.length - 1) {
       setCurrentStepIndex(qIndex)
       setIsHideInput(false)
@@ -198,9 +186,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   }
 
   const getCurrentStep = (): ChoiceQuestion | undefined =>
-    survey && currentStepIndex !== undefined
-      ? (survey.config.steps[currentStepIndex] as ChoiceQuestion)
-      : undefined
+    survey && currentStepIndex !== undefined ? (survey.config.steps[currentStepIndex] as ChoiceQuestion) : undefined
 
   const getInvalidTargetStepIds = (): string[] => {
     const currentStep = getCurrentStep()
@@ -224,12 +210,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     <>
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
         {({onConfirm, onCancel}) => (
-          <ConfirmationDialog
-            isOpen={hasObjectChanged}
-            type={'NAVIGATE'}
-            onCancel={onCancel}
-            onConfirm={onConfirm}
-          />
+          <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
         )}
       </NavigationPrompt>
 

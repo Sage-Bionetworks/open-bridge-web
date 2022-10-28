@@ -1,10 +1,4 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectProps,
-} from '@mui/material'
+import {FormControl, InputLabel, MenuItem, Select, SelectProps} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
@@ -39,9 +33,7 @@ export interface SelectWithEnumProps {
   size?: 'small' | 'normal'
 }
 
-const SelectWithEnum: React.FunctionComponent<
-  SelectWithEnumProps & SelectProps
-> = ({
+const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps & SelectProps> = ({
   sourceData,
 
   id,

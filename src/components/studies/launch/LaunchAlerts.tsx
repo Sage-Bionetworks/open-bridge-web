@@ -126,9 +126,7 @@ const ALERTS: StudyAlertSection[] = [
       {
         errorText: 'All study sessions need to have at least one assessment',
         validationFn: (args: DataToValidate) => {
-          const noAsseessments = args.schedule.sessions.find(
-            s => !s.assessments || s.assessments.length === 0
-          )
+          const noAsseessments = args.schedule.sessions.find(s => !s.assessments || s.assessments.length === 0)
           return !noAsseessments
         },
         isDismissable: false,
@@ -145,26 +143,20 @@ const ALERTS: StudyAlertSection[] = [
           if (!args.schedule) {
             return false
           }
-          const allNotifications = args.schedule.sessions.reduce(
-            (prev, curr) => {
-              return [...prev, ...(curr.notifications || [])]
-            },
-            [] as ScheduleNotification[]
-          )
+          const allNotifications = args.schedule.sessions.reduce((prev, curr) => {
+            return [...prev, ...(curr.notifications || [])]
+          }, [] as ScheduleNotification[])
           const defaultNotifications = allNotifications.find(
             n =>
-              _.get(n.messages, '0.message') ===
-                DEFAULT_NOTIFICATION.messages[0]!.message ||
-              _.get(n.messages, '0.subject') ===
-                DEFAULT_NOTIFICATION.messages[0]!.subject
+              _.get(n.messages, '0.message') === DEFAULT_NOTIFICATION.messages[0]!.message ||
+              _.get(n.messages, '0.subject') === DEFAULT_NOTIFICATION.messages[0]!.subject
           )
           return !defaultNotifications
         },
         isDismissable: true,
       },
       {
-        errorText:
-          'Please make sure to edit schedule through the "Schedule Sessions" tab',
+        errorText: 'Please make sure to edit schedule through the "Schedule Sessions" tab',
         validationFn: (args: DataToValidate) => {
           if (!args.schedule) return false
           return !isSameAsDefaultSchedule(args.schedule)
@@ -178,8 +170,7 @@ const ALERTS: StudyAlertSection[] = [
     errors: [
       {
         errorText: 'Please select enrollment type',
-        validationFn: (args: DataToValidate) =>
-          !_.isEmpty(args.study.signInTypes),
+        validationFn: (args: DataToValidate) => !_.isEmpty(args.study.signInTypes),
         isDismissable: false,
       },
     ],
@@ -204,8 +195,7 @@ const ALERTS: StudyAlertSection[] = [
       },
       {
         errorText: 'Please enter Institutional Affiliation',
-        validationFn: (args: DataToValidate) =>
-          !!getLeadPI(args.study)?.affiliation,
+        validationFn: (args: DataToValidate) => !!getLeadPI(args.study)?.affiliation,
         isDismissable: false,
         anchor: 'leadPI',
       },
@@ -223,17 +213,14 @@ const ALERTS: StudyAlertSection[] = [
         errorText: 'Please enter Contact Lead',
         validationFn: (args: DataToValidate) => {
           const contactSupport = getStudySupportPerson(args.study)
-          return (
-            !!contactSupport && contactSupport.name !== DEFAULT_CONTACT_NAME
-          )
+          return !!contactSupport && contactSupport.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: false,
         anchor: 'contactLead',
       },
       {
         errorText: 'Please enter Contact’s position',
-        validationFn: (args: DataToValidate) =>
-          !!getStudySupportPerson(args.study)?.position,
+        validationFn: (args: DataToValidate) => !!getStudySupportPerson(args.study)?.position,
 
         isDismissable: false,
         anchor: 'contactLead',
@@ -241,8 +228,7 @@ const ALERTS: StudyAlertSection[] = [
 
       {
         errorText: 'Please enter Email of Contact Lead',
-        validationFn: (args: DataToValidate) =>
-          !!getStudySupportPerson(args.study)?.email,
+        validationFn: (args: DataToValidate) => !!getStudySupportPerson(args.study)?.email,
         isDismissable: false,
         anchor: 'contactLead',
       },
@@ -257,15 +243,13 @@ const ALERTS: StudyAlertSection[] = [
       },
       {
         errorText: 'Please enter Phone # of IRB Contact',
-        validationFn: (args: DataToValidate) =>
-          !!getIrbContact(args.study)?.phone,
+        validationFn: (args: DataToValidate) => !!getIrbContact(args.study)?.phone,
         isDismissable: false,
         anchor: 'contactIrb',
       },
       {
         errorText: 'Please enter Email of IRB',
-        validationFn: (args: DataToValidate) =>
-          !!getIrbContact(args.study)?.email,
+        validationFn: (args: DataToValidate) => !!getIrbContact(args.study)?.email,
         isDismissable: false,
         anchor: 'contactIrb',
       },
@@ -279,8 +263,7 @@ const ALERTS: StudyAlertSection[] = [
       },
       {
         errorText: 'Please enter a valid study color',
-        validationFn: (args: DataToValidate) =>
-          isAppBackgroundColorValid(args.study.colorScheme?.background),
+        validationFn: (args: DataToValidate) => isAppBackgroundColorValid(args.study.colorScheme?.background),
         isDismissable: false,
         anchor: 'hex-color-picker',
       },
@@ -305,9 +288,7 @@ export interface LaunchAlertsProps {
   onEnableNext: Function
 }
 
-const StudyAlertComponent: React.FunctionComponent<
-  StudyAlertSection & {onIgnore: Function; study: Study}
-> = ({
+const StudyAlertComponent: React.FunctionComponent<StudyAlertSection & {onIgnore: Function; study: Study}> = ({
   section,
   errors,
   onIgnore,
@@ -321,21 +302,13 @@ const StudyAlertComponent: React.FunctionComponent<
   return (
     <div className={classes.section}>
       <div className={classes.sectionHeader}>
-        <img
-          src={_section!.navIcon}
-          className={classes.navIcon}
-          alt={_section!.name}
-        />
+        <img src={_section!.navIcon} className={classes.navIcon} alt={_section!.name} />
         <span>{_section!.name}</span>
       </div>
       {errors.map((error, errorIndex) => (
-        <div
-          className={classes.errorDescription}
-          key={error.errorText + errorIndex}>
+        <div className={classes.errorDescription} key={error.errorText + errorIndex}>
           <div style={{display: 'flex', alignItems: 'center'}}>
-            {!error.isDismissable && (
-              <Alert_Icon className={classes.alertIcon} />
-            )}
+            {!error.isDismissable && <Alert_Icon className={classes.alertIcon} />}
 
             {error.errorText}
           </div>
@@ -343,23 +316,17 @@ const StudyAlertComponent: React.FunctionComponent<
             <Box className={classes.reviewIgnoreButtons}>
               <NavLink
                 style={{textDecoration: 'none'}}
-                to={`${_section!.path}?from=launch${
-                  error.anchor ? '&anchor=' + error.anchor : ''
-                }`}>
+                to={`${_section!.path}?from=launch${error.anchor ? '&anchor=' + error.anchor : ''}`}>
                 <Button>Review</Button>
               </NavLink>
 
-              <Button onClick={() => onIgnore(_section!.path, errorIndex)}>
-                Ignore
-              </Button>
+              <Button onClick={() => onIgnore(_section!.path, errorIndex)}>Ignore</Button>
             </Box>
           )}
           {!error.isDismissable && (
             <NavLink
               style={{textDecoration: 'none'}}
-              to={`${_section!.path}?from=launch${
-                error.anchor ? '&anchor=' + error.anchor : ''
-              }`}>
+              to={`${_section!.path}?from=launch${error.anchor ? '&anchor=' + error.anchor : ''}`}>
               <Button variant="contained" className={classes.mustReviewButton}>
                 Review Required
               </Button>
@@ -432,9 +399,7 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
       <Box textAlign="left">
         <MTBHeadingH1 style={{marginBottom: '24px'}}>{study.name}</MTBHeadingH1>
         {alerts?.length > 0 && (
-          <MTBHeadingH2 style={{marginBottom: '40px'}}>
-            Please review the following alerts:{' '}
-          </MTBHeadingH2>
+          <MTBHeadingH2 style={{marginBottom: '40px'}}>Please review the following alerts: </MTBHeadingH2>
         )}
       </Box>
       {study &&
@@ -452,10 +417,7 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
         <Preview_Icon />
         <span>
           Please remember to&nbsp;
-          <NavLink to={`/studies/builder/${study.identifier}/preview`}>
-            Preview Your Study
-          </NavLink>{' '}
-          before launching.
+          <NavLink to={`/studies/builder/${study.identifier}/preview`}>Preview Your Study</NavLink> before launching.
         </span>
       </div>
     </Container>

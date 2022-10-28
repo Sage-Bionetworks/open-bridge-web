@@ -38,10 +38,7 @@ const Wrapper = <T extends BaseStep>({Component, step: _step}: Props<T>) => {
   )
 }
 //render the component
-export const renderSurveyQuestionComponent = <T extends BaseStep>({
-  step,
-  Component,
-}: Props<T>) => {
+export const renderSurveyQuestionComponent = <T extends BaseStep>({step, Component}: Props<T>) => {
   const user = userEvent.setup()
   const element = render(<Wrapper Component={Component} step={step} />)
   return {user, element}

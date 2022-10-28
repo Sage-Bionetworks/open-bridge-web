@@ -21,9 +21,7 @@ const HideWhen: React.FunctionComponent<HideWhenProps> = props => {
   }
 
   if (children.length === 2) {
-    return props.hideWhen
-      ? (children[1] as React.ReactElement<any>)
-      : (children[0] as React.ReactElement<any>)
+    return props.hideWhen ? (children[1] as React.ReactElement<any>) : (children[0] as React.ReactElement<any>)
   }
 
   return <></>

@@ -10,13 +10,8 @@ export interface EndDateProps {
 }
 export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURRENCES'
 
-const EndDate: React.FunctionComponent<EndDateProps> = ({
-  occurrences,
-  onChange,
-}: EndDateProps) => {
-  const [endType, setEndType] = React.useState<SessionScheduleEndType>(
-    occurrences ? 'N_OCCURRENCES' : 'END_STUDY'
-  )
+const EndDate: React.FunctionComponent<EndDateProps> = ({occurrences, onChange}: EndDateProps) => {
+  const [endType, setEndType] = React.useState<SessionScheduleEndType>(occurrences ? 'N_OCCURRENCES' : 'END_STUDY')
 
   const changeEndDate = (type: SessionScheduleEndType) => {
     setEndType(type)
@@ -34,11 +29,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
         name="endAfter"
         value={endType}
         onChange={e => changeEndDate(e.target.value as SessionScheduleEndType)}>
-        <FormControlLabel
-          value={'END_STUDY'}
-          control={<Radio />}
-          label="End of study "
-        />
+        <FormControlLabel value={'END_STUDY'} control={<Radio />} label="End of study " />
         <FormControlLabel
           control={
             <>

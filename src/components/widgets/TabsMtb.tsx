@@ -60,9 +60,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
 }: TabProps) => {
   const classes = useStyles()
 
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
-    null
-  )
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     if (newValue !== -10) {
@@ -130,9 +128,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
                   <div className={classes.TabTitle}>
                     <EditableTextbox
                       initValue={tab.label}
-                      onTriggerUpdate={(newText: string) =>
-                        onRenameTab(tab.id, newText)
-                      }></EditableTextbox>
+                      onTriggerUpdate={(newText: string) => onRenameTab(tab.id, newText)}></EditableTextbox>
                   </div>
                 </>
               ) : (

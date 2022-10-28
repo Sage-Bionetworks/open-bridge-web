@@ -3,9 +3,7 @@ import {Box, styled} from '@mui/material'
 import {latoFont} from '@style/theme'
 import {ChoiceQuestion, Step} from '@typedefs/surveys'
 import {Edge, MarkerType, Node} from 'reactflow'
-import QUESTIONS, {
-  getQuestionId,
-} from '../survey-design/left-panel/QuestionConfigs'
+import QUESTIONS, {getQuestionId} from '../survey-design/left-panel/QuestionConfigs'
 import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 
 const position = {x: 0, y: 0}
@@ -41,9 +39,7 @@ function createNode(
     <div style={{position: 'relative'}}>
       <DivContainer>
         {QUESTIONS.get(getQuestionId(q))?.img}
-        {q.type !== 'completion' && q.type !== 'overview' && (
-          <Box>{qSequentialIndex}</Box>
-        )}
+        {q.type !== 'completion' && q.type !== 'overview' && <Box>{qSequentialIndex}</Box>}
         <StyledQuestionTitle className="title" unconnected={isUnconnected}>
           {q.title}
         </StyledQuestionTitle>
@@ -85,10 +81,7 @@ function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
     const nextIds = [
       ...new Set(
         q.surveyRules
-          .filter(
-            rule =>
-              rule.matchingAnswer && qChoiceValues.includes(rule.matchingAnswer)
-          )
+          .filter(rule => rule.matchingAnswer && qChoiceValues.includes(rule.matchingAnswer))
           .map(rule => rule.skipToIdentifier)
       ),
     ]
@@ -131,9 +124,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
       //add child edges
       for (let child of nextQs) {
         //find sequential index of the quesiton
-        const qIndex = questions.findIndex(
-          q1 => q1.identifier === child.identifier
-        )
+        const qIndex = questions.findIndex(q1 => q1.identifier === child.identifier)
 
         //add child node
         const indexOfNode = nodes.findIndex(q1 => q1.id === child.identifier)
@@ -142,9 +133,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
           addNode(child, qIndex, error)
         }
         //add edge
-        const indexOfEdge = edges.findIndex(
-          e => e.source === q.identifier && e.target === child.identifier
-        )
+        const indexOfEdge = edges.findIndex(e => e.source === q.identifier && e.target === child.identifier)
         if (indexOfEdge === -1) {
           const edge = createEdge(q.identifier, child.identifier)
           edges.push(edge)

@@ -20,10 +20,7 @@ type SurveyTitleProps = {
   onChange: (s: BaseStep) => void
 }
 
-const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
-  step,
-  onChange,
-}) => {
+const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({step, onChange}) => {
   /*{
 	"type": "assessment",
 	"identifier": "foo",
@@ -41,12 +38,7 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
 }*/
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      justifyContent="flex-start"
-      paddingTop="120px"
-      height="100%">
+    <Box display="flex" flexDirection="column" justifyContent="flex-start" paddingTop="120px" height="100%">
       <TitleIcon>
         {step.image?.imageName && (
           <img

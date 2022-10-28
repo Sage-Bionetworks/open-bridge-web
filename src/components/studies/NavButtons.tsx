@@ -29,19 +29,12 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
     return <></>
   }
 
-  const sectionLinks = getStudyBuilderSections(
-    StudyService.isStudyInDesign(study)
-  )
+  const sectionLinks = getStudyBuilderSections(StudyService.isStudyInDesign(study))
   const currentIndex = sectionLinks.findIndex(i => i.path === currentSection)
   const prev = currentIndex > 0 ? sectionLinks[currentIndex - 1] : undefined
-  const next =
-    currentIndex + 1 < sectionLinks.length
-      ? sectionLinks[currentIndex + 1]
-      : undefined
+  const next = currentIndex + 1 < sectionLinks.length ? sectionLinks[currentIndex + 1] : undefined
   const prevButton = prev ? (
-    <NavLink
-      to={`/studies/builder/${study.identifier}/${prev.path}`}
-      style={{textDecoration: 'none'}}>
+    <NavLink to={`/studies/builder/${study.identifier}/${prev.path}`} style={{textDecoration: 'none'}}>
       <PrevButton variant="outlined" color="primary">
         <ArrowIcon /> {prev.buttonName || prev.name}
       </PrevButton>
@@ -51,13 +44,8 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   )
 
   const nextButton = next ? (
-    <NavLink
-      to={disabled ? '#' : `/studies/builder/${study.identifier}/${next.path}`}
-      style={{textDecoration: 'none'}}>
-      <NextButton
-        variant="contained"
-        color="primary"
-        disabled={disabled || false}>
+    <NavLink to={disabled ? '#' : `/studies/builder/${study.identifier}/${next.path}`} style={{textDecoration: 'none'}}>
+      <NextButton variant="contained" color="primary" disabled={disabled || false}>
         {next.buttonName || next.name} <ArrowIcon />
       </NextButton>
     </NavLink>

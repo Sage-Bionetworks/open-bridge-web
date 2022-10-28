@@ -19,14 +19,7 @@ import TablePagination from '@components/widgets/pagination/TablePagination'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Tab,
-  Tabs,
-} from '@mui/material'
+import {Box, Button, CircularProgress, Container, Tab, Tabs} from '@mui/material'
 import Alert from '@mui/material/Alert'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import StudyService from '@services/study.service'
@@ -44,10 +37,7 @@ import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import {useEvents, useEventsForUsers} from '../../../services/eventHooks'
-import {
-  useInvalidateParticipants,
-  useParticipants,
-} from '../../../services/participantHooks'
+import {useInvalidateParticipants, useParticipants} from '../../../services/participantHooks'
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
@@ -77,16 +67,8 @@ const TAB_DEFs = [
   {type: 'TEST', label: 'Test Accounts'},
 ]
 
-const TAB_ICONS_FOCUS = [
-  ParticipantListFocusIcon,
-  WithdrawnParticipantsFocusIcon,
-  TestAccountFocusIcon,
-]
-const TAB_ICONS_UNFOCUS = [
-  ParticipantListUnfocusIcon,
-  WithdrawnParticipantsUnfocusIcon,
-  TestAccountUnfocusIcon,
-]
+const TAB_ICONS_FOCUS = [ParticipantListFocusIcon, WithdrawnParticipantsFocusIcon, TestAccountFocusIcon]
+const TAB_ICONS_UNFOCUS = [ParticipantListUnfocusIcon, WithdrawnParticipantsUnfocusIcon, TestAccountUnfocusIcon]
 
 /***  subcomponents  */
 const UnderConstructionSC: FunctionComponent = () => (
@@ -102,9 +84,7 @@ const UnderConstructionSC: FunctionComponent = () => (
   </Container>
 )
 
-const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({
-  title,
-}) => {
+const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({title}) => {
   const classes = useStyles()
   return (
     <div className={classes.addParticipantIcon}>
@@ -120,8 +100,7 @@ const GoToDownloadPageLinkSC: FunctionComponent = () => {
       target="_blank"
       aria-label="downloadApp"
       className={classes.downloadPageLinkButton}>
-      <img src={DownloadAppIcon} style={{marginRight: '10px'}}></img> App
-      Download Link
+      <img src={DownloadAppIcon} style={{marginRight: '10px'}}></img> App Download Link
     </Button>
   )
 }
@@ -142,11 +121,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }>()
 
   const {token} = useUserSessionDataState()
-  const {
-    data: study,
-    error: studyError,
-    isLoading: isStudyLoading,
-  } = useStudy(studyId)
+  const {data: study, error: studyError, isLoading: isStudyLoading} = useStudy(studyId)
 
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -172,27 +147,20 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   // True if the user is currently searching for a particpant using id
   const [error, setError] = React.useState<Error>()
-  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
-    string | undefined
-  >(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<string | undefined>(undefined)
 
   //user ids selectedForSction
-  const [selectedParticipantIds, setSelectedParticipantIds] =
-    React.useState<SelectedParticipantIdsType>({
-      ACTIVE: [],
-      TEST: [],
-      WITHDRAWN: [],
-    })
+  const [selectedParticipantIds, setSelectedParticipantIds] = React.useState<SelectedParticipantIdsType>({
+    ACTIVE: [],
+    TEST: [],
+    WITHDRAWN: [],
+  })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   //List of participants errored out during operation - used for deltee
-  const [participantsWithError, setParticipantsWithError] = React.useState<
-    ParticipantAccountSummary[]
-  >([])
+  const [participantsWithError, setParticipantsWithError] = React.useState<ParticipantAccountSummary[]>([])
 
-  const [searchValue, setSearchValue] = React.useState<string | undefined>(
-    undefined
-  )
+  const [searchValue, setSearchValue] = React.useState<string | undefined>(undefined)
 
   const isById = Utility.isSignInById(study?.signInTypes)
   const [data, setData] = React.useState<ParticipantData>()
@@ -205,14 +173,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     data: pData,
     status,
     error: participantError,
-  } = useParticipants(
-    study?.identifier,
-    currentPage,
-    pageSize,
-    tab,
-    searchValue,
-    isById
-  )
+  } = useParticipants(study?.identifier, currentPage, pageSize, tab, searchValue, isById)
   const {data: pEventsMap} = useEventsForUsers(study?.identifier, pIds)
 
   const invalidateParticipants = useInvalidateParticipants()
@@ -290,10 +251,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         selectionType === 'ALL'
           ? undefined
           : {
-              items:
-                data?.items?.filter(p =>
-                  selectedParticipantIds[tab].includes(p.id)
-                ) || [],
+              items: data?.items?.filter(p => selectedParticipantIds[tab].includes(p.id)) || [],
               total: selectedParticipantIds[tab].length,
             }
       const participantBlob = await CsvUtility.getParticipantDataForDownload(
@@ -317,11 +275,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const displayPlaceholderScreen =
-    !constants.constants.IS_TEST_MODE &&
-    StudyService.getDisplayStatusForStudyPhase(study.phase) !== 'LIVE'
+    !constants.constants.IS_TEST_MODE && StudyService.getDisplayStatusForStudyPhase(study.phase) !== 'LIVE'
 
-  const displayNoParticipantsPage =
-    status !== 'loading' && data?.items.length === 0 && tab === 'WITHDRAWN'
+  const displayNoParticipantsPage = status !== 'loading' && data?.items.length === 0 && tab === 'WITHDRAWN'
 
   return (
     <Box bgcolor="#F8F8F8">
@@ -332,9 +288,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       </Box>
 
       {displayPlaceholderScreen && <ParticipantManagerPlaceholder />}
-      {['COMPLETED', 'WITHDRAWN'].includes(
-        StudyService.getDisplayStatusForStudyPhase(study.phase)
-      ) && <UnderConstructionSC />}
+      {['COMPLETED', 'WITHDRAWN'].includes(StudyService.getDisplayStatusForStudyPhase(study.phase)) && (
+        <UnderConstructionSC />
+      )}
       {!displayPlaceholderScreen && (
         <>
           <Box py={0} pr={3} pl={2}>
@@ -354,32 +310,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     root: clsx(
                       classes.tab,
                       tab === tabDef.type && classes.selectedTab,
-                      tabDef.type === 'WITHDRAWN' &&
-                        classes.withdrawnParticipants
+                      tabDef.type === 'WITHDRAWN' && classes.withdrawnParticipants
                     ),
                   }}
                   icon={
                     <Box
                       display="flex"
                       flexDirection="row"
-                      className={clsx(
-                        classes.tab_icon,
-                        tab !== tabDef.type && classes.unactiveTabIcon
-                      )}>
+                      className={clsx(classes.tab_icon, tab !== tabDef.type && classes.unactiveTabIcon)}>
                       <img
-                        src={
-                          tab === tabDef.type
-                            ? TAB_ICONS_FOCUS[index]
-                            : TAB_ICONS_UNFOCUS[index]
-                        }
+                        src={tab === tabDef.type ? TAB_ICONS_FOCUS[index] : TAB_ICONS_UNFOCUS[index]}
                         style={{marginRight: '6px'}}></img>
-                      <div>{`${tabDef.label} ${
-                        tab === tabDef.type
-                          ? data
-                            ? `(${data.total})`
-                            : '(...)'
-                          : ''
-                      }`}</div>
+                      <div>{`${tabDef.label} ${tab === tabDef.type ? (data ? `(${data.total})` : '(...)') : ''}`}</div>
                     </Box>
                   }
                 />
@@ -391,13 +333,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 isFullWidth={true}
                 isHideContentOnClose={true}
                 isDrawerHidden={tab === 'WITHDRAWN'}
-                collapseButton={
-                  <CollapseIcon
-                    className={clsx(
-                      tab === 'TEST' && classes.collapsedAddTestUser
-                    )}
-                  />
-                }
+                collapseButton={<CollapseIcon className={clsx(tab === 'TEST' && classes.collapsedAddTestUser)} />}
                 onToggleClick={(open: boolean) => setIsAddOpen(open)}
                 expandButton={
                   tab === 'ACTIVE' ? (
@@ -410,8 +346,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   display: 'block',
                   padding: '0',
                   borderRadius: 0,
-                  backgroundColor:
-                    tab === 'ACTIVE' ? theme.palette.primary.dark : '#AEDCC9',
+                  backgroundColor: tab === 'ACTIVE' ? theme.palette.primary.dark : '#AEDCC9',
                 }}>
                 <>
                   <AddParticipants
@@ -429,10 +364,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 ) : (
                   <div>
                     <Box className={classes.gridToolBar}>
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        alignItems="center">
+                      <Box display="flex" flexDirection="row" alignItems="center">
                         {/* This is here for now because the "Send SMS link" feature is not being included in the october release. */}
                         {false && !Utility.isSignInById(study!.signInTypes) && (
                           <Button
@@ -449,8 +381,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             <img
                               src={SMSPhoneImg}
                               className={clsx(
-                                selectedParticipantIds[tab].length === 0 &&
-                                  classes.disabledImage,
+                                selectedParticipantIds[tab].length === 0 && classes.disabledImage,
                                 classes.topRowImage
                               )}></img>
                             Send SMS link
@@ -466,8 +397,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             disabled={selectedParticipantIds[tab].length <= 1}>
                             <img
                               className={clsx(
-                                selectedParticipantIds[tab].length <= 1 &&
-                                  classes.disabledImage,
+                                selectedParticipantIds[tab].length <= 1 && classes.disabledImage,
                                 classes.topRowImage
                               )}
                               src={BatchEditIcon}></img>
@@ -476,14 +406,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         )}
 
                         <ParticipantDownloadTrigger
-                          onDownload={() =>
-                            downloadParticipants(isAllSelected ? 'ALL' : 'SOME')
-                          }
+                          onDownload={() => downloadParticipants(isAllSelected ? 'ALL' : 'SOME')}
                           fileDownloadUrl={fileDownloadUrl}
-                          hasItems={
-                            !!data?.items?.length &&
-                            selectedParticipantIds[tab].length > 0
-                          }
+                          hasItems={!!data?.items?.length && selectedParticipantIds[tab].length > 0}
                           onDone={() => {
                             URL.revokeObjectURL(fileDownloadUrl!)
                             setFileDownloadUrl(undefined)
@@ -493,10 +418,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                               src={DownloadIcon}
                               style={{
                                 marginRight: '6px',
-                                opacity:
-                                  selectedParticipantIds[tab].length === 0
-                                    ? 0.5
-                                    : 1,
+                                opacity: selectedParticipantIds[tab].length === 0 ? 0.5 : 1,
                               }}></img>
                             {!loadingIndicators.isDownloading ? (
                               'StudyParticipants.csv'
@@ -518,8 +440,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           disabled={selectedParticipantIds[tab].length === 0}>
                           <DeleteIcon
                             className={clsx(
-                              selectedParticipantIds[tab].length === 0 &&
-                                classes.disabledImage,
+                              selectedParticipantIds[tab].length === 0 && classes.disabledImage,
                               classes.topRowImage,
                               classes.deleteIcon
                             )}></DeleteIcon>
@@ -546,32 +467,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       id={`active-participants`}
                       className={classes.tabPanel}
                       style={{
-                        marginLeft:
-                          !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
+                        marginLeft: !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
                       }}>
                       {error && (
-                        <Alert
-                          color="error"
-                          onClose={() => setError(undefined)}>
+                        <Alert color="error" onClose={() => setError(undefined)}>
                           {error.message}
                         </Alert>
                       )}
                       <ParticipantTableGrid
                         rows={data?.items || []}
                         status={status}
-                        scheduleEventIds={
-                          scheduleEvents.map(e => e.eventId) || []
-                        }
+                        scheduleEventIds={scheduleEvents.map(e => e.eventId) || []}
                         studyId={study.identifier}
                         totalParticipants={data?.total || 0}
                         isAllSelected={isAllSelected}
                         gridType={tab}
                         selectedParticipantIds={selectedParticipantIds[tab]}
                         isEnrolledById={Utility.isSignInById(study.signInTypes)}
-                        onRowSelected={(
-                          /*id: string, isSelected: boolean*/ selection,
-                          isAll
-                        ) => {
+                        onRowSelected={(/*id: string, isSelected: boolean*/ selection, isAll) => {
                           if (isAll !== undefined) {
                             setIsAllSelected(isAll)
                           }
@@ -611,10 +524,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           <ParticipantDeleteModal
             studyId={studyId}
             dialogState={dialogState}
-            onClose={(_dialogState: {
-              dialogOpenRemove: boolean
-              dialogOpenSMS: boolean
-            }) => {
+            onClose={(_dialogState: {dialogOpenRemove: boolean; dialogOpenSMS: boolean}) => {
               setDialogState(_dialogState)
               resetSelectAll()
             }}

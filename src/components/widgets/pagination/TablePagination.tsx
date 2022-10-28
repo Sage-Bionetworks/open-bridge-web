@@ -127,14 +127,7 @@ const TablePagination: React.FunctionComponent<TablePaginationProps> = ({
         currentPageSelected={currentPage}
         numberOfPages={Math.ceil(totalItems / pageSize)}
         handlePageNavigationArrowPressed={(val: PageSelectorValues) =>
-          onPageSelectedChanged(
-            getCurrentPageFromPageNavigationArrowPressed(
-              val,
-              currentPage,
-              totalItems,
-              pageSize
-            )
-          )
+          onPageSelectedChanged(getCurrentPageFromPageNavigationArrowPressed(val, currentPage, totalItems, pageSize))
         }
       />
       <div className={classes.pageSizeSelectorContainer}>

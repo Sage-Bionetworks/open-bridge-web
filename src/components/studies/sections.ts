@@ -71,10 +71,7 @@ const SECTIONS: {
   {
     name: 'Optional Monitoring',
     path: 'passive-features',
-    hideApps: [
-      CONSTANTS.constants.ARC_APP_ID,
-      CONSTANTS.constants.INV_ARC_APP_ID,
-    ],
+    hideApps: [CONSTANTS.constants.ARC_APP_ID, CONSTANTS.constants.INV_ARC_APP_ID],
     navIcon: RecordersRegularIcon,
     hoverIcon: RecordersHoveredIcon,
   },
@@ -109,26 +106,16 @@ const appId = Utility.getAppId()
 
 export const getStudyBuilderSections = (isStudyInDraft: boolean) => {
   return isStudyInDraft
-    ? SECTIONS.filter(
-        section => !section.hideApps?.includes(appId) && !section.isHiddenDraft
-      )
-    : SECTIONS.filter(
-        section => !section.hideApps?.includes(appId) && !section.isHiddenLive
-      )
+    ? SECTIONS.filter(section => !section.hideApps?.includes(appId) && !section.isHiddenDraft)
+    : SECTIONS.filter(section => !section.hideApps?.includes(appId) && !section.isHiddenLive)
 }
 
-export const isSectionEditableWhenLive = (
-  sectionPath: StudySection
-): boolean | undefined => {
+export const isSectionEditableWhenLive = (sectionPath: StudySection): boolean | undefined => {
   const sections = SECTIONS.filter(section => section.path === sectionPath)
   if (!sections.length) {
-    throw Error(
-      `isSectionEditableWhenLive: the ${sectionPath} section does not exist`
-    )
+    throw Error(`isSectionEditableWhenLive: the ${sectionPath} section does not exist`)
   } else {
-    const hasEditableSections = sections.find(
-      section => section.isEditableLive === true
-    )
+    const hasEditableSections = sections.find(section => section.isEditableLive === true)
     return !!hasEditableSections
   }
 }

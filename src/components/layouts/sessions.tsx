@@ -13,13 +13,7 @@ import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps} from 'react-router-dom'
-import {
-  MTBHeadingH1,
-  MTBHeadingH2,
-  MTBHeadingH3,
-  MTBHeadingH4,
-  MTBHeadingH5,
-} from '../widgets/Headings'
+import {MTBHeadingH1, MTBHeadingH2, MTBHeadingH3, MTBHeadingH4, MTBHeadingH5} from '../widgets/Headings'
 
 const drawerWidth = 212
 
@@ -109,11 +103,7 @@ const SessionsLayout: FunctionComponent<RouteComponentProps> = ({}) => {
     setOpen(prev => !prev)
   }
   return (
-    <Box
-      paddingTop="16px"
-      bgcolor="#997cbf29"
-      display="flex"
-      position="relative">
+    <Box paddingTop="16px" bgcolor="#997cbf29" display="flex" position="relative">
       <Drawer
         variant="permanent"
         className={clsx(classes.drawer, {
@@ -133,16 +123,9 @@ const SessionsLayout: FunctionComponent<RouteComponentProps> = ({}) => {
         </div>
         <Divider />
         <List>
-          {[
-            'Study Protocol',
-            'Sessions Creator',
-            'Scheduler',
-            'Participant Groups',
-          ].map((text, index) => (
+          {['Study Protocol', 'Sessions Creator', 'Scheduler', 'Participant Groups'].map((text, index) => (
             <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <SomeIcon /> : <SomeIcon />}
-              </ListItemIcon>
+              <ListItemIcon>{index % 2 === 0 ? <SomeIcon /> : <SomeIcon />}</ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
           ))}
@@ -170,11 +153,7 @@ const SessionsLayout: FunctionComponent<RouteComponentProps> = ({}) => {
             columnGap="16px"
             rowGap="16px">
             {cards.map(card => (
-              <Box
-                width="280px"
-                height="511px"
-                border="1px solid black"
-                bgcolor="#d5e5ec">
+              <Box width="280px" height="511px" border="1px solid black" bgcolor="#d5e5ec">
                 card
               </Box>
             ))}

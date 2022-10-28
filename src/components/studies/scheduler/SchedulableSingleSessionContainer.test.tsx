@@ -75,9 +75,7 @@ const studySession: StudySession = {
   startEventIds: ['timeline_retrieved'],
 }
 
-const Wrapper: React.FunctionComponent<{_session: StudySession}> = ({
-  _session,
-}) => {
+const Wrapper: React.FunctionComponent<{_session: StudySession}> = ({_session}) => {
   const [session, setSession] = React.useState(_session)
 
   return (
@@ -113,9 +111,7 @@ function setUp(session: StudySession) {
 
 test('renders and changes reminder notification type', async () => {
   const {user} = setUp(studySession)
-  const reminderNotification = screen.getByText(
-    /Send a reminder notification/i
-  ).parentElement
+  const reminderNotification = screen.getByText(/Send a reminder notification/i).parentElement
   const radioButton = within(reminderNotification!).getByRole('radio', {
     name: /after start of window/i,
   })
@@ -144,9 +140,7 @@ test('renders and changes reminder notification type', async () => {
 
 test('renders and changes reminder notification interval', async () => {
   const {user} = setUp(studySession)
-  const reminderNotification = screen.getByText(
-    /Send a reminder notification/i
-  ).parentElement
+  const reminderNotification = screen.getByText(/Send a reminder notification/i).parentElement
   const value = within(reminderNotification!).getByRole('spinbutton')
 
   await act(async () => {

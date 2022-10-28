@@ -15,9 +15,7 @@ function getStepType(step: Step): QuestionTypeKey {
     return 'INSTRUCTION'
   }
   if (step.type === 'choiceQuestion') {
-    return (step as ChoiceQuestion).singleChoice
-      ? 'SINGLE_SELECT'
-      : 'MULTI_SELECT'
+    return (step as ChoiceQuestion).singleChoice ? 'SINGLE_SELECT' : 'MULTI_SELECT'
   }
   if (step.type === 'completion') {
     return 'COMPLETION'
@@ -62,10 +60,7 @@ const useQuestionInfo = (step: Step, steps: Step[]): ExtendedStepInfo => {
 
   React.useEffect(() => {
     const stepType = getStepType(step)
-    const {index, isLast} = SurveyUtils.getSequentialQuestionIndex(
-      step.identifier,
-      steps
-    )
+    const {index, isLast} = SurveyUtils.getSequentialQuestionIndex(step.identifier, steps)
     setExtendedStep({step, stepType, index, isLast})
   }, [step, steps])
 

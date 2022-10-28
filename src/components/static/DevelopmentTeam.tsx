@@ -9,10 +9,7 @@ type DevelopmentTeamOwnProps = {
 
 type DevelopmentTeamProps = DevelopmentTeamOwnProps & RouteComponentProps
 
-const DevelopmentTeam: FunctionComponent<DevelopmentTeamProps> = ({
-  title = 'something',
-  paragraph,
-}) => (
+const DevelopmentTeam: FunctionComponent<DevelopmentTeamProps> = ({title = 'something', paragraph}) => (
   <aside>
     <h2>{title}DevelopmentTeam</h2>
     <p>{paragraph}</p>

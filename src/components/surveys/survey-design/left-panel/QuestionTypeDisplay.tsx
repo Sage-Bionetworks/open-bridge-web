@@ -3,28 +3,26 @@ import {poppinsFont} from '@style/theme'
 import React from 'react'
 import QUESTIONS, {QuestionTypeKey} from './QuestionConfigs'
 
-export const DivContainer = styled('div')<{hover?: boolean}>(
-  ({theme, hover = true}) => ({
-    height: theme.spacing(6),
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
+export const DivContainer = styled('div')<{hover?: boolean}>(({theme, hover = true}) => ({
+  height: theme.spacing(6),
+  display: 'flex',
+  alignItems: 'center',
+  width: '100%',
 
-    '> svg, img': {
-      flexShrink: 0,
-      flexGrow: 0,
-      maxWidth: theme.spacing(6),
-      maxHeight: theme.spacing(6),
-      // margin: theme.spacing(2),
-    },
-    '> div': {
-      color: '#3A3A3A',
-      fontFamily: poppinsFont,
-      fontWeight: 500,
-      fontSize: '14px',
-    },
-  })
-)
+  '> svg, img': {
+    flexShrink: 0,
+    flexGrow: 0,
+    maxWidth: theme.spacing(6),
+    maxHeight: theme.spacing(6),
+    // margin: theme.spacing(2),
+  },
+  '> div': {
+    color: '#3A3A3A',
+    fontFamily: poppinsFont,
+    fontWeight: 500,
+    fontSize: '14px',
+  },
+}))
 
 // optionally use a custom type guard
 function isPropsQuestionTypeDisplayProps(
@@ -40,17 +38,16 @@ type QuestionTypeWrappedDisplayProps = {
   children: React.ReactNode
 }
 
-const QuestionTypeDisplay: React.FunctionComponent<
-  QuestionTypeDisplayProps | QuestionTypeWrappedDisplayProps
-> = props => {
-  return isPropsQuestionTypeDisplayProps(props) ? (
-    <DivContainer>
-      {QUESTIONS.get(props.name)?.img}
-      <div>{QUESTIONS.get(props.name)?.title}</div>
-    </DivContainer>
-  ) : (
-    <DivContainer>{props.children}</DivContainer>
-  )
-}
+const QuestionTypeDisplay: React.FunctionComponent<QuestionTypeDisplayProps | QuestionTypeWrappedDisplayProps> =
+  props => {
+    return isPropsQuestionTypeDisplayProps(props) ? (
+      <DivContainer>
+        {QUESTIONS.get(props.name)?.img}
+        <div>{QUESTIONS.get(props.name)?.title}</div>
+      </DivContainer>
+    ) : (
+      <DivContainer>{props.children}</DivContainer>
+    )
+  }
 
 export default QuestionTypeDisplay

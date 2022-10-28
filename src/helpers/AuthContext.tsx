@@ -18,12 +18,8 @@ const initialState = {
   demoExternalId: '',
 }
 
-const UserSessionDataStateContext = React.createContext<
-  UserSessionData | undefined
->(undefined)
-const UserSessionDataDispatchContext = React.createContext<
-  Dispatch | undefined
->(undefined)
+const UserSessionDataStateContext = React.createContext<UserSessionData | undefined>(undefined)
+const UserSessionDataDispatchContext = React.createContext<Dispatch | undefined>(undefined)
 
 function userReducer(state: UserSessionData, action: Action): UserSessionData {
   switch (action.type) {
@@ -76,15 +72,10 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
 }
 
 function UserSessionDataProvider({children}: UserSessionDataProviderProps) {
-  const [state, dispatch] = React.useReducer(
-    userReducer,
-    Utility.getSession() || initialState
-  )
+  const [state, dispatch] = React.useReducer(userReducer, Utility.getSession() || initialState)
   return (
     <UserSessionDataStateContext.Provider value={state}>
-      <UserSessionDataDispatchContext.Provider value={dispatch}>
-        {children}
-      </UserSessionDataDispatchContext.Provider>
+      <UserSessionDataDispatchContext.Provider value={dispatch}>{children}</UserSessionDataDispatchContext.Provider>
     </UserSessionDataStateContext.Provider>
   )
 }
@@ -100,16 +91,9 @@ function useUserSessionDataState() {
 function useUserSessionDataDispatch() {
   const context = React.useContext(UserSessionDataDispatchContext)
   if (context === undefined) {
-    throw new Error(
-      'useUserSessionDataDispatch must be used within a AuthContext'
-    )
+    throw new Error('useUserSessionDataDispatch must be used within a AuthContext')
   }
   return context
 }
 
-export {
-  UserSessionDataProvider,
-  useUserSessionDataState,
-  useUserSessionDataDispatch,
-  UserSessionDataStateContext,
-}
+export {UserSessionDataProvider, useUserSessionDataState, useUserSessionDataDispatch, UserSessionDataStateContext}

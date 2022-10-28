@@ -34,49 +34,42 @@ type ReadOnlyEnrollmentTypeSelectorProps = {
   studyId: string
 }
 
-const ReadOnlyEnrollmentTypeSelector: React.FunctionComponent<ReadOnlyEnrollmentTypeSelectorProps> =
-  ({isPhoneNumberSignInType, children, studyId, isIdGenerated}) => {
-    const classes = useStyles()
-    let signInType = 'Phone number'
-    if (!isPhoneNumberSignInType) {
-      signInType = isIdGenerated
-        ? 'Generated Participant ID'
-        : 'Participant ID defined by you'
-    }
-
-    return (
-      <>
-        <Box className={classes.container}>
-          <img
-            className={classes.image}
-            src={StudyEnrollmentAdditionIcon}></img>
-          <Box className={classes.text}>
-            Participants will enroll into this study on their smartphone device
-            with a:
-            <br></br>
-            <br></br>
-            <strong>{signInType}</strong>
-            <br></br>
-            <br></br>
-            If you haven’t already done so, you will need to enroll your
-            participants to your study in the{' '}
-            <NavLink
-              to={constants.restrictedPaths.PARTICIPANT_MANAGER.replace(
-                ':id',
-                studyId
-              )}>
-              Participant Manager
-            </NavLink>
-            <br></br>
-            <br></br>
-            To log into the app, participants will need to enter both their
-            Study ID and{' '}
-            {isPhoneNumberSignInType ? 'their Phone number' : 'Participant ID.'}
-          </Box>
-        </Box>
-        {children}
-      </>
-    )
+const ReadOnlyEnrollmentTypeSelector: React.FunctionComponent<ReadOnlyEnrollmentTypeSelectorProps> = ({
+  isPhoneNumberSignInType,
+  children,
+  studyId,
+  isIdGenerated,
+}) => {
+  const classes = useStyles()
+  let signInType = 'Phone number'
+  if (!isPhoneNumberSignInType) {
+    signInType = isIdGenerated ? 'Generated Participant ID' : 'Participant ID defined by you'
   }
+
+  return (
+    <>
+      <Box className={classes.container}>
+        <img className={classes.image} src={StudyEnrollmentAdditionIcon}></img>
+        <Box className={classes.text}>
+          Participants will enroll into this study on their smartphone device with a:
+          <br></br>
+          <br></br>
+          <strong>{signInType}</strong>
+          <br></br>
+          <br></br>
+          If you haven’t already done so, you will need to enroll your participants to your study in the{' '}
+          <NavLink to={constants.restrictedPaths.PARTICIPANT_MANAGER.replace(':id', studyId)}>
+            Participant Manager
+          </NavLink>
+          <br></br>
+          <br></br>
+          To log into the app, participants will need to enter both their Study ID and{' '}
+          {isPhoneNumberSignInType ? 'their Phone number' : 'Participant ID.'}
+        </Box>
+      </Box>
+      {children}
+    </>
+  )
+}
 
 export default ReadOnlyEnrollmentTypeSelector

@@ -22,20 +22,14 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const PasswordReset: FunctionComponent<PasswordResetProps> = ({
-  username: _username,
-  callbackFn,
-}) => {
+const PasswordReset: FunctionComponent<PasswordResetProps> = ({username: _username, callbackFn}) => {
   const classes = useStyles()
   const [username, setUsername] = useState(_username)
 
   const requestResetPassword = async (username: string) => {
     const response = await UserService.requestResetPassword(username)
     const success = response.status === 200 || response.status === 202
-    callbackFn(
-      success,
-      success ? 'Password has been sent' : 'Password reset error'
-    )
+    callbackFn(success, success ? 'Password has been sent' : 'Password reset error')
   }
 
   return (

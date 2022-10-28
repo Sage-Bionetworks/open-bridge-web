@@ -145,69 +145,64 @@ export const DialogButtonPrimary = withStyles(theme => ({
   },
 }))(Button)
 
-export const SimpleTextLabel = styled(InputLabel, {label: 'SimpleTextLabel'})(
-  ({theme}) => ({
-    fontFamily: [poppinsFont, 'Roboto'].join(','),
-    fontWeight: 500,
+export const SimpleTextLabel = styled(InputLabel, {label: 'SimpleTextLabel'})(({theme}) => ({
+  fontFamily: [poppinsFont, 'Roboto'].join(','),
+  fontWeight: 500,
+  fontSize: '14px',
+  transform: 'none',
+  maxWidth: '100%',
+  paddingLeft: theme.spacing(0),
+
+  '&.error': {
+    color: theme.palette.error.main,
+  },
+}))
+
+export const SimpleTextInput = styled(InputBase, {label: 'SimpleTextInput'})(({theme}) => ({
+  border: `1px solid ${theme.palette.text.secondary}`,
+  backgroundColor: '#fff',
+  'label + &': {
+    marginTop: theme.spacing(2.5),
+  },
+  '&.Mui-focused': {
+    borderColor: theme.palette.primary.light,
+  },
+  '.error > &': {
+    borderColor: theme.palette.error.main,
+  },
+  '&.Mui-error': {
+    borderColor: theme.palette.error.main,
+  },
+
+  '&:not(:last-child)': {
+    marginBottom: theme.spacing(2),
+  },
+
+  multiline: {
+    padding: 0,
+  },
+
+  '& input, textarea': {
+    borderRadius: '1px',
+    // borderRadius: 0,
+    position: 'relative',
+    backgroundColor: theme.palette.common.white,
     fontSize: '14px',
-    transform: 'none',
-    maxWidth: '100%',
-    paddingLeft: theme.spacing(0),
-
-    '&.error': {
-      color: theme.palette.error.main,
+    width: 'auto',
+    padding: '10px 12px',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    fontFamily: [latoFont, 'Roboto'].join(','),
+    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
+      ' -webkit-box-shadow': '0 0 0 30px white inset !important',
     },
-  })
-)
-
-export const SimpleTextInput = styled(InputBase, {label: 'SimpleTextInput'})(
-  ({theme}) => ({
-    border: `1px solid ${theme.palette.text.secondary}`,
-    backgroundColor: '#fff',
-    'label + &': {
-      marginTop: theme.spacing(2.5),
+    '&.Mui-disabled': {
+      backgroundColor: 'rgba(239, 239, 239, 0.3)',
     },
-    '&.Mui-focused': {
-      borderColor: theme.palette.primary.light,
-    },
-    '.error > &': {
-      borderColor: theme.palette.error.main,
-    },
-    '&.Mui-error': {
-      borderColor: theme.palette.error.main,
-    },
-
-    '&:not(:last-child)': {
-      marginBottom: theme.spacing(2),
-    },
-
-    multiline: {
-      padding: 0,
-    },
-
-    '& input, textarea': {
-      borderRadius: '1px',
-      // borderRadius: 0,
-      position: 'relative',
-      backgroundColor: theme.palette.common.white,
-      fontSize: '14px',
-      width: 'auto',
-      padding: '10px 12px',
-      transition: theme.transitions.create(['border-color', 'box-shadow']),
-      fontFamily: [latoFont, 'Roboto'].join(','),
-      '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
-        {
-          ' -webkit-box-shadow': '0 0 0 30px white inset !important',
-        },
-      '&.Mui-disabled': {
-        backgroundColor: 'rgba(239, 239, 239, 0.3)',
-      },
-    },
-    fullWidth: {
-      '& input': {width: '100%'},
-    },
-  })
-)
+  },
+  fullWidth: {
+    '& input': {width: '100%'},
+  },
+}))
 
 export const FormControlLabelHidden = withStyles(theme => ({
   root: {

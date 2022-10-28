@@ -3,10 +3,7 @@ import {ReactComponent as BurstIcon} from '@assets/scheduler/burst_icon.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
 import LoadingComponent from '@components/widgets/Loader'
-import {
-  DialogButtonPrimary,
-  DialogButtonSecondary,
-} from '@components/widgets/StyledComponents'
+import {DialogButtonPrimary, DialogButtonSecondary} from '@components/widgets/StyledComponents'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
@@ -25,33 +22,21 @@ import makeStyles from '@mui/styles/makeStyles'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {latoFont, poppinsFont, theme} from '@style/theme'
-import {
-  DWsEnum,
-  PerformanceOrder,
-  Schedule,
-  StudySession,
-} from '@typedefs/scheduling'
+import {DWsEnum, PerformanceOrder, Schedule, StudySession} from '@typedefs/scheduling'
 import {ExtendedError, Study} from '@typedefs/types'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import {
-  useSchedule,
-  useTimeline,
-  useUpdateSchedule,
-} from '../../../services/scheduleHooks'
+import {useSchedule, useTimeline, useUpdateSchedule} from '../../../services/scheduleHooks'
 import {useStudy, useUpdateStudyDetail} from '../../../services/studyHooks'
 import AssessmentList from './AssessmentList'
 import ConfigureBurstTab from './ConfigureBurstTab'
 import Duration from './Duration'
 import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
-import actionsReducer, {
-  ActionTypes,
-  SessionScheduleAction,
-} from './scheduleActions'
+import actionsReducer, {ActionTypes, SessionScheduleAction} from './scheduleActions'
 import ScheduleTimelineDisplay from './ScheduleTimelineDisplay'
 import SessionStartTab from './SessionStartTab'
 import StudyStartEvent from './StudyStartEvent'
@@ -159,20 +144,14 @@ type SchedulerProps = {
 
 function isScheduleDefault(schedule: Schedule) {
   for (var session of schedule.sessions) {
-    const onlyTimelineRetrieved =
-      session.startEventIds.length === 1 &&
-      session.startEventIds[0] === JOINED_EVENT_ID
+    const onlyTimelineRetrieved = session.startEventIds.length === 1 && session.startEventIds[0] === JOINED_EVENT_ID
 
     const isSingleDefaultWindow =
       session.timeWindows.length === 1 &&
       session.timeWindows[0].startTime === '08:00' &&
       !session.timeWindows[0].expiration
 
-    const isDefaultWindow =
-      onlyTimelineRetrieved &&
-      !session.interval &&
-      !session.occurrences &&
-      isSingleDefaultWindow
+    const isDefaultWindow = onlyTimelineRetrieved && !session.interval && !session.occurrences && isSingleDefaultWindow
 
     if (!isDefaultWindow) {
       return false
@@ -181,12 +160,7 @@ function isScheduleDefault(schedule: Schedule) {
   return true
 }
 
-const Scheduler: React.FunctionComponent<SchedulerProps> = ({
-  id,
-  children,
-  isReadOnly,
-  onShowFeedback,
-}) => {
+const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isReadOnly, onShowFeedback}) => {
   const classes = useStyles()
 
   const {data: _study} = useStudy(id)
@@ -199,9 +173,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
 
   const [hasBursts, setHasBursts] = React.useState(false)
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
-  const [schedulerErrors, setScheduleErrors] = React.useState<
-    SchedulerErrorType[]
-  >([])
+  const [schedulerErrors, setScheduleErrors] = React.useState<SchedulerErrorType[]>([])
 
   const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)
@@ -221,12 +193,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     >()
   )
 
-  const [openModal, setOpenModal] = React.useState<
-    'EVENTS' | 'BURSTS' | undefined
-  >(undefined)
-  const [openStudySession, setOpenStudySession] = React.useState<
-    StudySession | undefined
-  >()
+  const [openModal, setOpenModal] = React.useState<'EVENTS' | 'BURSTS' | undefined>(undefined)
+  const [openStudySession, setOpenStudySession] = React.useState<StudySession | undefined>()
 
   type SessionStartHandle = React.ElementRef<typeof SessionStartTab>
   const ref1 = React.useRef<SessionStartHandle>(null) // assign null makes it compatible with elements.
@@ -351,17 +319,13 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         }
         const errorType = keyArr[keyArr.length - 1]
         const currentError = errors[key]
-        const errorMessage = currentError
-          .map((error: string) => error.replace(key, ''))
-          .join(',')
+        const errorMessage = currentError.map((error: string) => error.replace(key, '')).join(',')
 
         const sessionName = entity.sessions[sessionIndex[0]].name
         const wholeErrorMessage = errorType + errorMessage
 
         const windowNumber = windowIndex ? parseInt(windowIndex) + 1 : undefined
-        const notificationNumber = notificationIndex
-          ? parseInt(notificationIndex) + 1
-          : undefined
+        const notificationNumber = notificationIndex ? parseInt(notificationIndex) + 1 : undefined
         const sessionKey = `${sessionName}-${parseInt(sessionIndex) + 1}`
 
         let currentErrorState: any
@@ -376,15 +340,9 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         }
 
         if (windowNumber) {
-          currentErrorState?.sessionWindowErrors.set(
-            windowNumber,
-            wholeErrorMessage
-          )
+          currentErrorState?.sessionWindowErrors.set(windowNumber, wholeErrorMessage)
         } else if (notificationNumber) {
-          currentErrorState?.notificationErrors.set(
-            notificationNumber,
-            wholeErrorMessage
-          )
+          currentErrorState?.notificationErrors.set(notificationNumber, wholeErrorMessage)
         } else {
           currentErrorState!.generalErrorMessage.push(wholeErrorMessage)
         }
@@ -405,8 +363,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     if (!session) {
       return undefined
     }
-    const startEventId =
-      session.startEventIds?.length > 0 ? session.startEventIds[0] : undefined
+    const startEventId = session.startEventIds?.length > 0 ? session.startEventIds[0] : undefined
     if (startEventId === JOINED_EVENT_ID) {
       return undefined
     }
@@ -419,9 +376,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     }
 
     const otherSessionCanStartStudy = schedule.sessions.find(
-      s =>
-        s.guid !== session.guid &&
-        getSessionCustomStartEvent(s) === study.studyStartEventId
+      s => s.guid !== session.guid && getSessionCustomStartEvent(s) === study.studyStartEventId
     )
     return otherSessionCanStartStudy === undefined
   }
@@ -430,9 +385,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     if (action.payload.shouldInvalidateBurst) {
       const studyStartedFromEventId =
         study.studyStartEventId ===
-        getSessionCustomStartEvent(
-          schedule.sessions.find(s => s.guid === action.payload.sessionId)
-        )
+        getSessionCustomStartEvent(schedule.sessions.find(s => s.guid === action.payload.sessionId))
       //start event id has changed
       //see if the old session startEventId is study start event Id, and if no other session Has It
       //it is it -- update the study to start with the new starteventId
@@ -454,9 +407,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     }, [] as string[])
 
     const studyBurstId =
-      schedule.studyBursts && schedule.studyBursts.length > 0
-        ? schedule.studyBursts[0].originEventId
-        : undefined
+      schedule.studyBursts && schedule.studyBursts.length > 0 ? schedule.studyBursts[0].originEventId : undefined
     if (studyBurstId !== undefined) {
       startEventIds.push(studyBurstId)
     }
@@ -473,9 +424,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   if (_.isEmpty(schedule.sessions)) {
     return (
       <Box textAlign="center" mx="auto">
-        <ErrorDisplay>
-          You need to create sessions before creating the schedule
-        </ErrorDisplay>
+        <ErrorDisplay>You need to create sessions before creating the schedule</ErrorDisplay>
       </Box>
     )
   }
@@ -485,19 +434,12 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
       <Box>
         <NavigationPrompt when={hasObjectChanged} key="prompt">
           {({onConfirm, onCancel}) => (
-            <ConfirmationDialog
-              isOpen={hasObjectChanged}
-              type={'NAVIGATE'}
-              onCancel={onCancel}
-              onConfirm={onConfirm}
-            />
+            <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
           )}
         </NavigationPrompt>
         <div>{saveLoader && <CircularProgress />}</div>
         <Box textAlign="left" key="content">
-          <div
-            className={clsx(classes.scheduleHeader, isReadOnly && 'readOnly')}
-            key="intro">
+          <div className={clsx(classes.scheduleHeader, isReadOnly && 'readOnly')} key="intro">
             {!isReadOnly ? (
               <Box>
                 <FormControlLabel
@@ -531,9 +473,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                         value={study.studyStartEventId || ''}
                         eventIdsInSchedule={getEventsInSchedule()}
                         eventsInStudy={study.customEvents?.map(e => e.eventId)}
-                        onChangeFn={(startEventId: string) =>
-                          updateStudyStartEventId(startEventId)
-                        }
+                        onChangeFn={(startEventId: string) => updateStudyStartEventId(startEventId)}
                       />
                     }
                   />
@@ -548,11 +488,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                   {' '}
                   Save Changes
                 </DialogButtonPrimary>
-                <Box
-                  fontSize="12px"
-                  ml={2}
-                  fontFamily={latoFont}
-                  fontWeight="bold">
+                <Box fontSize="12px" ml={2} fontFamily={latoFont} fontWeight="bold">
                   The study duration must be shorter than 5 years.
                 </Box>
               </Box>
@@ -561,9 +497,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 <div className={clsx(classes.labelDuration, classes.readOnly)}>
                   <span>Study duration:</span>
                   <strong>
-                    {schedule.duration
-                      ? getFormattedTimeDateFromPeriodString(schedule.duration)
-                      : 'No duration set'}
+                    {schedule.duration ? getFormattedTimeDateFromPeriodString(schedule.duration) : 'No duration set'}
                   </strong>
                 </div>
 
@@ -571,9 +505,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                   <span>Study starts on:</span>
                   <strong>
                     {study.studyStartEventId
-                      ? EventService.formatEventIdForDisplay(
-                          study.studyStartEventId
-                        )
+                      ? EventService.formatEventIdForDisplay(study.studyStartEventId)
                       : 'unkonwn'}
                   </strong>
                 </div>
@@ -599,14 +531,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 disabled={isScheduleDefault(schedule) && !hasBeenSaved}
                 className={classes.burstButton}
                 onClick={() => setOpenModal('BURSTS')}>
-                <BurstIcon
-                  style={
-                    isScheduleDefault(schedule) && !hasBeenSaved
-                      ? {opacity: '0.3'}
-                      : {}
-                  }
-                />{' '}
-                Configure Study Bursts
+                <BurstIcon style={isScheduleDefault(schedule) && !hasBeenSaved ? {opacity: '0.3'} : {}} /> Configure
+                Study Bursts
               </Button>
             )}
             {!timeline ? (
@@ -645,18 +571,12 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           <SessionStartTab
             ref={ref1}
             study={study!}
-            eventIdsInSchedule={_.uniq(
-              ScheduleService.getEventsForTimeline(timeline!).map(
-                e => e.eventId
-              )
-            )}
+            eventIdsInSchedule={_.uniq(ScheduleService.getEventsForTimeline(timeline!).map(e => e.eventId))}
             onNavigate={() => setOpenModal(undefined)}
           />
         </DialogContent>
         <DialogActions className={classes.dialogAction}>
-          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
-            Cancel
-          </DialogButtonSecondary>
+          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>Cancel</DialogButtonSecondary>
 
           <DialogButtonPrimary
             onClick={() => {
@@ -674,11 +594,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
               key={getOpenStudySession().guid}
               border={
                 schedulerErrorState.get(
-                  `${openStudySession.name}-${
-                    schedule.sessions.findIndex(
-                      s => s.guid === openStudySession.guid
-                    ) + 1
-                  }`
+                  `${openStudySession.name}-${schedule.sessions.findIndex(s => s.guid === openStudySession.guid) + 1}`
                 )
                   ? `1px solid ${theme.palette.error.main}`
                   : ''
@@ -692,13 +608,9 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
               </IconButton>
               <Box className={classes.assessments}>
                 <AssessmentList
-                  studySessionIndex={schedule.sessions.findIndex(
-                    s => s.guid === openStudySession.guid
-                  )}
+                  studySessionIndex={schedule.sessions.findIndex(s => s.guid === openStudySession.guid)}
                   studySession={getOpenStudySession()}
-                  onChangePerformanceOrder={(
-                    performanceOrder: PerformanceOrder
-                  ) => {
+                  onChangePerformanceOrder={(performanceOrder: PerformanceOrder) => {
                     const schedule = {
                       ...getOpenStudySession(),
                       performanceOrder,
@@ -712,9 +624,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                       },
                     })
                   }}
-                  performanceOrder={
-                    getOpenStudySession().performanceOrder || 'sequential'
-                  }
+                  performanceOrder={getOpenStudySession().performanceOrder || 'sequential'}
                 />
               </Box>
               {/* This is what is being displayed as the card */}
@@ -723,22 +633,14 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 key={getOpenStudySession().guid}
                 customEvents={study?.customEvents}
                 studySession={getOpenStudySession()}
-                hasCriticalStartEvent={sessionHasCriticalStudyStartEvent(
-                  getOpenStudySession()
-                )}
-                burstOriginEventId={
-                  _.first(schedule.studyBursts)?.originEventId
-                }
+                hasCriticalStartEvent={sessionHasCriticalStudyStartEvent(getOpenStudySession())}
+                burstOriginEventId={_.first(schedule.studyBursts)?.originEventId}
                 onUpdateSessionSchedule={(
                   session: StudySession,
                   shouldInvalidateBurst: boolean,
                   shouldUpdaeStudyStartEvent: boolean
                 ) => {
-                  if (
-                    shouldUpdaeStudyStartEvent &&
-                    session.startEventIds.length > 0 &&
-                    session.startEventIds[0]
-                  ) {
+                  if (shouldUpdaeStudyStartEvent && session.startEventIds.length > 0 && session.startEventIds[0]) {
                     console.log('UPDAING')
                     updateStudyStartEventId(session.startEventIds[0])
                   }
@@ -753,9 +655,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 }}
                 sessionErrorState={schedulerErrorState.get(
                   `${getOpenStudySession().name}-${
-                    schedule.sessions.findIndex(
-                      s => s.guid === openStudySession.guid
-                    ) + 1
+                    schedule.sessions.findIndex(s => s.guid === openStudySession.guid) + 1
                   }`
                 )}></SchedulableSingleSessionContainer>
             </Box>
@@ -772,22 +672,16 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
               <ReadOnlyScheduler
                 originEventId={_.first(schedule.studyBursts)?.originEventId}
                 session={openStudySession}
-                studySessionIndex={schedule.sessions.findIndex(
-                  s => s.guid === openStudySession.guid
-                )}
+                studySessionIndex={schedule.sessions.findIndex(s => s.guid === openStudySession.guid)}
               />
             </>
           )}
         </DialogContent>
         <DialogActions>
           {!isReadOnly ? (
-            <DialogButtonSecondary onClick={() => onCancelSessionUpdate()}>
-              Cancel
-            </DialogButtonSecondary>
+            <DialogButtonSecondary onClick={() => onCancelSessionUpdate()}>Cancel</DialogButtonSecondary>
           ) : (
-            <DialogButtonPrimary onClick={() => onCancelSessionUpdate()}>
-              Close
-            </DialogButtonPrimary>
+            <DialogButtonPrimary onClick={() => onCancelSessionUpdate()}>Close</DialogButtonPrimary>
           )}
 
           {!isReadOnly && (
@@ -823,17 +717,11 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           />
         </DialogContent>
         <DialogActions>
-          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
-            Cancel
-          </DialogButtonSecondary>
+          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>Cancel</DialogButtonSecondary>
 
           <DialogButtonPrimary
             disabled={!!!hasBursts && schedule.studyBursts?.length === 0}
-            className={
-              !!!hasBursts && schedule.studyBursts?.length === 0
-                ? classes.inactiveBurstSaveButton
-                : ''
-            }
+            className={!!!hasBursts && schedule.studyBursts?.length === 0 ? classes.inactiveBurstSaveButton : ''}
             onClick={() => {
               ref2.current?.save()
             }}>

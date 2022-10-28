@@ -59,21 +59,18 @@ export const handlers = [
   }),
 
   // update
-  rest.post(
-    `*${constants.endpoints.study.replace('/:id', '')}`,
-    async (req, res, ctx) => {
-      const study = req.body as Study
-      study.identifier = req.params.id
+  rest.post(`*${constants.endpoints.study.replace('/:id', '')}`, async (req, res, ctx) => {
+    const study = req.body as Study
+    study.identifier = req.params.id
 
-      return res(
-        ctx.status(201),
-        ctx.json({
-          version: study.version + 1,
-          data: study,
-        })
-      )
-    }
-  ),
+    return res(
+      ctx.status(201),
+      ctx.json({
+        version: study.version + 1,
+        data: study,
+      })
+    )
+  }),
 ]
 
 export default handlers

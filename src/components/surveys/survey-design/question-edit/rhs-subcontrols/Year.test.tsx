@@ -105,20 +105,14 @@ test('validation for values update', async () => {
     user.clear(max)
     await user.type(max, '1999')
   })
-  expect(screen.queryByRole('alert')).toHaveTextContent(
-    'Max value must be greater than min value'
-  )
+  expect(screen.queryByRole('alert')).toHaveTextContent('Max value must be greater than min value')
   await act(async () => {
     user.clear(max)
     await user.type(max, '2023')
   })
-  expect(screen.queryByRole('alert')).toHaveTextContent(
-    'No future years allowed'
-  )
+  expect(screen.queryByRole('alert')).toHaveTextContent('No future years allowed')
   await act(async () => await user.click(getFutureCheckbox()))
   expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   await act(async () => await user.click(getFutureCheckbox()))
-  expect(screen.queryByRole('alert')).toHaveTextContent(
-    'No future years allowed'
-  )
+  expect(screen.queryByRole('alert')).toHaveTextContent('No future years allowed')
 })
