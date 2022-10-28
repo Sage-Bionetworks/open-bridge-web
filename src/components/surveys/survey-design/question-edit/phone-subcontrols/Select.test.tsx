@@ -83,7 +83,9 @@ test('show the Select options correctly', () => {
 test('delete an option, and rules pertaining to it', async () => {
   const {user} = renderComponent(step)
   const birthYearOption = screen.getByRole('button', {name: /birth year/i})
-  const deleteButton = within(birthYearOption).getByRole('button', {name: /delete/i})
+  const deleteButton = within(birthYearOption).getByRole('button', {
+    name: /delete/i,
+  })
   await act(async () => await user.click(deleteButton))
   await waitFor(() => {
     expect(screen.queryByRole('button', {name: /birth year/i})).not.toBeInTheDocument()
