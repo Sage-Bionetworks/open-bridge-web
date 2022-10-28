@@ -162,20 +162,44 @@ export const SessionSymbols = new Map([
   ['Session4Diamond', [<S04cg />, <S04p />, <S04i />, <S04pR />, <S04iR />]],
   ['Session5Pentagon', [<S05cg />, <S05p />, <S05i />, <S05pR />, <S05iR />]],
   ['Session6Hexagon', [<S06cg />, <S06p />, <S06i />, <S06pR />, <S06iR />]],
-  ['Session7TriangleSharpUp', [<S07cg />, <S07p />, <S07i />, <S07pR />, <S07iR />]],
-  ['Session8SquareSharp', [<S08cg />, <S08p />, <S08i />, <S08pR />, <S08iR />]],
-  ['Session9DiamondSharp', [<S09cg />, <S09p />, <S09i />, <S09pR />, <S09iR />]],
+  [
+    'Session7TriangleSharpUp',
+    [<S07cg />, <S07p />, <S07i />, <S07pR />, <S07iR />],
+  ],
+  [
+    'Session8SquareSharp',
+    [<S08cg />, <S08p />, <S08i />, <S08pR />, <S08iR />],
+  ],
+  [
+    'Session9DiamondSharp',
+    [<S09cg />, <S09p />, <S09i />, <S09pR />, <S09iR />],
+  ],
   ['Session10TriangleR', [<S10cg />, <S10p />, <S10i />, <S10pR />, <S10iR />]],
-  ['Session11HexagonFlat', [<S11cg />, <S11p />, <S11i />, <S11pR />, <S11iR />]],
-  ['Session12TriangleSharpDown', [<S12cg />, <S12p />, <S12i />, <S12pR />, <S12iR />]],
+  [
+    'Session11HexagonFlat',
+    [<S11cg />, <S11p />, <S11i />, <S11pR />, <S11iR />],
+  ],
+  [
+    'Session12TriangleSharpDown',
+    [<S12cg />, <S12p />, <S12i />, <S12pR />, <S12iR />],
+  ],
   ['Session13RhombusV', [<S13c />, <S13p />, <S13i />, <S13pR />, <S13iR />]],
-  ['Session14TriangleCornerL', [<S14cg />, <S14p />, <S14i />, <S14pR />, <S14iR />]],
+  [
+    'Session14TriangleCornerL',
+    [<S14cg />, <S14p />, <S14i />, <S14pR />, <S14iR />],
+  ],
   ['Session15Octagon', [<S15cg />, <S15p />, <S15i />, <S15pR />, <S15iR />]],
   ['Session16RhombusH', [<S16cg />, <S16p />, <S16i />, <S16pR />, <S16iR />]],
-  ['Session17TriandleCornerR', [<S17cg />, <S17p />, <S17i />, <S17pR />, <S17iR />]],
+  [
+    'Session17TriandleCornerR',
+    [<S17cg />, <S17p />, <S17i />, <S17pR />, <S17iR />],
+  ],
   ['Session18TriangleL', [<S18cg />, <S18p />, <S18i />, <S18pR />, <S18iR />]],
   ['Session19TriangleB', [<S19cg />, <S19p />, <S19i />, <S19pR />, <S19iR />]],
-  ['Session20TriangleDiagonal', [<S20cg />, <S20p />, <S20i />, <S20pR />, <S20iR />]],
+  [
+    'Session20TriangleDiagonal',
+    [<S20cg />, <S20p />, <S20i />, <S20pR />, <S20iR />],
+  ],
 ])
 
 const sesisonNames = Array.from(SessionSymbols.keys())
@@ -186,16 +210,23 @@ export interface SessionIconProps {
   children?: JSX.Element | string
 }
 
-const SessionIcon: React.FunctionComponent<SessionIconProps & React.HTMLAttributes<HTMLElement>> = props => {
+const SessionIcon: React.FunctionComponent<
+  SessionIconProps & React.HTMLAttributes<HTMLElement>
+> = props => {
   const {index = 0, symbolKey, symbolIndex, children, ...rest} = props
 
   const classes = useStyles()
-  const imageProps = rest.style ? {style: rest.style} : {className: classes.icon}
+  const imageProps = rest.style
+    ? {style: rest.style}
+    : {className: classes.icon}
 
-  var haveSymbolForKey = symbolKey && SessionSymbols.has(symbolKey) && symbolIndex !== undefined
+  var haveSymbolForKey =
+    symbolKey && SessionSymbols.has(symbolKey) && symbolIndex !== undefined
 
   const el = React.cloneElement(
-    haveSymbolForKey ? SessionSymbols.get(symbolKey!)![symbolIndex!] : SessionSymbolsArray[index],
+    haveSymbolForKey
+      ? SessionSymbols.get(symbolKey!)![symbolIndex!]
+      : SessionSymbolsArray[index],
     imageProps
   )
 

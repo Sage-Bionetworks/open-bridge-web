@@ -29,17 +29,32 @@ const WidthrawnTabNoParticipants: React.FunctionComponent<{}> = ({}) => {
         <Box mb={3} fontWeight="bold" fontFamily={poppinsFont}>
           Withdrawing Participants From the Study
         </Box>
-        <p>Once a participant signs into the app, they are considered enrolled in your study.</p>
         <p>
-          A <img src={JoinedCheckSymbol} alt="Check Icon" style={{marginBottom: '-4px'}}></img> and timestamp will
-          appear on the Joined column of the Particpant List.
+          Once a participant signs into the app, they are considered enrolled in
+          your study.
         </p>
         <p>
-          To withdraw a participant from a study: on the Participant List tab, click on the{' '}
-          <img src={BatchEditIcon} alt="Pencil Icon" style={{marginBottom: '-4px'}}></img> icon to Edit Participant
-          Details. Click on Withdraw from study in the bottom left corner.
+          A{' '}
+          <img
+            src={JoinedCheckSymbol}
+            alt="Check Icon"
+            style={{marginBottom: '-4px'}}></img>{' '}
+          and timestamp will appear on the Joined column of the Particpant List.
         </p>
-        <p>Participants who are withdrawn will appear on this Withdrawn Participant tab for your study records.</p>
+        <p>
+          To withdraw a participant from a study: on the Participant List tab,
+          click on the{' '}
+          <img
+            src={BatchEditIcon}
+            alt="Pencil Icon"
+            style={{marginBottom: '-4px'}}></img>{' '}
+          icon to Edit Participant Details. Click on Withdraw from study in the
+          bottom left corner.
+        </p>
+        <p>
+          Participants who are withdrawn will appear on this Withdrawn
+          Participant tab for your study records.
+        </p>
       </Box>
       <img src={EditParticipantImage}></img>
     </Box>

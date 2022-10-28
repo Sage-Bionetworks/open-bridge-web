@@ -30,7 +30,10 @@ type ContactInformationProps = {
   email: string
 }
 
-const ContactInformation: React.FunctionComponent<ContactInformationProps> = ({email, phoneNumber}) => {
+const ContactInformation: React.FunctionComponent<ContactInformationProps> = ({
+  email,
+  phoneNumber,
+}) => {
   const classes = useStyles()
   return (
     <Box className={classes.container}>

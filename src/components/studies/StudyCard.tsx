@@ -18,8 +18,18 @@ import {useAdherenceForWeek} from './adherenceHooks'
 
 const DraftIcon = () => {
   return (
-    <Box width="100%" height="4px" borderRadius="5px" bgcolor="#C4C4C4" position="relative">
-      <Box width="20%" height="4px" borderRadius="5px 0 0 5px" bgcolor="#3E3030" position="absolute"></Box>
+    <Box
+      width="100%"
+      height="4px"
+      borderRadius="5px"
+      bgcolor="#C4C4C4"
+      position="relative">
+      <Box
+        width="20%"
+        height="4px"
+        borderRadius="5px 0 0 5px"
+        bgcolor="#3E3030"
+        position="absolute"></Box>
     </Box>
   )
 }
@@ -138,32 +148,58 @@ const CardBottom: FunctionComponent<{
 }> = ({study}: {study: Study}) => {
   const classes = useStyles()
   //const [numParticipants, setNumParticipants] = React.useState('--')
-  const date = new Date(study.phase === 'design' ? study.modifiedOn! : study.createdOn!)
-  const {data: adherenceWeeklyInProcessCount} = useAdherenceForWeek(study.identifier, 0, 5, {
-    progressionFilters: ['in_progress'],
-  })
+  const date = new Date(
+    study.phase === 'design' ? study.modifiedOn! : study.createdOn!
+  )
+  const {data: adherenceWeeklyInProcessCount} = useAdherenceForWeek(
+    study.identifier,
+    0,
+    5,
+    {
+      progressionFilters: ['in_progress'],
+    }
+  )
 
   return (
-    <Box display="flex" textAlign="left" paddingTop="8px" position="absolute" bottom="8px" left="8px" right="8px">
+    <Box
+      display="flex"
+      textAlign="left"
+      paddingTop="8px"
+      position="absolute"
+      bottom="8px"
+      left="8px"
+      right="8px">
       <div className={classes.cardBottomContainer}>
         {study.phase === 'design' ? (
           <div className={classes.lastEditedTest}>Last edited:</div>
         ) : (
           <div className={classes.participantsRow}>
-            <img src={participants_icon} className={classes.participantsIcon} alt="participant number" />
+            <img
+              src={participants_icon}
+              className={classes.participantsIcon}
+              alt="participant number"
+            />
             {adherenceWeeklyInProcessCount?.total.toString() || '--'}
           </div>
         )}
 
         <div className={classes.studyStatusRow}>
-          <div>{study.phase === 'design' ? `${getFormattedDate(date)}` : `Launched: ${getFormattedDate(date)}`}</div>
+          <div>
+            {study.phase === 'design'
+              ? `${getFormattedDate(date)}`
+              : `Launched: ${getFormattedDate(date)}`}
+          </div>
         </div>
       </div>
     </Box>
   )
 }
 
-const CardTop: FunctionComponent<StudyCardProps> = ({onSetAnchor, section, isMenuOpen}: StudyCardProps) => {
+const CardTop: FunctionComponent<StudyCardProps> = ({
+  onSetAnchor,
+  section,
+  isMenuOpen,
+}: StudyCardProps) => {
   function getStatusIcon(section: string) {
     if (section === 'LIVE') {
       return LiveIcon
@@ -186,7 +222,11 @@ const CardTop: FunctionComponent<StudyCardProps> = ({onSetAnchor, section, isMen
           onSetAnchor(e.currentTarget)
         }}
         size="large">
-        <Box className={classes.menuBox} style={isMenuOpen ? {boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)'} : {}}>
+        <Box
+          className={classes.menuBox}
+          style={
+            isMenuOpen ? {boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)'} : {}
+          }>
           <MoreVertIcon />
         </Box>
       </IconButton>
@@ -224,7 +264,10 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   const classes = useStyles()
   const input = React.createRef<HTMLInputElement>()
 
-  const handleKeyDown = (event: React.KeyboardEvent, name: string | undefined) => {
+  const handleKeyDown = (
+    event: React.KeyboardEvent,
+    name: string | undefined
+  ) => {
     if (!onRename) {
       return
     }
@@ -250,7 +293,11 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
           }
         }}>
         <>
-          <CardTop section={section} study={study} onSetAnchor={onSetAnchor} isMenuOpen={isMenuOpen}></CardTop>
+          <CardTop
+            section={section}
+            study={study}
+            onSetAnchor={onSetAnchor}
+            isMenuOpen={isMenuOpen}></CardTop>
         </>
         <CardContent>
           <div>

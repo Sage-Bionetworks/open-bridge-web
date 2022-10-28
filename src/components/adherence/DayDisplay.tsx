@@ -48,7 +48,8 @@ const DayDisplay: FunctionComponent<{
   }
 
   //we have a carry over from previous week if it's the first day and the date is diff. from the report start date
-  const carryOver = relevantReportStartDate && entry.startDate !== relevantReportStartDate
+  const carryOver =
+    relevantReportStartDate && entry.startDate !== relevantReportStartDate
 
   if (carryOver) {
     return (
@@ -66,7 +67,9 @@ const DayDisplay: FunctionComponent<{
   }
 
   return (
-    <div className={clsx(classes.dayCell, entry.today && 'today')} style={divStyle}>
+    <div
+      className={clsx(classes.dayCell, entry.today && 'today')}
+      style={divStyle}>
       {entry.timeWindows.map((tw, itw) => (
         <TimeWindowPlotElement
           key={`${tw.timeWindowGuid}_window_all`}

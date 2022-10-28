@@ -108,7 +108,9 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
         [classes.listItemActive]: isActive,
         [classes.listItemCollapsed]: !isOpen,
       })}>
-      <Button onClick={handleClick} className={clsx(classes.link, styleProps && styleProps)}>
+      <Button
+        onClick={handleClick}
+        className={clsx(classes.link, styleProps && styleProps)}>
         {children}
       </Button>
     </li>

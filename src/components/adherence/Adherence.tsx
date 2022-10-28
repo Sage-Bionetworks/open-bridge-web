@@ -77,11 +77,14 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
   let {id: studyId} = useParams<{
     id: string
   }>()
-  const isEnrolledTab = new URLSearchParams(useLocation().search)?.get('tab') === 'ENROLLED'
+  const isEnrolledTab =
+    new URLSearchParams(useLocation().search)?.get('tab') === 'ENROLLED'
   const {data: adherenceWeeklyReport} = useAdherenceForWeek(studyId, 0, 5, {})
 
   // Withdrawn or active participants
-  const [tab, setTab] = React.useState<AdherenceTabType>(isEnrolledTab || true ? 'ENROLLED' : 'SUMMARY')
+  const [tab, setTab] = React.useState<AdherenceTabType>(
+    isEnrolledTab || true ? 'ENROLLED' : 'SUMMARY'
+  )
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
@@ -89,7 +92,11 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
 
   const classes = useStyles()
 
-  const {data: study, error: studyError, isLoading: isStudyLoading} = useStudy(studyId)
+  const {
+    data: study,
+    error: studyError,
+    isLoading: isStudyLoading,
+  } = useStudy(studyId)
 
   return (
     <Box bgcolor="#F8F8F8" px={5} minHeight="100vh">
@@ -98,25 +105,41 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
       </Box>
 
       <Box py={0} pr={3} pl={2}>
-        <Tabs value={tab} variant="standard" onChange={handleTabChange} TabIndicatorProps={{hidden: true}}>
+        <Tabs
+          value={tab}
+          variant="standard"
+          onChange={handleTabChange}
+          TabIndicatorProps={{hidden: true}}>
           {TAB_DEFs.map((tabDef, index) => (
             <Tab
               key={`tab_${tabDef.label}`}
               value={tabDef.type}
               classes={{
-                root: clsx(classes.tab, tab === tabDef.type && classes.selectedTab),
+                root: clsx(
+                  classes.tab,
+                  tab === tabDef.type && classes.selectedTab
+                ),
               }}
               icon={
                 <Box
                   display="flex"
                   flexDirection="row"
-                  className={clsx(classes.tab_icon, tab !== tabDef.type && classes.unactiveTabIcon)}>
+                  className={clsx(
+                    classes.tab_icon,
+                    tab !== tabDef.type && classes.unactiveTabIcon
+                  )}>
                   <img
-                    src={tab === tabDef.type ? TAB_ICONS_FOCUS[index] : TAB_ICONS_UNFOCUS[index]}
+                    src={
+                      tab === tabDef.type
+                        ? TAB_ICONS_FOCUS[index]
+                        : TAB_ICONS_UNFOCUS[index]
+                    }
                     style={{marginRight: '6px'}}></img>
                   <div>
                     {`${tabDef.label} ${
-                      tab === tabDef.type ? '(' + (adherenceWeeklyReport?.total || '...') + ')' : ''
+                      tab === tabDef.type
+                        ? '(' + (adherenceWeeklyReport?.total || '...') + ')'
+                        : ''
 
                       /*? data 
                               ? `(${data.total})`
@@ -130,8 +153,14 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
           ))}
         </Tabs>
         <Box bgcolor="white">
-          <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-            {tab === 'SUMMARY' ? <AdherenceSummary /> : <AdherenceParticipants />}
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onError={ErrorHandler}>
+            {tab === 'SUMMARY' ? (
+              <AdherenceSummary />
+            ) : (
+              <AdherenceParticipants />
+            )}
           </ErrorBoundary>
         </Box>
       </Box>

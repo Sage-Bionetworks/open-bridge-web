@@ -270,7 +270,9 @@ export const getQuestionId = (step: Step): QuestionTypeKey => {
     return 'INSTRUCTION'
   }
   if (step.type === 'choiceQuestion') {
-    return (step as ChoiceQuestion).singleChoice ? 'SINGLE_SELECT' : 'MULTI_SELECT'
+    return (step as ChoiceQuestion).singleChoice
+      ? 'SINGLE_SELECT'
+      : 'MULTI_SELECT'
   }
   if (step.type === 'completion') {
     return 'COMPLETION'

@@ -141,7 +141,10 @@ type SurveyTopNavProps = {
   error: ExtendedError | null
 }
 
-const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({survey, error}: SurveyTopNavProps) => {
+const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
+  survey,
+  error,
+}: SurveyTopNavProps) => {
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
 
@@ -174,15 +177,27 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({survey, error}: Sur
               paddingTop: '0',
               alignItems: 'center',
             }}>
-            <NavLink to="/studies" key="/studies" className={classes.toolbarLink} style={{padding: '0 24px 0 0'}}>
-              <img src={Logo} className={classes.logo} key="img_home" alt="home" />
+            <NavLink
+              to="/studies"
+              key="/studies"
+              className={classes.toolbarLink}
+              style={{padding: '0 24px 0 0'}}>
+              <img
+                src={Logo}
+                className={classes.logo}
+                key="img_home"
+                alt="home"
+              />
             </NavLink>
 
             {survey?.title && (
               <BreadCrumb
                 links={[{url: '/surveys', text: ''}]}
                 currentItem={
-                  survey?.title && survey?.title !== constants.constants.NEW_STUDY_NAME ? survey?.title : ''
+                  survey?.title &&
+                  survey?.title !== constants.constants.NEW_STUDY_NAME
+                    ? survey?.title
+                    : ''
                 }></BreadCrumb>
             )}
           </Toolbar>
@@ -199,10 +214,15 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({survey, error}: Sur
                 </NavLink>
               ))}
           </Toolbar>
-          <Toolbar className={classes.toolbar} style={{width: '160px', overflow: 'hidden'}}>
+          <Toolbar
+            className={classes.toolbar}
+            style={{width: '160px', overflow: 'hidden'}}>
             {(Utility.isInAdminRole() || true) /* enable all aggess*/ && (
               <NavLink
-                to={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', survey?.guid ?? '')}
+                to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
+                  ':id',
+                  survey?.guid ?? ''
+                )}
                 key={'path-to-access-settings'}
                 className={classes.toolbarLink}
                 activeClassName={classes.selectedLink}
@@ -225,7 +245,9 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({survey, error}: Sur
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}>
-          <MobileDrawerMenuHeader setIsMobileOpen={setIsMobileOpen} type="IN_STUDY"></MobileDrawerMenuHeader>
+          <MobileDrawerMenuHeader
+            setIsMobileOpen={setIsMobileOpen}
+            type="IN_STUDY"></MobileDrawerMenuHeader>
           {links
             .filter(section => section.name)
             .map(section => (
@@ -239,22 +261,35 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({survey, error}: Sur
               </NavLink>
             ))}
           <NavLink
-            to={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', survey?.guid ?? '')}
+            to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
+              ':id',
+              survey?.guid ?? ''
+            )}
             key={'path-to-access-settings'}
-            className={clsx(classes.mobileToolBarLink, classes.accessSettingsDrawerOption)}
+            className={clsx(
+              classes.mobileToolBarLink,
+              classes.accessSettingsDrawerOption
+            )}
             activeClassName={classes.mobileSelectedLink}
             onClick={() => setIsMobileOpen(false)}>
-            <img src={ParticipantsIcon} style={{marginRight: '20px'}} alt="participants"></img>
+            <img
+              src={ParticipantsIcon}
+              style={{marginRight: '20px'}}
+              alt="participants"></img>
             Access settings
           </NavLink>
         </Drawer>
       </nav>
       {error && (
         <Box mx="auto" textAlign="center">
-          <Alert variant="outlined" color="error" style={{marginBottom: '10px'}}>
+          <Alert
+            variant="outlined"
+            color="error"
+            style={{marginBottom: '10px'}}>
             {' '}
             {error.statusCode}
-            You do not have the permission to access this feature. Please contact your study administrator
+            You do not have the permission to access this feature. Please
+            contact your study administrator
           </Alert>
         </Box>
       )}

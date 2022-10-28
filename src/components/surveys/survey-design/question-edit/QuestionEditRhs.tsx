@@ -3,7 +3,14 @@ import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import {Box, Button, styled} from '@mui/material'
 import {latoFont, theme} from '@style/theme'
-import {BaseStep, ChoiceQuestion, ScaleQuestion, Step, TimeQuestion, YearQuestion} from '@typedefs/surveys'
+import {
+  BaseStep,
+  ChoiceQuestion,
+  ScaleQuestion,
+  Step,
+  TimeQuestion,
+  YearQuestion,
+} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {StyledLabel14} from '../../widgets/SharedStyled'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
@@ -34,22 +41,34 @@ const StyledSimpleTextInput = styled(SimpleTextInput)(({theme}) => ({
   '& input': {width: '100%'},
 }))
 
-function Factory(args: {step: Step; onChange: (step: Step) => void; q_type: QuestionTypeKey}) {
+function Factory(args: {
+  step: Step
+  onChange: (step: Step) => void
+  q_type: QuestionTypeKey
+}) {
   switch (args.q_type) {
     case 'SINGLE_SELECT': {
-      return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
+      return (
+        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
+      )
     }
 
     case 'MULTI_SELECT':
-      return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
+      return (
+        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
+      )
 
     case 'FREE_TEXT':
       return <></>
     case 'SLIDER':
     case 'LIKERT':
-      return <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
+      return (
+        <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
+      )
     case 'NUMERIC':
-      return <Numeric step={args.step as ScaleQuestion} onChange={args.onChange} />
+      return (
+        <Numeric step={args.step as ScaleQuestion} onChange={args.onChange} />
+      )
     case 'DURATION':
       return (
         <Box
@@ -60,7 +79,8 @@ function Factory(args: {step: Step; onChange: (step: Step) => void; q_type: Ques
             fontSize: '16px',
             lineHeight: '19px',
           }}>
-          *Hours and Minutes will be converted into seconds (SI unit) in the results data.{' '}
+          *Hours and Minutes will be converted into seconds (SI unit) in the
+          results data.{' '}
         </Box>
       )
     case 'TIME':
@@ -68,9 +88,13 @@ function Factory(args: {step: Step; onChange: (step: Step) => void; q_type: Ques
     case 'YEAR':
       return <Year step={args.step as YearQuestion} onChange={args.onChange} />
     case 'OVERVIEW':
-      return <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
+      return (
+        <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
+      )
     case 'COMPLETION':
-      return <Completion step={args.step as BaseStep} onChange={args.onChange} />
+      return (
+        <Completion step={args.step as BaseStep} onChange={args.onChange} />
+      )
     default:
       return <>nothing</>
   }
@@ -89,7 +113,12 @@ type QuestionEditProps = {
   isDynamic: boolean
 }
 
-const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, children, isDynamic}) => {
+const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
+  step,
+  onChange,
+  children,
+  isDynamic,
+}) => {
   const matchIdentifier = () => {
     const newId = `${step?.title
       .replaceAll(' ', '_')

@@ -2,7 +2,10 @@ import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {ChangeEventHandler} from 'react'
 import {playfairDisplayFont} from '../../../../style/theme'
-import {SimpleTextInput, SimpleTextLabel} from '../../../widgets/StyledComponents'
+import {
+  SimpleTextInput,
+  SimpleTextLabel,
+} from '../../../widgets/StyledComponents'
 
 const useStyles = makeStyles(theme => ({
   informationRowStyle: {
@@ -58,7 +61,9 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
   return (
     <>
       {titleText && (
-        <SimpleTextLabel htmlFor={id} className={clsx(hasError && classes.errorText)}>
+        <SimpleTextLabel
+          htmlFor={id}
+          className={clsx(hasError && classes.errorText)}>
           {titleText}
         </SimpleTextLabel>
       )}

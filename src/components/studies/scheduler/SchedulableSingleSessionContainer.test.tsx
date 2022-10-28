@@ -75,7 +75,9 @@ const studySession: StudySession = {
   startEventIds: ['timeline_retrieved'],
 }
 
-const Wrapper: React.FunctionComponent<{_session: StudySession}> = ({_session}) => {
+const Wrapper: React.FunctionComponent<{_session: StudySession}> = ({
+  _session,
+}) => {
   const [session, setSession] = React.useState(_session)
 
   return (
@@ -111,8 +113,12 @@ function setUp(session: StudySession) {
 
 test('renders and changes reminder notification type', async () => {
   const {user} = setUp(studySession)
-  const reminderNotification = screen.getByText(/Send a reminder notification/i).parentElement
-  const radioButton = within(reminderNotification!).getByRole('radio', {name: /after start of window/i})
+  const reminderNotification = screen.getByText(
+    /Send a reminder notification/i
+  ).parentElement
+  const radioButton = within(reminderNotification!).getByRole('radio', {
+    name: /after start of window/i,
+  })
   expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
 
   await act(async () => {
@@ -138,7 +144,9 @@ test('renders and changes reminder notification type', async () => {
 
 test('renders and changes reminder notification interval', async () => {
   const {user} = setUp(studySession)
-  const reminderNotification = screen.getByText(/Send a reminder notification/i).parentElement
+  const reminderNotification = screen.getByText(
+    /Send a reminder notification/i
+  ).parentElement
   const value = within(reminderNotification!).getByRole('spinbutton')
 
   await act(async () => {
@@ -146,7 +154,9 @@ test('renders and changes reminder notification interval', async () => {
     await user.type(value, '47')
   })
 
-  const radioButton = within(reminderNotification!).getByRole('radio', {name: /window expires/i})
+  const radioButton = within(reminderNotification!).getByRole('radio', {
+    name: /window expires/i,
+  })
 
   await act(async () => {
     await user.click(radioButton)

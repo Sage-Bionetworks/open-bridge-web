@@ -43,30 +43,28 @@ type ReadOnlyAssessmentWindowProps = {
   expireAfter: string
 }
 
-const ReadOnlyAssessmentWindow: React.FunctionComponent<ReadOnlyAssessmentWindowProps> = ({
-  index,
-  startTime,
-  expireAfter,
-}) => {
-  const classes = useStyles()
-  const sharedSchedulerStyles = SharedSchedulerStyles()
-  const start = dayjs(startTime, 'HH:mm').format('h:mm a')
-  return (
-    <Box className={classes.container}>
-      <Box className={classes.topLevel}>
-        <Box alignSelf="flex-start">{index}.</Box>
-        <img src={ClockIcon} style={{height: '22px', width: '22px'}}></img>
-      </Box>
-      <Box className={classes.timesContainer}>
-        <Box className={sharedSchedulerStyles.row} mb={2}>
-          <Box>Start:</Box> <strong>{start}</strong>
+const ReadOnlyAssessmentWindow: React.FunctionComponent<ReadOnlyAssessmentWindowProps> =
+  ({index, startTime, expireAfter}) => {
+    const classes = useStyles()
+    const sharedSchedulerStyles = SharedSchedulerStyles()
+    const start = dayjs(startTime, 'HH:mm').format('h:mm a')
+    return (
+      <Box className={classes.container}>
+        <Box className={classes.topLevel}>
+          <Box alignSelf="flex-start">{index}.</Box>
+          <img src={ClockIcon} style={{height: '22px', width: '22px'}}></img>
         </Box>
-        <Box className={sharedSchedulerStyles.row}>
-          <Box>Expire After:</Box> <strong>{getFormattedTimeDateFromPeriodString(expireAfter)}</strong>
+        <Box className={classes.timesContainer}>
+          <Box className={sharedSchedulerStyles.row} mb={2}>
+            <Box>Start:</Box> <strong>{start}</strong>
+          </Box>
+          <Box className={sharedSchedulerStyles.row}>
+            <Box>Expire After:</Box>{' '}
+            <strong>{getFormattedTimeDateFromPeriodString(expireAfter)}</strong>
+          </Box>
         </Box>
       </Box>
-    </Box>
-  )
-}
+    )
+  }
 
 export default ReadOnlyAssessmentWindow

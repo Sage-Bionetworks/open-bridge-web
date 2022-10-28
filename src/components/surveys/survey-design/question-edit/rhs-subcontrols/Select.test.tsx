@@ -6,7 +6,8 @@ import Select from './Select'
 const step: ChoiceQuestion = {
   type: 'choiceQuestion',
   identifier: 'choiceQ1',
-  comment: 'Go to the question selected by the participant. If they skip the question then go directly to follow-up.',
+  comment:
+    'Go to the question selected by the participant. If they skip the question then go directly to follow-up.',
   title: 'Choose which question to answer',
   surveyRules: [
     {
@@ -67,8 +68,10 @@ const step: ChoiceQuestion = {
   ],
 }
 
-const getQuestionTypeSelect = () => screen.getByRole('button', {name: /question type:/i})
-const getDataTypeSelect = () => screen.getByRole('button', {name: /set response value pairing:/i})
+const getQuestionTypeSelect = () =>
+  screen.getByRole('button', {name: /question type:/i})
+const getDataTypeSelect = () =>
+  screen.getByRole('button', {name: /set response value pairing:/i})
 
 //render the component
 const renderComponent = (step: ChoiceQuestion) => {
@@ -98,7 +101,9 @@ test('show the setting correctly for multi-select and string', async () => {
 test('updates the values for questions', async () => {
   const {user} = renderComponent(step)
   var cell = screen.getByText(/Time/, {exact: true})
-  var textBox = within(cell.parentElement?.parentElement || cell).getByRole('textbox')
+  var textBox = within(cell.parentElement?.parentElement || cell).getByRole(
+    'textbox'
+  )
   expect(textBox).toHaveValue('6')
   await act(async () => {
     await user.type(textBox, '7')
@@ -112,11 +117,16 @@ test('updates the values for select type and data type', async () => {
   const dataTypeSelect = getDataTypeSelect()
   expect(questionTypeSelect).toHaveTextContent('Single Select')
   await act(async () => await user.click(questionTypeSelect))
-  await act(async () => await user.click(screen.getByRole('option', {name: /multi\-select/i})))
+  await act(
+    async () =>
+      await user.click(screen.getByRole('option', {name: /multi\-select/i}))
+  )
   expect(questionTypeSelect).toHaveTextContent('Multi-Select')
 
   expect(dataTypeSelect).toHaveTextContent('Integer')
   await act(async () => await user.click(dataTypeSelect))
-  await act(async () => await user.click(screen.getByRole('option', {name: /string/i})))
+  await act(
+    async () => await user.click(screen.getByRole('option', {name: /string/i}))
+  )
   expect(dataTypeSelect).toHaveTextContent('String')
 })

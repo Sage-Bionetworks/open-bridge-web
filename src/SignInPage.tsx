@@ -67,7 +67,9 @@ const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp}) => {
           src={isARCApp ? ArcLogo : MtbFinalLogo}></img>
       </Box>
       <Box className={classes.rightContainer}>
-        <AccountLogin callbackFn={() => {}} isArcSignIn={isARCApp}></AccountLogin>
+        <AccountLogin
+          callbackFn={() => {}}
+          isArcSignIn={isARCApp}></AccountLogin>
       </Box>
     </Box>
   )

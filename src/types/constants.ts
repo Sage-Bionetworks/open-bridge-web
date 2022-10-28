@@ -104,21 +104,25 @@ const constants = {
   },
 
   endpoints: {
-    adherenceDetail: '/v5/studies/:studyId/participants/:userId/adherence/study',
+    adherenceDetail:
+      '/v5/studies/:studyId/participants/:userId/adherence/study',
     adherenceStats: '/v5/studies/:studyId/adherence/stats',
-    adherenceUserWeekly: '/v5/studies/:studyId/participants/:userId/adherence/weekly',
+    adherenceUserWeekly:
+      '/v5/studies/:studyId/participants/:userId/adherence/weekly',
     adherenceWeekly: '/v5/studies/:studyId/adherence/weekly',
     assessment: '/v1/assessments/:id',
     assessmentShared: '/v1/sharedassessments/:id',
     assessments: '/v1/assessments/?includeDeleted=false',
     assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
     assessmentResources: '/v1/assessments/identifier::identifier/resources', //'/v1/sharedassessments',
-    assessmentSharedResources: '/v1/sharedassessments/identifier::identifier/resources',
+    assessmentSharedResources:
+      '/v1/sharedassessments/identifier::identifier/resources',
     assmentsForSessions: '/v1/sessions/:sessionId/assessments',
     bridgeAccount: '/v1/accounts/:id',
     enrollments: '/v5/studies/:studyId/enrollments',
     enrollment: '/v5/studies/:studyId/enrollments/:userId',
-    participantEnrollments: '/v5/studies/:studyId/participants/:userId/enrollments',
+    participantEnrollments:
+      '/v5/studies/:studyId/participants/:userId/enrollments',
     events: '/v5/studies/:studyId/participants/:userId/activityevents',
     getAccountsForOrg: '/v1/organizations/:orgId/members',
     oauthSignIn: '/v3/auth/oauth/signIn',

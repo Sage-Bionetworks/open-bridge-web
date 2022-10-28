@@ -1,6 +1,9 @@
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
-import {DialogButtonPrimary, DialogButtonSecondary} from '@components/widgets/StyledComponents'
+import {
+  DialogButtonPrimary,
+  DialogButtonSecondary,
+} from '@components/widgets/StyledComponents'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
@@ -23,7 +26,9 @@ import {ChoiceQuestion, Step, SurveyRuleOperator} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
 import Draggable from 'react-draggable'
 import useQuestionInfo from '../hooks/useQuestionInfo'
-import QUESTIONS, {getQuestionId} from '../survey-design/left-panel/QuestionConfigs'
+import QUESTIONS, {
+  getQuestionId,
+} from '../survey-design/left-panel/QuestionConfigs'
 import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 import {StyledDropDown, StyledDropDownItem} from '../widgets/StyledDropDown'
 import {detectCycle, getEdgesFromSteps} from './GetNodesToPlot'
@@ -64,26 +69,30 @@ const StyledQuestionDisplay = styled(Box, {label: 'StyledQuestionDisplay'})<{
   '& svg, img ': getSvgFilter(mode),
 }))
 
-const StyledSmallFont = styled(Typography, {label: 'StyledSmallFont'})(({theme}) => ({
-  fontFamily: latoFont,
-  fontWeight: 400,
-  fontSize: '12px',
-  color: '#fff',
-  width: '100%',
-  padding: theme.spacing(1, 0, 0.5, 0),
-  '&:last-child': {
-    padding: theme.spacing(1.5, 0, 0, 0),
-  },
-}))
+const StyledSmallFont = styled(Typography, {label: 'StyledSmallFont'})(
+  ({theme}) => ({
+    fontFamily: latoFont,
+    fontWeight: 400,
+    fontSize: '12px',
+    color: '#fff',
+    width: '100%',
+    padding: theme.spacing(1, 0, 0.5, 0),
+    '&:last-child': {
+      padding: theme.spacing(1.5, 0, 0, 0),
+    },
+  })
+)
 
-const StyledDialogTitle = styled(DialogTitle, {label: 'StyledDialogTitle'})(({theme}) => ({
-  background: ' #565656',
-  color: '#fff',
-  padding: theme.spacing(3, 3, 2, 3),
-  fontSize: '16px',
-  fontWeight: 700,
-  position: 'relative',
-}))
+const StyledDialogTitle = styled(DialogTitle, {label: 'StyledDialogTitle'})(
+  ({theme}) => ({
+    background: ' #565656',
+    color: '#fff',
+    padding: theme.spacing(3, 3, 2, 3),
+    fontSize: '16px',
+    fontWeight: 700,
+    position: 'relative',
+  })
+)
 
 const StyledTable = styled('table', {label: 'StyledTable'})(({theme}) => ({
   marginTop: theme.spacing(2.5),
@@ -100,7 +109,9 @@ const StyledTable = styled('table', {label: 'StyledTable'})(({theme}) => ({
 
 function PaperComponent(props: PaperProps) {
   return (
-    <Draggable handle="#draggable-dialog-title" cancel={'[class*="MuiDialogContent-root"]'}>
+    <Draggable
+      handle="#draggable-dialog-title"
+      cancel={'[class*="MuiDialogContent-root"]'}>
       <Paper {...props} />
     </Draggable>
   )
@@ -168,7 +179,8 @@ const ErrorDisplay: FunctionComponent<{
   }
   const textToUse = qNumber !== undefined ? textObj.cycle : textObj.rule
   return (
-    <Box sx={{bgcolor: theme.palette.error.light, padding: theme.spacing(1, 1.5)}}>
+    <Box
+      sx={{bgcolor: theme.palette.error.light, padding: theme.spacing(1, 1.5)}}>
       <AlertWithTextWrapper>
         <Box sx={{color: 'black', fontSize: '12px'}}>
           <strong>{textToUse.title}</strong>
@@ -189,8 +201,19 @@ const BranchingConfig: FunctionComponent<{
   onSave: () => void
   onChange: (step: ChoiceQuestion[]) => void
   isOpen: boolean
-}> = ({error, step, questions, invalidTargetStepIds, onChange, onCancel, isOpen, onSave}) => {
-  const [cycleErrQNum, setCycleErrQNum] = React.useState<number | undefined>(undefined)
+}> = ({
+  error,
+  step,
+  questions,
+  invalidTargetStepIds,
+  onChange,
+  onCancel,
+  isOpen,
+  onSave,
+}) => {
+  const [cycleErrQNum, setCycleErrQNum] = React.useState<number | undefined>(
+    undefined
+  )
   const [hasUnreachableState, setHasUnreachableState] = React.useState(false)
   const extendedStepInfo = useQuestionInfo(step, questions)
   if (!step) {
@@ -198,7 +221,10 @@ const BranchingConfig: FunctionComponent<{
   }
   // const qTypeId = getQuestionId(step)
 
-  const validateAndSave = (updatedSteps: ChoiceQuestion[], changedStepId: string) => {
+  const validateAndSave = (
+    updatedSteps: ChoiceQuestion[],
+    changedStepId: string
+  ) => {
     setCycleErrQNum(undefined)
     setHasUnreachableState(false)
     const updatedStep = updatedSteps.find(s => s.identifier === step.identifier)
@@ -206,7 +232,9 @@ const BranchingConfig: FunctionComponent<{
       //if we have rules for each step and skip to is not one of them then we have an error
       if (
         updatedStep.choices.length === updatedStep.surveyRules.length &&
-        !updatedStep.surveyRules.find(r => r.skipToIdentifier === updatedStep.nextStepIdentifier)
+        !updatedStep.surveyRules.find(
+          r => r.skipToIdentifier === updatedStep.nextStepIdentifier
+        )
       ) {
         setHasUnreachableState(true)
         return
@@ -217,7 +245,9 @@ const BranchingConfig: FunctionComponent<{
 
     const cycles = detectCycle(edges.edges)
     if (cycles) {
-      setCycleErrQNum(SurveyUtils.getSequentialQuestionIndex(changedStepId, questions).index)
+      setCycleErrQNum(
+        SurveyUtils.getSequentialQuestionIndex(changedStepId, questions).index
+      )
     } else {
       onChange(updatedSteps)
     }
@@ -227,7 +257,9 @@ const BranchingConfig: FunctionComponent<{
   const onChangeNextId = (stepId: string) => {
     validateAndSave(
       questions.map(_question =>
-        _question.identifier === step.identifier ? {..._question, nextStepIdentifier: stepId} : _question
+        _question.identifier === step.identifier
+          ? {..._question, nextStepIdentifier: stepId}
+          : _question
       ),
       stepId
     )
@@ -235,7 +267,10 @@ const BranchingConfig: FunctionComponent<{
   //radio button change
   const onChangeNextOption = (hasNextDefined: string) => {
     let newSteps: ChoiceQuestion[]
-    const stepIndex = SurveyUtils.getSequentialQuestionIndex(step.identifier, questions).index
+    const stepIndex = SurveyUtils.getSequentialQuestionIndex(
+      step.identifier,
+      questions
+    ).index
     if (hasNextDefined === 'false') {
       newSteps = questions.map(_question =>
         _question.identifier === step.identifier
@@ -255,10 +290,15 @@ const BranchingConfig: FunctionComponent<{
     validateAndSave(newSteps, questions[stepIndex + 1]?.identifier)
   }
 
-  const changeRuleMapping = (optionValue: string | number | boolean | undefined, nextStepId: string) => {
+  const changeRuleMapping = (
+    optionValue: string | number | boolean | undefined,
+    nextStepId: string
+  ) => {
     //make a copy of the rules
     let rules = [...(step.surveyRules || [])]
-    const ruleIndexToUpdate = rules?.findIndex(r => r.matchingAnswer === optionValue)
+    const ruleIndexToUpdate = rules?.findIndex(
+      r => r.matchingAnswer === optionValue
+    )
     const rule = {
       matchingAnswer: optionValue,
       ruleOperator: 'eq' as SurveyRuleOperator,
@@ -325,7 +365,9 @@ const BranchingConfig: FunctionComponent<{
       <DialogContent>
         <Box sx={{padding: theme.spacing(3)}}>
           {error && <div>{error}</div>}
-          <RadioGroup onChange={e => onChangeNextOption(e.target.value)} value={Boolean(step.nextStepIdentifier)}>
+          <RadioGroup
+            onChange={e => onChangeNextOption(e.target.value)}
+            value={Boolean(step.nextStepIdentifier)}>
             <FormControlLabel
               value={false}
               control={<Radio />}
@@ -382,9 +424,13 @@ const BranchingConfig: FunctionComponent<{
                           questions={questions}
                           excludeIds={invalidTargetStepIds}
                           selectedIdentifier={
-                            step.surveyRules?.find(rule => rule.matchingAnswer === c.value)?.skipToIdentifier || ''
+                            step.surveyRules?.find(
+                              rule => rule.matchingAnswer === c.value
+                            )?.skipToIdentifier || ''
                           }
-                          onChangeSelected={nextStepId => changeRuleMapping(c.value, nextStepId)}
+                          onChangeSelected={nextStepId =>
+                            changeRuleMapping(c.value, nextStepId)
+                          }
                         />
                       </td>
                     </tr>
@@ -397,7 +443,9 @@ const BranchingConfig: FunctionComponent<{
         </Box>
       </DialogContent>
       <DialogActions>
-        <DialogButtonSecondary onClick={closeModal}>Cancel</DialogButtonSecondary>
+        <DialogButtonSecondary onClick={closeModal}>
+          Cancel
+        </DialogButtonSecondary>
         <DialogButtonPrimary onClick={onSave} disabled={isSaveDisabled()}>
           Save Changes
         </DialogButtonPrimary>

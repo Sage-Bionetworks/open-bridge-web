@@ -47,7 +47,11 @@ type EditParticipantNotesProps = {
   enrollment: EnrolledAccountRecord
 }
 
-const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({participantId, studyId, enrollment}) => {
+const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
+  participantId,
+  studyId,
+  enrollment,
+}) => {
   const classes = useStyles()
   const [note, setNote] = React.useState(enrollment.note)
   const {isLoading, mutateAsync} = useUpdateParticipantInList()

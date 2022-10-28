@@ -16,7 +16,10 @@ const ColorPickerSection: React.FunctionComponent<ColorPickerSection> = ({
 }) => {
   return (
     <Subsection heading="Select background color">
-      <p>Select a background color that matches your institution or study to be seen beneath your logo.</p>
+      <p>
+        Select a background color that matches your institution or study to be
+        seen beneath your logo.
+      </p>
       <Box width="250px" height="230px" ml={-1.25}>
         <ReactColorPicker
           color={appBackgroundColor}

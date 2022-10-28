@@ -11,11 +11,17 @@ export const LocalAssessmentsMTB = [
     revision: 1,
     ownerId: 'sage-bionetworks',
     title: 'Memory for Sequences',
-    summary: 'Recall an alphanumeric string and reorganize/cognitively manipulate it and produce a new output.',
+    summary:
+      'Recall an alphanumeric string and reorganize/cognitively manipulate it and produce a new output.',
     osName: 'iPhone OS',
     validationStatus: '',
     normingStatus: '',
-    tags: ['cognitive', 'working-memory', 'mobile', AssessmentService.SURVEY_APP_TAG[mtbAppId]],
+    tags: [
+      'cognitive',
+      'working-memory',
+      'mobile',
+      AssessmentService.SURVEY_APP_TAG[mtbAppId],
+    ],
     customizationFields: {},
     createdOn: '2020-10-05T20:44:53.727Z',
     modifiedOn: '2020-10-05T20:44:53.727Z',
@@ -51,7 +57,8 @@ export const SharedAssessmentsMTB = [
     revision: 1,
     ownerId: 'sage-bionetworks',
     title: 'Picture Sequence Memory (PSM)',
-    summary: 'Dragging the picture/item in the correct order of the sequence to assess episodic memory.',
+    summary:
+      'Dragging the picture/item in the correct order of the sequence to assess episodic memory.',
     osName: 'iPhone OS',
     validationStatus: '',
     normingStatus: '',
@@ -69,11 +76,16 @@ export const SharedAssessmentsMTB = [
     revision: 1,
     ownerId: 'sage-bionetworks',
     title: 'Number Match',
-    summary: 'Fill in items, one row at a time, according to a code/legend on the top of the screen.',
+    summary:
+      'Fill in items, one row at a time, according to a code/legend on the top of the screen.',
     osName: 'iPhone OS',
     validationStatus: '',
     normingStatus: '',
-    tags: ['cognitive', 'episodic-memory', AssessmentService.ASSESSMENT_APP_TAG[mtbAppId]],
+    tags: [
+      'cognitive',
+      'episodic-memory',
+      AssessmentService.ASSESSMENT_APP_TAG[mtbAppId],
+    ],
     customizationFields: {},
     createdOn: '2020-10-05T20:34:41.421Z',
     modifiedOn: '2020-10-05T20:34:41.421Z',
@@ -132,7 +144,8 @@ export const SharedAssessmentsArc = [
     summary:
       'Indicate the direction of a central arrow flanked by foils on each side presented in the same (congruent) and opposite (incongruent) orientations',
     osName: 'iPhone OS',
-    validationStatus: 'To be validated in 2020 through the mobiletoolbox consortium',
+    validationStatus:
+      'To be validated in 2020 through the mobiletoolbox consortium',
     normingStatus: '',
     tags: ['cognitive', 'executive-function', 'inhibitory-control'],
     customizationFields: {},
@@ -148,11 +161,17 @@ export const SharedAssessmentsArc = [
     revision: 1,
     ownerId: 'sage-bionetworks',
     title: 'Face Name Associative Memory Exam (FNAME)',
-    summary: 'Participants see a series of facial photos and names and are asked to remember the face-name pairs.',
+    summary:
+      'Participants see a series of facial photos and names and are asked to remember the face-name pairs.',
     osName: 'Universal',
-    validationStatus: 'To be validated in 2020 through the mobiletoolbox consortium.',
+    validationStatus:
+      'To be validated in 2020 through the mobiletoolbox consortium.',
     normingStatus: '',
-    tags: ['associative-memory', 'cognitive', AssessmentService.ASSESSMENT_APP_TAG[arcAppId]],
+    tags: [
+      'associative-memory',
+      'cognitive',
+      AssessmentService.ASSESSMENT_APP_TAG[arcAppId],
+    ],
     customizationFields: {},
     createdOn: '2020-10-05T20:15:05.353Z',
     modifiedOn: '2020-10-05T20:15:05.353Z',
@@ -169,7 +188,8 @@ export const SharedAssessmentsArc = [
     summary:
       'The Digital Jar Open assessment measures the functional range of motion without pain for the joints of the arm (wrist, elbow, shoulder) on each arm while rotating inward and outward. Data collected from this assessment includes x,y,z accelerometer readings (at ~100Hz) and rotation rates from the gyroscope as well as the overall degrees of rotation in each direction for each arm.',
     osName: 'iPhone OS',
-    validationStatus: 'A validation study is in progress in the context of psoriatic arthritis.',
+    validationStatus:
+      'A validation study is in progress in the context of psoriatic arthritis.',
     normingStatus: '',
     tags: ['interactive', AssessmentService.ASSESSMENT_APP_TAG[arcAppId]],
     customizationFields: {},

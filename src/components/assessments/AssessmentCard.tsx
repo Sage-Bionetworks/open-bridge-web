@@ -78,12 +78,18 @@ type AssessmentCardOwnProps = {
 
 type AssessmentCardProps = AssessmentCardOwnProps
 
-const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({assessment, index}) => {
+const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
+  assessment,
+  index,
+}) => {
   const classes = useStyles()
 
   return (
     <Card className={classes.root}>
-      <AssessmentImage resources={assessment.resources} variant="normal" name={assessment.title}>
+      <AssessmentImage
+        resources={assessment.resources}
+        variant="normal"
+        name={assessment.title}>
         <Typography variant="subtitle2" className={classes.tags}>
           {assessment.tags.join(', ')}
         </Typography>
@@ -93,7 +99,9 @@ const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({assessment, ind
           {assessment.title}
         </Typography>
 
-        <Typography className={classes.summary}>{assessment.summary}</Typography>
+        <Typography className={classes.summary}>
+          {assessment.summary}
+        </Typography>
       </CardContent>
       <CardActions className={classes.bottom}>
         <div>{`${assessment.minutesToComplete} min.`} </div>

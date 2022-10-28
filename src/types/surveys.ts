@@ -69,7 +69,13 @@ export type ChoiceQuestionChoice = {
 }
 
 export interface Instruction extends BaseStep {}
-export type ControlType = 'radio' | 'checkbox' | 'text' | 'likert' | 'time' | 'date'
+export type ControlType =
+  | 'radio'
+  | 'checkbox'
+  | 'text'
+  | 'likert'
+  | 'time'
+  | 'date'
 
 export interface Question extends BaseStep {
   optional?: boolean //true,

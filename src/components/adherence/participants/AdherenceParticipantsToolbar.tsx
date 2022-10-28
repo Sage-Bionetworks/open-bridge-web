@@ -6,14 +6,15 @@ type AdherenceParticipantsToolbarProps = {
   studyId?: string
 }
 
-const AdherenceParticipantsToolbar: FunctionComponent<AdherenceParticipantsToolbarProps> = () => {
-  let {id: studyId} = useParams<{
-    id: string
-  }>()
+const AdherenceParticipantsToolbar: FunctionComponent<AdherenceParticipantsToolbarProps> =
+  () => {
+    let {id: studyId} = useParams<{
+      id: string
+    }>()
 
-  const {token} = useUserSessionDataState()
+    const {token} = useUserSessionDataState()
 
-  return <div>Adherence Grid</div>
-}
+    return <div>Adherence Grid</div>
+  }
 
 export default AdherenceParticipantsToolbar

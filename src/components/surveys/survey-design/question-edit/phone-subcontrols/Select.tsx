@@ -4,9 +4,19 @@ import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
 import ClearIcon from '@mui/icons-material/Clear'
 import {Box, IconButton, styled, Typography} from '@mui/material'
 import {theme} from '@style/theme'
-import {ChoiceQuestion, ChoiceQuestionChoice, ChoiceSelectorType} from '@typedefs/surveys'
+import {
+  ChoiceQuestion,
+  ChoiceQuestionChoice,
+  ChoiceSelectorType,
+} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
-import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from 'react-beautiful-dnd'
+import {
+  DragDropContext,
+  Draggable,
+  DraggableProvided,
+  Droppable,
+  DropResult,
+} from 'react-beautiful-dnd'
 
 const OptionList = styled('div', {label: 'OptionList'})(({theme}) => ({}))
 
@@ -93,7 +103,10 @@ const SelectOption: FunctionComponent<{
 
       <div>
         {provided !== undefined && <DraggableIcon />}
-        <IconButton onClick={() => onDelete(title)} sx={{padding: 0, marginLeft: '4px'}} title="delete">
+        <IconButton
+          onClick={() => onDelete(title)}
+          sx={{padding: 0, marginLeft: '4px'}}
+          title="delete">
           <ClearIcon fontSize="small" />
         </IconButton>
       </div>
@@ -112,7 +125,11 @@ const Select: React.FunctionComponent<{
       return
     }
 
-    const items = SurveyUtils.reorder([...stepData.choices], result.source.index, result.destination?.index)
+    const items = SurveyUtils.reorder(
+      [...stepData.choices],
+      result.source.index,
+      result.destination?.index
+    )
 
     onChange({...stepData, choices: items})
   }
@@ -132,11 +149,15 @@ const Select: React.FunctionComponent<{
         throw new Error('question badly formed')
       }
 
-      const deleteIndex = selectorType ? stepData.choices.findIndex(c => c.selectorType === selectorType) : index
+      const deleteIndex = selectorType
+        ? stepData.choices.findIndex(c => c.selectorType === selectorType)
+        : index
       //if this value is in the surveyRules - remove it
       if (stepData.surveyRules) {
         const rulesDeleteIndex = stepData.surveyRules!.findIndex(
-          r => r.matchingAnswer && r.matchingAnswer === stepData.choices[deleteIndex].value
+          r =>
+            r.matchingAnswer &&
+            r.matchingAnswer === stepData.choices[deleteIndex].value
         )
         newRules = [...stepData.surveyRules]
         if (rulesDeleteIndex !== -1) {
@@ -154,14 +175,20 @@ const Select: React.FunctionComponent<{
     }
   }
 
-  const renameOption = (newName: string, index: number, selectorType?: ChoiceSelectorType) => {
+  const renameOption = (
+    newName: string,
+    index: number,
+    selectorType?: ChoiceSelectorType
+  ) => {
     if (stepData.choices) {
       const newChoices = [...stepData.choices]
       if ((index > -1 && selectorType) || (index === -1 && !selectorType)) {
         throw new Error('question badly formed')
       }
 
-      const changeIndex = selectorType ? stepData.choices.findIndex(c => c.selectorType === selectorType) : index
+      const changeIndex = selectorType
+        ? stepData.choices.findIndex(c => c.selectorType === selectorType)
+        : index
 
       newChoices[changeIndex].text = newName
 
@@ -182,14 +209,19 @@ const Select: React.FunctionComponent<{
   }
 
   const shouldShowExclusiveQuestion = () => {
-    return stepData.choices && getIndexOfTheLastRealQuestion() < stepData.choices.length - 1
+    return (
+      stepData.choices &&
+      getIndexOfTheLastRealQuestion() < stepData.choices.length - 1
+    )
   }
   const getIndexOfTheLastRealQuestion = (): number => {
     if (!stepData.choices) {
       return -1
     }
     const firstExclusiveQIndex =
-      stepData.choices.findIndex(o => o.selectorType === 'all' || o.selectorType === 'exclusive') ?? -1
+      stepData.choices.findIndex(
+        o => o.selectorType === 'all' || o.selectorType === 'exclusive'
+      ) ?? -1
     //if index=== -1 -- all questions are real questions
     if (firstExclusiveQIndex === -1) {
       return stepData.choices.length - 1
@@ -203,25 +235,27 @@ const Select: React.FunctionComponent<{
         <Droppable droppableId="options">
           {provided => (
             <Box ref={provided.innerRef} {...provided.droppableProps}>
-              {[...stepData.choices!].slice(0, getIndexOfTheLastRealQuestion() + 1).map((choice, index) => (
-                <Draggable
-                  draggableId={choice.value?.toString() || ''}
-                  isDragDisabled={false}
-                  index={index}
-                  key={choice.value?.toString()}>
-                  {provided => (
-                    <SelectOption
-                      options={{
-                        isSingleChoice: stepData.singleChoice,
-                        provided,
-                      }}
-                      onRename={qText => renameOption(qText, index)}
-                      choice={choice}
-                      onDelete={() => deleteOption(index)}
-                    />
-                  )}
-                </Draggable>
-              ))}
+              {[...stepData.choices!]
+                .slice(0, getIndexOfTheLastRealQuestion() + 1)
+                .map((choice, index) => (
+                  <Draggable
+                    draggableId={choice.value?.toString() || ''}
+                    isDragDisabled={false}
+                    index={index}
+                    key={choice.value?.toString()}>
+                    {provided => (
+                      <SelectOption
+                        options={{
+                          isSingleChoice: stepData.singleChoice,
+                          provided,
+                        }}
+                        onRename={qText => renameOption(qText, index)}
+                        choice={choice}
+                        onDelete={() => deleteOption(index)}
+                      />
+                    )}
+                  </Draggable>
+                ))}
               {provided.placeholder}
             </Box>
           )}

@@ -67,7 +67,10 @@ export const Editable: FunctionComponent<EditableProps> = ({
     if (key === 'Tab' || key === enterKey) {
       onTriggerUpdate()
     }
-    if ((type === 'textarea' && keys.indexOf(key) > -1) || (type !== 'textarea' && allKeys.indexOf(key) > -1)) {
+    if (
+      (type === 'textarea' && keys.indexOf(key) > -1) ||
+      (type !== 'textarea' && allKeys.indexOf(key) > -1)
+    ) {
       setEditing(false)
     }
   }
@@ -75,7 +78,9 @@ export const Editable: FunctionComponent<EditableProps> = ({
   return (
     <div {...props}>
       {isEditing ? (
-        <div onBlur={() => setEditing(false)} onKeyDown={e => handleKeyDown(e, type)}>
+        <div
+          onBlur={() => setEditing(false)}
+          onKeyDown={e => handleKeyDown(e, type)}>
           {children}
         </div>
       ) : (
@@ -85,7 +90,9 @@ export const Editable: FunctionComponent<EditableProps> = ({
             setEditing(true)
             e.stopPropagation()
           }}>
-          <WrapperElement style={{margin: 0}}>{text || placeholder || ' '}</WrapperElement>
+          <WrapperElement style={{margin: 0}}>
+            {text || placeholder || ' '}
+          </WrapperElement>
         </div>
       )}
     </div>

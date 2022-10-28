@@ -127,8 +127,13 @@ const LaunchStepper: React.FunctionComponent<LaunchStepperProps> = ({
         connector={<ColorlibConnector />}>
         {steps.map((step, index) => (
           <Step key={step.label}>
-            <StepButton onClick={() => setActiveStepFn(index)} completed={step.isComplete} disabled={!step.isComplete}>
-              <StepLabel StepIconComponent={ColorlibStepIcon}>{step.label}</StepLabel>
+            <StepButton
+              onClick={() => setActiveStepFn(index)}
+              completed={step.isComplete}
+              disabled={!step.isComplete}>
+              <StepLabel StepIconComponent={ColorlibStepIcon}>
+                {step.label}
+              </StepLabel>
             </StepButton>
           </Step>
         ))}

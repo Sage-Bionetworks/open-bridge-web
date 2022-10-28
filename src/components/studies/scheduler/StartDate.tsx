@@ -1,6 +1,15 @@
 import {ReactComponent as EditIcon} from '@assets/edit_pencil.svg'
 import {ReactComponent as RedEditIcon} from '@assets/edit_pencil_red.svg'
-import {FormControl, FormGroup, IconButton, MenuItem, Radio, RadioGroup, Select, Tooltip} from '@mui/material'
+import {
+  FormControl,
+  FormGroup,
+  IconButton,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Select,
+  Tooltip,
+} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import constants from '@typedefs/constants'
@@ -60,7 +69,9 @@ const ToolIcon: FunctionComponent<ToolIconProps> = ({onOpenEventsEditor}) => {
         {isHoveringEdit ? (
           <EditIcon />
         ) : (
-          <RedEditIcon style={{position: 'relative', bottom: '0.5px', right: '0.5px'}} />
+          <RedEditIcon
+            style={{position: 'relative', bottom: '0.5px', right: '0.5px'}}
+          />
         )}
       </IconButton>
     </Tooltip>
@@ -146,7 +157,9 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
             <SelectEventId
               disabled={hasDelay || isBurst}
               value={!hasDelay ? startEventId : ''}
-              onChangeFn={(e: string) => onChangeStartEventId(e)}></SelectEventId>
+              onChangeFn={(e: string) =>
+                onChangeStartEventId(e)
+              }></SelectEventId>
             <ToolIcon onOpenEventsEditor={onOpenEventsEditor} />
             {isBurst ? children : ''}
           </FormGroup>
@@ -168,7 +181,9 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
             <SelectEventId
               disabled={!hasDelay || !!isBurst}
               value={hasDelay ? startEventId : ''}
-              onChangeFn={(e: string) => onChangeStartEventId(e)}></SelectEventId>
+              onChangeFn={(e: string) =>
+                onChangeStartEventId(e)
+              }></SelectEventId>
             <ToolIcon onOpenEventsEditor={onOpenEventsEditor} />
           </FormGroup>
         </RadioGroup>

@@ -36,7 +36,8 @@ const useStyles = makeStyles<ThemeType>((theme: ThemeType) => ({
     height: 'auto',
     width: '100%',
     backgroundColor: '#F2F2F2',
-    boxShadow: '0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12)',
+    boxShadow:
+      '0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12)',
   },
 
   mainAreaWrapper: {
@@ -140,7 +141,10 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
           }}>
           <Box className={classes.drawerToolbar}>
             {children.length === 3 && isOpen && children[2]}
-            <IconButton onClick={() => setIsOpen(prev => !prev)} style={toggleStyle} size="large">
+            <IconButton
+              onClick={() => setIsOpen(prev => !prev)}
+              style={toggleStyle}
+              size="large">
               {isOpen ? closeIcon : openIcon}
             </IconButton>
           </Box>

@@ -10,7 +10,8 @@ const renderComponent = (step: TimeQuestion) => {
 }
 //mock the props
 
-const getCheckbox = () => screen.getByRole('checkbox', {name: /no min and max/i})
+const getCheckbox = () =>
+  screen.getByRole('checkbox', {name: /no min and max/i})
 const getMinInput = () => screen.getByRole('button', {name: /min/i})
 const getMaxInput = () => screen.getByRole('button', {name: /max/i})
 const getGroup = () => screen.getByRole('radiogroup')
@@ -57,9 +58,15 @@ test('renders the component with min and max', () => {
 
   expect(min).not.toHaveClass('Mui-disabled')
   expect(max).not.toHaveClass('Mui-disabled')
-  expect(screen.getByRole('radio', {name: /allow any time value/i})).toHaveProperty('checked', true)
-  expect(screen.getByRole('radio', {name: /allow only time in the future/i})).toHaveProperty('checked', false)
-  expect(screen.getByRole('radio', {name: /allow only time in the past/i})).toHaveProperty('checked', false)
+  expect(
+    screen.getByRole('radio', {name: /allow any time value/i})
+  ).toHaveProperty('checked', true)
+  expect(
+    screen.getByRole('radio', {name: /allow only time in the future/i})
+  ).toHaveProperty('checked', false)
+  expect(
+    screen.getByRole('radio', {name: /allow only time in the past/i})
+  ).toHaveProperty('checked', false)
 })
 
 test('updates values', async () => {
@@ -93,5 +100,7 @@ test('updates values', async () => {
   expect(min).toHaveClass('Mui-disabled')
   expect(max).toHaveClass('Mui-disabled')
   expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-  expect(screen.getByRole('radio', {name: /allow only time in the past/i})).toHaveProperty('checked', true)
+  expect(
+    screen.getByRole('radio', {name: /allow only time in the past/i})
+  ).toHaveProperty('checked', true)
 })

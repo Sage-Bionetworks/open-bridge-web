@@ -12,7 +12,12 @@ import {
 
 type RestMethod = 'POST' | 'GET' | 'DELETE'
 
-function makeRequest(method: RestMethod = 'POST', url: string, body: any, token?: string): Promise<any> {
+function makeRequest(
+  method: RestMethod = 'POST',
+  url: string,
+  body: any,
+  token?: string
+): Promise<any> {
   return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest()
     xhr.open(method, url)
@@ -146,7 +151,8 @@ const getOauthEnvironment = (): OauthEnvironment => {
 const getOauthEnvironmentFromLocation = (loc: URL): OauthEnvironment => {
   var href = loc.origin
 
-  const isLocalhost = (): boolean => href.indexOf('127.0.0.1') > -1 || href.indexOf('localhost') > -1
+  const isLocalhost = (): boolean =>
+    href.indexOf('127.0.0.1') > -1 || href.indexOf('localhost') > -1
 
   //localhost
   if (isLocalhost()) {
@@ -236,9 +242,13 @@ const getRandomId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2)
 }
 
-const getEnumKeys = <T extends {}>(enum1: T): (keyof T)[] => Object.keys(enum1) as (keyof T)[]
+const getEnumKeys = <T extends {}>(enum1: T): (keyof T)[] =>
+  Object.keys(enum1) as (keyof T)[]
 
-const getEnumKeyByEnumValue = (myEnum: any, enumValue: number | string): string => {
+const getEnumKeyByEnumValue = (
+  myEnum: any,
+  enumValue: number | string
+): string => {
   let keys = Object.keys(myEnum).filter(x => myEnum[x] === enumValue)
   const result = keys.length > 0 ? keys[0] : ''
 
@@ -248,7 +258,10 @@ const getEnumKeyByEnumValue = (myEnum: any, enumValue: number | string): string 
 const bytesToSize = (bytes: number) => {
   const sizes = ['bytes', 'kb', 'MB', 'GB', 'TB']
   if (bytes === 0) return 'n/a'
-  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)).toString(), 10)
+  const i = parseInt(
+    Math.floor(Math.log(bytes) / Math.log(1024)).toString(),
+    10
+  )
   if (i === 0) return `${bytes} ${sizes[i]})`
   return `${(bytes / 1024 ** i).toFixed(1)}${sizes[i]}`
 }
@@ -314,7 +327,10 @@ const isPathAllowed = (studyId: string, path: string) => {
   const pathToCheck = path.replace(':id', studyId)
   const access = {
     org_admin: [CONSTANTS.restrictedPaths.ACCESS_SETTINGS],
-    study_designer: [CONSTANTS.restrictedPaths.STUDY_BUILDER, CONSTANTS.restrictedPaths.SURVEY_BUILDER],
+    study_designer: [
+      CONSTANTS.restrictedPaths.STUDY_BUILDER,
+      CONSTANTS.restrictedPaths.SURVEY_BUILDER,
+    ],
     study_coordinator: [
       CONSTANTS.restrictedPaths.PARTICIPANT_MANAGER,
       CONSTANTS.restrictedPaths.ADHERENCE_DATA,
@@ -328,7 +344,9 @@ const isPathAllowed = (studyId: string, path: string) => {
       (access[role] || []).map(link => link.replace(':id', studyId))
     )
   })
-  const hasPath = allowedPaths.find(allowedPath => pathToCheck.includes(allowedPath))
+  const hasPath = allowedPaths.find(allowedPath =>
+    pathToCheck.includes(allowedPath)
+  )
   return !!hasPath
 }
 
@@ -363,7 +381,10 @@ if (studyId.length !== 6) return studyId
 
 //this function allows to retrieve all of the pages for a query function
 
-async function getAllPages<T>(fn: Function, args: any[]): Promise<{items: T[]; total: number}> {
+async function getAllPages<T>(
+  fn: Function,
+  args: any[]
+): Promise<{items: T[]; total: number}> {
   const pageSize = 50
   const result = await fn(...args, pageSize, 0)
   const pages = Math.ceil(result.total / pageSize)

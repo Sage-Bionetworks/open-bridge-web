@@ -18,16 +18,22 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const AlertWithTextWrapper: React.FunctionComponent<AlertWithTextWrapperProps> = ({text, children, className}) => {
-  const classes = useStyles()
-  return (
-    <AlertWithText
-      icon={<img src={Alert_Icon} style={{height: '20px'}} alt={'error-icon'}></img>}
-      severity="error"
-      className={clsx(classes.errorText, className && className)}>
-      {text || children}
-    </AlertWithText>
-  )
-}
+const AlertWithTextWrapper: React.FunctionComponent<AlertWithTextWrapperProps> =
+  ({text, children, className}) => {
+    const classes = useStyles()
+    return (
+      <AlertWithText
+        icon={
+          <img
+            src={Alert_Icon}
+            style={{height: '20px'}}
+            alt={'error-icon'}></img>
+        }
+        severity="error"
+        className={clsx(classes.errorText, className && className)}>
+        {text || children}
+      </AlertWithText>
+    )
+  }
 
 export default AlertWithTextWrapper

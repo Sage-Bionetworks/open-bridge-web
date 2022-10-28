@@ -1,6 +1,13 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import AdherenceService, {WeeklyAdherenceFilter} from '@services/adherence.service'
-import {AdherenceDetailReport, AdherenceStatistics, AdherenceWeeklyReport, ExtendedError} from '@typedefs/types'
+import AdherenceService, {
+  WeeklyAdherenceFilter,
+} from '@services/adherence.service'
+import {
+  AdherenceDetailReport,
+  AdherenceStatistics,
+  AdherenceWeeklyReport,
+  ExtendedError,
+} from '@typedefs/types'
 import {useQuery} from 'react-query'
 
 export const ADHERENCE_KEYS = {
@@ -29,7 +36,8 @@ export const ADHERENCE_KEYS = {
       adherenceMax,
     ] as const,
 
-  detail: (studyId: string, userId: string) => [...ADHERENCE_KEYS.list(studyId), userId] as const,
+  detail: (studyId: string, userId: string) =>
+    [...ADHERENCE_KEYS.list(studyId), userId] as const,
 }
 
 export const useAdherence = (studyId: string, userId: string | undefined) => {
@@ -89,7 +97,10 @@ export const useAdherenceForWeek = (
 ) => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<{items: AdherenceWeeklyReport[]; total: number}, ExtendedError>(
+  return useQuery<
+    {items: AdherenceWeeklyReport[]; total: number},
+    ExtendedError
+  >(
     ADHERENCE_KEYS.list(
       studyId,
       currentPage,

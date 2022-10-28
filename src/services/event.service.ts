@@ -20,7 +20,8 @@ function isEventBurstEvent(eventIdentifier: string) {
 
 function prefixCustomEventIdentifier(eventIdentifier: string) {
   var isBurst = new RegExp(BURST_EVENT_REGEX_PATTERN).test(eventIdentifier)
-  return eventIdentifier.includes(constants.constants.CUSTOM_EVENT_PREFIX) || isBurst
+  return eventIdentifier.includes(constants.constants.CUSTOM_EVENT_PREFIX) ||
+    isBurst
     ? eventIdentifier
     : constants.constants.CUSTOM_EVENT_PREFIX + eventIdentifier
 }
@@ -48,13 +49,24 @@ async function getRelevantEventsForParticipants(
     customEvents: ParticipantEvent[]
   }>
 > {
-  const customEventsForStudy = await ScheduleService.getAllEventsForTimelineByStudyId(studyIdentifier, token)
+  const customEventsForStudy =
+    await ScheduleService.getAllEventsForTimelineByStudyId(
+      studyIdentifier,
+      token
+    )
 
   const customEventIdsForStudy = customEventsForStudy.map(e => e.eventId)
   const promises = participantId.map(async pId => {
-    const endpoint = constants.endpoints.events.replace(':studyId', studyIdentifier).replace(':userId', pId)
+    const endpoint = constants.endpoints.events
+      .replace(':studyId', studyIdentifier)
+      .replace(':userId', pId)
 
-    const apiCall = await Utility.callEndpoint<{items: any[]}>(endpoint, 'GET', {}, token)
+    const apiCall = await Utility.callEndpoint<{items: any[]}>(
+      endpoint,
+      'GET',
+      {},
+      token
+    )
     return {participantId: pId, apiCall: apiCall}
   })
 
@@ -64,7 +76,9 @@ async function getRelevantEventsForParticipants(
       const relevantEvents = item.apiCall.data.items.filter(event => {
         return customEventIdsForStudy.includes(event.eventId)
       })
-      let joinedDate = item.apiCall.data.items.find(event => event.eventId === JOINED_EVENT_ID)
+      let joinedDate = item.apiCall.data.items.find(
+        event => event.eventId === JOINED_EVENT_ID
+      )
 
       // let smsDate = item.apiCall.data.items.find(
       //  event => event.eventId === `custom:${LINK_SENT_EVENT_ID}` //TODO: this will not be custom
@@ -73,7 +87,9 @@ async function getRelevantEventsForParticipants(
         ...acc,
         [item.participantId]: {
           timeline_retrieved: joinedDate?.timestamp,
-          customEvents: relevantEvents.filter(e => e.eventId !== JOINED_EVENT_ID),
+          customEvents: relevantEvents.filter(
+            e => e.eventId !== JOINED_EVENT_ID
+          ),
         },
       }
     }, {})
@@ -90,13 +106,22 @@ async function updateParticipantCustomEvents(
   clientTimeZone: string
 ) {
   console.log('%c updating events', 'background: #222; color: #bada55')
-  let eventEndpoint = constants.endpoints.events.replace(':studyId', studyIdentifier).replace(':userId', participantId)
+  let eventEndpoint = constants.endpoints.events
+    .replace(':studyId', studyIdentifier)
+    .replace(':userId', participantId)
 
-  const customEventsToUpdate = eventsToUpdate.filter(e => e.eventId !== JOINED_EVENT_ID)
+  const customEventsToUpdate = eventsToUpdate.filter(
+    e => e.eventId !== JOINED_EVENT_ID
+  )
 
   //to update an event -- delete it and then recreate it
   for (const event of customEventsToUpdate) {
-    await Utility.callEndpoint<{identifier: string}>(eventEndpoint + '/' + event.eventId, 'DELETE', {}, token)
+    await Utility.callEndpoint<{identifier: string}>(
+      eventEndpoint + '/' + event.eventId,
+      'DELETE',
+      {},
+      token
+    )
     if (event.timestamp) {
       const data = {
         eventId: event.eventId,

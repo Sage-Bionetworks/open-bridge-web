@@ -9,7 +9,10 @@ type PlansOwnProps = {
 
 type PlansProps = PlansOwnProps & RouteComponentProps
 
-const Plans: FunctionComponent<PlansProps> = ({title = 'something', paragraph}) => (
+const Plans: FunctionComponent<PlansProps> = ({
+  title = 'something',
+  paragraph,
+}) => (
   <aside>
     <h2>{title}Plans</h2>
     <p>{paragraph}</p>

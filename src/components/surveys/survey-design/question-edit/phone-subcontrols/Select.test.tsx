@@ -6,7 +6,8 @@ import Select from './Select'
 const step: ChoiceQuestion = {
   type: 'choiceQuestion',
   identifier: 'choiceQ1',
-  comment: 'Go to the question selected by the participant. If they skip the question then go directly to follow-up.',
+  comment:
+    'Go to the question selected by the participant. If they skip the question then go directly to follow-up.',
   title: 'Choose which question to answer',
   surveyRules: [
     {
@@ -76,17 +77,23 @@ afterEach(cleanup)
 test('show the Select options correctly', () => {
   renderComponent(step)
   for (const choice of step.choices) {
-    expect(screen.getByRole('button', {name: new RegExp(choice.text, 'i')})).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', {name: new RegExp(choice.text, 'i')})
+    ).toBeInTheDocument()
   }
 })
 
 test('delete an option, and rules pertaining to it', async () => {
   const {user} = renderComponent(step)
   const birthYearOption = screen.getByRole('button', {name: /birth year/i})
-  const deleteButton = within(birthYearOption).getByRole('button', {name: /delete/i})
+  const deleteButton = within(birthYearOption).getByRole('button', {
+    name: /delete/i,
+  })
   await act(async () => await user.click(deleteButton))
   await waitFor(() => {
-    expect(screen.queryByRole('button', {name: /birth year/i})).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', {name: /birth year/i})
+    ).not.toBeInTheDocument()
   })
 })
 

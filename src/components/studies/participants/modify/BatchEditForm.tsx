@@ -49,7 +49,11 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   }
 
   return (
-    <Dialog open={isBatchEditOpen} maxWidth="sm" fullWidth aria-labelledby="edit participant">
+    <Dialog
+      open={isBatchEditOpen}
+      maxWidth="sm"
+      fullWidth
+      aria-labelledby="edit participant">
       <EditDialogTitle
         onCancel={() => {
           onSetIsBatchEditOpen(false)

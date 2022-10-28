@@ -42,26 +42,39 @@ type MobileDrawHeaderProps = {
   type: 'IN_STUDY' | 'LOGGED_IN' | 'NOT_LOGGED_IN'
 }
 
-const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = ({setIsMobileOpen, type}) => {
-  const classes = useStyles()
-  const logo = <img className={classes.logoImage} src={Logo} alt="Logo" />
-  const logoElement =
-    type === 'IN_STUDY' || type === 'LOGGED_IN' ? (
-      <NavLink color="inherit" to={'/studies'} key="MY STUDIES" className={classes.mobileToolBarLink}>
-        {logo}
-      </NavLink>
-    ) : (
-      <a target="_blank" href="https://www.mobiletoolbox.org" className={classes.mobileToolBarLink} rel="noreferrer">
-        {logo}
-      </a>
-    )
+const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> =
+  ({setIsMobileOpen, type}) => {
+    const classes = useStyles()
+    const logo = <img className={classes.logoImage} src={Logo} alt="Logo" />
+    const logoElement =
+      type === 'IN_STUDY' || type === 'LOGGED_IN' ? (
+        <NavLink
+          color="inherit"
+          to={'/studies'}
+          key="MY STUDIES"
+          className={classes.mobileToolBarLink}>
+          {logo}
+        </NavLink>
+      ) : (
+        <a
+          target="_blank"
+          href="https://www.mobiletoolbox.org"
+          className={classes.mobileToolBarLink}
+          rel="noreferrer">
+          {logo}
+        </a>
+      )
 
-  return (
-    <div className={classes.mobileHomeOptionContainer}>
-      {logoElement}
-      <img alt="close" src={BlackXIcon} onClick={() => setIsMobileOpen(false)} className={classes.blackXIcon}></img>
-    </div>
-  )
-}
+    return (
+      <div className={classes.mobileHomeOptionContainer}>
+        {logoElement}
+        <img
+          alt="close"
+          src={BlackXIcon}
+          onClick={() => setIsMobileOpen(false)}
+          className={classes.blackXIcon}></img>
+      </div>
+    )
+  }
 
 export default MobileDrawerMenuHeader

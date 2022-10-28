@@ -14,17 +14,22 @@ export function ErrorFallback(props: any) {
         <Box mx="auto" bgcolor="white" p={5} textAlign="center">
           <AccountLogin
             {...props}
-            isArcSignIn={[constants.constants.ARC_APP_ID, constants.constants.INV_ARC_APP_ID].includes(
-              Utility.getAppId()
-            )}
+            isArcSignIn={[
+              constants.constants.ARC_APP_ID,
+              constants.constants.INV_ARC_APP_ID,
+            ].includes(Utility.getAppId())}
             callbackFn={() => {
               window.location.replace('/')
             }}></AccountLogin>
         </Box>
       ) : props.error.statusCode === 403 ? (
         <Box mx="auto" bgcolor="white" p={5} textAlign="center">
-          <Alert variant="outlined" color="error" style={{marginBottom: '40px'}}>
-            You do not have the permission to access this feature. Please contact your study administrator
+          <Alert
+            variant="outlined"
+            color="error"
+            style={{marginBottom: '40px'}}>
+            You do not have the permission to access this feature. Please
+            contact your study administrator
           </Alert>
 
           <a href="/studies"> Back to study listings</a>
@@ -42,5 +47,9 @@ export function ErrorFallback(props: any) {
 }
 
 export const ErrorHandler = (error: Error, info: {componentStack: string}) => {
-  console.log('%cError Caught by Boundary:' + error.message, 'color:red', info.componentStack)
+  console.log(
+    '%cError Caught by Boundary:' + error.message,
+    'color:red',
+    info.componentStack
+  )
 }

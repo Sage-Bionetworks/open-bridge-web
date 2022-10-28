@@ -6,7 +6,9 @@ afterEach(cleanup)
 const onChange = jest.fn()
 
 function renderControl(actArray: ActionButtonName[] = ['goForward']) {
-  return render(<RequiredToggle shouldHideActionsArray={actArray} onChange={onChange} />)
+  return render(
+    <RequiredToggle shouldHideActionsArray={actArray} onChange={onChange} />
+  )
 }
 
 test('"allow" should be selected if "skip" is NOT in hidden actions, and clicking it have no effect', () => {
@@ -20,7 +22,9 @@ test('"allow" should be selected if "skip" is NOT in hidden actions, and clickin
 test('"allow" should NOT be selected if "skip" is IN  hidden actions, and clicking it have no effect', () => {
   const render = renderControl(['goForward', 'skip'])
   let allowButton = render.getByRole('button', {name: /allow skip/i})
-  expect(Array.from(allowButton.classList.values())).not.toContain('Mui-selected')
+  expect(Array.from(allowButton.classList.values())).not.toContain(
+    'Mui-selected'
+  )
   let requireButton = render.getByRole('button', {name: /require/i})
   expect(Array.from(requireButton.classList.values())).toContain('Mui-selected')
 

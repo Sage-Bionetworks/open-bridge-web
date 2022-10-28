@@ -48,7 +48,10 @@ async function getRelevantParticipantInfo(
     const updatedParticipant = {
       ...participant,
       // joinedDate: events.timeline_retrieved,
-      events: [...events.customEvents, {eventId: JOINED_EVENT_ID, timestamp: events.timeline_retrieved}],
+      events: [
+        ...events.customEvents,
+        {eventId: JOINED_EVENT_ID, timestamp: events.timeline_retrieved},
+      ],
       //   smsDate: event.smsDate,
     }
     return updatedParticipant
@@ -80,7 +83,13 @@ async function getParticipants(
         tab,
         searchOptions.searchParam
       )
-    : await ParticipantService.getParticipants(studyId, token, tab, pageSize, offset < 0 ? 0 : offset)
+    : await ParticipantService.getParticipants(
+        studyId,
+        token,
+        tab,
+        pageSize,
+        offset < 0 ? 0 : offset
+      )
   if (items && total) {
     const result = await getRelevantParticipantInfo(studyId, token, items)
     return {items: result, total}

@@ -14,10 +14,20 @@ const TimeWindowPlotElement: FunctionComponent<{
   maxNumberOfWindows: number
   isCompliant: boolean
   timeZone?: string
-}> = ({startDate, endDate, windowIndex, sessionSymbol, windowState, maxNumberOfWindows, isCompliant, timeZone}) => {
+}> = ({
+  startDate,
+  endDate,
+  windowIndex,
+  sessionSymbol,
+  windowState,
+  maxNumberOfWindows,
+  isCompliant,
+  timeZone,
+}) => {
   const tooltipTitle = (
     <div>
-      {timeZone && <div>{timeZone}</div>} {AdherenceUtility.getDateForDisplay(startDate)}
+      {timeZone && <div>{timeZone}</div>}{' '}
+      {AdherenceUtility.getDateForDisplay(startDate)}
       <div style={{marginTop: '8px'}}>
         <i>Expires on: {AdherenceUtility.getDateForDisplay(endDate)}</i>
       </div>
@@ -31,7 +41,11 @@ const TimeWindowPlotElement: FunctionComponent<{
           textAlign: 'center',
           width: `${Math.floor(100 / maxNumberOfWindows)}%`,
         }}>
-        <AdherenceSessionIcon sessionSymbol={sessionSymbol} windowState={windowState} isRed={!isCompliant} />
+        <AdherenceSessionIcon
+          sessionSymbol={sessionSymbol}
+          windowState={windowState}
+          isRed={!isCompliant}
+        />
       </div>
     </Tooltip>
   )

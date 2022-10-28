@@ -24,7 +24,11 @@ type AddSingleParticipantProps = {
   studyIdentifier: string
 }
 
-export async function addParticipantById(studyIdentifier: string, token: string, options: EditableParticipantData) {
+export async function addParticipantById(
+  studyIdentifier: string,
+  token: string,
+  options: EditableParticipantData
+) {
   await ParticipantService.addParticipant(studyIdentifier, token, options)
 }
 
@@ -49,11 +53,17 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
   studyIdentifier,
 }) => {
   const classes = useStyles()
-  const [participant, setParticipant] = React.useState<EditableParticipantData>({
-    externalId: '',
-  })
+  const [participant, setParticipant] = React.useState<EditableParticipantData>(
+    {
+      externalId: '',
+    }
+  )
   const [error, setError] = React.useState<Error>()
-  const {isLoading, error: participantAddError, mutateAsync} = useAddParticipant()
+  const {
+    isLoading,
+    error: participantAddError,
+    mutateAsync,
+  } = useAddParticipant()
 
   React.useEffect(() => {
     if (participantAddError) setError(participantAddError as Error)
@@ -78,13 +88,19 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
 
   const isAddDisabled = (): boolean => {
     const enrolledByPhoneWithoutNumber =
-      !isEnrolledById && (!participant.phoneNumber || Utility.isInvalidPhone(participant.phoneNumber))
+      !isEnrolledById &&
+      (!participant.phoneNumber ||
+        Utility.isInvalidPhone(participant.phoneNumber))
     const enrolledNyIdWithoutId = isEnrolledById && !participant.externalId
     const noTimeZoneForStudiesWithCustomEvents =
       scheduleEvents.find(e => e.eventId.includes('custom')) !== undefined &&
       (participant.clientTimeZone || '').length < 3
 
-    return enrolledByPhoneWithoutNumber || enrolledNyIdWithoutId || noTimeZoneForStudiesWithCustomEvents
+    return (
+      enrolledByPhoneWithoutNumber ||
+      enrolledNyIdWithoutId ||
+      noTimeZoneForStudiesWithCustomEvents
+    )
   }
 
   return (

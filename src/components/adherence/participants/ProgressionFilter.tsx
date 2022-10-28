@@ -21,10 +21,17 @@ const COMPLETION_STATUS: {label: string; value: ProgressionStatus}[] = [
   {label: 'Completed', value: 'done'},
 ]
 
-const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({progressionStatus, onChange, counts}) => {
+const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
+  progressionStatus,
+  onChange,
+  counts,
+}) => {
   const classes = {...useCommonStyles(), ...useStyles()}
 
-  const updateProgressionStatus = (value: ProgressionStatus, checked: boolean) => {
+  const updateProgressionStatus = (
+    value: ProgressionStatus,
+    checked: boolean
+  ) => {
     let result
     let cStatus = progressionStatus
     if (cStatus === undefined) {
@@ -53,8 +60,15 @@ const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({progressio
             control={
               <Checkbox
                 checked={isChecked(status.value)}
-                disabled={isChecked(status.value) && progressionStatus?.length === 1}
-                onChange={e => updateProgressionStatus(e.target.value as ProgressionStatus, e.target.checked)}
+                disabled={
+                  isChecked(status.value) && progressionStatus?.length === 1
+                }
+                onChange={e =>
+                  updateProgressionStatus(
+                    e.target.value as ProgressionStatus,
+                    e.target.checked
+                  )
+                }
               />
             }
             label={`${status.label} (${counts.get(status.value)})`}

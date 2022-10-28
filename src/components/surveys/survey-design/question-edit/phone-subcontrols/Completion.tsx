@@ -4,24 +4,31 @@ import {Box, FormControl, Paper, styled} from '@mui/material'
 import {latoFont} from '@style/theme'
 import {BaseStep} from '@typedefs/surveys'
 
-const StyledContainer = styled(Paper, {label: 'StyledContainer'})(({theme}) => ({
-  position: 'relative',
-  marginTop: '150px',
-  marginLeft: '-10px',
-  marginRight: '-10px',
-  padding: theme.spacing(theme.spacing(7), theme.spacing(2), theme.spacing(2), theme.spacing(2)),
+const StyledContainer = styled(Paper, {label: 'StyledContainer'})(
+  ({theme}) => ({
+    position: 'relative',
+    marginTop: '150px',
+    marginLeft: '-10px',
+    marginRight: '-10px',
+    padding: theme.spacing(
+      theme.spacing(7),
+      theme.spacing(2),
+      theme.spacing(2),
+      theme.spacing(2)
+    ),
 
-  background: '#FFFFFF',
-  boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
-  display: 'flex',
-  textAlign: 'center',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  '& > input': {
+    background: '#FFFFFF',
+    boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
+    display: 'flex',
     textAlign: 'center',
-  },
-}))
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '& > input': {
+      textAlign: 'center',
+    },
+  })
+)
 
 const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
   fontFamily: latoFont,

@@ -1,6 +1,12 @@
-import {StyledCheckbox, StyledFormControl} from '@components/surveys/widgets/SharedStyled'
+import {
+  StyledCheckbox,
+  StyledFormControl,
+} from '@components/surveys/widgets/SharedStyled'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
-import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
+import {
+  SimpleTextInput,
+  SimpleTextLabel,
+} from '@components/widgets/StyledComponents'
 import {Box, FormControlLabel, Typography} from '@mui/material'
 import {poppinsFont, theme} from '@style/theme'
 import {FormatOptionsYear, YearQuestion} from '@typedefs/surveys'
@@ -26,8 +32,17 @@ const GeneralAllowCheckbox: React.FunctionComponent<{
     <FormControlLabel
       htmlFor={CONFIG[type].labelId}
       sx={{mt: theme.spacing(1.5)}}
-      control={<StyledCheckbox checked={value !== false} onChange={e => onChange(e.target.checked)} />}
-      label={<Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>{CONFIG[type].label}</Typography>}
+      control={
+        <StyledCheckbox
+          checked={value !== false}
+          onChange={e => onChange(e.target.checked)}
+        />
+      }
+      label={
+        <Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>
+          {CONFIG[type].label}
+        </Typography>
+      }
     />
   )
 }
@@ -54,7 +69,9 @@ const ValueSelector: React.FunctionComponent<{
   return (
     <>
       <StyledFormControl sx={{marginRight: theme.spacing(2)}} mb={1}>
-        <SimpleTextLabel htmlFor={CONFIG[type].labelId}>{CONFIG[type].label}</SimpleTextLabel>
+        <SimpleTextLabel htmlFor={CONFIG[type].labelId}>
+          {CONFIG[type].label}
+        </SimpleTextLabel>
 
         <SimpleTextInput
           sx={{width: '80px'}}
@@ -82,13 +99,21 @@ const Year: React.FunctionComponent<{
   step: YearQuestion
   onChange: (step: YearQuestion) => void
 }> = ({step, onChange}) => {
-  const [range, setRange] = React.useState<{min?: number; max?: number} | undefined>({
+  const [range, setRange] = React.useState<
+    {min?: number; max?: number} | undefined
+  >({
     min: step.inputItem.formatOptions?.minimumYear,
     max: step.inputItem.formatOptions?.maximumYear,
   })
-  const [allowFuture, setAllowFuture] = React.useState(step.inputItem.formatOptions?.allowFuture !== false)
-  const [allowPast, setAllowPast] = React.useState(step.inputItem.formatOptions?.allowPast !== false)
-  const [error, setError] = React.useState<keyof typeof ErrorMessages | null>(null)
+  const [allowFuture, setAllowFuture] = React.useState(
+    step.inputItem.formatOptions?.allowFuture !== false
+  )
+  const [allowPast, setAllowPast] = React.useState(
+    step.inputItem.formatOptions?.allowPast !== false
+  )
+  const [error, setError] = React.useState<keyof typeof ErrorMessages | null>(
+    null
+  )
 
   const onUpdateFormat = (fm?: FormatOptionsYear) => {
     const inputItem = {...step.inputItem, formatOptions: fm}
@@ -101,8 +126,10 @@ const Year: React.FunctionComponent<{
     allowFuture: boolean
   ): keyof typeof ErrorMessages | null => {
     const currYear = new Date().getFullYear()
-    const gtCurrent = (range.min && range.min > currYear) || (range.max && range.max > currYear)
-    const ltCurrent = (range.min && range.min < currYear) || (range.max && range.max < currYear)
+    const gtCurrent =
+      (range.min && range.min > currYear) || (range.max && range.max > currYear)
+    const ltCurrent =
+      (range.min && range.min < currYear) || (range.max && range.max < currYear)
 
     if (range.min === undefined && range.max === undefined) {
       return null
@@ -137,8 +164,16 @@ const Year: React.FunctionComponent<{
 
   return (
     <>
-      <GeneralAllowCheckbox type="PAST" value={allowPast} onChange={setAllowPast} />
-      <GeneralAllowCheckbox type="FUTURE" value={allowFuture} onChange={setAllowFuture} />
+      <GeneralAllowCheckbox
+        type="PAST"
+        value={allowPast}
+        onChange={setAllowPast}
+      />
+      <GeneralAllowCheckbox
+        type="FUTURE"
+        value={allowFuture}
+        onChange={setAllowFuture}
+      />
 
       <Box
         sx={{
@@ -161,7 +196,10 @@ const Year: React.FunctionComponent<{
           }}
         />
       </Box>
-      {error && <AlertWithTextWrapper text={ErrorMessages[error]}></AlertWithTextWrapper>}
+      {error && (
+        <AlertWithTextWrapper
+          text={ErrorMessages[error]}></AlertWithTextWrapper>
+      )}
     </>
   )
 }

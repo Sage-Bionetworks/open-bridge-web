@@ -5,9 +5,23 @@ type cssGlobalClasses = {
   [key: string]: CSSProperties
 }
 
-export const openSansFont = ['Open Sans', 'serif', 'Lato', 'Roboto', 'Helvetica', 'Arial'].join(',')
+export const openSansFont = [
+  'Open Sans',
+  'serif',
+  'Lato',
+  'Roboto',
+  'Helvetica',
+  'Arial',
+].join(',')
 
-export const playfairDisplayFont = ['Playfair Display', 'serif', 'Lato', 'Roboto', 'Helvetica', 'Arial'].join(',')
+export const playfairDisplayFont = [
+  'Playfair Display',
+  'serif',
+  'Lato',
+  'Roboto',
+  'Helvetica',
+  'Arial',
+].join(',')
 
 const SPACE_UNIT = 8
 

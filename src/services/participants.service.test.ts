@@ -2,16 +2,25 @@ import ParticipantService from '@services/participants.service'
 import * as participant from '../../src/__test_utils/mocks/participant.json'
 describe('participants.service', () => {
   it('it should get the single participant correctly', async () => {
-    const result = await ParticipantService.getParticipant('study123', 'p123', 'token123')
+    const result = await ParticipantService.getParticipant(
+      'study123',
+      'p123',
+      'token123'
+    )
     const name = participant.firstName
     expect(name).toBe('Some')
     expect(result.firstName).toBe(name)
   })
   describe('update participant', () => {
     it('it should update the single participant with a participant property', async () => {
-      const result = await ParticipantService.updateParticipant('study123', 'token123', ['p123'], {
-        firstName: 'NewName',
-      })
+      const result = await ParticipantService.updateParticipant(
+        'study123',
+        'token123',
+        ['p123'],
+        {
+          firstName: 'NewName',
+        }
+      )
       const name = participant.firstName
 
       expect(name).toBe('Some')
@@ -29,10 +38,15 @@ describe('participants.service', () => {
     })
 
     it('it should update the single participant with property and note', async () => {
-      const result = await ParticipantService.updateParticipant('study123', 'token123', ['p123'], {
-        firstName: 'NewName',
-        note: 'My Note',
-      })
+      const result = await ParticipantService.updateParticipant(
+        'study123',
+        'token123',
+        ['p123'],
+        {
+          firstName: 'NewName',
+          note: 'My Note',
+        }
+      )
       const name = participant.firstName
 
       expect(name).toBe('Some')
@@ -50,9 +64,14 @@ describe('participants.service', () => {
     })
 
     it('it should uupdate timezone for several participants', async () => {
-      const result = await ParticipantService.updateParticipant('study123', 'token123', ['p123', 'p456'], {
-        clientTimeZone: 'America/New_York',
-      })
+      const result = await ParticipantService.updateParticipant(
+        'study123',
+        'token123',
+        ['p123', 'p456'],
+        {
+          clientTimeZone: 'America/New_York',
+        }
+      )
 
       expect(result.length).toBe(2)
 

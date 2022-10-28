@@ -11,7 +11,10 @@ type AssessmentsPreviewOwnProps = {
 
 type AssessmentsPreviewProps = AssessmentsPreviewOwnProps & RouteComponentProps
 
-const AssessmentsPreview: FunctionComponent<AssessmentsPreviewProps> = ({title = 'something', paragraph}) => {
+const AssessmentsPreview: FunctionComponent<AssessmentsPreviewProps> = ({
+  title = 'something',
+  paragraph,
+}) => {
   const links = [{url: '/assessments', text: 'Assessments'}]
   return (
     <Container maxWidth="xl" style={{position: 'relative'}}>

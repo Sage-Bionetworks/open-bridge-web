@@ -2,14 +2,21 @@ import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
 import {poppinsFont} from '@style/theme'
-import {NotificationTimeAtEnum, ScheduleNotification, StudySession} from '@typedefs/scheduling'
+import {
+  NotificationTimeAtEnum,
+  ScheduleNotification,
+  StudySession,
+} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
 import AssessmentList from '../AssessmentList'
 import ReadOnlyAssessmentWindow from '../read-only-pages/ReadOnlyAssessmentWindow'
 import ReadOnlyNotificationWindow from '../read-only-pages/ReadOnlyNotificationWindow'
-import {defaultSchedule, useStyles as SchedulableSessionStyles} from '../SchedulableSingleSessionContainer'
+import {
+  defaultSchedule,
+  useStyles as SchedulableSessionStyles,
+} from '../SchedulableSingleSessionContainer'
 import {useStyles as sharedSchedulerStyles} from '../Scheduler'
 import SchedulingFormSection from '../SchedulingFormSection'
 import {getFormattedTimeDateFromPeriodString} from '../utility'
@@ -57,7 +64,9 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
 
   function getSessionIntervalText(session: StudySession) {
     const {interval, occurrences} = session
-    const label = occurrences ? ` for ${occurrences} times` : 'until the end of study'
+    const label = occurrences
+      ? ` for ${occurrences} times`
+      : 'until the end of study'
     let intervalString = ''
     if (interval) {
       intervalString = getFormattedTimeDateFromPeriodString(interval) + ' '
@@ -65,10 +74,15 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
     return `${intervalString}${label}`
   }
 
-  const getNotificationTimeText = (notification: ScheduleNotification, index: number): string => {
+  const getNotificationTimeText = (
+    notification: ScheduleNotification,
+    index: number
+  ): string => {
     const offset = notification.offset
     const endingText =
-      offset === undefined && index === 1 ? 'at start of window' : NotificationTimeAtEnum[notification.notifyAt]
+      offset === undefined && index === 1
+        ? 'at start of window'
+        : NotificationTimeAtEnum[notification.notifyAt]
     let offsetText = ''
     if (offset) {
       offsetText = getFormattedTimeDateFromPeriodString(offset) + ' '
@@ -78,7 +92,9 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
 
   return (
     <Box mb={2} display="flex" key={session.guid}>
-      <Box className={clsx(schedulerClasses.assessments)} style={{backgroundColor: '#f8f8f8'}}>
+      <Box
+        className={clsx(schedulerClasses.assessments)}
+        style={{backgroundColor: '#f8f8f8'}}>
         <AssessmentList
           isReadOnly={true}
           studySessionIndex={studySessionIndex}
@@ -97,22 +113,40 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                   <span>
                     starts
                     <br />
-                    <strong>{getFormattedTimeDateFromPeriodString(session.delay)}</strong> from:{' '}
+                    <strong>
+                      {getFormattedTimeDateFromPeriodString(session.delay)}
+                    </strong>{' '}
+                    from:{' '}
                   </span>
                 ) : (
                   'starts on:'
                 )}
               </Box>
             }>
-            <strong className={clsx(classes.readOnlyText, classes.readOnlyTextCentering)}>
-              {EventService.formatEventIdForDisplay(_.first(session.startEventIds) || originEventId || 'Unknown')}
+            <strong
+              className={clsx(
+                classes.readOnlyText,
+                classes.readOnlyTextCentering
+              )}>
+              {EventService.formatEventIdForDisplay(
+                _.first(session.startEventIds) || originEventId || 'Unknown'
+              )}
             </strong>
           </SchedulingFormSection>
         </Box>
         <Box className={sessionContainerClasses.formSection}>
-          <SchedulingFormSection label={<Box className={classes.rowHeader}>End after:</Box>}>
-            <strong className={clsx(classes.readOnlyText, classes.readOnlyTextCentering)}>
-              {`${session.occurrences ? session.occurrences + ' times' : ' End of study'}`}
+          <SchedulingFormSection
+            label={<Box className={classes.rowHeader}>End after:</Box>}>
+            <strong
+              className={clsx(
+                classes.readOnlyText,
+                classes.readOnlyTextCentering
+              )}>
+              {`${
+                session.occurrences
+                  ? session.occurrences + ' times'
+                  : ' End of study'
+              }`}
             </strong>
           </SchedulingFormSection>
         </Box>
@@ -127,37 +161,56 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                 Run this session every:
               </Box>
             }>
-            <strong className={clsx(classes.readOnlyText, classes.readOnlyTextCentering)}>
+            <strong
+              className={clsx(
+                classes.readOnlyText,
+                classes.readOnlyTextCentering
+              )}>
               {getSessionIntervalText(session)}
             </strong>
           </SchedulingFormSection>
-          <SchedulingFormSection label={<Box className={classes.rowHeader}>Session window:</Box>}>
+          <SchedulingFormSection
+            label={<Box className={classes.rowHeader}>Session window:</Box>}>
             <Box flexGrow={1}>
-              {(session || defaultSchedule).timeWindows?.map((window, index) => {
-                return (
-                  <ReadOnlyAssessmentWindow
-                    key={'read-only-assessment-window-' + index}
-                    startTime={window.startTime}
-                    index={index + 1}
-                    expireAfter={window.expiration || 'N/A'}
-                  />
-                )
-              })}
+              {(session || defaultSchedule).timeWindows?.map(
+                (window, index) => {
+                  return (
+                    <ReadOnlyAssessmentWindow
+                      key={'read-only-assessment-window-' + index}
+                      startTime={window.startTime}
+                      index={index + 1}
+                      expireAfter={window.expiration || 'N/A'}
+                    />
+                  )
+                }
+              )}
             </Box>
           </SchedulingFormSection>
-          <SchedulingFormSection label={<Box className={classes.rowHeader}>Session Notifications:</Box>}>
+          <SchedulingFormSection
+            label={
+              <Box className={classes.rowHeader}>Session Notifications:</Box>
+            }>
             <Box flexGrow={1}>
-              {(session || defaultSchedule).notifications?.map((notification, index) => {
-                return (
-                  <ReadOnlyNotificationWindow
-                    key={'read-only-notification-window-' + index}
-                    index={index + 1}
-                    notificationHeader={_.first(notification.messages)?.subject || ''}
-                    notificationMessage={_.first(notification.messages)?.message || ''}
-                    notificationTimeText={getNotificationTimeText(notification, index + 1)}
-                  />
-                )
-              })}
+              {(session || defaultSchedule).notifications?.map(
+                (notification, index) => {
+                  return (
+                    <ReadOnlyNotificationWindow
+                      key={'read-only-notification-window-' + index}
+                      index={index + 1}
+                      notificationHeader={
+                        _.first(notification.messages)?.subject || ''
+                      }
+                      notificationMessage={
+                        _.first(notification.messages)?.message || ''
+                      }
+                      notificationTimeText={getNotificationTimeText(
+                        notification,
+                        index + 1
+                      )}
+                    />
+                  )
+                }
+              )}
             </Box>
             {(session || defaultSchedule).notifications?.length === 0 && (
               <strong

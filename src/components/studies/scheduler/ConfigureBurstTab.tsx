@@ -1,4 +1,9 @@
-import {MTBHeadingH1, MTBHeadingH2, MTBHeadingH3, MTBHeadingH4} from '@components/widgets/Headings'
+import {
+  MTBHeadingH1,
+  MTBHeadingH2,
+  MTBHeadingH3,
+  MTBHeadingH4,
+} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import SessionIcon from '@components/widgets/SessionIcon'
 import SmallTextBox from '@components/widgets/SmallTextBox'
@@ -158,14 +163,20 @@ const HasBurstsSC: React.FunctionComponent<{
   return (
     <>
       <Box display="flex" flexDirection="row" alignItems="center">
-        <Switch checked={hasBursts} onChange={e => setHasBursts(e.target.checked)} color="primary" />{' '}
+        <Switch
+          checked={hasBursts}
+          onChange={e => setHasBursts(e.target.checked)}
+          color="primary"
+        />{' '}
         <MTBHeadingH3>{hasBursts ? 'ON' : 'OFF'}</MTBHeadingH3>
       </Box>
 
       <MTBHeadingH1 style={{marginBottom: '16px'}}>Burst Design</MTBHeadingH1>
       <Typography component="p" variant="body1">
-        A burst design involves repeating multiple study sessions tied to an Event that are spaced out over time at
-        regular intervals with long breaks. This is intended to maximize longitudinal participation with minimal burden.
+        A burst design involves repeating multiple study sessions tied to an
+        Event that are spaced out over time at regular intervals with long
+        breaks. This is intended to maximize longitudinal participation with
+        minimal burden.
       </Typography>
     </>
   )
@@ -177,7 +188,13 @@ const BurstSelectorSC: React.FunctionComponent<{
   triggerEventId: string | undefined
   onUpdateEvent: (eventId: string) => void
   onUpdateSessionSelection: (guids: string[]) => void
-}> = ({schedule, burstSessionGuids, onUpdateSessionSelection, triggerEventId, onUpdateEvent}) => {
+}> = ({
+  schedule,
+  burstSessionGuids,
+  onUpdateSessionSelection,
+  triggerEventId,
+  onUpdateEvent,
+}) => {
   const classes = useStyles()
   const burstEventId = _.first(schedule.studyBursts)?.originEventId
   const updatedSessions = schedule.sessions.map(s =>
@@ -218,9 +235,14 @@ const BurstSelectorSC: React.FunctionComponent<{
         <Paper
           key={`event_${key}`}
           elevation={3}
-          className={clsx(classes.eventSessionCard, isEventSelected(key) && 'selected')}
+          className={clsx(
+            classes.eventSessionCard,
+            isEventSelected(key) && 'selected'
+          )}
           onClick={() => selectEvent(key)}>
-          <MTBHeadingH4>Sessions associated with {EventService.formatEventIdForDisplay(key)} </MTBHeadingH4>
+          <MTBHeadingH4>
+            Sessions associated with {EventService.formatEventIdForDisplay(key)}{' '}
+          </MTBHeadingH4>
           {groups[key].map((s, index) => (
             <FormControlLabel
               key={s.guid}
@@ -239,7 +261,9 @@ const BurstSelectorSC: React.FunctionComponent<{
               label={
                 <TooltipHoverDisplay key={s.guid} session={s}>
                   <SessionIcon
-                    index={schedule.sessions.findIndex(session => session.guid === s.guid)}
+                    index={schedule.sessions.findIndex(
+                      session => session.guid === s.guid
+                    )}
                     key={s.guid}
                     symbolKey={s.symbol}
                     onClick={() => {
@@ -280,7 +304,10 @@ const BurstScheduleSC: React.FunctionComponent<{
           weeks
         </FormControl>
         <FormControl fullWidth className={classes.row}>
-          <InputLabel htmlFor="burst-num" style={{marginRight: '24px'}} className={classes.assignBurstText}>
+          <InputLabel
+            htmlFor="burst-num"
+            style={{marginRight: '24px'}}
+            className={classes.assignBurstText}>
             For:
           </InputLabel>
           <SmallTextBox
@@ -295,7 +322,10 @@ const BurstScheduleSC: React.FunctionComponent<{
   )
 }
 
-const ConfigureBurstTab: React.ForwardRefRenderFunction<SaveHandle, ConfigureBurstTabProps> = (
+const ConfigureBurstTab: React.ForwardRefRenderFunction<
+  SaveHandle,
+  ConfigureBurstTabProps
+> = (
   {onNavigate, id, schedule, hasBursts, onSetHasBursts}: ConfigureBurstTabProps,
   ref
 ) => {
@@ -312,7 +342,9 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<SaveHandle, ConfigureBur
   const [originEventId, setOriginEventId] = React.useState<string | undefined>()
   const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
   const [burstNumber, setBurstNumber] = React.useState<number | undefined>()
-  const [burstFrequency, setBurstFrequency] = React.useState<number | undefined>()
+  const [burstFrequency, setBurstFrequency] = React.useState<
+    number | undefined
+  >()
 
   React.useImperativeHandle(ref, () => ({
     async save() {
@@ -400,7 +432,9 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<SaveHandle, ConfigureBur
 
     //update sessions, remove startEventId
     const sessionsWithBurst = sessions.map(s =>
-      burstSessionGuids.includes(s.guid!) ? {...s, studyBurstIds: [burst.identifier], startEventIds: []} : s
+      burstSessionGuids.includes(s.guid!)
+        ? {...s, studyBurstIds: [burst.identifier], startEventIds: []}
+        : s
     )
     console.log('guids', burstSessionGuids)
 
@@ -441,7 +475,11 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<SaveHandle, ConfigureBur
   }
   return (
     <div className={classes.root}>
-      <LoadingComponent reqStatusLoading={saveLoader} loaderSize="2rem" variant={'small'} />
+      <LoadingComponent
+        reqStatusLoading={saveLoader}
+        loaderSize="2rem"
+        variant={'small'}
+      />
       {error && <Alert color="error">{error}</Alert>}
       <HasBurstsSC hasBursts={hasBursts} setHasBursts={onSetHasBursts} />
 
@@ -453,7 +491,9 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<SaveHandle, ConfigureBur
               burstSessionGuids={burstSessionGuids}
               triggerEventId={originEventId}
               onUpdateEvent={(eventId: string) => setOriginEventId(eventId)}
-              onUpdateSessionSelection={(guids: string[]) => setBurstSessionGuids(guids)}
+              onUpdateSessionSelection={(guids: string[]) =>
+                setBurstSessionGuids(guids)
+              }
             />
 
             <div className={classes.setBurstInfoContainer}>

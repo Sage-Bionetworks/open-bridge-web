@@ -42,7 +42,12 @@ function getSteps(isLive: boolean) {
   if (isLive) {
     return [{label: 'About Study'}, {label: 'IRB Details'}]
   }
-  return [{label: 'Review Alerts'}, {label: 'About Study'}, {label: 'IRB Details'}, {label: 'Study is live'}]
+  return [
+    {label: 'Review Alerts'},
+    {label: 'About Study'},
+    {label: 'IRB Details'},
+    {label: 'Study is live'},
+  ]
 }
 
 type StepContentProps = {
@@ -66,9 +71,21 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
 }) => {
   switch (stepName) {
     case 'Review Alerts':
-      return <LaunchAlerts study={study} schedule={schedule} onEnableNext={onEnableNext} />
+      return (
+        <LaunchAlerts
+          study={study}
+          schedule={schedule}
+          onEnableNext={onEnableNext}
+        />
+      )
     case 'About Study':
-      return <AboutStudy study={study} onChange={onChange} onEnableNext={onEnableNext} />
+      return (
+        <AboutStudy
+          study={study}
+          onChange={onChange}
+          onEnableNext={onEnableNext}
+        />
+      )
     case 'IRB Details':
       return (
         <IrbDetails
@@ -87,7 +104,11 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
   }
 }
 
-const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedback}: LaunchProps) => {
+const Launch: React.FunctionComponent<LaunchProps> = ({
+  id,
+  children,
+  onShowFeedback,
+}: LaunchProps) => {
   const classes = useStyles()
   const {data: sourceStudy} = useStudy(id)
   const {data: schedule} = useSchedule(id, false)
@@ -108,7 +129,8 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
     if (sourceStudy) {
       setStudy(sourceStudy)
 
-      const isLive = StudyService.getDisplayStatusForStudyPhase(sourceStudy.phase) === 'LIVE'
+      const isLive =
+        StudyService.getDisplayStatusForStudyPhase(sourceStudy.phase) === 'LIVE'
       setIsStudyLive(isLive)
       const steps = getSteps(isLive)
       setSteps(steps)
@@ -124,7 +146,8 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
       if (!study) {
         return
       }
-      const missingIrbInfo = !study.irbDecisionType || !study.irbDecisionOn || !study.irbExpiresOn
+      const missingIrbInfo =
+        !study.irbDecisionType || !study.irbDecisionOn || !study.irbExpiresOn
       if (missingIrbInfo) {
         delete study.irbDecisionOn
         delete study.irbExpiresOn
@@ -148,7 +171,9 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
   }
 
   const handleNext = () => {
-    const newSteps = steps.map((s, i) => (i === activeStep ? {...s, isComplete: true} : s))
+    const newSteps = steps.map((s, i) =>
+      i === activeStep ? {...s, isComplete: true} : s
+    )
     setSteps(newSteps)
     setActiveStep(prevActiveStep => prevActiveStep + 1)
     onSave()
@@ -174,17 +199,27 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
   if (isReadOnly) {
     return <ReadOnlyIrbDetails study={study} />
   }
-  const showNextButton = !isReadOnly && ((!isStudyLive && activeStep < 2) || (isStudyLive && activeStep === 0))
+  const showNextButton =
+    !isReadOnly &&
+    ((!isStudyLive && activeStep < 2) || (isStudyLive && activeStep === 0))
 
   return (
     <Paper className={classes.root} elevation={2} id="container">
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
         {({onConfirm, onCancel}) => (
-          <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
+          <ConfirmationDialog
+            isOpen={hasObjectChanged}
+            type={'NAVIGATE'}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
+          />
         )}
       </NavigationPrompt>
       {!isReadOnly && (
-        <LaunchStepper steps={steps} activeStep={activeStep} setActiveStepFn={handleStepClick}></LaunchStepper>
+        <LaunchStepper
+          steps={steps}
+          activeStep={activeStep}
+          setActiveStepFn={handleStepClick}></LaunchStepper>
       )}
 
       <div className={classes.instructions}>
@@ -207,7 +242,10 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
                   {activeStep === 0 ? (
                     children
                   ) : (
-                    <PrevButton variant="outlined" color="primary" onClick={handleBack}>
+                    <PrevButton
+                      variant="outlined"
+                      color="primary"
+                      onClick={handleBack}>
                       <ArrowIcon /> {steps[activeStep - 1]?.label}
                     </PrevButton>
                   )}
@@ -216,21 +254,33 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
               )}
 
               {showNextButton && (
-                <NextButton variant="contained" color="primary" onClick={handleNext} disabled={!isNextEnabled}>
+                <NextButton
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                  disabled={!isNextEnabled}>
                   {steps[activeStep + 1]?.label}
                   <ArrowIcon />
                 </NextButton>
               )}
 
               {activeStep === 2 && (
-                <Button variant="contained" color="primary" onClick={() => submitAndLock()} disabled={!isNextEnabled}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => submitAndLock()}
+                  disabled={!isNextEnabled}>
                   <LockIcon style={{marginRight: '4px'}} />
                   Submit and lock the study
                 </Button>
               )}
 
               {activeStep === 1 && isStudyLive && (
-                <SaveButton variant="contained" color="primary" disabled={!isNextEnabled} onClick={() => onSave()}>
+                <SaveButton
+                  variant="contained"
+                  color="primary"
+                  disabled={!isNextEnabled}
+                  onClick={() => onSave()}>
                   Save to App
                 </SaveButton>
               )}

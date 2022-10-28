@@ -29,7 +29,14 @@ type DatePickerProps = {
 }
 
 // -----------------  Add participant control
-const DatePicker2: FunctionComponent<DatePickerProps> = ({onChange, value, label, id, disabled, isYearOnly}) => {
+const DatePicker2: FunctionComponent<DatePickerProps> = ({
+  onChange,
+  value,
+  label,
+  id,
+  disabled,
+  isYearOnly,
+}) => {
   const classes = useStyles()
 
   const handleDateChange = (date: Date | null) => {
@@ -44,7 +51,14 @@ const DatePicker2: FunctionComponent<DatePickerProps> = ({onChange, value, label
           clearable={true}
           value={value}
           onChange={e => handleDateChange(e || null)}
-          renderInput={params => <TextField {...params} id={id} disabled={disabled} className={classes.datePicker} />}
+          renderInput={params => (
+            <TextField
+              {...params}
+              id={id}
+              disabled={disabled}
+              className={classes.datePicker}
+            />
+          )}
         />
       </FormControl>
     </LocalizationProvider>

@@ -18,13 +18,22 @@ export const MOCKS = {
   SCHEDULE: Schedule.data,
 }
 
-export const setItem = async <T>(key: string, item: T, timeout = 100): Promise<T> => {
+export const setItem = async <T>(
+  key: string,
+  item: T,
+  timeout = 100
+): Promise<T> => {
   localStorage.setItem(key, JSON.stringify(item))
   return new Promise(resolve => setTimeout(resolve.bind(null, item), timeout))
 }
 
-export const getItem = async <T>(key: string, timeout = 100): Promise<T | null> => {
+export const getItem = async <T>(
+  key: string,
+  timeout = 100
+): Promise<T | null> => {
   const item = localStorage.getItem(key)
 
-  return new Promise(resolve => setTimeout(resolve.bind(null, item ? JSON.parse(item) : null), timeout))
+  return new Promise(resolve =>
+    setTimeout(resolve.bind(null, item ? JSON.parse(item) : null), timeout)
+  )
 }

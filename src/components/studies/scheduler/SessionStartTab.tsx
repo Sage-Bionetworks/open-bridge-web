@@ -13,7 +13,13 @@ import {SchedulingEvent} from '@typedefs/scheduling'
 import {ExtendedError, Study} from '@typedefs/types'
 import clsx from 'clsx'
 import React from 'react'
-import {DragDropContext, Draggable, DraggableLocation, Droppable, DropResult} from 'react-beautiful-dnd'
+import {
+  DragDropContext,
+  Draggable,
+  DraggableLocation,
+  Droppable,
+  DropResult,
+} from 'react-beautiful-dnd'
 import {useUpdateStudyDetail} from '../../../services/studyHooks'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -177,7 +183,12 @@ const ERROR_MSG = {
 
 const CalendarIconControl: React.FunctionComponent<any> = React.memo(() => {
   const classes = useStyles()
-  return <img src={CalendarIcon} className={classes.calendarIcon} alt="calendar"></img>
+  return (
+    <img
+      src={CalendarIcon}
+      className={classes.calendarIcon}
+      alt="calendar"></img>
+  )
 })
 
 const FakeSelect: React.FunctionComponent<{
@@ -188,7 +199,8 @@ const FakeSelect: React.FunctionComponent<{
   const classes = useStyles()
 
   return (
-    <Box className={clsx(classes.fakeSelect, hasCalendar && classes.withCalendar)}>
+    <Box
+      className={clsx(classes.fakeSelect, hasCalendar && classes.withCalendar)}>
       {hasCalendar && <CalendarIconControl />}
       <div>
         {evtName}
@@ -202,10 +214,10 @@ const FakeSelect: React.FunctionComponent<{
   )
 }
 
-const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTabProps> = (
-  {study, onNavigate, eventIdsInSchedule}: SessionStartTabProps,
-  ref
-) => {
+const SessionStartTab: React.ForwardRefRenderFunction<
+  SaveHandle,
+  SessionStartTabProps
+> = ({study, onNavigate, eventIdsInSchedule}: SessionStartTabProps, ref) => {
   const classes = useStyles()
 
   React.useImperativeHandle(ref, () => ({
@@ -227,7 +239,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
 
   const [saveLoader, setSaveLoader] = React.useState(false)
   const [error, setError] = React.useState<string | undefined>(undefined)
-  const [customEvents, setCustomEvents] = React.useState<SchedulingEvent[]>(study.customEvents || [])
+  const [customEvents, setCustomEvents] = React.useState<SchedulingEvent[]>(
+    study.customEvents || []
+  )
 
   const onSave = async () => {
     if (!study) {
@@ -245,7 +259,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
     }
   }
 
-  const [newEvent, setNewEvent] = React.useState(`Event ${customEvents.length + 1}`)
+  const [newEvent, setNewEvent] = React.useState(
+    `Event ${customEvents.length + 1}`
+  )
 
   if (!study) {
     return <>...loading</>
@@ -296,10 +312,16 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
   }
 
   const canEdit = (eventId: string): boolean => {
-    return !eventIdsInSchedule.map(e => EventService.formatEventIdForDisplay(e)).includes(eventId)
+    return !eventIdsInSchedule
+      .map(e => EventService.formatEventIdForDisplay(e))
+      .includes(eventId)
   }
 
-  const rearrangeList = (list: any[], source: DraggableLocation, destination: DraggableLocation) => {
+  const rearrangeList = (
+    list: any[],
+    source: DraggableLocation,
+    destination: DraggableLocation
+  ) => {
     const startIndex = source.index
     const endIndex = destination.index
     const result = Array.from(list)
@@ -309,11 +331,18 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
     return result
   }
 
-  const reorderEvents = (events: SchedulingEvent[] | undefined, dropResult: DropResult) => {
+  const reorderEvents = (
+    events: SchedulingEvent[] | undefined,
+    dropResult: DropResult
+  ) => {
     if (!dropResult.destination || !events) {
       return
     }
-    const updatedEvents = rearrangeList(events, dropResult.source, dropResult.destination)
+    const updatedEvents = rearrangeList(
+      events,
+      dropResult.source,
+      dropResult.destination
+    )
     setCustomEvents(updatedEvents)
     // onUpdate(updatedEvents)
   }
@@ -321,33 +350,46 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
   return (
     <Box className={classes.root} bgcolor="#F8F8F8">
       {' '}
-      <LoadingComponent reqStatusLoading={saveLoader} loaderSize="2rem" variant={'small'} />
+      <LoadingComponent
+        reqStatusLoading={saveLoader}
+        loaderSize="2rem"
+        variant={'small'}
+      />
       <Box className={classes.columnContainer} bgcolor="#F8F8F8">
         <div className={classes.leftCol} style={{maxWidth: '300px'}}>
           <p>
             <PhoneIcon />
             <br />
-            By default, sessions start once a participant logs into the study for the first time on their smart phone,
-            known as <strong>Initial Login</strong>.
+            By default, sessions start once a participant logs into the study
+            for the first time on their smart phone, known as{' '}
+            <strong>Initial Login</strong>.
           </p>
 
           <p>
             <img src={CalendarIcon} />
             <br />
-            To start a session on calendar date/appointment unique to each participant, create additional{' '}
-            <strong>Events</strong> to this Dropdown menu.
+            To start a session on calendar date/appointment unique to each
+            participant, create additional <strong>Events</strong> to this
+            Dropdown menu.
           </p>
           <p>
-            When you add participants to your study, you will be able to define these dates in the Participant Manager
-            tab.
+            When you add participants to your study, you will be able to define
+            these dates in the Participant Manager tab.
           </p>
         </div>
         <div className={classes.rightCol}>
-          <p className={classes.small} style={{width: '170px', marginLeft: '28px'}}>
-            Example: A clinical study might have 2 Events: a Baseline Visit and Final Visit.
+          <p
+            className={classes.small}
+            style={{width: '170px', marginLeft: '28px'}}>
+            Example: A clinical study might have 2 Events: a Baseline Visit and
+            Final Visit.
           </p>
           <div>
-            <FakeSelect evtName="Initial Login" hasCalendar={false} hasCarret={true} />
+            <FakeSelect
+              evtName="Initial Login"
+              hasCalendar={false}
+              hasCarret={true}
+            />
             <FakeSelect evtName="Baseline Visit" hasCalendar={true} />
             <FakeSelect evtName="Final Visit" hasCalendar={true} />
           </div>
@@ -357,7 +399,10 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
         className={classes.columnContainer}
         bgcolor="#FFF"
         height={`${customEvents ? customEvents.length * 64 + 24 : 200}px`}>
-        <Box className={classes.leftCol} display="flex" justifyContent="space-between">
+        <Box
+          className={classes.leftCol}
+          display="flex"
+          justifyContent="space-between">
           <div style={{width: '165px'}}>
             {error && <Box className={classes.errorText}>{error}</Box>}
             <input
@@ -367,8 +412,14 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
                 setNewEvent(e.target.value)
                 setError(undefined)
               }}
-              className={clsx(classes.input, error && classes.errorTextbox)}></input>
-            <RedButton variant="contained" onClick={addEvent} className={classes.newEventButton}>
+              className={clsx(
+                classes.input,
+                error && classes.errorTextbox
+              )}></input>
+            <RedButton
+              variant="contained"
+              onClick={addEvent}
+              className={classes.newEventButton}>
               + Add New Event
             </RedButton>
           </div>
@@ -394,10 +445,19 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
                     {...provided.droppableProps}>
                     {customEvents &&
                       customEvents.map((evt, index) => (
-                        <Draggable draggableId={evt.eventId + index} index={index} key={evt.eventId + index}>
+                        <Draggable
+                          draggableId={evt.eventId + index}
+                          index={index}
+                          key={evt.eventId + index}>
                           {(provided, snapshot) => (
-                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                              <Box display="block" key={evt.eventId} className={classes.eventBox}>
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}>
+                              <Box
+                                display="block"
+                                key={evt.eventId}
+                                className={classes.eventBox}>
                                 <CalendarIconControl />
                                 <FormGroup
                                   row={true}
@@ -405,8 +465,13 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
                                   style={{
                                     alignItems: 'center',
                                   }}>
-                                  <div className={classes.hoverImage}> &#9776;</div>
-                                  <div className={classes.eventText}>{evt.eventId}</div>
+                                  <div className={classes.hoverImage}>
+                                    {' '}
+                                    &#9776;
+                                  </div>
+                                  <div className={classes.eventText}>
+                                    {evt.eventId}
+                                  </div>
 
                                   {canEdit(evt.eventId) ? (
                                     <IconButton
@@ -420,9 +485,11 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
                                     <InfoCircleWithToolTip
                                       tooltipDescription={
                                         <span>
-                                          This event is being used in one/more session(s) as a Session Start event. To{' '}
-                                          <strong>rename or delete</strong> this Event, please unselect it from all
-                                          Session Start events.
+                                          This event is being used in one/more
+                                          session(s) as a Session Start event.
+                                          To <strong>rename or delete</strong>{' '}
+                                          this Event, please unselect it from
+                                          all Session Start events.
                                         </span>
                                       }
                                       variant="info"

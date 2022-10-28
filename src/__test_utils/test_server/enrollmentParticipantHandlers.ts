@@ -21,14 +21,17 @@ requestInfo: '/v5/studies/:studyId/participants/:userId/requestInfo',*/
 
 const endpoints = [
   //get enrollment for participant
-  rest.get(`*${constants.endpoints.participantEnrollments}*`, async (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        items: [enrollment.items],
-      })
-    )
-  }),
+  rest.get(
+    `*${constants.endpoints.participantEnrollments}*`,
+    async (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          items: [enrollment.items],
+        })
+      )
+    }
+  ),
   //get participant
   rest.get(`*${constants.endpoints.participant}/*`, async (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(participant))
@@ -47,14 +50,17 @@ const endpoints = [
   }),
 
   // get enrollments for user
-  rest.get(`*${constants.endpoints.participantEnrollments}/*`, async (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        items: [enrollment.items],
-      })
-    )
-  }),
+  rest.get(
+    `*${constants.endpoints.participantEnrollments}/*`,
+    async (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          items: [enrollment.items],
+        })
+      )
+    }
+  ),
 ]
 
 export default endpoints

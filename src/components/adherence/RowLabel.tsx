@@ -6,7 +6,9 @@ const RowLabel: FunctionComponent<{
   burstNum?: number
   sessionName: string
 }> = ({wkInStudy, burstNum, sessionName}) => {
-  const label = `Week ${wkInStudy}${burstNum !== undefined ? `/Burst ${burstNum}` : ''}/${sessionName}`
+  const label = `Week ${wkInStudy}${
+    burstNum !== undefined ? `/Burst ${burstNum}` : ''
+  }/${sessionName}`
 
   return (
     <Tooltip title={label}>

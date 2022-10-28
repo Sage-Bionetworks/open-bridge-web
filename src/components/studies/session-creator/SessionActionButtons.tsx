@@ -2,7 +2,11 @@ import {Box, MenuItem} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import React, {FunctionComponent, useEffect} from 'react'
 import {StudySession} from '../../../types/scheduling'
-import {BlueButton, ButtonWithSelectButton, ButtonWithSelectSelect} from '../../widgets/StyledComponents'
+import {
+  BlueButton,
+  ButtonWithSelectButton,
+  ButtonWithSelectSelect,
+} from '../../widgets/StyledComponents'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,9 +38,9 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   disabled,
 }: SessionActionButtonsProps) => {
   const classes = useStyles()
-  const [selectedSessionId, setSelectedSessionId] = React.useState<string | undefined>(
-    sessions.length > 0 ? sessions[0].guid : undefined
-  )
+  const [selectedSessionId, setSelectedSessionId] = React.useState<
+    string | undefined
+  >(sessions.length > 0 ? sessions[0].guid : undefined)
 
   useEffect(() => {
     setSelectedSessionId(sessions.length > 0 ? sessions[0].guid : undefined)
@@ -46,7 +50,11 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
     const session = sessions.find(s => s.guid === selectedId)
     const name = session?.name ? session.name + ' (copy)' : undefined
 
-    if (!selectedId || !session?.assessments || session.assessments.length === 0) {
+    if (
+      !selectedId ||
+      !session?.assessments ||
+      session.assessments.length === 0
+    ) {
       onAddSession(sessions, [], name)
     } else {
       onAddSession(sessions, [...session.assessments], name)
@@ -76,7 +84,9 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
             inputProps={{'aria-label': 'Select Sessions'}}
             disableUnderline={true}>
             {sessions.map((session, index) => (
-              <MenuItem value={session.guid} key={`${session.guid}menu${index}`}>
+              <MenuItem
+                value={session.guid}
+                key={`${session.guid}menu${index}`}>
                 {session.name}
               </MenuItem>
             ))}

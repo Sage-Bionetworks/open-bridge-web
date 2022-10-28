@@ -21,13 +21,20 @@ const useStyles = makeStyles(theme => ({
 
 type AssessmentLibraryProps = AssessmentLibraryOwnProps & RouteComponentProps
 
-const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: AssessmentLibraryProps) => {
+const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
+  match,
+}: AssessmentLibraryProps) => {
   const classes = useStyles()
   const handleError = useErrorHandler()
 
-  const [filteredAssessments, setFilteredAssessments] = useState<Assessment[] | undefined>(undefined)
+  const [filteredAssessments, setFilteredAssessments] = useState<
+    Assessment[] | undefined
+  >(undefined)
 
-  const {data, isError, error, status, isLoading} = useAssessmentsWithResources(false, false)
+  const {data, isError, error, status, isLoading} = useAssessmentsWithResources(
+    false,
+    false
+  )
   const {data: surveys} = useAssessmentsWithResources(false, true)
 
   if (isError) {
@@ -45,7 +52,10 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: A
           assessments={data.assessments}
           assessmentsType="OTHER"
           onChangeAssessmentsType={() => {}}
-          onChangeTags={(assessments: Assessment[]) => setFilteredAssessments(assessments) /*setFilterTags(tags)*/}>
+          onChangeTags={
+            (assessments: Assessment[]) =>
+              setFilteredAssessments(assessments) /*setFilterTags(tags)*/
+          }>
           {/*    {surveys?.assessments &&
             (surveys?.assessments).map((a, index) => (
               <Link
@@ -59,8 +69,14 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: A
               </Link>
             ))}*/}
           {(filteredAssessments || data.assessments).map((a, index) => (
-            <Link to={`${match.url}/${a.guid}`} className={classes.cardLink} key={a.guid}>
-              <AssessmentCard index={index} assessment={a} key={a.guid}></AssessmentCard>
+            <Link
+              to={`${match.url}/${a.guid}`}
+              className={classes.cardLink}
+              key={a.guid}>
+              <AssessmentCard
+                index={index}
+                assessment={a}
+                key={a.guid}></AssessmentCard>
             </Link>
           ))}
         </AssessmentLibraryWrapper>

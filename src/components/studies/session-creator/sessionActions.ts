@@ -48,7 +48,8 @@ export type ActionPayload = {
   }
 }
 
-export type SessionAction = ActionMap<ActionPayload>[keyof ActionMap<ActionPayload>]
+export type SessionAction =
+  ActionMap<ActionPayload>[keyof ActionMap<ActionPayload>]
 
 function addSession(
   sessions: StudySession[],
@@ -56,7 +57,9 @@ function addSession(
 
   assessments: Assessment[]
 ): StudySession[] {
-  const startEventId = sessions.length ? _.first(sessions[0].startEventIds) : JOINED_EVENT_ID
+  const startEventId = sessions.length
+    ? _.first(sessions[0].startEventIds)
+    : JOINED_EVENT_ID
 
   var symbolKeys = Array.from(SessionSymbols.keys())
   const usedSymbols = sessions.map(s => s.symbol).filter(s => !!s)
@@ -84,7 +87,11 @@ function addSession(
   return result
 }
 
-function updateSessionName(sessions: StudySession[], sessionId: string, sessionName: string): StudySession[] {
+function updateSessionName(
+  sessions: StudySession[],
+  sessionId: string,
+  sessionName: string
+): StudySession[] {
   const result = sessions.map(session => {
     if (session.guid !== sessionId) {
       return session
@@ -96,11 +103,20 @@ function updateSessionName(sessions: StudySession[], sessionId: string, sessionN
   return result
 }
 
-function removeSession(sessions: StudySession[], sessionId: string): StudySession[] {
-  return sessions.filter(session => session.guid !== sessionId).map((s, index) => ({...s, order: index}))
+function removeSession(
+  sessions: StudySession[],
+  sessionId: string
+): StudySession[] {
+  return sessions
+    .filter(session => session.guid !== sessionId)
+    .map((s, index) => ({...s, order: index}))
 }
 
-function updateAssessments(sessions: StudySession[], sessionId: string, assessments: Assessment[]): StudySession[] {
+function updateAssessments(
+  sessions: StudySession[],
+  sessionId: string,
+  assessments: Assessment[]
+): StudySession[] {
   const result = sessions.map(session => {
     if (session.guid !== sessionId) {
       return session
@@ -111,25 +127,40 @@ function updateAssessments(sessions: StudySession[], sessionId: string, assessme
   return result
 }
 
-function actionsReducer(sessions: StudySession[], action: SessionAction): StudySession[] {
+function actionsReducer(
+  sessions: StudySession[],
+  action: SessionAction
+): StudySession[] {
   switch (action.type) {
     case Types.SetSessions: {
       return action.payload.sessions
     }
 
     case Types.AddSession: {
-      return addSession(sessions, action.payload.name, action.payload.assessments)
+      return addSession(
+        sessions,
+        action.payload.name,
+        action.payload.assessments
+      )
     }
 
     case Types.UpdateSessionName: {
-      return updateSessionName(sessions, action.payload.sessionId, action.payload.sessionName)
+      return updateSessionName(
+        sessions,
+        action.payload.sessionId,
+        action.payload.sessionName
+      )
     }
 
     case Types.RemoveSession: {
       return removeSession(sessions, action.payload.sessionId)
     }
     case Types.UpdateAssessments: {
-      return updateAssessments(sessions, action.payload.sessionId, action.payload.assessments)
+      return updateAssessments(
+        sessions,
+        action.payload.sessionId,
+        action.payload.assessments
+      )
     }
 
     default: {

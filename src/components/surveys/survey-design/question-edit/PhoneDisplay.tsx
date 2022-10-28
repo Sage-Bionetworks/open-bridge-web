@@ -24,7 +24,11 @@ type PhoneDisplayProps = {
   phoneBottom?: ReactNode
 }
 
-const PhoneDisplay: FunctionComponent<PhoneDisplayProps> = ({children, phoneBottom, sx}) => {
+const PhoneDisplay: FunctionComponent<PhoneDisplayProps> = ({
+  children,
+  phoneBottom,
+  sx,
+}) => {
   return (
     <PhoneDiv sx={sx}>
       <Box height="100%" pb={5}>

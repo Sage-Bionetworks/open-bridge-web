@@ -13,7 +13,8 @@ const renderComponent = (step: NumericQuestion) => {
 }
 //mock the props
 
-const getCheckbox = () => screen.getByRole('checkbox', {name: /no min and max/i})
+const getCheckbox = () =>
+  screen.getByRole('checkbox', {name: /no min and max/i})
 const getMinInput = () => screen.getByRole('spinbutton', {name: /min/i})
 const getMaxInput = () => screen.getByRole('spinbutton', {name: /max/i})
 const step: NumericQuestion = {

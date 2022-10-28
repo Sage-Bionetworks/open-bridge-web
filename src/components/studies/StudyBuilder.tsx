@@ -113,263 +113,307 @@ export type SchedulerErrorType = {
   entity: any
 }
 
-const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> = () => {
-  const classes = useStyles()
-  let {id, section = 'session-creator'} = useParams<{
-    id: string
-    section: StudySection
-  }>()
+const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
+  () => {
+    const classes = useStyles()
+    let {id, section = 'session-creator'} = useParams<{
+      id: string
+      section: StudySection
+    }>()
 
-  const {data: scheduleSource, error: scheduleError, isLoading: isScheduleLoading} = useSchedule(id)
-  const {data: studySource, error: studyError, isLoading: isStudyLoading} = useStudy(id)
-  const [study, setStudy] = React.useState<Study | undefined>()
-  const [schedule, setSchedule] = React.useState<Schedule | undefined>()
-  const [error, setError] = React.useState<string>()
-  const handleError = useErrorHandler()
-  const [open, setOpen] = React.useState(true)
-  const [displayFeedbackBanner, setDisplayFeedbackBanner] = React.useState(false)
-  const [displayEditabilityBanner, setDisplayEditabilityBanner] = React.useState(false)
-  const [cancelBanner, setCancelBanner] = React.useState(false)
-  const [editabilityBannerType, setEditabilityBannerType] = React.useState<BannerInfoType | undefined>()
-  const [feedbackBannerType, setFeedbackBannerType] = React.useState<BannerInfoType | undefined>()
+    const {
+      data: scheduleSource,
+      error: scheduleError,
+      isLoading: isScheduleLoading,
+    } = useSchedule(id)
+    const {
+      data: studySource,
+      error: studyError,
+      isLoading: isStudyLoading,
+    } = useStudy(id)
+    const [study, setStudy] = React.useState<Study | undefined>()
+    const [schedule, setSchedule] = React.useState<Schedule | undefined>()
+    const [error, setError] = React.useState<string>()
+    const handleError = useErrorHandler()
+    const [open, setOpen] = React.useState(true)
+    const [displayFeedbackBanner, setDisplayFeedbackBanner] =
+      React.useState(false)
+    const [displayEditabilityBanner, setDisplayEditabilityBanner] =
+      React.useState(false)
+    const [cancelBanner, setCancelBanner] = React.useState(false)
+    const [editabilityBannerType, setEditabilityBannerType] = React.useState<
+      BannerInfoType | undefined
+    >()
+    const [feedbackBannerType, setFeedbackBannerType] = React.useState<
+      BannerInfoType | undefined
+    >()
 
-  React.useEffect(() => {
-    if (!study) {
-      setStudy(studySource)
-    }
-  }, [studySource])
-
-  React.useEffect(() => {
-    if (!schedule) {
-      setSchedule(scheduleSource)
-    }
-  }, [scheduleSource])
-
-  React.useEffect(() => {
-    if (study) {
-      setFeedbackBannerType(getFeedbackBannerInfo(!!error))
-      setEditabilityBannerType(getEditabilityBannerInfo(study))
-      if (!StudyService.isStudyInDesign(study)) {
-        setDisplayEditabilityBanner(true)
+    React.useEffect(() => {
+      if (!study) {
+        setStudy(studySource)
       }
+    }, [studySource])
+
+    React.useEffect(() => {
+      if (!schedule) {
+        setSchedule(scheduleSource)
+      }
+    }, [scheduleSource])
+
+    React.useEffect(() => {
+      if (study) {
+        setFeedbackBannerType(getFeedbackBannerInfo(!!error))
+        setEditabilityBannerType(getEditabilityBannerInfo(study))
+        if (!StudyService.isStudyInDesign(study)) {
+          setDisplayEditabilityBanner(true)
+        }
+      }
+    }, [study?.phase, study, section, cancelBanner, error])
+
+    const getFeedbackBannerInfo = (hasError: boolean) => {
+      const bannerType = hasError ? 'error' : 'success'
+      return BannerInfo.bannerMap.get(bannerType)
     }
-  }, [study?.phase, study, section, cancelBanner, error])
 
-  const getFeedbackBannerInfo = (hasError: boolean) => {
-    const bannerType = hasError ? 'error' : 'success'
-    return BannerInfo.bannerMap.get(bannerType)
-  }
+    const getEditabilityBannerInfo = (study: Study) => {
+      const phase = study.phase
 
-  const getEditabilityBannerInfo = (study: Study) => {
-    const phase = study.phase
-
-    const displayPhase = StudyService.getDisplayStatusForStudyPhase(phase)
-    if (displayPhase === 'DRAFT') {
-      return
+      const displayPhase = StudyService.getDisplayStatusForStudyPhase(phase)
+      if (displayPhase === 'DRAFT') {
+        return
+      }
+      const bannerInfo = BannerInfo.bannerMap.get(displayPhase)
+      // const isEditable = isSectionEditableWhenLive(section)
+      //return {bannerType, isEditable}
+      return bannerInfo
     }
-    const bannerInfo = BannerInfo.bannerMap.get(displayPhase)
-    // const isEditable = isSectionEditableWhenLive(section)
-    //return {bannerType, isEditable}
-    return bannerInfo
-  }
 
-  const allSessionsHaveAssessments = () => {
-    return (
-      !_.isEmpty(scheduleSource?.sessions) && !scheduleSource?.sessions!.find(session => _.isEmpty(session.assessments))
+    const allSessionsHaveAssessments = () => {
+      return (
+        !_.isEmpty(scheduleSource?.sessions) &&
+        !scheduleSource?.sessions!.find(session =>
+          _.isEmpty(session.assessments)
+        )
+      )
+    }
+
+    const navButtons = (
+      <NavButtons
+        study={study}
+        key={`${id}_nav_button`}
+        currentSection={section}
+        isPrevOnly={section === 'launch'}
+        disabled={!allSessionsHaveAssessments()}></NavButtons>
     )
-  }
 
-  const navButtons = (
-    <NavButtons
-      study={study}
-      key={`${id}_nav_button`}
-      currentSection={section}
-      isPrevOnly={section === 'launch'}
-      disabled={!allSessionsHaveAssessments()}></NavButtons>
-  )
+    const navButtonsArray = [
+      <NavButtons
+        study={study}
+        key={`${id}_p_button`}
+        currentSection={section}
+        isPrevOnly={true}
+      />,
+      <NavButtons
+        study={study}
+        key={`${id}_n_button`}
+        currentSection={section}
+        isNextOnly={true}></NavButtons>,
+    ]
 
-  const navButtonsArray = [
-    <NavButtons study={study} key={`${id}_p_button`} currentSection={section} isPrevOnly={true} />,
-    <NavButtons study={study} key={`${id}_n_button`} currentSection={section} isNextOnly={true}></NavButtons>,
-  ]
-
-  const getClasses = () => {
-    return clsx(classes.mainArea, {
-      [classes.mainAreaNormalWithLeftNav]: open,
-      [classes.mainAreaWideWithLeftNav]: open && ['customize', 'scheduler'].includes(section),
-      [classes.mainAreaNoLeftNav]: !open,
-      [classes.mainAreaWideNoLeftNav]: !open && ['customize', 'scheduler'].includes(section),
-    })
-  }
-
-  const showFeedback = (e?: ExtendedError) => {
-    if (e) {
-      if (e.statusCode === 401) {
-        handleError(e)
-      } else {
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth',
-        })
-        setError(e.message)
-      }
-    } else {
-      setError(undefined)
+    const getClasses = () => {
+      return clsx(classes.mainArea, {
+        [classes.mainAreaNormalWithLeftNav]: open,
+        [classes.mainAreaWideWithLeftNav]:
+          open && ['customize', 'scheduler'].includes(section),
+        [classes.mainAreaNoLeftNav]: !open,
+        [classes.mainAreaWideNoLeftNav]:
+          !open && ['customize', 'scheduler'].includes(section),
+      })
     }
-    setDisplayFeedbackBanner(true)
-  }
 
-  return (
-    <Box bgcolor={section === 'scheduler' ? '#E5E5E5' : '#f7f7f7'}>
-      <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-        <Box display="flex" bgcolor="#f7f7f7">
-          <AlertBanner
-            backgroundColor={feedbackBannerType?.bgColor!}
-            textColor={feedbackBannerType?.textColor!}
-            onClose={() => {
-              //setCancelBanner(true)
-              setDisplayFeedbackBanner(false)
-            }}
-            isVisible={displayFeedbackBanner}
-            icon={feedbackBannerType?.icon[0]!}
-            isSelfClosing={feedbackBannerType?.type === 'success'}
-            displayBottomOfPage={false}
-            displayText={feedbackBannerType?.displayText[0]!}></AlertBanner>
-          {study && (
+    const showFeedback = (e?: ExtendedError) => {
+      if (e) {
+        if (e.statusCode === 401) {
+          handleError(e)
+        } else {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          })
+          setError(e.message)
+        }
+      } else {
+        setError(undefined)
+      }
+      setDisplayFeedbackBanner(true)
+    }
+
+    return (
+      <Box bgcolor={section === 'scheduler' ? '#E5E5E5' : '#f7f7f7'}>
+        <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+          <Box display="flex" bgcolor="#f7f7f7">
             <AlertBanner
-              backgroundColor={editabilityBannerType?.bgColor!}
-              textColor={editabilityBannerType?.textColor!}
+              backgroundColor={feedbackBannerType?.bgColor!}
+              textColor={feedbackBannerType?.textColor!}
               onClose={() => {
-                // setCancelBanner(true)
-                setDisplayEditabilityBanner(false)
+                //setCancelBanner(true)
+                setDisplayFeedbackBanner(false)
               }}
-              isVisible={displayEditabilityBanner}
-              icon={
-                isSectionEditableWhenLive(section) && StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
-                  ? editabilityBannerType?.icon[1]!
-                  : editabilityBannerType?.icon[0]!
-              }
-              isSelfClosing={false}
-              displayBottomOfPage={true}
-              displayText={
-                isSectionEditableWhenLive(section) && StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
-                  ? editabilityBannerType?.displayText[1]!
-                  : editabilityBannerType?.displayText[0]!
-              }></AlertBanner>
-          )}
-          <Box width={open ? 210 : 56} flexShrink={0} pl={5} pt={2}>
-            <StudyIdWithPhaseImage study={study} excludedPhase="DRAFT" />
-          </Box>
-          <Box className={getClasses()} pt={8} pl={2}>
-            <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
-          </Box>
-        </Box>
-        <Container
-          maxWidth="xl"
-          className={classes.studyComponentContainer}
-          style={{
-            backgroundColor:
-              section === 'session-creator' ||
-              section === 'scheduler' ||
-              section === 'enrollment-type-selector' ||
-              section === 'preview'
-                ? '#f7f7f7'
-                : 'inherit',
-          }}>
-          <Box paddingTop={2} display="flex" position="relative">
-            <StudyLeftNav
-              open={open}
-              onToggle={() => setOpen(prev => !prev)}
-              currentSection={section}
-              study={study!}
-              disabled={!allSessionsHaveAssessments()}></StudyLeftNav>
-            <Box className={classes.mainAreaWrapper}>
-              <Box className={getClasses()}>
-                <LoadingComponent
-                  reqStatusLoading={isStudyLoading || isScheduleLoading}
-                  variant="small"
-                  loaderSize="2rem"
-                  style={{
-                    width: '2rem',
-                    position: 'absolute',
-                    top: '30px',
-                    left: '50%',
-                  }}></LoadingComponent>
-                {!_.isEmpty(error) && (Array.isArray(error) || (!!error && error.length > 1)) && (
-                  <Alert variant="outlined" color="error" style={{marginBottom: '16px'}}>
-                    {Array.isArray(error) ? (
-                      error.map(e => (
-                        <div
-                          style={{
-                            textAlign: 'left',
-                          }}>
-                          {e}
-                        </div>
-                      ))
-                    ) : (
-                      <div
-                        style={{
-                          textAlign: 'left',
-                        }}>
-                        {error}
-                      </div>
-                    )}
-                  </Alert>
-                )}
-
-                <LoadingComponent reqStatusLoading={!study}>
-                  {study && !schedule && !isScheduleLoading ? (
-                    <Box className={classes.introInfoContainer}>
-                      <IntroInfo studyName={study.name} id={id}></IntroInfo>
-                    </Box>
-                  ) : (
-                    study &&
-                    schedule && (
-                      <Switch>
-                        <Route path={`/studies/builder/:id/scheduler`}>
-                          <Scheduler
-                            id={id}
-                            onShowFeedback={showFeedback}
-                            isReadOnly={!StudyService.isStudyInDesign(study)}>
-                            {navButtons}
-                          </Scheduler>
-                        </Route>
-                        <Route path={`/studies/builder/:id/enrollment-type-selector`}>
-                          <EnrollmentTypeSelector id={id}>{navButtons}</EnrollmentTypeSelector>
-                        </Route>
-                        <Route path={`/studies/builder/:id/customize`}>
-                          <AppDesign id={id} onShowFeedback={showFeedback}>
-                            {navButtons}
-                          </AppDesign>
-                        </Route>
-
-                        <Route path={`/studies/builder/:id/preview`}>
-                          <Preview id={id}> {navButtons}</Preview>
-                        </Route>
-                        <Route path={`/studies/builder/:id/launch`}>
-                          <Launch id={id} onShowFeedback={showFeedback}>
-                            {navButtons}
-                          </Launch>
-                        </Route>
-                        <Route path={`/studies/builder/:id/passive-features`}>
-                          <PassiveFeatures id={id}>{navButtons}</PassiveFeatures>
-                        </Route>
-                        <Route>
-                          <SessionCreator id={id} onShowFeedback={showFeedback}>
-                            {navButtons}
-                          </SessionCreator>
-                        </Route>
-                      </Switch>
-                    )
-                  )}
-                </LoadingComponent>
-              </Box>
+              isVisible={displayFeedbackBanner}
+              icon={feedbackBannerType?.icon[0]!}
+              isSelfClosing={feedbackBannerType?.type === 'success'}
+              displayBottomOfPage={false}
+              displayText={feedbackBannerType?.displayText[0]!}></AlertBanner>
+            {study && (
+              <AlertBanner
+                backgroundColor={editabilityBannerType?.bgColor!}
+                textColor={editabilityBannerType?.textColor!}
+                onClose={() => {
+                  // setCancelBanner(true)
+                  setDisplayEditabilityBanner(false)
+                }}
+                isVisible={displayEditabilityBanner}
+                icon={
+                  isSectionEditableWhenLive(section) &&
+                  StudyService.getDisplayStatusForStudyPhase(study.phase) ===
+                    'LIVE'
+                    ? editabilityBannerType?.icon[1]!
+                    : editabilityBannerType?.icon[0]!
+                }
+                isSelfClosing={false}
+                displayBottomOfPage={true}
+                displayText={
+                  isSectionEditableWhenLive(section) &&
+                  StudyService.getDisplayStatusForStudyPhase(study.phase) ===
+                    'LIVE'
+                    ? editabilityBannerType?.displayText[1]!
+                    : editabilityBannerType?.displayText[0]!
+                }></AlertBanner>
+            )}
+            <Box width={open ? 210 : 56} flexShrink={0} pl={5} pt={2}>
+              <StudyIdWithPhaseImage study={study} excludedPhase="DRAFT" />
+            </Box>
+            <Box className={getClasses()} pt={8} pl={2}>
+              <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
             </Box>
           </Box>
-        </Container>
-      </ErrorBoundary>
-    </Box>
-  )
-}
+          <Container
+            maxWidth="xl"
+            className={classes.studyComponentContainer}
+            style={{
+              backgroundColor:
+                section === 'session-creator' ||
+                section === 'scheduler' ||
+                section === 'enrollment-type-selector' ||
+                section === 'preview'
+                  ? '#f7f7f7'
+                  : 'inherit',
+            }}>
+            <Box paddingTop={2} display="flex" position="relative">
+              <StudyLeftNav
+                open={open}
+                onToggle={() => setOpen(prev => !prev)}
+                currentSection={section}
+                study={study!}
+                disabled={!allSessionsHaveAssessments()}></StudyLeftNav>
+              <Box className={classes.mainAreaWrapper}>
+                <Box className={getClasses()}>
+                  <LoadingComponent
+                    reqStatusLoading={isStudyLoading || isScheduleLoading}
+                    variant="small"
+                    loaderSize="2rem"
+                    style={{
+                      width: '2rem',
+                      position: 'absolute',
+                      top: '30px',
+                      left: '50%',
+                    }}></LoadingComponent>
+                  {!_.isEmpty(error) &&
+                    (Array.isArray(error) || (!!error && error.length > 1)) && (
+                      <Alert
+                        variant="outlined"
+                        color="error"
+                        style={{marginBottom: '16px'}}>
+                        {Array.isArray(error) ? (
+                          error.map(e => (
+                            <div
+                              style={{
+                                textAlign: 'left',
+                              }}>
+                              {e}
+                            </div>
+                          ))
+                        ) : (
+                          <div
+                            style={{
+                              textAlign: 'left',
+                            }}>
+                            {error}
+                          </div>
+                        )}
+                      </Alert>
+                    )}
+
+                  <LoadingComponent reqStatusLoading={!study}>
+                    {study && !schedule && !isScheduleLoading ? (
+                      <Box className={classes.introInfoContainer}>
+                        <IntroInfo studyName={study.name} id={id}></IntroInfo>
+                      </Box>
+                    ) : (
+                      study &&
+                      schedule && (
+                        <Switch>
+                          <Route path={`/studies/builder/:id/scheduler`}>
+                            <Scheduler
+                              id={id}
+                              onShowFeedback={showFeedback}
+                              isReadOnly={!StudyService.isStudyInDesign(study)}>
+                              {navButtons}
+                            </Scheduler>
+                          </Route>
+                          <Route
+                            path={`/studies/builder/:id/enrollment-type-selector`}>
+                            <EnrollmentTypeSelector id={id}>
+                              {navButtons}
+                            </EnrollmentTypeSelector>
+                          </Route>
+                          <Route path={`/studies/builder/:id/customize`}>
+                            <AppDesign id={id} onShowFeedback={showFeedback}>
+                              {navButtons}
+                            </AppDesign>
+                          </Route>
+
+                          <Route path={`/studies/builder/:id/preview`}>
+                            <Preview id={id}> {navButtons}</Preview>
+                          </Route>
+                          <Route path={`/studies/builder/:id/launch`}>
+                            <Launch id={id} onShowFeedback={showFeedback}>
+                              {navButtons}
+                            </Launch>
+                          </Route>
+                          <Route path={`/studies/builder/:id/passive-features`}>
+                            <PassiveFeatures id={id}>
+                              {navButtons}
+                            </PassiveFeatures>
+                          </Route>
+                          <Route>
+                            <SessionCreator
+                              id={id}
+                              onShowFeedback={showFeedback}>
+                              {navButtons}
+                            </SessionCreator>
+                          </Route>
+                        </Switch>
+                      )
+                    )}
+                  </LoadingComponent>
+                </Box>
+              </Box>
+            </Box>
+          </Container>
+        </ErrorBoundary>
+      </Box>
+    )
+  }
 
 export default StudyBuilder

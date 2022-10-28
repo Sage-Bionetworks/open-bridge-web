@@ -93,66 +93,86 @@ type StudyPageBottomPhoneContentProps = {
   isReadOnly?: boolean
 }
 
-const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneContentProps> = ({
-  generalContactPhoneNumber,
-  irbPhoneNumber,
-  studyID,
-  ethicsBoardInfo,
-  contactLead,
-  irbProtocolId,
-  getContactName,
-  isReadOnly,
-}) => {
-  const classes = useStyles()
-  return (
-    <Box className={classes.container}>
-      <Box className={classes.innerContainer}>
-        <Box className={classes.contactAndSupportText}>General Support</Box>
-        <p className={classes.bodyPhoneText}>
-          For general questions about the study or to <strong>withdraw</strong> from the study, please contact:
-        </p>
-        <Box className={classes.summaryRoles}>
-          {!isReadOnly && <SectionIndicator index={6} className={classes.sectionSixAndSevenIndicatorPosition} />}
-          <StudySummaryRoles
-            type={contactLead.position || 'Role in study'}
-            name={getContactName(contactLead.name) || 'Contact lead'}
-          />
-        </Box>
-        <ContactInformation phoneNumber={generalContactPhoneNumber} email={contactLead.email || ''} />
-        <Box className={classes.withdrawFromStudyContainer}>
-          <p className={classes.widthdrawText}>
-            To <strong>withdraw from this study</strong>, you’ll need the following info:
+const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneContentProps> =
+  ({
+    generalContactPhoneNumber,
+    irbPhoneNumber,
+    studyID,
+    ethicsBoardInfo,
+    contactLead,
+    irbProtocolId,
+    getContactName,
+    isReadOnly,
+  }) => {
+    const classes = useStyles()
+    return (
+      <Box className={classes.container}>
+        <Box className={classes.innerContainer}>
+          <Box className={classes.contactAndSupportText}>General Support</Box>
+          <p className={classes.bodyPhoneText}>
+            For general questions about the study or to{' '}
+            <strong>withdraw</strong> from the study, please contact:
           </p>
-          <Box className={classes.idContainer}>
-            <Box>
-              <strong>Study ID:</strong> {studyID}
-            </Box>
-            <Box>
-              <strong>Enrollment ID:</strong> -------
+          <Box className={classes.summaryRoles}>
+            {!isReadOnly && (
+              <SectionIndicator
+                index={6}
+                className={classes.sectionSixAndSevenIndicatorPosition}
+              />
+            )}
+            <StudySummaryRoles
+              type={contactLead.position || 'Role in study'}
+              name={getContactName(contactLead.name) || 'Contact lead'}
+            />
+          </Box>
+          <ContactInformation
+            phoneNumber={generalContactPhoneNumber}
+            email={contactLead.email || ''}
+          />
+          <Box className={classes.withdrawFromStudyContainer}>
+            <p className={classes.widthdrawText}>
+              To <strong>withdraw from this study</strong>, you’ll need the
+              following info:
+            </p>
+            <Box className={classes.idContainer}>
+              <Box>
+                <strong>Study ID:</strong> {studyID}
+              </Box>
+              <Box>
+                <strong>Enrollment ID:</strong> -------
+              </Box>
             </Box>
           </Box>
-        </Box>
-        <Divider className={classes.divider} />
-        <Box className={classes.contactAndSupportText} mt={3}>
-          Your Participant Rights
-        </Box>
-        <p className={classes.bodyPhoneText}>
-          For questions about your rights as a research participant, please contact :
-        </p>
-        <Box className={classes.summaryRoles}>
-          {!isReadOnly && <SectionIndicator index={7} className={classes.sectionSixAndSevenIndicatorPosition} />}
-          <StudySummaryRoles
-            type={ethicsBoardInfo.position!}
-            name={getContactName(ethicsBoardInfo.name) || 'IRB/Ethics Board'}
+          <Divider className={classes.divider} />
+          <Box className={classes.contactAndSupportText} mt={3}>
+            Your Participant Rights
+          </Box>
+          <p className={classes.bodyPhoneText}>
+            For questions about your rights as a research participant, please
+            contact :
+          </p>
+          <Box className={classes.summaryRoles}>
+            {!isReadOnly && (
+              <SectionIndicator
+                index={7}
+                className={classes.sectionSixAndSevenIndicatorPosition}
+              />
+            )}
+            <StudySummaryRoles
+              type={ethicsBoardInfo.position!}
+              name={getContactName(ethicsBoardInfo.name) || 'IRB/Ethics Board'}
+            />
+          </Box>
+          <ContactInformation
+            phoneNumber={irbPhoneNumber}
+            email={ethicsBoardInfo.email || ''}
           />
-        </Box>
-        <ContactInformation phoneNumber={irbPhoneNumber} email={ethicsBoardInfo.email || ''} />
-        <Box mt={1.5} width="100%">
-          IRB Protocol ID: {irbProtocolId || 'placeholder'}
+          <Box mt={1.5} width="100%">
+            IRB Protocol ID: {irbProtocolId || 'placeholder'}
+          </Box>
         </Box>
       </Box>
-    </Box>
-  )
-}
+    )
+  }
 
 export default StudyPageBottomPhoneContent

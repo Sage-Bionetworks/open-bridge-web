@@ -6,7 +6,12 @@ import {Box} from '@mui/material'
 import Tooltip, {TooltipProps} from '@mui/material/Tooltip'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, poppinsFont} from '@style/theme'
-import {Schedule, ScheduleTimeline, StudySession, StudySessionTimeline} from '@typedefs/scheduling'
+import {
+  Schedule,
+  ScheduleTimeline,
+  StudySession,
+  StudySessionTimeline,
+} from '@typedefs/scheduling'
 import React from 'react'
 import Pluralize from 'react-pluralize'
 import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
@@ -80,7 +85,9 @@ export const TooltipHoverDisplay: React.FunctionComponent<{
         <Box width="115px">
           {session.assessments?.map((assessment, index) => {
             return (
-              <Box className={classes.assessmentBox} key={`assmnt_${assessment.guid}_${index}`}>
+              <Box
+                className={classes.assessmentBox}
+                key={`assmnt_${assessment.guid}_${index}`}>
                 <AssessmentImage
                   resources={assessment.resources}
                   variant="small"
@@ -125,20 +132,28 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
     <Box pt={0} pb={3} px={0}>
       {!timeline && (
         <>
-          This timeline viewer will update to provide a visual summary of the schedules you’ve defined below for each
-          session!.
+          This timeline viewer will update to provide a visual summary of the
+          schedules you’ve defined below for each session!.
         </>
       )}
       {timeline && (
         <div className={classes.stats}>
-          <NotificationsIcon /> <Pluralize singular={'notification'} count={timeline.totalNotifications} />
-          <TimerIcon /> <Pluralize singular={'total minute'} count={timeline.totalMinutes} />
+          <NotificationsIcon />{' '}
+          <Pluralize
+            singular={'notification'}
+            count={timeline.totalNotifications}
+          />
+          <TimerIcon />{' '}
+          <Pluralize singular={'total minute'} count={timeline.totalMinutes} />
         </div>
       )}
       <Box display="flex" justifyContent="space-between">
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
-            <TooltipHoverDisplay key={s.guid} session={s} tooltipProps={tooltipProps}>
+            <TooltipHoverDisplay
+              key={s.guid}
+              session={s}
+              tooltipProps={tooltipProps}>
               <div
                 onClick={() => {
                   onSelectSession(s)
@@ -155,8 +170,9 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
         <TimelineBurstPlot studyId={studyId} timeline={timeline}>
           {isDefault && (
             <div>
-              Design the study's schedule/protocol by selecting each session above.&nbsp;&nbsp;A summary of the
-              schedule/protocol will be visualized here.
+              Design the study's schedule/protocol by selecting each session
+              above.&nbsp;&nbsp;A summary of the schedule/protocol will be
+              visualized here.
             </div>
           )}
         </TimelineBurstPlot>

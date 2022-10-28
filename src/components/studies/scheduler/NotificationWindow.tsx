@@ -1,4 +1,12 @@
-import {Box, Checkbox, Divider, FormControlLabel, IconButton, Paper, TextField} from '@mui/material'
+import {
+  Box,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  IconButton,
+  Paper,
+  TextField,
+} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import DeleteIcon from '@mui/icons-material/Close'
 import clsx from 'clsx'
@@ -86,11 +94,15 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
   }
   const classes = useStyles()
   return (
-    <Paper className={clsx(classes.root, isError && classes.error)} elevation={2}>
+    <Paper
+      className={clsx(classes.root, isError && classes.error)}
+      elevation={2}>
       <Box position="relative">
         <Box className={classes.windowTitle}>
           <BellIcon style={{marginRight: '16px'}} />
-          {`${index + 1}. ${index === 0 ? 'Initial Notification' : 'Follow-up Notification'}`}
+          {`${index + 1}. ${
+            index === 0 ? 'Initial Notification' : 'Follow-up Notification'
+          }`}
         </Box>
         {index > 0 && (
           <IconButton
@@ -103,7 +115,10 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
         )}
       </Box>
       <Box mx="auto" width="auto">
-        <SchedulingFormSection label={'Subject line: (30 character limit)'} variant="small" border={false}>
+        <SchedulingFormSection
+          label={'Subject line: (30 character limit)'}
+          variant="small"
+          border={false}>
           <TextField
             color="secondary"
             multiline={false}
@@ -116,7 +131,10 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
             }}></TextField>
         </SchedulingFormSection>
 
-        <SchedulingFormSection label={'Body text: (40 character limit)'} variant="small" border={false}>
+        <SchedulingFormSection
+          label={'Body text: (40 character limit)'}
+          variant="small"
+          border={false}>
           <TextField
             color="secondary"
             multiline={true}

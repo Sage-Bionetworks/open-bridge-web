@@ -29,14 +29,19 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({links, currentItem = ''}: BreadCrumbProps) => {
+const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({
+  links,
+  currentItem = '',
+}: BreadCrumbProps) => {
   const classes = useStyles()
   return (
     <Breadcrumbs aria-label="breadcrumb" separator={currentItem ? '/' : ''}>
       {links.map((link, index) => (
         <NavLink to={link.url} key={link.url} className={classes.link}>
           {index === 0 && <BackIcon className={classes.backIcon} />}
-          <div className={clsx(classes.text, index > 0 && classes.addMargin)}>{link.text}</div>
+          <div className={clsx(classes.text, index > 0 && classes.addMargin)}>
+            {link.text}
+          </div>
         </NavLink>
       ))}
 

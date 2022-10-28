@@ -5,7 +5,13 @@ import {Box, styled} from '@mui/material'
 import {theme} from '@style/theme'
 import {Step, SurveyConfig} from '@typedefs/surveys'
 import React from 'react'
-import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from 'react-beautiful-dnd'
+import {
+  DragDropContext,
+  Draggable,
+  DraggableProvided,
+  Droppable,
+  DropResult,
+} from 'react-beautiful-dnd'
 import {NavLink} from 'react-router-dom'
 import QUESTIONS, {getQuestionId} from './QuestionConfigs'
 import {DivContainer} from './QuestionTypeDisplay'
@@ -33,13 +39,15 @@ const Container = styled('div')(() => ({
   borderRight: '1px solid #DFDFDF',
 }))
 
-const AddStepMenuContainer = styled('div', {label: 'addStepMenuContainer'})(() => ({
-  width: leftSideWidth,
-  position: 'fixed',
-  bottom: '0px',
+const AddStepMenuContainer = styled('div', {label: 'addStepMenuContainer'})(
+  () => ({
+    width: leftSideWidth,
+    position: 'fixed',
+    bottom: '0px',
 
-  height: '50px',
-}))
+    height: '50px',
+  })
+)
 
 const Row = styled('div', {label: 'Row'})(({theme}) => ({
   height: theme.spacing(6),
@@ -176,7 +184,15 @@ const LeftPanel: React.FunctionComponent<{
   currentStepIndex?: number
   onReorderSteps: (s: Step[]) => void
   onNavigateStep: (id: number) => void
-}> = ({guid, surveyConfig, children, surveyId, currentStepIndex, onNavigateStep, onReorderSteps}) => {
+}> = ({
+  guid,
+  surveyConfig,
+  children,
+  surveyId,
+  currentStepIndex,
+  onNavigateStep,
+  onReorderSteps,
+}) => {
   const onDragEnd = (result: DropResult) => {
     if (!surveyConfig?.steps) {
       return
@@ -187,7 +203,11 @@ const LeftPanel: React.FunctionComponent<{
       resultDesinationIndex = surveyConfig.steps.length - 2
     }
 
-    const items = SurveyUtils.reorder([...surveyConfig!.steps], result.source.index, resultDesinationIndex)
+    const items = SurveyUtils.reorder(
+      [...surveyConfig!.steps],
+      result.source.index,
+      resultDesinationIndex
+    )
 
     onReorderSteps(items)
   }
@@ -195,7 +215,11 @@ const LeftPanel: React.FunctionComponent<{
     <Container id="left">
       <DragDropContext onDragEnd={onDragEnd}>
         <Box id="questions">
-          <TitleRow surveyId={surveyId} guid={guid} isCurrent={currentStepIndex === undefined} />
+          <TitleRow
+            surveyId={surveyId}
+            guid={guid}
+            isCurrent={currentStepIndex === undefined}
+          />
           <Box
             sx={{
               height: 'calc(100vh - 150px)',
@@ -210,7 +234,9 @@ const LeftPanel: React.FunctionComponent<{
                         <Draggable
                           draggableId={step.identifier}
                           isDragDisabled={
-                            surveyConfig?.steps!.length < 3 || step.type === 'overview' || step.type === 'completion'
+                            surveyConfig?.steps!.length < 3 ||
+                            step.type === 'overview' ||
+                            step.type === 'completion'
                           }
                           index={index}
                           key={step.identifier}>
@@ -235,7 +261,9 @@ const LeftPanel: React.FunctionComponent<{
             )}
           </Box>
         </Box>
-        {surveyConfig && <AddStepMenuContainer>{children}</AddStepMenuContainer>}
+        {surveyConfig && (
+          <AddStepMenuContainer>{children}</AddStepMenuContainer>
+        )}
       </DragDropContext>
     </Container>
   )

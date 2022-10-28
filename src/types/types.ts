@@ -151,7 +151,14 @@ export type AssessmentConfig = {
 
 /* *** Study ********************************/
 export type SignInType = 'phone_password' | 'external_id_password'
-export type StudyPhase = 'legacy' | 'design' | 'recruitment' | 'in_flight' | 'analysis' | 'completed' | 'withdrawn'
+export type StudyPhase =
+  | 'legacy'
+  | 'design'
+  | 'recruitment'
+  | 'in_flight'
+  | 'analysis'
+  | 'completed'
+  | 'withdrawn'
 export type DisplayStudyPhase = 'DRAFT' | 'LIVE' | 'COMPLETED' | 'WITHDRAWN'
 export type StudyDesignType = 'observation' | 'intervention'
 export type Study = {
@@ -275,7 +282,11 @@ type EnrolledSubrecord = {
   enrolledOn: string
 }
 
-export type ProgressionStatus = 'done' | 'in_progress' | 'unstarted' | 'no_schedule'
+export type ProgressionStatus =
+  | 'done'
+  | 'in_progress'
+  | 'unstarted'
+  | 'no_schedule'
 
 export type ParticipantClientData = {
   hasMigratedToV2?: boolean

@@ -17,7 +17,10 @@ const SURVEY_APP_TAG = {
 }
 
 //tags used internally that end user will not see
-const TAGS_TO_HIDE = [...Object.values(SURVEY_APP_TAG), ...Object.values(ASSESSMENT_APP_TAG)]
+const TAGS_TO_HIDE = [
+  ...Object.values(SURVEY_APP_TAG),
+  ...Object.values(ASSESSMENT_APP_TAG),
+]
 
 const DEFAULT_ASSESSMENT_RETR_OPTIONS = {isLocal: false, isSurvey: false}
 
@@ -28,7 +31,9 @@ async function getAssessment(
 
   options: {isLocal: boolean; shouldKeepAllTags?: boolean}
 ): Promise<Assessment> {
-  let endPoint = options.isLocal ? constants.endpoints.assessment : constants.endpoints.assessmentShared
+  let endPoint = options.isLocal
+    ? constants.endpoints.assessment
+    : constants.endpoints.assessmentShared
   const assessmentResponse = await Utility.callEndpoint<Assessment>(
     `${endPoint.replace(':id', guid)}`,
     'GET',
@@ -55,13 +60,17 @@ async function getAssessments(
 ): Promise<Assessment[]> {
   const _options = {...DEFAULT_ASSESSMENT_RETR_OPTIONS, ...options}
   const result = await Utility.callEndpoint<{items: Assessment[]}>(
-    _options?.isLocal ? constants.endpoints.assessments : constants.endpoints.assessmentsShared,
+    _options?.isLocal
+      ? constants.endpoints.assessments
+      : constants.endpoints.assessmentsShared,
     'GET',
     {},
     token
   )
 
-  const filterTag = _options?.isSurvey ? SURVEY_APP_TAG[appId] : ASSESSMENT_APP_TAG[appId]
+  const filterTag = _options?.isSurvey
+    ? SURVEY_APP_TAG[appId]
+    : ASSESSMENT_APP_TAG[appId]
   const returnResult = result.data.items
 
     .filter(item => item.tags && item.tags.includes(filterTag))
@@ -74,8 +83,14 @@ async function getAssessments(
 }
 
 /*gets resources for an assessment (shared) or survey (local) */
-async function getResource(assessment: Assessment, token: string, isLocal = false): Promise<Assessment> {
-  const endPoint = isLocal ? constants.endpoints.assessmentResources : constants.endpoints.assessmentSharedResources
+async function getResource(
+  assessment: Assessment,
+  token: string,
+  isLocal = false
+): Promise<Assessment> {
+  const endPoint = isLocal
+    ? constants.endpoints.assessmentResources
+    : constants.endpoints.assessmentSharedResources
   const response = await Utility.callEndpoint<{items: any[]}>(
     endPoint.replace(':identifier', assessment.identifier),
     'GET',
@@ -95,9 +110,13 @@ async function getAssessmentsWithResources(
 ): Promise<{assessments: Assessment[]; tags: string[]}> {
   const {guid, ..._options} = {...DEFAULT_ASSESSMENT_RETR_OPTIONS, ...options}
   const assessments = guid
-    ? await getAssessment(guid, token, {isLocal: _options.isLocal}).then(result => [result])
+    ? await getAssessment(guid, token, {isLocal: _options.isLocal}).then(
+        result => [result]
+      )
     : await getAssessments(appId, token, _options)
-  const resourcePromises = assessments.map(async asmnt => getResource(asmnt, token))
+  const resourcePromises = assessments.map(async asmnt =>
+    getResource(asmnt, token)
+  )
   return Promise.allSettled(resourcePromises).then(items1 => {
     const items = items1
       .filter(i => i.status === 'fulfilled')
@@ -132,7 +151,11 @@ async function getAssessmentsWithResources(
 
 /* creates assessment for the survey. Potentially can be used to create any assessment but needs to be 
   refactored as to add the proper tags conditionally */
-async function createSurveyAssessment(appId: string, assessment: Assessment, token: string): Promise<Assessment> {
+async function createSurveyAssessment(
+  appId: string,
+  assessment: Assessment,
+  token: string
+): Promise<Assessment> {
   const tags = Array.from(new Set([...assessment.tags, SURVEY_APP_TAG[appId]]))
   const response = await Utility.callEndpoint<Assessment>(
     constants.endpoints.assessment.replace(':id', ''),
@@ -167,12 +190,23 @@ async function duplicateAssessment(
   const configCopy = {config: {...sourceConfig.config, identifier}}
 
   const assessment = await createSurveyAssessment(appId, assessmentCopy, token)
-  const config = await updateSurveyAssessmentConfig(assessment.guid!, configCopy, token)
+  const config = await updateSurveyAssessmentConfig(
+    assessment.guid!,
+    configCopy,
+    token
+  )
   return {assessment, config}
 }
 
-async function updateSurveyAssessment(appId: string, assessment: Assessment, token: string): Promise<Assessment> {
-  const endpoint = constants.endpoints.assessment.replace(':id', assessment.guid!)
+async function updateSurveyAssessment(
+  appId: string,
+  assessment: Assessment,
+  token: string
+): Promise<Assessment> {
+  const endpoint = constants.endpoints.assessment.replace(
+    ':id',
+    assessment.guid!
+  )
   const tags = Array.from(new Set([...assessment.tags, SURVEY_APP_TAG[appId]]))
   const assessmentToUpdate = {...assessment, tags}
   const update = async (a: Assessment): Promise<Assessment> => {
@@ -203,16 +237,33 @@ async function updateSurveyAssessment(appId: string, assessment: Assessment, tok
   } else throw new Error("Can't update assessment")
 }
 
-async function deleteSurveyAssessment(assessment: Assessment, token: string): Promise<Assessment> {
-  const endpoint = constants.endpoints.assessment.replace(':id', assessment.guid!)
+async function deleteSurveyAssessment(
+  assessment: Assessment,
+  token: string
+): Promise<Assessment> {
+  const endpoint = constants.endpoints.assessment.replace(
+    ':id',
+    assessment.guid!
+  )
 
-  const assessmentResponse = await Utility.callEndpoint<Assessment>(endpoint, 'DELETE', {}, token)
+  const assessmentResponse = await Utility.callEndpoint<Assessment>(
+    endpoint,
+    'DELETE',
+    {},
+    token
+  )
   console.log('assessment deleted', assessmentResponse.data)
   return assessmentResponse.data
 }
 
-async function getSurveyAssessmentConfig(guid: string, token: string): Promise<Survey> {
-  const endpoint = `${constants.endpoints.assessment.replace(':id', guid)}/config`
+async function getSurveyAssessmentConfig(
+  guid: string,
+  token: string
+): Promise<Survey> {
+  const endpoint = `${constants.endpoints.assessment.replace(
+    ':id',
+    guid
+  )}/config`
   const response = await Utility.callEndpoint<Survey>(
     endpoint,
     'GET', // once we add things to the study -- we can change this to actual object
@@ -229,9 +280,10 @@ async function updateSurveyAssessmentResource(
   resource: AssessmentResource,
   token: string
 ): Promise<AssessmentResource> {
-  const endpoint = `${constants.endpoints.assessmentResources.replace(':identifier', assessmentId)}/${
-    resource.guid || ''
-  }`
+  const endpoint = `${constants.endpoints.assessmentResources.replace(
+    ':identifier',
+    assessmentId
+  )}/${resource.guid || ''}`
 
   const response = await Utility.callEndpoint<AssessmentResource>(
     endpoint,
@@ -242,8 +294,15 @@ async function updateSurveyAssessmentResource(
 
   return response.data
 }
-async function updateSurveyAssessmentConfig(guid: string, survey: Survey, token: string): Promise<Survey> {
-  const endpoint = `${constants.endpoints.assessment.replace(':id', guid)}/config`
+async function updateSurveyAssessmentConfig(
+  guid: string,
+  survey: Survey,
+  token: string
+): Promise<Survey> {
+  const endpoint = `${constants.endpoints.assessment.replace(
+    ':id',
+    guid
+  )}/config`
 
   const result = await Utility.callEndpoint<Survey>(endpoint, 'GET', {}, token)
   const data = {
@@ -251,7 +310,12 @@ async function updateSurveyAssessmentConfig(guid: string, survey: Survey, token:
     version: result.data.version,
   }
 
-  const response = await Utility.callEndpoint<Survey>(endpoint, 'POST', data, token)
+  const response = await Utility.callEndpoint<Survey>(
+    endpoint,
+    'POST',
+    data,
+    token
+  )
 
   return response.data
 }

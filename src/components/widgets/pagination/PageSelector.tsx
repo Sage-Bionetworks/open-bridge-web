@@ -48,7 +48,8 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
   }
 
   const rotateAndDisableBackIcons = currentPageSelected === 0
-  const rotateAndDisableForwardIcons = currentPageSelected + 1 === numberOfPages || numberOfPages === 0
+  const rotateAndDisableForwardIcons =
+    currentPageSelected + 1 === numberOfPages || numberOfPages === 0
 
   return (
     <div className={classes.container}>
@@ -58,7 +59,9 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
         disabled={rotateAndDisableBackIcons}
         id="back-to-beginning-button">
         <img
-          src={rotateAndDisableBackIcons ? BackToBeginningIcon : ForwardToEndIcon}
+          src={
+            rotateAndDisableBackIcons ? BackToBeginningIcon : ForwardToEndIcon
+          }
           className={classes.image}
           alt="back_to_beginning_icon"
           style={{
@@ -110,7 +113,11 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
         disabled={rotateAndDisableForwardIcons}
         id="forward-to-end-button">
         <img
-          src={rotateAndDisableForwardIcons ? BackToBeginningIcon : ForwardToEndIcon}
+          src={
+            rotateAndDisableForwardIcons
+              ? BackToBeginningIcon
+              : ForwardToEndIcon
+          }
           className={classes.image}
           alt="forward_to_end_icon"
           style={{

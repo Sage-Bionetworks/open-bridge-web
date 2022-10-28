@@ -17,33 +17,55 @@ const ReadOnlyAppDesign: React.FunctionComponent<{
   getContactPersonObject: Function
 }> = ({children, study, getContactPersonObject}) => {
   const AppDesignClasses = AppDesignSharedStyles()
-  const generalContactPhoneNumber = getContact(study, 'study_support')?.phone?.number || ''
-  const irbPhoneNumber = formatPhoneNumber(getContact(study, 'irb')?.phone?.number || '')
+  const generalContactPhoneNumber =
+    getContact(study, 'study_support')?.phone?.number || ''
+  const irbPhoneNumber = formatPhoneNumber(
+    getContact(study, 'irb')?.phone?.number || ''
+  )
 
   return (
     <>
       <Box className={AppDesignClasses.root}>
-        <Paper className={AppDesignClasses.section} style={{flexDirection: 'column'}} elevation={2} id="container">
+        <Paper
+          className={AppDesignClasses.section}
+          style={{flexDirection: 'column'}}
+          elevation={2}
+          id="container">
           <Box className={AppDesignClasses.fields}>
             <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
-            <p className={AppDesignClasses.smallScreenText} style={{maxWidth: '350px'}}>
-              When a participant first downloads the app, they will see this Welcome screen message:
+            <p
+              className={AppDesignClasses.smallScreenText}
+              style={{maxWidth: '350px'}}>
+              When a participant first downloads the app, they will see this
+              Welcome screen message:
             </p>
           </Box>
           <Box className={AppDesignClasses.phoneArea}>
             <Box ml={-3}>
-              <WelcomeScreenDisplay study={study} isReadOnly={true} studyLogoUrl={study.studyLogoUrl} />
+              <WelcomeScreenDisplay
+                study={study}
+                isReadOnly={true}
+                studyLogoUrl={study.studyLogoUrl}
+              />
             </Box>
           </Box>
         </Paper>
-        <Paper className={AppDesignClasses.section} style={{flexDirection: 'column'}} elevation={2}>
+        <Paper
+          className={AppDesignClasses.section}
+          style={{flexDirection: 'column'}}
+          elevation={2}>
           <Box className={AppDesignClasses.fields}>
             <MTBHeadingH2>Study Page</MTBHeadingH2>
             <p className={AppDesignClasses.smallScreenText}>
-              Your About the Study and Contact & Support pages will look like this:
+              Your About the Study and Contact & Support pages will look like
+              this:
             </p>
           </Box>
-          <Box display="flex" flexDirection="row" alignItems="flex-start" ml={-1}>
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="flex-start"
+            ml={-1}>
             <StudyPageTopPhone
               study={study}
               studyLogoUrl={study.studyLogoUrl}

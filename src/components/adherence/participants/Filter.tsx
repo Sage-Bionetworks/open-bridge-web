@@ -1,7 +1,17 @@
 import {ReactComponent as FilterIcon} from '@assets/filter.svg'
 import {MTBHeadingH5, MTBHeadingH6} from '@components/widgets/Headings'
 import {WhiteButton} from '@components/widgets/StyledComponents'
-import {Box, Button, Checkbox, Divider, Drawer, FormControlLabel, FormGroup, Radio, RadioGroup} from '@mui/material'
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Drawer,
+  FormControlLabel,
+  FormGroup,
+  Radio,
+  RadioGroup,
+} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AdherenceService from '@services/adherence.service'
 import {AdherenceStatistics, AdherenceWeeklyReport} from '@typedefs/types'
@@ -55,7 +65,11 @@ type FilterProps = {
   adherenceReportItems: AdherenceWeeklyReport[]
   adherenceStats: AdherenceStatistics
   selectedLabels?: string[]
-  onFilterChange: (arg: {labels: string[] | undefined; min: number; max: number}) => void
+  onFilterChange: (arg: {
+    labels: string[] | undefined
+    min: number
+    max: number
+  }) => void
 }
 
 function getThreshold(min: number = 0, max: number = 100): ThresholdValue {
@@ -73,7 +87,10 @@ function getDisplayLabels(items: AdherenceWeeklyReport[]) {
   const labels = new Map(
     _.flatten(items.map(i => i.rows))
       .filter(r => !!r)
-      .map(r => [r.searchableLabel, AdherenceUtility.getDisplayFromLabel(r.label, r.studyBurstNum)])
+      .map(r => [
+        r.searchableLabel,
+        AdherenceUtility.getDisplayFromLabel(r.label, r.studyBurstNum),
+      ])
   )
 
   return new Map(labels)
@@ -111,7 +128,8 @@ const Filter: FunctionComponent<FilterProps> = ({
   }, [min, max, adherenceReportItems])
 
   React.useEffect(() => {
-    const isAllSelected = selectedLabels === undefined || selectedLabels.length === 0
+    const isAllSelected =
+      selectedLabels === undefined || selectedLabels.length === 0
     setIsSelectAll(isAllSelected)
     if (isAllSelected) {
       setSearchLabels(Array.from(getDisplayLabels(adherenceReportItems).keys()))
@@ -148,7 +166,8 @@ const Filter: FunctionComponent<FilterProps> = ({
   }
 
   const applyFilterChange = () => {
-    let labels = searchLabels.length === displayLabels.size ? undefined : searchLabels
+    let labels =
+      searchLabels.length === displayLabels.size ? undefined : searchLabels
     let thresh = {min: 0, max: 100}
     if (threshold === 'OVER') {
       thresh.min = AdherenceService.COMPLIANCE_THRESHOLD
@@ -173,10 +192,15 @@ const Filter: FunctionComponent<FilterProps> = ({
       <Drawer anchor={'right'} open={open} onClose={handleClose}>
         <Box p={4} minWidth={416}>
           <Box display="flex" mb={2}>
-            <FilterIcon /> <MTBHeadingH6 style={{color: '#3B4141'}}>Filter Participants by:</MTBHeadingH6>
+            <FilterIcon />{' '}
+            <MTBHeadingH6 style={{color: '#3B4141'}}>
+              Filter Participants by:
+            </MTBHeadingH6>
           </Box>
 
-          <MTBHeadingH5 className={classes.subheader}>Schedule Visualizer</MTBHeadingH5>
+          <MTBHeadingH5 className={classes.subheader}>
+            Schedule Visualizer
+          </MTBHeadingH5>
           <Divider className={classes.divider} />
           <FormGroup className={classes.group}>
             <FormControlLabel
@@ -208,14 +232,18 @@ const Filter: FunctionComponent<FilterProps> = ({
                 label={
                   <FilterLabel
                     label={displayLabels.get(searchKey)}
-                    count={adherenceStats.entries.find(e => e.searchableLabel === searchKey)}
+                    count={adherenceStats.entries.find(
+                      e => e.searchableLabel === searchKey
+                    )}
                   />
                 }
                 labelPlacement="end"
               />
             ))}
           </FormGroup>
-          <MTBHeadingH5 className={classes.subheader}>Adherence Levels</MTBHeadingH5>
+          <MTBHeadingH5 className={classes.subheader}>
+            Adherence Levels
+          </MTBHeadingH5>
           <Divider className={classes.divider} />
           <RadioGroup
             className={classes.group}
@@ -225,13 +253,27 @@ const Filter: FunctionComponent<FilterProps> = ({
             }}>
             <FormControlLabel
               classes={{label: classes.label}}
-              control={<Radio color="secondary" size="small" value={'ALL'} className={classes.checkbox} />}
+              control={
+                <Radio
+                  color="secondary"
+                  size="small"
+                  value={'ALL'}
+                  className={classes.checkbox}
+                />
+              }
               label={<FilterLabel label="All" count={adherenceStats} />}
             />
 
             <FormControlLabel
               classes={{label: classes.label}}
-              control={<Radio color="secondary" size="small" value={'UNDER'} className={classes.checkbox} />}
+              control={
+                <Radio
+                  color="secondary"
+                  size="small"
+                  value={'UNDER'}
+                  className={classes.checkbox}
+                />
+              }
               label={
                 <FilterLabel
                   label={`x </= ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
@@ -242,7 +284,14 @@ const Filter: FunctionComponent<FilterProps> = ({
 
             <FormControlLabel
               classes={{label: classes.label}}
-              control={<Radio color="secondary" size="small" value={'OVER'} className={classes.checkbox} />}
+              control={
+                <Radio
+                  color="secondary"
+                  size="small"
+                  value={'OVER'}
+                  className={classes.checkbox}
+                />
+              }
               label={
                 <FilterLabel
                   label={`x > ${AdherenceService.COMPLIANCE_THRESHOLD}%`}

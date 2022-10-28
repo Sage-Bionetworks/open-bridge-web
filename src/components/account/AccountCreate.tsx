@@ -9,7 +9,10 @@ type AccountCreateOwnProps = {
 
 type AccountCreateProps = AccountCreateOwnProps & RouteComponentProps
 
-const AccountCreate: FunctionComponent<AccountCreateProps> = ({title = 'something', paragraph}) => (
+const AccountCreate: FunctionComponent<AccountCreateProps> = ({
+  title = 'something',
+  paragraph,
+}) => (
   <aside>
     <h2>{title}AccountCreate</h2>
     <p>{paragraph}</p>

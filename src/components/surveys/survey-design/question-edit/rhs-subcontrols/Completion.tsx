@@ -42,23 +42,31 @@ const Completion: React.FunctionComponent<{
   return (
     <Box sx={{padding: theme.spacing(8, 4, 4, 4)}}>
       <StyledText>
-        Customize the Completion Screen that participants will see after they've submitted their responses.{' '}
+        Customize the Completion Screen that participants will see after they've
+        submitted their responses.{' '}
       </StyledText>
-      <StyledText>Surveys will be submitted on the screen prior to this Completion screen.</StyledText>{' '}
+      <StyledText>
+        Surveys will be submitted on the screen prior to this Completion screen.
+      </StyledText>{' '}
       <Box marginBottom="8px" marginTop="12px">
         <Rocket />
         <Typography component="span" fontWeight={800} fontFamily={poppinsFont}>
           Ready to launch?
         </Typography>
       </Box>
-      <StyledText>Before launching, please review any branching logic to your questions.</StyledText>
+      <StyledText>
+        Before launching, please review any branching logic to your questions.
+      </StyledText>
       <BranchingButton>
         <Branching />
-        <NavLink to={`/surveys/${surveyGuid}/branching`}> Preview Branching Logic</NavLink>
+        <NavLink to={`/surveys/${surveyGuid}/branching`}>
+          {' '}
+          Preview Branching Logic
+        </NavLink>
       </BranchingButton>
       <StyledText>
-        <Alert /> Please note that once a survey is published, it cannot be deleted if it is used in any study on the
-        platform.{' '}
+        <Alert /> Please note that once a survey is published, it cannot be
+        deleted if it is used in any study on the platform.{' '}
       </StyledText>
     </Box>
   )

@@ -6,7 +6,14 @@ import MobileDrawerMenuHeader from '@components/widgets/MobileDrawerMenuHeader'
 import Utility from '@helpers/utility'
 import MenuIcon from '@mui/icons-material/Menu'
 import PeopleIcon from '@mui/icons-material/People'
-import {Alert, Box, Drawer, Hidden, IconButton, LinearProgress} from '@mui/material'
+import {
+  Alert,
+  Box,
+  Drawer,
+  Hidden,
+  IconButton,
+  LinearProgress,
+} from '@mui/material'
 import Toolbar from '@mui/material/Toolbar'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
@@ -143,7 +150,10 @@ type StudyTopNavProps = {
   currentSection?: string
 }
 
-const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyTopNavProps) => {
+const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
+  study,
+  error,
+}: StudyTopNavProps) => {
   const allLinks: {path: string; name: string; status: StudyPhase[]}[] = [
     {
       path: `${constants.restrictedPaths.STUDY_BUILDER}`,
@@ -166,7 +176,9 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyT
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
 
-  const links = allLinks.filter(link => Utility.isPathAllowed(study.identifier, link.path))
+  const links = allLinks.filter(link =>
+    Utility.isPathAllowed(study.identifier, link.path)
+  )
 
   return (
     <Box className={classes.rootStudyTopNav}>
@@ -192,14 +204,26 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyT
               paddingTop: '0',
               alignItems: 'center',
             }}>
-            <NavLink to="/studies" key="/studies" className={classes.toolbarLink} style={{padding: '0 24px 0 0'}}>
-              <img src={Logo} className={classes.logo} key="img_home" alt="home" />
+            <NavLink
+              to="/studies"
+              key="/studies"
+              className={classes.toolbarLink}
+              style={{padding: '0 24px 0 0'}}>
+              <img
+                src={Logo}
+                className={classes.logo}
+                key="img_home"
+                alt="home"
+              />
             </NavLink>
             <HideWhen hideWhen={study === undefined && !error}>
               <BreadCrumb
                 links={[{url: '/studies', text: ''}]}
                 currentItem={
-                  study?.name && study?.name !== constants.constants.NEW_STUDY_NAME ? study?.name : ''
+                  study?.name &&
+                  study?.name !== constants.constants.NEW_STUDY_NAME
+                    ? study?.name
+                    : ''
                 }></BreadCrumb>
 
               <LinearProgress style={{width: '50px'}} />
@@ -218,16 +242,24 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyT
                     {section.name}
                   </NavLink>
                 ) : (
-                  <span key={section.path} style={{opacity: 0.45}} className={classes.toolbarLink}>
+                  <span
+                    key={section.path}
+                    style={{opacity: 0.45}}
+                    className={classes.toolbarLink}>
                     {section.name}
                   </span>
                 )
               )}
           </Toolbar>
-          <Toolbar className={classes.toolbar} style={{width: '160px', overflow: 'hidden'}}>
+          <Toolbar
+            className={classes.toolbar}
+            style={{width: '160px', overflow: 'hidden'}}>
             {(Utility.isInAdminRole() || true) /* enable all aggess*/ && (
               <NavLink
-                to={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', study.identifier)}
+                to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
+                  ':id',
+                  study.identifier
+                )}
                 key={'path-to-access-settings'}
                 className={classes.toolbarLink}
                 activeClassName={classes.selectedLink}
@@ -250,7 +282,9 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyT
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}>
-          <MobileDrawerMenuHeader setIsMobileOpen={setIsMobileOpen} type="IN_STUDY"></MobileDrawerMenuHeader>
+          <MobileDrawerMenuHeader
+            setIsMobileOpen={setIsMobileOpen}
+            type="IN_STUDY"></MobileDrawerMenuHeader>
           {links
             .filter(section => section.name)
             .map(section =>
@@ -264,18 +298,30 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyT
                   {section.name}
                 </NavLink>
               ) : (
-                <span key={section.path} style={{opacity: 0.45}} className={classes.mobileToolBarLink}>
+                <span
+                  key={section.path}
+                  style={{opacity: 0.45}}
+                  className={classes.mobileToolBarLink}>
                   {section.name}
                 </span>
               )
             )}
           <NavLink
-            to={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', study.identifier)}
+            to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
+              ':id',
+              study.identifier
+            )}
             key={'path-to-access-settings'}
-            className={clsx(classes.mobileToolBarLink, classes.accessSettingsDrawerOption)}
+            className={clsx(
+              classes.mobileToolBarLink,
+              classes.accessSettingsDrawerOption
+            )}
             activeClassName={classes.mobileSelectedLink}
             onClick={() => setIsMobileOpen(false)}>
-            <img src={ParticipantsIcon} style={{marginRight: '20px'}} alt="access settings"></img>
+            <img
+              src={ParticipantsIcon}
+              style={{marginRight: '20px'}}
+              alt="access settings"></img>
             Access settings
           </NavLink>
         </Drawer>
@@ -283,10 +329,14 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyT
 
       {error && (
         <Box mx="auto" textAlign="center">
-          <Alert variant="outlined" color="error" style={{marginBottom: '10px'}}>
+          <Alert
+            variant="outlined"
+            color="error"
+            style={{marginBottom: '10px'}}>
             {' '}
             {error.statusCode}
-            You do not have the permission to access this feature. Please contact your study administrator
+            You do not have the permission to access this feature. Please
+            contact your study administrator
           </Alert>
         </Box>
       )}

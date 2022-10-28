@@ -6,7 +6,17 @@ import {ReactComponent as UploadIcon} from '@assets/upload.svg'
 import {ReactComponent as RedUploadIcon} from '@assets/upload_red.svg'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import Utility from '@helpers/utility'
-import {Box, Button, Dialog, DialogActions, DialogContent, LinearProgress, Paper, Tab, Tabs} from '@mui/material'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  LinearProgress,
+  Paper,
+  Tab,
+  Tabs,
+} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import EventService from '@services/event.service'
@@ -140,13 +150,18 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   const handleOnDrop = async (rows: any) => {
     setImportError([])
     if (!rows[0]?.data) {
-      setImportError([...importError, 'Please check the format of your file. No data'])
+      setImportError([
+        ...importError,
+        'Please check the format of your file. No data',
+      ])
       return
     }
 
-    const customParticipantEvents: ParticipantEvent[] = scheduleEvents.map(event => ({
-      eventId: EventService.formatEventIdForDisplay(event.eventId),
-    }))
+    const customParticipantEvents: ParticipantEvent[] = scheduleEvents.map(
+      event => ({
+        eventId: EventService.formatEventIdForDisplay(event.eventId),
+      })
+    )
 
     const validityCheck = CsvUtility.isImportFileValid(
       isEnrolledById,
@@ -167,12 +182,21 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       const data = row.data
 
       try {
-        await CsvUtility.uploadCsvRow(data, customParticipantEvents, isEnrolledById, study.identifier, token)
+        await CsvUtility.uploadCsvRow(
+          data,
+          customParticipantEvents,
+          isEnrolledById,
+          study.identifier,
+          token
+        )
         setProgress(prev => prev + progressTick)
       } catch (error) {
         console.log('Error', JSON.stringify(error))
         const key = Object.values(row.data)[0]
-        setImportError(prev => [...prev, `${key}: ${(error as Error).message || error}`])
+        setImportError(prev => [
+          ...prev,
+          `${key}: ${(error as Error).message || error}`,
+        ])
       }
     }
     setIsCsvProcessed(true)
@@ -190,7 +214,11 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
   return (
     <>
-      <Dialog open={isOpenUpload} maxWidth="sm" fullWidth aria-labelledby="form-dialog-title">
+      <Dialog
+        open={isOpenUpload}
+        maxWidth="sm"
+        fullWidth
+        aria-labelledby="form-dialog-title">
         <DialogTitleWithClose
           onCancel={() => setIsOpenUpload(false)}
           icon={<CloudUploadIcon />}
@@ -198,7 +226,11 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         />
         <DialogContent>
           <>
-            <div className={clsx(classes.dropAreaUploading, isCsvUploaded && classes.dropAreaUploadingWithBorder)}>
+            <div
+              className={clsx(
+                classes.dropAreaUploading,
+                isCsvUploaded && classes.dropAreaUploadingWithBorder
+              )}>
               {!isCsvUploaded && (
                 <CSVReader
                   onDrop={handleOnDrop}
@@ -221,7 +253,13 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
                       <LinearProgress variant="determinate" value={progress} />
                     </>
                   )}
-                  {isCsvProcessed && <span>{importError.length > 0 ? 'Completed with errors below' : 'Success'}</span>}
+                  {isCsvProcessed && (
+                    <span>
+                      {importError.length > 0
+                        ? 'Completed with errors below'
+                        : 'Success'}
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -237,7 +275,11 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
           </>
         </DialogContent>
         <DialogActions>
-          <Button disabled={isCsvUploaded} onClick={() => setIsOpenUpload(false)} color="secondary" variant="outlined">
+          <Button
+            disabled={isCsvUploaded}
+            onClick={() => setIsOpenUpload(false)}
+            color="secondary"
+            variant="outlined">
             Cancel
           </Button>
           {isCsvProcessed && (
@@ -265,7 +307,11 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
               classes={{
                 indicator: classes.tabIndicator,
               }}>
-              <Tab label="Upload .csv " icon={tab === 0 ? <RedUploadIcon /> : <UploadIcon />} className={classes.tab} />
+              <Tab
+                label="Upload .csv "
+                icon={tab === 0 ? <RedUploadIcon /> : <UploadIcon />}
+                className={classes.tab}
+              />
               <Tab
                 label="Enter details"
                 icon={tab === 1 ? <RedPencilIcon /> : <PencilIcon />}
@@ -284,7 +330,8 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
                   }}
                   color="primary"
                   variant="contained">
-                  <UploadIcon style={{marginRight: '3px', marginTop: '3px'}} /> Upload CSV File
+                  <UploadIcon style={{marginRight: '3px', marginTop: '3px'}} />{' '}
+                  Upload CSV File
                 </BlueButton>
               </ImportParticipantsInstructions>
             </TabPanel>
@@ -303,7 +350,9 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             <Box
               className={classes.titleBar}
               style={{
-                borderColor: isTestAccount ? '#AEDCC9' : theme.palette.secondary.contrastText,
+                borderColor: isTestAccount
+                  ? '#AEDCC9'
+                  : theme.palette.secondary.contrastText,
               }}>
               Generate IDs
             </Box>

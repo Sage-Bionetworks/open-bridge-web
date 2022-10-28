@@ -80,46 +80,50 @@ export interface SchedulingFormSectionProps {
   disabled?: boolean
 }
 
-const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps> = ({
-  label,
-  style,
-  variant,
-  children,
-  isHideLabel,
-  altLabel,
-  isCollapseLabelSmall,
-  border = true,
-  justifyContent = 'flex-start',
-  disabled = false,
-}: SchedulingFormSectionProps) => {
-  const classes = useStyles()
+const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps> =
+  ({
+    label,
+    style,
+    variant,
+    children,
+    isHideLabel,
+    altLabel,
+    isCollapseLabelSmall,
+    border = true,
+    justifyContent = 'flex-start',
+    disabled = false,
+  }: SchedulingFormSectionProps) => {
+    const classes = useStyles()
 
-  return (
-    <>
-      <section
-        className={clsx(
-          classes.root,
-          variant === 'small' && 'small',
-          border === false && 'no-border',
-          disabled && classes.disabled
-        )}
-        style={style}>
-        <div
-          style={{justifyContent: justifyContent}}
-          className={clsx(classes.formControl, variant === 'small' && 'small')}>
-          <label
+    return (
+      <>
+        <section
+          className={clsx(
+            classes.root,
+            variant === 'small' && 'small',
+            border === false && 'no-border',
+            disabled && classes.disabled
+          )}
+          style={style}>
+          <div
+            style={{justifyContent: justifyContent}}
             className={clsx(
-              /*typeof label === 'string'*/ true && classes.label,
-              variant === 'small' && 'small',
-              isCollapseLabelSmall && 'collapseLabelSmall'
+              classes.formControl,
+              variant === 'small' && 'small'
             )}>
-            {!isHideLabel ? label : ''}
-          </label>
-          {children}
-        </div>
-      </section>
-    </>
-  )
-}
+            <label
+              className={clsx(
+                /*typeof label === 'string'*/ true && classes.label,
+                variant === 'small' && 'small',
+                isCollapseLabelSmall && 'collapseLabelSmall'
+              )}>
+              {!isHideLabel ? label : ''}
+            </label>
+            {children}
+          </div>
+        </section>
+      </>
+    )
+  }
 
 export default SchedulingFormSection

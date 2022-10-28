@@ -1,6 +1,12 @@
-import {StyledCheckbox, StyledFormControl} from '@components/surveys/widgets/SharedStyled'
+import {
+  StyledCheckbox,
+  StyledFormControl,
+} from '@components/surveys/widgets/SharedStyled'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
-import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
+import {
+  SimpleTextInput,
+  SimpleTextLabel,
+} from '@components/widgets/StyledComponents'
 import {Box, FormControlLabel, Typography} from '@mui/material'
 import {poppinsFont, theme} from '@style/theme'
 import {FormatOptionsInteger, NumericQuestion} from '@typedefs/surveys'
@@ -28,7 +34,9 @@ const ValueSelector: React.FunctionComponent<{
   return (
     <>
       <StyledFormControl sx={{marginRight: theme.spacing(2)}} mb={1}>
-        <SimpleTextLabel htmlFor={CONFIG[type].labelId}>{CONFIG[type].label}</SimpleTextLabel>
+        <SimpleTextLabel htmlFor={CONFIG[type].labelId}>
+          {CONFIG[type].label}
+        </SimpleTextLabel>
 
         <SimpleTextInput
           sx={{width: '80px'}}
@@ -52,9 +60,12 @@ const Numeric: React.FunctionComponent<{
   onChange: (step: NumericQuestion) => void
 }> = ({step, onChange}) => {
   const [rangeDisabled, setRangeDisabled] = React.useState(
-    step.inputItem.formatOptions?.minimumValue === undefined && step.inputItem.formatOptions?.maximumValue === undefined
+    step.inputItem.formatOptions?.minimumValue === undefined &&
+      step.inputItem.formatOptions?.maximumValue === undefined
   )
-  const [range, setRange] = React.useState<{min?: number; max?: number} | undefined>({
+  const [range, setRange] = React.useState<
+    {min?: number; max?: number} | undefined
+  >({
     min: step.inputItem.formatOptions?.minimumValue,
     max: step.inputItem.formatOptions?.maximumValue,
   })
@@ -73,7 +84,11 @@ const Numeric: React.FunctionComponent<{
   }
 
   React.useEffect(() => {
-    setError(!range || validate(range) ? '' : 'Max value should be greater than min value')
+    setError(
+      !range || validate(range)
+        ? ''
+        : 'Max value should be greater than min value'
+    )
   }, [range])
 
   const changeRangeDisabled = (val: boolean) => {
@@ -89,8 +104,17 @@ const Numeric: React.FunctionComponent<{
     <>
       <FormControlLabel
         sx={{mt: theme.spacing(1.5)}}
-        control={<StyledCheckbox checked={rangeDisabled} onChange={e => changeRangeDisabled(e.target.checked)} />}
-        label={<Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>No min and max validation</Typography>}
+        control={
+          <StyledCheckbox
+            checked={rangeDisabled}
+            onChange={e => changeRangeDisabled(e.target.checked)}
+          />
+        }
+        label={
+          <Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>
+            No min and max validation
+          </Typography>
+        }
       />
       <Box
         sx={{

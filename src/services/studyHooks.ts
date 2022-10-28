@@ -55,11 +55,19 @@ export const useUpdateStudyInList = () => {
         return await StudyService.withdrawStudy(study.identifier, token!)
 
       case 'RENAME':
-        const updatedStudy = await StudyService.renameStudy(study.identifier, study.name, token!)
+        const updatedStudy = await StudyService.renameStudy(
+          study.identifier,
+          study.name,
+          token!
+        )
 
         return [updatedStudy]
       case 'COPY':
-        const {study: newStudy} = await StudyService.copyStudy(study.identifier!, appId, token!)
+        const {study: newStudy} = await StudyService.copyStudy(
+          study.identifier!,
+          appId,
+          token!
+        )
         return [newStudy]
       case 'CREATE':
         newVersion = await StudyService.createStudy(study, token!)
@@ -76,7 +84,9 @@ export const useUpdateStudyInList = () => {
       // console.log('starting update in studies')
       // Snapshot the previous value
       const {study, action} = props
-      const previousStudies = queryClient.getQueryData<Study[]>(STUDY_KEYS.list())
+      const previousStudies = queryClient.getQueryData<Study[]>(
+        STUDY_KEYS.list()
+      )
       let updatedList: Study[] = []
 
       switch (action) {
@@ -85,14 +95,18 @@ export const useUpdateStudyInList = () => {
         case 'RENAME':
           if (previousStudies) {
             updatedList = previousStudies.map(s =>
-              s.identifier !== study.identifier ? s : {...study, version: study.version + 1}
+              s.identifier !== study.identifier
+                ? s
+                : {...study, version: study.version + 1}
             )
           }
           break
 
         case 'DELETE':
           if (previousStudies) {
-            updatedList = previousStudies.filter(s => s.identifier !== study.identifier)
+            updatedList = previousStudies.filter(
+              s => s.identifier !== study.identifier
+            )
           }
           break
         case 'COPY': {
@@ -152,11 +166,16 @@ export const useUpdateStudyDetail = () => {
       // console.log('starting update for study detail')
       // Snapshot the previous value
       const {study} = props
-      const previousStudy = queryClient.getQueryData<Study>(STUDY_KEYS.detail(props.study.identifier))
+      const previousStudy = queryClient.getQueryData<Study>(
+        STUDY_KEYS.detail(props.study.identifier)
+      )
 
       const newStudy: Study = {...study, version: study.version + 1}
 
-      queryClient.setQueryData<Study>(STUDY_KEYS.detail(props.study.identifier), newStudy)
+      queryClient.setQueryData<Study>(
+        STUDY_KEYS.detail(props.study.identifier),
+        newStudy
+      )
 
       return {previousStudy}
     },

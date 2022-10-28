@@ -12,7 +12,8 @@ export const useStyles = makeStyles(theme => ({
   nextActivity: {
     textAlign: 'center',
     // marginRight: theme.spacing(1),
-    background: 'linear-gradient(to bottom, #fff 10px, #333 10px 11px, #fff 11px )',
+    background:
+      'linear-gradient(to bottom, #fff 10px, #333 10px 11px, #fff 11px )',
     '& span': {
       backgroundColor: '#fff',
       padding: theme.spacing(0, 3),
@@ -61,13 +62,21 @@ const NoActivities: FunctionComponent<{
   }
 
   return (
-    <div className={completionStatus === 'done' ? classes.completed : classes.nextActivity} style={rowStyle}>
+    <div
+      className={
+        completionStatus === 'done' ? classes.completed : classes.nextActivity
+      }
+      style={rowStyle}>
       {innerElement}
     </div>
   )
 }
 
-const NoRows: FunctionComponent<NoRowsProps> = ({dayPxWidth, nextActivity, completionStatus}) => {
+const NoRows: FunctionComponent<NoRowsProps> = ({
+  dayPxWidth,
+  nextActivity,
+  completionStatus,
+}) => {
   const classes = {...useCommonStyles(), ...useStyles()}
   const leftMargin = 8
   const rowStyle: React.CSSProperties = {
@@ -80,7 +89,9 @@ const NoRows: FunctionComponent<NoRowsProps> = ({dayPxWidth, nextActivity, compl
     upNext = nextActivity.studyBurstNum
       ? `Week ${nextActivity.weekInStudy}/Burst ${nextActivity.studyBurstNum}`
       : `Week ${nextActivity.weekInStudy}/Burst ${nextActivity.sessionName}`
-    upNext = `${upNext} on ${dayjs(nextActivity.startDate).format('MM/DD/YYYY')}`
+    upNext = `${upNext} on ${dayjs(nextActivity.startDate).format(
+      'MM/DD/YYYY'
+    )}`
   }
 
   return (

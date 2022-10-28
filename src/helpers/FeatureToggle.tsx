@@ -10,7 +10,10 @@ export interface FeatureToggleProps {
 
 const Ctx = React.createContext<any>({})
 
-export const FeatureToggleProvider: React.FC<FeatureToggleProps> = ({children, featureToggles: initialToggles}) => {
+export const FeatureToggleProvider: React.FC<FeatureToggleProps> = ({
+  children,
+  featureToggles: initialToggles,
+}) => {
   const [featureToggles, setFeatureToggles] = useState(initialToggles || {})
 
   useEffect(() => {

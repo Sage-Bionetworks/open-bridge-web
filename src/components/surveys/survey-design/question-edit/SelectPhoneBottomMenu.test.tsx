@@ -6,7 +6,8 @@ import SelectPhoneBottomMenu from './SelectPhoneBottomMenu'
 const step: ChoiceQuestion = {
   type: 'choiceQuestion',
   identifier: 'choiceQ1',
-  comment: 'Go to the question selected by the participant. If they skip the question then go directly to follow-up.',
+  comment:
+    'Go to the question selected by the participant. If they skip the question then go directly to follow-up.',
   title: 'Choose which question to answer',
   surveyRules: [
     {
@@ -71,7 +72,9 @@ const onChange = jest.fn()
 
 function setUp(step: ChoiceQuestion) {
   const user = userEvent.setup()
-  const component = render(<SelectPhoneBottomMenu step={step} onChange={step => onChange(step)} />)
+  const component = render(
+    <SelectPhoneBottomMenu step={step} onChange={step => onChange(step)} />
+  )
 
   return {user, component}
 }
@@ -91,11 +94,17 @@ test('additional options for integer multiselect', async () => {
 
   await user.click(btnDots)
 
-  expect(screen.getByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
+  expect(
+    screen.getByRole('menuitem', {name: /all of the above/i})
+  ).toBeInTheDocument()
+  expect(
+    screen.getByRole('menuitem', {name: /none of the above/i})
+  ).toBeInTheDocument()
   expect(screen.getByRole('menuitem', {name: /other/i})).toBeInTheDocument()
   screen.debug(screen.getByRole('menuitem', {name: /other/i}))
-  expect(screen.getByRole('menuitem', {name: /other/i})).toHaveClass('Mui-disabled')
+  expect(screen.getByRole('menuitem', {name: /other/i})).toHaveClass(
+    'Mui-disabled'
+  )
 })
 
 test('additional options for string multiselect', async () => {
@@ -104,10 +113,16 @@ test('additional options for string multiselect', async () => {
 
   await user.click(btnDots)
 
-  expect(screen.getByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
+  expect(
+    screen.getByRole('menuitem', {name: /all of the above/i})
+  ).toBeInTheDocument()
+  expect(
+    screen.getByRole('menuitem', {name: /none of the above/i})
+  ).toBeInTheDocument()
   expect(screen.getByRole('menuitem', {name: /other/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).not.toHaveClass('Mui-disabled')
+  expect(screen.getByRole('menuitem', {name: /other/i})).not.toHaveClass(
+    'Mui-disabled'
+  )
 })
 
 test('additional options for integer single select', async () => {
@@ -116,10 +131,16 @@ test('additional options for integer single select', async () => {
 
   await user.click(btnDots)
 
-  expect(screen.queryByRole('menuitem', {name: /all of the above/i})).not.toBeInTheDocument()
-  expect(screen.queryByRole('menuitem', {name: /none of the above/i})).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('menuitem', {name: /all of the above/i})
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('menuitem', {name: /none of the above/i})
+  ).not.toBeInTheDocument()
   expect(screen.getByRole('menuitem', {name: /other/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).toHaveClass('Mui-disabled')
+  expect(screen.getByRole('menuitem', {name: /other/i})).toHaveClass(
+    'Mui-disabled'
+  )
 })
 
 test('additional options for string single select', async () => {
@@ -128,8 +149,14 @@ test('additional options for string single select', async () => {
 
   await user.click(btnDots)
 
-  expect(screen.queryByRole('menuitem', {name: /all of the above/i})).not.toBeInTheDocument()
-  expect(screen.queryByRole('menuitem', {name: /none of the above/i})).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('menuitem', {name: /all of the above/i})
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('menuitem', {name: /none of the above/i})
+  ).not.toBeInTheDocument()
   expect(screen.getByRole('menuitem', {name: /other/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).not.toHaveClass('Mui-disabled')
+  expect(screen.getByRole('menuitem', {name: /other/i})).not.toHaveClass(
+    'Mui-disabled'
+  )
 })

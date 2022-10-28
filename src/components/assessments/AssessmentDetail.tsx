@@ -114,7 +114,9 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
     return <Loader reqStatusLoading={true} />
   }
 
-  const correctResource = data?.resources?.find(resource => resource.category === 'website')
+  const correctResource = data?.resources?.find(
+    resource => resource.category === 'website'
+  )
 
   return (
     <div className={classes.overallContainer}>
@@ -125,7 +127,10 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
         <Paper className="classes.container">
           <Box display="flex" className={classes.informationBox}>
             <Box width="530px" marginRight="32px" style={{textAlign: 'left'}}>
-              <AssessmentImage name={`${data.title}_img`} resources={data.resources} variant="detail"></AssessmentImage>
+              <AssessmentImage
+                name={`${data.title}_img`}
+                resources={data.resources}
+                variant="detail"></AssessmentImage>
             </Box>
             <Box textAlign="left">
               <Typography variant="subtitle2" className={classes.categories}>
@@ -134,28 +139,45 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
               <div className={classes.titleText}>{data.title}</div>
               <Box>{data.summary}</Box>
               <Divider className={classes.divider} />
-              <div className={clsx(classes.imageTextRow, classes.imageTextRowValidatedIcon)}>
+              <div
+                className={clsx(
+                  classes.imageTextRow,
+                  classes.imageTextRowValidatedIcon
+                )}>
                 <img
                   className={classes.validatedIcon}
                   src={ScientificallyValidatedIcon}
                   alt="scientifically_validated_icon"></img>
-                <div className={classes.informationTextInContainer}>Validation and Norming in progress</div>
+                <div className={classes.informationTextInContainer}>
+                  Validation and Norming in progress
+                </div>
               </div>
               <div className={classes.imageTextRow}>
                 <img
                   className={classes.icon}
                   src={OfficialMobileToolboxVersion}
                   alt="official_mobile_toolbox_icon"></img>
-                <div className={classes.informationTextInContainer}>Official Mobile Toolbox version</div>
+                <div className={classes.informationTextInContainer}>
+                  Official Mobile Toolbox version
+                </div>
               </div>
               <div className={classes.imageTextRow}>
-                <img className={classes.icon} src={ClockIcon} alt="clock_icon"></img>
-                <div className={classes.informationTextInContainer}>{data.minutesToComplete} min</div>
+                <img
+                  className={classes.icon}
+                  src={ClockIcon}
+                  alt="clock_icon"></img>
+                <div className={classes.informationTextInContainer}>
+                  {data.minutesToComplete} min
+                </div>
               </div>
               {/*<div className={classes.informationText}>[Age: 18 +]</div>*/}
               <div className={clsx(classes.informationText, classes.row)}>
                 <div style={{width: '100px'}}>Designed By:</div>
-                <div>{correctResource && correctResource.creators ? correctResource.creators.join(', ') : ''}</div>
+                <div>
+                  {correctResource && correctResource.creators
+                    ? correctResource.creators.join(', ')
+                    : ''}
+                </div>
               </div>
               {/* <div className={classes.informationText}>
                   [Used in <u>15 published studies</u>]

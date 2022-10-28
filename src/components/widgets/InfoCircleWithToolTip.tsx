@@ -95,7 +95,11 @@ const InfoCircleWithToolTip: React.FunctionComponent<
       <Tooltip
         placement="right"
         arrow
-        title={<Box className={classes.descriptionContainer}>{tooltipDescription}</Box>}
+        title={
+          <Box className={classes.descriptionContainer}>
+            {tooltipDescription}
+          </Box>
+        }
         classes={{
           tooltip: classes.toolTip,
           arrow: classes.arrow,

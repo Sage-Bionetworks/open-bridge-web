@@ -55,7 +55,9 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn}) => {
-  const [alertMsg, setAlertMsg] = useState<{msg: string; type: AlertProps['severity']} | undefined>()
+  const [alertMsg, setAlertMsg] = useState<
+    {msg: string; type: AlertProps['severity']} | undefined
+  >()
 
   const classes = useStyles()
 
@@ -71,7 +73,10 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn}) => {
         </Alert>
       </Snackbar>
 
-      <Container component="main" maxWidth="xs" className={classes.buttonContainer}>
+      <Container
+        component="main"
+        maxWidth="xs"
+        className={classes.buttonContainer}>
         <Box className={clsx(classes.text, !isArcSignIn && classes.mtbText)}>
           {isArcSignIn
             ? 'Please sign in to ARC using your Synapse account.'

@@ -34,7 +34,11 @@ const DeleteButton: FunctionComponent<{
   } else {
     return (
       <>
-        <ActionButton startIcon={<DeleteIcon />} disabled={true} variant="text" onClick={onClick}>
+        <ActionButton
+          startIcon={<DeleteIcon />}
+          disabled={true}
+          variant="text"
+          onClick={onClick}>
           Delete
         </ActionButton>
         <Box sx={{display: 'inline-flex', alignItems: 'center'}}>
@@ -61,15 +65,24 @@ const QuestionEditToolbar: FunctionComponent<{
   return (
     <>
       <QuestionEditToolbarContainer>
-        <ActionButton startIcon={<SaveIcon />} variant="text" onClick={() => onAction('save')}>
+        <ActionButton
+          startIcon={<SaveIcon />}
+          variant="text"
+          onClick={() => onAction('save')}>
           Save Changes
         </ActionButton>
         {isDynamic && (
           <div>
-            <ActionButton startIcon={<DuplicateIcon />} variant="text" onClick={() => onAction('duplicate')}>
+            <ActionButton
+              startIcon={<DuplicateIcon />}
+              variant="text"
+              onClick={() => onAction('duplicate')}>
               Duplicate
             </ActionButton>
-            <DeleteButton dependentQuestions={dependentQuestions} onClick={() => setIsConfirmDelete(true)} />
+            <DeleteButton
+              dependentQuestions={dependentQuestions}
+              onClick={() => setIsConfirmDelete(true)}
+            />
           </div>
         )}
       </QuestionEditToolbarContainer>
@@ -83,7 +96,9 @@ const QuestionEditToolbar: FunctionComponent<{
           setIsConfirmDelete(false)
         }}>
         <div>
-          <strong>Are you sure you would like to permanently delete this question?</strong>
+          <strong>
+            Are you sure you would like to permanently delete this question?
+          </strong>
         </div>
       </ConfirmationDialog>
     </>

@@ -83,7 +83,12 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export type ConfirmationDialogType = 'DELETE' | 'NAVIGATE' | 'WITHDRAW_STUDY' | 'CLOSE_STUDY' | 'CUSTOM'
+export type ConfirmationDialogType =
+  | 'DELETE'
+  | 'NAVIGATE'
+  | 'WITHDRAW_STUDY'
+  | 'CLOSE_STUDY'
+  | 'CUSTOM'
 
 type ConfirmationDialogProps = {
   isOpen: boolean
@@ -145,7 +150,11 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
       <DialogTitle id="alert-dialog-title" className={classes.title}>
         {getImage()}
         <div>{title}</div>
-        <IconButton aria-label="close" className={classes.closeButton} onClick={() => onCancel()} size="large">
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={() => onCancel()}
+          size="large">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -155,7 +164,11 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
         </DialogContentText>
       </DialogContent>
       <DialogActions className={classes.dialogButtonsContainer}>
-        <Button onClick={() => onCancel()} variant="contained" color="primary" className={classes.cancelButton}>
+        <Button
+          onClick={() => onCancel()}
+          variant="contained"
+          color="primary"
+          className={classes.cancelButton}>
           {cancelText}
         </Button>
         <Button
