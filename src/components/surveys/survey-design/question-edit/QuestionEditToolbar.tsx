@@ -25,6 +25,13 @@ const DeleteButton: FunctionComponent<{
   dependentQuestions: number[] | undefined
 }> = ({onClick, dependentQuestions}) => {
   const isDisabled = !!dependentQuestions?.length
+
+  const getText = (depQs: number[]) => {
+    if (depQs.length === 1) {
+      return `If you want to delete this question, first change the branching on question ${depQs[0]}.`
+    }
+    return `If you want to delete this question, first change the branching on questions: ${depQs.join(', ')}.`
+  }
   if (!isDisabled) {
     return (
       <ActionButton startIcon={<DeleteIcon />} variant="text" onClick={onClick}>
@@ -40,10 +47,7 @@ const DeleteButton: FunctionComponent<{
         <Box sx={{display: 'inline-flex', alignItems: 'center'}}>
           <InfoCircleWithToolTip
             style={{marginLeft: '0px'}}
-            tooltipDescription={
-              'If you want to delete this question, first change the branching on questions: ' +
-              dependentQuestions?.map(index => ++index).join(',')
-            }
+            tooltipDescription={getText(dependentQuestions)}
             variant="info"
           />
         </Box>
@@ -79,7 +83,6 @@ const QuestionEditToolbar: FunctionComponent<{
         type={'DELETE'}
         onCancel={() => setIsConfirmDelete(false)}
         onConfirm={() => {
-          onAction('delete')
           setIsConfirmDelete(false)
         }}>
         <div>
