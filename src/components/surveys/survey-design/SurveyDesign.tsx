@@ -326,8 +326,10 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
     const dependentSteps = survey!.config.steps.reduce((p, current, index) => {
       let q = current as ChoiceQuestion
-
-      if (q.surveyRules && q.surveyRules.findIndex(sr => sr.skipToIdentifier === currentStep.identifier) !== -1) {
+      const hasQInSurveyRules =
+        q.surveyRules && q.surveyRules.findIndex(sr => sr.skipToIdentifier === currentStep.identifier) !== -1
+      const hasQAsNextStep = q.nextStepIdentifier === currentStep.identifier
+      if (hasQInSurveyRules || hasQAsNextStep) {
         return [...p, index]
       }
       return [...p]
@@ -390,7 +392,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                       isDynamic={isDynamicStep()}
                       dependentQuestions={findDependentQuestions()}
                       onAction={action => {
-                        console.log(action)
                         if (action === 'save') {
                           save()
                         }
