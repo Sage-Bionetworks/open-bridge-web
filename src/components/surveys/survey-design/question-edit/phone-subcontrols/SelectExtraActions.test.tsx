@@ -64,7 +64,7 @@ test('renders the component and executes a callback with correct arguments', asy
   renderComponent(step)
   const sort = screen.getByRole('button', {name: /alpha/i})
   const sortReverse = screen.getByRole('button', {name: /reverse/i})
-  await act(async () => await userEvent.click(sort))
+  await userEvent.click(sort)
   expect(onSortFn).toHaveBeenCalledWith(1)
   await act(async () => await userEvent.click(sortReverse))
   expect(onSortFn).toHaveBeenCalledWith(-1)
