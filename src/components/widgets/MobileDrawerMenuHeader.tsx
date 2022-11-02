@@ -59,7 +59,8 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> =
         <a
           target="_blank"
           href="https://www.mobiletoolbox.org"
-          className={classes.mobileToolBarLink} rel="noreferrer">
+          className={classes.mobileToolBarLink}
+          rel="noreferrer">
           {logo}
         </a>
       )
