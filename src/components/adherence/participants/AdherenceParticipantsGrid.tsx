@@ -50,7 +50,8 @@ type AdherenceParticipantsGridProps = {
 const AdherenceCell: FunctionComponent<{
   progression: ProgressionStatus
   adherencePercent?: number
-}> = ({progression, adherencePercent}) => {
+  activityRows: number
+}> = ({progression, adherencePercent, activityRows}) => {
   const classes = {...useCommonStyles(), ...useStyles()}
 
   return (
@@ -60,7 +61,7 @@ const AdherenceCell: FunctionComponent<{
         classes.adherenceCell,
         adherencePercent ?? (100 < AdherenceService.COMPLIANCE_THRESHOLD && classes.red)
       )}>
-      {adherencePercent !== undefined ? `${adherencePercent}%` : '-'}
+      {adherencePercent !== undefined && activityRows > 0 ? `${adherencePercent}%` : 'n/a'}
     </Box>
   )
 }
@@ -162,7 +163,11 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                   </div>
                 </div>
               )}
-              <AdherenceCell progression={item.progression} adherencePercent={item.weeklyAdherencePercent} />
+              <AdherenceCell
+                progression={item.progression}
+                adherencePercent={item.weeklyAdherencePercent}
+                activityRows={item.rows?.length || 0}
+              />
             </div>
           </div>
         )
