@@ -1,17 +1,26 @@
-import {render, screen} from '@testing-library/react'
+//unit tests for BranchingConfig.tsx
+import {render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {ChoiceQuestion} from '@typedefs/surveys'
-import {act} from 'react-dom/test-utils'
+import {Step} from '@typedefs/surveys'
+import SurveyQuestions from '__test_utils/mocks/surveyQuestions'
 import {ProvideTheme} from '__test_utils/utils'
-import SelectExtraActions from './SelectExtraActions'
+import BranchingConfig from './BranchingConfig'
 
-const onSortFn = jest.fn()
+const onMock = jest.fn()
 //render the component
-export const renderComponent = (step: ChoiceQuestion) => {
+export const renderComponent = (step: any) => {
   const user = userEvent.setup()
   const element = render(
     <ProvideTheme>
-      <SelectExtraActions onSort={onSortFn} />
+      <BranchingConfig
+        step={step}
+        isOpen={true}
+        questions={SurveyQuestions}
+        invalidTargetStepIds={[]}
+        onCancel={() => onMock('cancel')}
+        onSave={() => onMock('save')}
+        onChange={(questions: Step[]) => onMock(questions)}
+      />
     </ProvideTheme>
   )
 
@@ -19,7 +28,7 @@ export const renderComponent = (step: ChoiceQuestion) => {
 }
 
 //mock the props
-const step: ChoiceQuestion = {
+const step = {
   type: 'choiceQuestion',
   identifier: 'singleChoiceQ_wtmfwv',
   subtitle: 'Subtitle',
@@ -34,6 +43,7 @@ const step: ChoiceQuestion = {
     },
     {
       value: 'Choice B',
+
       text: 'Choice B',
     },
     {
@@ -46,6 +56,7 @@ const step: ChoiceQuestion = {
     },
   ],
   nextStepIdentifier: 'numericQ_sqkjfd',
+
   surveyRules: [
     {
       matchingAnswer: 'Choice A',
@@ -60,12 +71,8 @@ const step: ChoiceQuestion = {
   ],
 }
 
-test('renders the component and executes a callback with correct arguments', async () => {
-  renderComponent(step)
-  const sort = screen.getByRole('button', {name: /alpha/i})
-  const sortReverse = screen.getByRole('button', {name: /reverse/i})
-  await userEvent.click(sort)
-  expect(onSortFn).toHaveBeenCalledWith(1)
-  await act(async () => await userEvent.click(sortReverse))
-  expect(onSortFn).toHaveBeenCalledWith(-1)
+describe('BranchingConfig', () => {
+  it('should render', () => {
+    renderComponent(step)
+  })
 })

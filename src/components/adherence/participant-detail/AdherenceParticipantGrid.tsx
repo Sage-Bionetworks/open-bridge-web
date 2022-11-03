@@ -1,9 +1,10 @@
 import {PlotDaysDisplay, useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
+import UtilityObject from '@helpers/utility'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
 import {latoFont} from '@style/theme'
-import {AdherenceDetailReport} from '@typedefs/types'
+import {AdherenceDetailReport, EventStreamDay, ParticipantClientData} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import AdherenceUtility from '../adherenceUtility'
@@ -55,6 +56,7 @@ const useStyles = makeStyles(theme => ({
 
 type AdherenceParticipantGridProps = {
   adherenceReport: AdherenceDetailReport
+  clientData: ParticipantClientData | undefined
 }
 
 const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({startEventIds}) => {
@@ -77,7 +79,7 @@ const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({startEve
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/AdherenceUtils.java
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/SessionCompletionState.java
 
-const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> = ({adherenceReport}) => {
+const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> = ({adherenceReport, clientData}) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
   const classes = {...useCommonStyles(), ...useStyles()}
@@ -94,6 +96,23 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
     lineHeight: '1',
     width: `${dayWidthInPx}px`,
     left: `${dayWidthInPx * 7}px`,
+  }
+
+  const mergeWithClientData = (eventStreamDay: EventStreamDay): EventStreamDay => {
+    if (clientData && UtilityObject.isArcApp()) {
+      console.log('clientData', clientData)
+      const windows = eventStreamDay.timeWindows.map(window => {
+        let record = (clientData.sessionStartLocalTimes || []).find(x => x.guid === window.sessionInstanceGuid)
+        if (record) {
+          console.log('record', record)
+        }
+        return record ? {...window, startTime: record.start} : window
+      })
+      console.log(windows)
+      return {...eventStreamDay, timeWindows: windows}
+    } else {
+      return eventStreamDay
+    }
   }
 
   return (
@@ -133,7 +152,9 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                     {[...new Array(7)].map((i, dayIndex) => (
                       <DayDisplay
                         key={dayIndex}
-                        entry={AdherenceUtility.getItemFromByDayEntries(week.byDayEntries, dayIndex, rowIndex)}
+                        entry={mergeWithClientData(
+                          AdherenceUtility.getItemFromByDayEntries(week.byDayEntries, dayIndex, rowIndex)
+                        )}
                         isCompliant={AdherenceUtility.isCompliant(week.adherencePercent)}
                         dayWidth={dayWidthInPx}
                         sessionSymbol={row.sessionSymbol}

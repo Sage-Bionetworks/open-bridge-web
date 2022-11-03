@@ -76,7 +76,7 @@ export interface Question extends BaseStep {
   inputItem?: InputItem
   skipCheckbox?: Skip
   baseType?: QuestionDataType
-  nextStepIdentifier?: string
+
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
 
@@ -139,6 +139,7 @@ export interface YearQuestion extends Question {
 
 export interface BaseStep {
   identifier: string //'step1',
+  nextStepIdentifier?: string
   controlType?: ControlType
   type:
     | 'overview'

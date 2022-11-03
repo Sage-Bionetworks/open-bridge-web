@@ -181,13 +181,12 @@ const ErrorDisplay: FunctionComponent<{
 
 const BranchingConfig: FunctionComponent<{
   error?: string
-
-  step: ChoiceQuestion
-  questions: ChoiceQuestion[]
+  step: Step
+  questions: Step[]
   invalidTargetStepIds: string[]
   onCancel: () => void
   onSave: () => void
-  onChange: (step: ChoiceQuestion[]) => void
+  onChange: (step: Step[]) => void
   isOpen: boolean
 }> = ({error, step, questions, invalidTargetStepIds, onChange, onCancel, isOpen, onSave}) => {
   const [cycleErrQNum, setCycleErrQNum] = React.useState<number | undefined>(undefined)
@@ -198,11 +197,15 @@ const BranchingConfig: FunctionComponent<{
   }
   // const qTypeId = getQuestionId(step)
 
-  const validateAndSave = (updatedSteps: ChoiceQuestion[], changedStepId: string) => {
+  const validateAndSave = (updatedSteps: Step[], changedStepId: string) => {
     setCycleErrQNum(undefined)
     setHasUnreachableState(false)
-    const updatedStep = updatedSteps.find(s => s.identifier === step.identifier)
-    if (updatedStep?.choices && updatedStep?.surveyRules) {
+    const updatedStep = updatedSteps.find(s => s.identifier === step.identifier) as ChoiceQuestion
+    if (!updatedStep) {
+      return
+    }
+
+    if (updatedStep.choices && updatedStep?.surveyRules) {
       //if we have rules for each step and skip to is not one of them then we have an error
       if (
         updatedStep.choices.length === updatedStep.surveyRules.length &&
@@ -234,7 +237,7 @@ const BranchingConfig: FunctionComponent<{
   }
   //radio button change
   const onChangeNextOption = (hasNextDefined: string) => {
-    let newSteps: ChoiceQuestion[]
+    let newSteps: Step[]
     const stepIndex = SurveyUtils.getSequentialQuestionIndex(step.identifier, questions).index
     if (hasNextDefined === 'false') {
       newSteps = questions.map(_question =>
@@ -257,7 +260,7 @@ const BranchingConfig: FunctionComponent<{
 
   const changeRuleMapping = (optionValue: string | number | boolean | undefined, nextStepId: string) => {
     //make a copy of the rules
-    let rules = [...(step.surveyRules || [])]
+    let rules = [...((step as ChoiceQuestion).surveyRules || [])]
     const ruleIndexToUpdate = rules?.findIndex(r => r.matchingAnswer === optionValue)
     const rule = {
       matchingAnswer: optionValue,
@@ -369,9 +372,9 @@ const BranchingConfig: FunctionComponent<{
           </RadioGroup>
           {extendedStepInfo.stepType === 'SINGLE_SELECT' && (
             <Box>
-              {step.choices && (
+              {(step as ChoiceQuestion).choices && (
                 <StyledTable>
-                  {step.choices.map(c => (
+                  {(step as ChoiceQuestion).choices.map(c => (
                     <tr key={c.value?.toString() || 'undefined'}>
                       <td>{c.value}</td>
                       <td style={{fontSize: '15px'}}>&rarr;</td>
@@ -382,7 +385,8 @@ const BranchingConfig: FunctionComponent<{
                           questions={questions}
                           excludeIds={invalidTargetStepIds}
                           selectedIdentifier={
-                            step.surveyRules?.find(rule => rule.matchingAnswer === c.value)?.skipToIdentifier || ''
+                            (step as ChoiceQuestion).surveyRules?.find(rule => rule.matchingAnswer === c.value)
+                              ?.skipToIdentifier || ''
                           }
                           onChangeSelected={nextStepId => changeRuleMapping(c.value, nextStepId)}
                         />
@@ -391,7 +395,7 @@ const BranchingConfig: FunctionComponent<{
                   ))}
                 </StyledTable>
               )}
-              {step.other && <div>{'OTHER'}</div>}
+              {(step as ChoiceQuestion).other && <div>{'OTHER'}</div>}
             </Box>
           )}
         </Box>

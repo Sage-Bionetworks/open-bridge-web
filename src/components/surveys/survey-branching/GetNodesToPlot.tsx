@@ -1,7 +1,7 @@
 import UtilityObject from '@helpers/utility'
 import {Box, styled} from '@mui/material'
 import {latoFont} from '@style/theme'
-import {ChoiceQuestion, Step} from '@typedefs/surveys'
+import {ChoiceQuestion, Question, Step} from '@typedefs/surveys'
 import {Edge, MarkerType, Node} from 'reactflow'
 import QUESTIONS, {getQuestionId} from '../survey-design/left-panel/QuestionConfigs'
 import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
@@ -70,17 +70,20 @@ function createEdge(i1: string, i2: string, isDisconnected?: boolean): Edge {
   }
 }
 
-function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
-  let nextQs: ChoiceQuestion[] = []
-  const qChoiceValues = (q.choices || []).map(c => c.value) || []
-  //if surveyRules
-  if (q.surveyRules?.length) {
+function getChildNodes(questions: (ChoiceQuestion | Step)[], q: ChoiceQuestion | Step) {
+  let nextQs: (ChoiceQuestion | Step)[] = []
+  const choices = (q as ChoiceQuestion).choices
+  const surveyRules = (q as ChoiceQuestion).surveyRules
+  const nextStepIdentifier = (q as Question).nextStepIdentifier
+  const qChoiceValues = choices.map(c => c.value) || []
+
+  if (surveyRules?.length) {
     //only use the rules that map to the choices the question has,
     // find ids we are going to next/create a set to remove dups
     //only included rules that have matchingAnswer
     const nextIds = [
       ...new Set(
-        q.surveyRules
+        surveyRules
           .filter(rule => rule.matchingAnswer && qChoiceValues.includes(rule.matchingAnswer))
           .map(rule => rule.skipToIdentifier)
       ),
@@ -88,16 +91,16 @@ function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
     //find questions correcponding to those ids
     nextQs = questions.filter(q1 => nextIds.includes(q1.identifier))
 
-    const qOptions = q.choices.map(c => c.value).filter(v => v !== undefined)
-    const ruleValues = q.surveyRules.map(rule => rule.matchingAnswer)
+    const qOptions = choices.map(c => c.value).filter(v => v !== undefined)
+    const ruleValues = surveyRules.map(rule => rule.matchingAnswer)
     if (UtilityObject.areArraysEqual(qOptions, ruleValues)) {
       return nextQs
     }
   }
 
   //either use next step identifier or next step in array
-  if (q.nextStepIdentifier) {
-    const next = questions.find(q1 => q1.identifier === q.nextStepIdentifier)
+  if (nextStepIdentifier) {
+    const next = questions.find(q1 => q1.identifier === nextStepIdentifier)
     if (next) {
       nextQs.push(next)
     }
@@ -115,7 +118,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
   const edges: Edge[] = []
   let error: Error | undefined = undefined
 
-  function addNode(q: ChoiceQuestion, index: number, error: Error | undefined) {
+  function addNode(q: ChoiceQuestion | Step, index: number, error: Error | undefined) {
     const node = createNode(q, index, false)
     nodes.push(node)
     let nextQs = getChildNodes(questions, q)
@@ -211,11 +214,11 @@ export const detectCycle = (edges: Edge[]): boolean => {
   return false
 }
 
-export const getEdgesFromSteps = (questions: ChoiceQuestion[]) => {
+export const getEdgesFromSteps = (questions: ChoiceQuestion[] | Step[]) => {
   const edges: Edge[] = []
   let error: Error | undefined = undefined
 
-  function addEdge(q: ChoiceQuestion, error: Error | undefined) {
+  function addEdge(q: Step | ChoiceQuestion, error: Error | undefined) {
     let nextEdges = getChildNodes(questions, q)
 
     //add it if it hasn't been added, otherwise just add edge

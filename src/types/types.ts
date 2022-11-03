@@ -282,7 +282,7 @@ export type ParticipantClientData = {
   sessionStartLocalTimes?: {
     guid: string
     start: string // "09:30"
-  }
+  }[]
   availability?: {
     wake: string // "09:30",
     bed: string //"17:30"
@@ -364,16 +364,19 @@ export type AdherenceSessionInfo = {
   startDate: string
 }
 
+export type EventStreamDayTimeWindow = {
+  sessionInstanceGuid: string
+  timeWindowGuid: string
+  state: AdherenceWindowState
+  startTime?: string
+  endTime?: string
+  endDay: number
+  endDate: string
+}
 export type EventStreamDay = AdherenceSessionInfo & {
   today?: boolean
   startDay: number
-  timeWindows: {
-    sessionInstanceGuid: string
-    timeWindowGuid: string
-    state: AdherenceWindowState
-    endDay: number
-    endDate: string
-  }[]
+  timeWindows: EventStreamDayTimeWindow[]
 }
 
 export type AdherenceByDayEntries = Record<string, EventStreamDay[]>

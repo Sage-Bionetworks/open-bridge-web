@@ -1,10 +1,9 @@
 import {FunctionComponent} from 'react'
 import {Route, RouteComponentProps, Switch, useLocation, withRouter} from 'react-router-dom'
 import TopNav from './components/widgets/AppTopNav'
-import Utility from './helpers/utility'
+import {default as Utility, default as UtilityObject} from './helpers/utility'
 import PublicRoutes from './routes_public'
 import SignInPage from './SignInPage'
-import constants from './types/constants'
 
 const UnauthenticatedApp: FunctionComponent<
   RouteComponentProps & {
@@ -15,7 +14,7 @@ const UnauthenticatedApp: FunctionComponent<
   const loc = useLocation()
   const route = PublicRoutes.find(r => r.path === loc.pathname)
 
-  if ([constants.constants.ARC_APP_ID, constants.constants.INV_ARC_APP_ID].includes(appId)) {
+  if (UtilityObject.isArcApp(appId)) {
     return <SignInPage isARCApp={true} />
   }
   return (

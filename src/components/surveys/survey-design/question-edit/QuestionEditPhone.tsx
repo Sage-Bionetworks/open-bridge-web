@@ -194,7 +194,8 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   const questionId = step ? getQuestionId(step) : 0
 
   const shouldShowSkipButton = (): boolean => {
-    return globalSkipConfiguration === 'SKIP' || !step!.shouldHideActions?.includes('skip')
+    //show skip button if not required in global config and is not hidden on local config
+    return globalSkipConfiguration !== 'NO_SKIP' && !step!.shouldHideActions?.includes('skip')
   }
 
   const sortSelectChoices = (choiceQ: ChoiceQuestion, direction: 1 | -1): ChoiceQuestionChoice[] => {
