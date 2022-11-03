@@ -457,12 +457,18 @@ function areObjectsEqual(obj1: any, obj2: any) {
   return true
 }
 
+function isArcApp(appId?: string) {
+  const _appId = appId || getAppId()
+  return [constants.constants.ARC_APP_ID, constants.constants.INV_ARC_APP_ID].includes(_appId)
+}
+
 const UtilityObject = {
   areArraysEqual,
   areObjectsEqual,
   capitalize,
   formatStudyId,
   setBodyClass,
+  isArcApp,
   isSignInById,
   isPathAllowed,
   isInAdminRole,
