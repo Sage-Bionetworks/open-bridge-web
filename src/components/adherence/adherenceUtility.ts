@@ -68,6 +68,10 @@ function getDateForDisplay(date?: string) {
   return date ? dayjs(date).format('MM/DD/YYYY') : 'Event date is not defined'
 }
 
+function getTimeForDisplay(time: string | undefined | null, atSymbol: boolean = true) {
+  return time ? `${atSymbol ? ' @ ' : ''} ${dayjs(time, 'HH:mm').format('h:mma')}` : ''
+}
+
 function getItemFromByDayEntries(byDayEntries: AdherenceByDayEntries, dayIndex: number, rowIndex: number) {
   return byDayEntries[dayIndex][rowIndex]
 }
@@ -76,6 +80,7 @@ const AdherenceUtility = {
   getMaxNumberOfTimeWindows,
   getUniqueSessionsInfo,
   getDateForDisplay,
+  getTimeForDisplay,
   isCompliant,
   getDisplayFromLabel,
   getItemFromByDayEntries,

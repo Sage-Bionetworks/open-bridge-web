@@ -162,7 +162,7 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
               ))}
             </Box>
           </Box>
-          {<AdherenceParticipantGrid adherenceReport={adherenceReport!} />}
+          {<AdherenceParticipantGrid adherenceReport={adherenceReport!} clientData={participant?.clientData} />}
           <Box display="flex">
             <Button className={classes.editEventDate} variant="text" onClick={() => setIsEditParticipant(true)}>
               <img src={EditIcon}></img>
