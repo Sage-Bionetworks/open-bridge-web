@@ -90,12 +90,14 @@ const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
         <a
           style={{marginRight: '24px'}}
           href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
-          target="_blank" rel="noreferrer">
+          target="_blank"
+          rel="noreferrer">
           <img src={appStoreBtn} alt="ios app store button"></img>
         </a>
         <a
           href="https://play.google.com/store/apps/details?id=org.sagebionetworks.research.mobiletoolbox.app"
-          target="_blank" rel="noreferrer">
+          target="_blank"
+          rel="noreferrer">
           <img src={googlePlayBtn} alt="google play store"></img>
         </a>
       </Box>

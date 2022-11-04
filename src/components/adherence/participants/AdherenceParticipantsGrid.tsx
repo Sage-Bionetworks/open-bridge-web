@@ -1,19 +1,19 @@
 import {
   PlotDaysDisplay,
-  useGetPlotAndUnitWidth
+  useGetPlotAndUnitWidth,
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import { Box, Tooltip } from '@mui/material'
+import {Box, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
-import { theme } from '@style/theme'
-import { AdherenceWeeklyReport, ProgressionStatus } from '@typedefs/types'
+import {theme} from '@style/theme'
+import {AdherenceWeeklyReport, ProgressionStatus} from '@typedefs/types'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { Link } from 'react-router-dom'
+import React, {FunctionComponent} from 'react'
+import {Link} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
 import DayDisplay from '../DayDisplay'
-import { useCommonStyles } from '../styles'
+import {useCommonStyles} from '../styles'
 import NextActivity from './NextActivity'
 
 export const useStyles = makeStyles(theme => ({
@@ -47,14 +47,15 @@ export const useStyles = makeStyles(theme => ({
 type AdherenceParticipantsGridProps = {
   studyId: string
 
-  adherenceWeeklyReport: { items: AdherenceWeeklyReport[]; total: number }
+  adherenceWeeklyReport: {items: AdherenceWeeklyReport[]; total: number}
 }
 
 const AdherenceCell: FunctionComponent<{
   progression: ProgressionStatus
   adherencePercent?: number
-}> = ({ progression, adherencePercent }) => {
-  const classes = { ...useCommonStyles(), ...useStyles() }
+  activityRows: number
+}> = ({progression, adherencePercent, activityRows}) => {
+  const classes = {...useCommonStyles(), ...useStyles()}
 
   return (
     <Box
@@ -62,27 +63,29 @@ const AdherenceCell: FunctionComponent<{
       className={clsx(
         classes.adherenceCell,
         adherencePercent ??
-        (100 < AdherenceService.COMPLIANCE_THRESHOLD && classes.red)
+          (100 < AdherenceService.COMPLIANCE_THRESHOLD && classes.red)
       )}>
-      {adherencePercent !== undefined ? `${adherencePercent}%` : '-'}
+      {adherencePercent !== undefined && activityRows > 0
+        ? `${adherencePercent}%`
+        : 'n/a'}
     </Box>
   )
 }
 
 const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProps> =
-  ({ studyId, adherenceWeeklyReport }) => {
-    const classes = { ...useCommonStyles(), ...useStyles() }
+  ({studyId, adherenceWeeklyReport}) => {
+    const classes = {...useCommonStyles(), ...useStyles()}
 
     const ref = React.useRef<HTMLDivElement>(null)
-    const { unitWidth: dayWidthInPx } = useGetPlotAndUnitWidth(ref, 7, 260)
+    const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 260)
     //  const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
 
     return (
-      <div ref={ref} style={{ marginBottom: '32px' }}>
-        <div style={{ display: 'flex', marginBottom: '16px' }}>
+      <div ref={ref} style={{marginBottom: '32px'}}>
+        <div style={{display: 'flex', marginBottom: '16px'}}>
           <Box width={theme.spacing(11)}>Participant</Box>
           <Box width={theme.spacing(12)}>Day in Study</Box>
-          <div style={{ marginLeft: '-60px' }}>
+          <div style={{marginLeft: '-60px'}}>
             <PlotDaysDisplay
               title=""
               unitWidth={dayWidthInPx}
@@ -113,7 +116,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
               key={`${item.participant}_${index}`}
               className={classes.participantRow}>
               <Box
-                sx={{ width: theme.spacing(11), flexShrink: 0 }}
+                sx={{width: theme.spacing(11), flexShrink: 0}}
                 key={'pIdentifier'}>
                 <Link
                   to={`adherence/${item.participant?.identifier || 'nothing'}`}>
@@ -126,7 +129,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
               <div
                 key={'data'}
                 id="data"
-                style={{ width: '100%', display: 'flex' }}>
+                style={{width: '100%', display: 'flex'}}>
                 {!item.rows?.length ? (
                   <NextActivity
                     dayPxWidth={dayWidthInPx}
@@ -194,6 +197,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                 <AdherenceCell
                   progression={item.progression}
                   adherencePercent={item.weeklyAdherencePercent}
+                  activityRows={item.rows?.length || 0}
                 />
               </div>
             </div>
