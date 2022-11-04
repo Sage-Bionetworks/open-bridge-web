@@ -79,6 +79,7 @@ export const useStyles = makeStyles(theme => ({
   },
   assessmentsContainer: {
     padding: '0px',
+    overflow: 'hidden',
     '&::-webkit-scrollbar': {
       width: '8px',
     },

@@ -46,7 +46,7 @@ function getDisplayFromLabel(
 ): string | string[] {
   const arr = label.split('/')
   const returnLabel =
-    burstNumber !== undefined ? `${arr[1].trim()}/Burst ${burstNumber}` : `${arr[1].trim()}/${arr[0].trim()}`
+    burstNumber !== undefined ? `${arr[1].trim()} / Burst ${burstNumber}` : `${arr[1].trim()} / ${arr[0].trim()}`
 
   return isReturnArray ? returnLabel.split('/') : returnLabel
 }

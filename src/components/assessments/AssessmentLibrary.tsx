@@ -1,12 +1,13 @@
 import makeStyles from '@mui/styles/makeStyles'
 import {useAssessmentsWithResources} from '@services/assessmentHooks'
-import {FunctionComponent, useState} from 'react'
+import React, {FunctionComponent, useState} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {Link, RouteComponentProps} from 'react-router-dom'
-import {Assessment} from '../../types/types'
+import {Assessment, ViewType} from '../../types/types'
 import Loader from '../widgets/Loader'
 import AssessmentCard from './AssessmentCard'
 import AssessmentLibraryWrapper from './AssessmentLibraryWrapper'
+import AssessmentSmall from './AssessmentSmall'
 
 type AssessmentLibraryOwnProps = {
   assessments?: Assessment[]
@@ -26,7 +27,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: A
   const handleError = useErrorHandler()
 
   const [filteredAssessments, setFilteredAssessments] = useState<Assessment[] | undefined>(undefined)
-
+  const [viewMode, setViewMode] = React.useState<ViewType>('GRID')
   const {data, isError, error, status, isLoading} = useAssessmentsWithResources(false, false)
   const {data: surveys} = useAssessmentsWithResources(false, true)
 
@@ -44,6 +45,8 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: A
         <AssessmentLibraryWrapper
           assessments={data.assessments}
           assessmentsType="OTHER"
+          viewMode={viewMode}
+          onChangeViewMode={setViewMode}
           onChangeAssessmentsType={() => {}}
           onChangeTags={(assessments: Assessment[]) => setFilteredAssessments(assessments) /*setFilterTags(tags)*/}>
           {/*    {surveys?.assessments &&
@@ -58,9 +61,14 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: A
                   key={a.guid}></AssessmentCard>
               </Link>
             ))}*/}
+
           {(filteredAssessments || data.assessments).map((a, index) => (
             <Link to={`${match.url}/${a.guid}`} className={classes.cardLink} key={a.guid}>
-              <AssessmentCard index={index} assessment={a} key={a.guid}></AssessmentCard>
+              {viewMode === 'GRID' ? (
+                <AssessmentCard index={index} assessment={a} key={a.guid}></AssessmentCard>
+              ) : (
+                <AssessmentSmall assessment={a} key={a.guid} hasHover={false}></AssessmentSmall>
+              )}
             </Link>
           ))}
         </AssessmentLibraryWrapper>

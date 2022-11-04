@@ -249,11 +249,12 @@ export const NextButton = withStyles(theme => ({
 
 export const StyledToggleButtonGroup = styled(ToggleButtonGroup, {
   label: 'StyledToggleButtonGroup',
-})<{$width?: number}>(({theme, $width}) => ({
+  shouldForwardProp: prop => prop !== 'width',
+})<{width?: number}>(({theme, width}) => ({
   background: '#EDEDED',
   justifyContent: 'space-between',
   boxShadow: 'inset 0px 1px 4px rgba(0, 0, 0, 0.25)',
-  width: `${$width || 255}px`,
+  width: `${width || 255}px`,
   borderRadius: '25px',
   padding: theme.spacing(0.25),
 }))
