@@ -77,6 +77,15 @@ function getDateForDisplay(date?: string) {
   return date ? moment(date).format('MM/DD/YYYY') : 'Event date is not defined'
 }
 
+function getTimeForDisplay(
+  time: string | undefined | null,
+  atSymbol: boolean = true
+) {
+  return time
+    ? `${atSymbol ? ' @ ' : ''} ${moment(time, 'HH:mm').format('h:mma')}`
+    : ''
+}
+
 function getItemFromByDayEntries(
   byDayEntries: AdherenceByDayEntries,
   dayIndex: number,
@@ -89,6 +98,7 @@ const AdherenceUtility = {
   getMaxNumberOfTimeWindows,
   getUniqueSessionsInfo,
   getDateForDisplay,
+  getTimeForDisplay,
   isCompliant,
   getDisplayFromLabel,
   getItemFromByDayEntries,

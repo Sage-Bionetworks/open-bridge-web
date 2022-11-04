@@ -208,7 +208,7 @@ const AdherenceParticipant: FunctionComponent<
               ))}
             </Box>
           </Box>
-          {<AdherenceParticipantGrid adherenceReport={adherenceReport!} />}
+          {<AdherenceParticipantGrid adherenceReport={adherenceReport!} clientData={participant?.clientData} />}
           <Box display="flex">
             <Button
               className={classes.editEventDate}

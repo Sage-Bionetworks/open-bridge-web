@@ -420,12 +420,20 @@ function areArraysEqual<T>(array1: T[], array2: T[]) {
 
   return false
 }
+function isArcApp(appId?: string) {
+  const _appId = appId || getAppId()
+  return [
+    constants.constants.ARC_APP_ID,
+    constants.constants.INV_ARC_APP_ID,
+  ].includes(_appId)
+}
 
 const UtilityObject = {
   areArraysEqual,
   capitalize,
   formatStudyId,
   setBodyClass,
+  isArcApp,
   isSignInById,
   isPathAllowed,
   isInAdminRole,
