@@ -100,12 +100,9 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
 
   const mergeWithClientData = (eventStreamDay: EventStreamDay): EventStreamDay => {
     if (clientData && UtilityObject.isArcApp()) {
-      console.log('clientData', clientData)
       const windows = eventStreamDay.timeWindows.map(window => {
         let record = (clientData.sessionStartLocalTimes || []).find(x => x.guid === window.sessionInstanceGuid)
-        if (record) {
-          console.log('record', record)
-        }
+
         return record ? {...window, startTime: record.start} : window
       })
       console.log(windows)

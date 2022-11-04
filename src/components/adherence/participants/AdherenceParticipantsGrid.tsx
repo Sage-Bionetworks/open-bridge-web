@@ -1,25 +1,32 @@
 import {PlotDaysDisplay, useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import {Box, Tooltip} from '@mui/material'
+import {Box, styled, Tooltip} from '@mui/material'
+import {Link} from 'react-router-dom'
+
 import makeStyles from '@mui/styles/makeStyles'
+
 import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
 import {theme} from '@style/theme'
 import {AdherenceWeeklyReport, ProgressionStatus} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {Link} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
 import DayDisplay from '../DayDisplay'
 import {useCommonStyles} from '../styles'
 import NextActivity from './NextActivity'
 
-export const useStyles = makeStyles(theme => ({
-  participantRow: {
+const StyledParticipantRow = styled(Box, {label: 'StyledParticipantRow'})<{progression?: ProgressionStatus}>(
+  ({theme, progression}) => ({
     display: 'flex',
     borderBottom: '4px solid #fbfbfb',
-    padding: theme.spacing(2, 0),
+    padding: theme.spacing(1, 0),
     alignItems: 'center',
-  },
+    textAlign: 'center',
+    // backgroundColor: progression === 'done' ? '#F7FBF6;' : 'transparent',
+  })
+)
+
+export const useStyles = makeStyles(theme => ({
   adherenceCell: {
     borderRight: 'none',
     borderLeft: '1px solid black',
@@ -102,11 +109,9 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
       </div>
       {adherenceWeeklyReport.items.map((item, index) =>
         !item.participant ? (
-          <div className={classes.participantRow} key={`no_participant_${index}`}>
-            the participant withdrew
-          </div>
+          <StyledParticipantRow key={`no_participant_${index}`}>the participant withdrew</StyledParticipantRow>
         ) : (
-          <div key={`${item.participant}_${index}`} className={classes.participantRow}>
+          <StyledParticipantRow key={`${item.participant}_${index}`} progression={item.progression}>
             <Box sx={{width: theme.spacing(11), flexShrink: 0}} key={'pIdentifier'}>
               <Link to={`adherence/${item.participant?.identifier || 'nothing'}`}>
                 {ParticipantService.formatExternalId(studyId, item.participant.externalId)}
@@ -169,7 +174,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                 activityRows={item.rows?.length || 0}
               />
             </div>
-          </div>
+          </StyledParticipantRow>
         )
       )}
     </div>
