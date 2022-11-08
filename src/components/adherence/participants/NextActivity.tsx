@@ -44,7 +44,7 @@ const NoActivities: FunctionComponent<{
   switch (completionStatus) {
     case 'done':
       //innerElement = <Celebration />
-      innerElement = <CheckIcon sx={{color: '#63A650'}} />
+      // innerElement = <CheckIcon sx={{color: '#63A650'}} />
       break
     case 'in_progress':
       innerElement = (
@@ -90,7 +90,10 @@ const NoRows: FunctionComponent<NoRowsProps> = ({dayPxWidth, nextActivity, compl
         {completionStatus === 'in_progress' ? (
           <Arrow style={{transform: 'scaleX(-1)'}} />
         ) : completionStatus === 'done' ? (
-          'Completed'
+          <Box sx={{display: 'flex'}}>
+            <CheckIcon sx={{color: '#63A650'}} />
+            &nbsp;Completed
+          </Box>
         ) : (
           ''
         )}
