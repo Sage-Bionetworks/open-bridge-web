@@ -14,9 +14,6 @@ const steps: (Step | ChoiceQuestion)[] = [
     title: 'Choose which question to answer',
     surveyRules: [
       {
-        skipToIdentifier: 'followupQ',
-      },
-      {
         matchingAnswer: 1,
         skipToIdentifier: 'simpleQ1',
       },
