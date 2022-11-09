@@ -138,6 +138,12 @@ const theme: Theme = createTheme({
         },
       },
     },
+    MuiIcon: {
+      defaultProps: {
+        // Replace the `material-icons` default value.
+        baseClassName: 'material-icons-two-tone',
+      },
+    },
     MuiPaper: {
       styleOverrides: {
         root: {

@@ -395,7 +395,7 @@ const BranchingConfig: FunctionComponent<{
                   ))}
                 </StyledTable>
               )}
-              {(step as ChoiceQuestion).other && <div>{'OTHER'}</div>}
+              {/*(step as ChoiceQuestion).other && <div>{'OTHER'}</div>*/}
             </Box>
           )}
         </Box>

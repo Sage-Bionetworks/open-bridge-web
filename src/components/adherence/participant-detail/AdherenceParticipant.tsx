@@ -1,4 +1,3 @@
-import {ReactComponent as CelebrationBg} from '@assets/adherence/celebration_bg.svg'
 import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import EditIcon from '@assets/edit_pencil_red.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
@@ -6,7 +5,8 @@ import BreadCrumb from '@components/widgets/BreadCrumb'
 import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {Box, Button, Paper, styled} from '@mui/material'
+import CheckIcon from '@mui/icons-material/CheckCircleTwoTone'
+import {Box, Button, Paper, styled, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useEnrollmentForParticipant} from '@services/enrollmentHooks'
 import {useEventsForUser} from '@services/eventHooks'
@@ -136,17 +136,27 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
 
         <BreadCrumb links={getBreadcrumbLinks()}></BreadCrumb>
         <Paper className={classes.mainContainer} elevation={2}>
-          {adherenceReport?.progression === 'done' && <CelebrationBg className={classes.celebration} />}
+          {/*adherenceReport?.progression === 'done' && <CelebrationBg className={classes.celebration} />*/}
           <Box display="flex" alignItems="center" mb={2}>
             {' '}
             <PersonIcon />
             <MTBHeadingH4>
               {ParticipantService.formatExternalId(studyId, adherenceReport?.participant?.externalId || '', true)}
             </MTBHeadingH4>
+            {adherenceReport?.progression === 'done' && (
+              <Tooltip title="Completed Study">
+                <CheckIcon sx={{color: '#63A650'}} />
+              </Tooltip>
+            )}
           </Box>
           <Box mb={2}>
             <MTBHeadingH4> Time in Study</MTBHeadingH4>
             {getDisplayTimeInStudyTime(events, adherenceReport)}
+            {adherenceReport?.progression === 'done' && (
+              <div>
+                <strong>Completed</strong>
+              </div>
+            )}
           </Box>
           <Box mb={2}>
             <MTBHeadingH4> Client TimeZone</MTBHeadingH4>

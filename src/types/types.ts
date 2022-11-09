@@ -32,6 +32,8 @@ export interface ExtendedError extends Error {
 
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
 
+export type ViewType = 'LIST' | 'GRID'
+
 export type OauthEnvironment = {
   client: string
   vendor: string
