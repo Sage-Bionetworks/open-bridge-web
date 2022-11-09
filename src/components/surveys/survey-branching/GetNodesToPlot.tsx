@@ -75,7 +75,7 @@ function getChildNodes(questions: (ChoiceQuestion | Step)[], q: ChoiceQuestion |
   const choices = (q as ChoiceQuestion).choices
   const surveyRules = (q as ChoiceQuestion).surveyRules
   const nextStepIdentifier = (q as Question).nextStepIdentifier
-  const qChoiceValues = choices.map(c => c.value) || []
+  const qChoiceValues = choices?.map(c => c.value) || []
 
   if (surveyRules?.length) {
     //only use the rules that map to the choices the question has,
@@ -93,6 +93,7 @@ function getChildNodes(questions: (ChoiceQuestion | Step)[], q: ChoiceQuestion |
 
     const qOptions = choices.map(c => c.value).filter(v => v !== undefined)
     const ruleValues = surveyRules.map(rule => rule.matchingAnswer)
+    //if we have rule for all choices we will skipp next identifier
     if (UtilityObject.areArraysEqual(qOptions, ruleValues)) {
       return nextQs
     }
@@ -113,7 +114,7 @@ function getChildNodes(questions: (ChoiceQuestion | Step)[], q: ChoiceQuestion |
   return nextQs
 }
 
-const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
+const getNodes = (questions: (ChoiceQuestion | Step)[]) => {
   const nodes: Node[] = []
   const edges: Edge[] = []
   let error: Error | undefined = undefined

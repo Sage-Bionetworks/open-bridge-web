@@ -1,6 +1,5 @@
 //unit tests for ./Completion.tsx using react-testing-library
 import {act, screen} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import {Step} from '@typedefs/surveys'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
 import Completion from './Completion'
@@ -47,6 +46,6 @@ test('the detail can be edited', async () => {
   const detail = getDetail()
   expect(detail).toHaveValue(step.detail)
   await act(async () => await user.clear(detail))
-  await act(async () => await userEvent.type(detail, 'New Details'))
+  await act(async () => await user.type(detail, 'New Details'))
   expect(detail).toHaveValue('New Details')
 })

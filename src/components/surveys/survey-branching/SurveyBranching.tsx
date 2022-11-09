@@ -2,7 +2,7 @@ import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {Box, styled} from '@mui/material'
 import {useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
 import {latoFont} from '@style/theme'
-import {ChoiceQuestion, Survey} from '@typedefs/surveys'
+import {ChoiceQuestion, Step, Survey} from '@typedefs/surveys'
 import dagre from 'dagre'
 import React, {FunctionComponent} from 'react'
 import 'reactflow/dist/style.css'
@@ -145,8 +145,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
 
   React.useEffect(() => {
     if (survey) {
-      const plotWidth = width || 0
-      const result = getNodes(survey?.config.steps as ChoiceQuestion[], plotWidth)
+      const result = getNodes(survey?.config.steps as ChoiceQuestion[])
       if (result.error) {
         setError(result.error)
       } else {
@@ -168,7 +167,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     }
   }
 
-  const changeBranching = (steps: ChoiceQuestion[]) => {
+  const changeBranching = (steps: (ChoiceQuestion | Step)[]) => {
     setHasObjectChanged(true)
 
     setSurvey({
