@@ -1,95 +1,82 @@
-import {Box, Drawer, IconButton} from '@mui/material'
+import CloseIcon from '@assets/study-builder-icons/left_nav_close_icon.svg'
+import OpenIcon from '@assets/study-builder-icons/left_nav_open_icon.svg'
+import SideBarListItem from '@components/widgets/SideBarListItem'
+import {Box, Drawer, IconButton, List, styled} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
+import {latoFont, theme, ThemeType} from '@style/theme'
 import {Study} from '@typedefs/types'
-import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import {NavLink} from 'react-router-dom'
-import CloseIcon from '../../assets/study-builder-icons/left_nav_close_icon.svg'
-import OpenIcon from '../../assets/study-builder-icons/left_nav_open_icon.svg'
-import {ThemeType} from '../../style/theme'
-import SideBarListItem from '../widgets/SideBarListItem'
 import {getStudyBuilderSections, StudySection} from './sections'
 
 const drawerWidth = 212
-const useStyles = makeStyles((theme: ThemeType) => ({
-  root: {
-    margin: 0,
-    padding: 0,
-    listStyle: 'none',
 
-    '& li': {
-      padding: theme.spacing(10, 0),
-      fontSize: 18,
-    },
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-  },
-  drawerOpen: {
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerClose: {
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: 'hidden',
-    width: theme.spacing(6),
-    [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(6),
-    },
-  },
-  list: {
-    margin: '0',
-    padding: '0',
-    position: 'relative',
-    listStyle: 'none',
-  },
-  drawerPaper: {
+const DrawerStyled = styled(Drawer, {label: 'DrawerStyled'})<{isOpen?: boolean}>(({theme, isOpen}) => ({
+  width: isOpen ? drawerWidth : theme.spacing(6),
+
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  backgroundColor: 'white',
+  marginRight: '3px',
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: isOpen ? theme.transitions.duration.enteringScreen : theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: isOpen ? 'auto' : 'hidden',
+
+  '& .MuiDrawer-paper': {
     fontSize: '14px',
     position: 'static',
     border: 'none',
-    backgroundColor: '#F2F2F2',
-    height: 'auto',
+
+    height: '100%',
     boxShadow: '0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12)',
   },
-  navIcon: {
-    marginRight: theme.spacing(2),
-    width: '48px',
-    height: '48px',
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
-  navIconImageContainer: {
+}))
+
+const StyledNavIconContainer = styled(Box, {label: 'StyledNavIconContainer'})<{isDisabled: boolean}>(
+  ({theme, isDisabled}) => ({
     display: 'flex',
     justifyContent: 'center',
+    textDecoration: 'none',
     alignItems: 'center',
     flexDirection: 'row',
-  },
+    '&:hover': {
+      '& svg': {
+        // fill: '#fff',
+      },
+      '> span': {
+        // color: '#fff',
+      },
+    },
+    '> div': {
+      display: 'flex',
+      alignItems: 'center',
+      marginRight: theme.spacing(1),
+      width: '48px',
+      height: '48px',
+      alignSelf: 'center',
+      justifyContent: 'center',
+      opacity: isDisabled ? 0.3 : 1,
+    },
+
+    '& span': {
+      textDecoration: 'none',
+      opacity: isDisabled ? 0.3 : 1,
+      fontWeight: 900,
+      fontSize: '14px',
+      lineHeight: '16px',
+      color: theme.palette.grey[800],
+      fontFamily: latoFont,
+    },
+  })
+)
+
+const useStyles = makeStyles((theme: ThemeType) => ({
   listItems: {
     padding: theme.spacing(0),
-  },
-  listItemCollapsed: {
-    marginLeft: theme.spacing(-0.5),
-  },
-  disabledElement: {
-    opacity: 0.3,
-  },
-  drawerButton: {
-    borderRadius: 0,
-    width: '48px',
-    height: '100%',
-    '&:hover': {
-      backgroundColor: 'white',
-    },
   },
 }))
 
@@ -119,25 +106,31 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
   }
 
   return (
-    <Drawer
-      variant="permanent"
-      elevation={1}
-      className={clsx(classes.drawer, {
-        [classes.drawerOpen]: open,
-        [classes.drawerClose]: !open,
-      })}
-      classes={{
-        paper: clsx(classes.drawerPaper, {
-          [classes.drawerOpen]: open,
-          [classes.drawerClose]: !open,
-        }),
-      }}>
-      <Box textAlign="right" height="48px" bgcolor="#F2F2F2">
-        <IconButton onClick={toggleDrawer} className={classes.drawerButton} size="large">
+    <DrawerStyled isOpen={open} variant="permanent" elevation={1}>
+      <Box sx={{textAlign: 'right', height: '48px'}}>
+        <IconButton
+          onClick={toggleDrawer}
+          sx={{
+            borderRadius: 0,
+            width: '48px',
+            height: '100%',
+            backgroundColor: '#F2F2F2',
+            '&:hover': {
+              backgroundColor: 'white',
+            },
+          }}
+          size="large">
           <img style={{width: '12px', height: '22px'}} src={open ? CloseIcon : OpenIcon} alt="Close/Open Icon"></img>
         </IconButton>
       </Box>
-      <ul className={classes.list} style={{pointerEvents: disabled ? 'none' : 'all'}}>
+      <List
+        sx={{
+          margin: '0',
+          padding: '0',
+          position: 'relative',
+          listStyle: 'none',
+          pointerEvents: disabled ? 'none' : 'all',
+        }}>
         {study &&
           getStudyBuilderSections(StudyService.isStudyInDesign(study)).map((sectionLink, index) => (
             <div
@@ -152,36 +145,19 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
                   isActive={sectionLink.path === currentSection}
                   styleProps={classes.listItems}
                   inStudyBuilder={true}>
-                  <div
-                    style={{display: 'flex', textDecoration: 'none'}}
-                    className={clsx(
-                      classes.navIconImageContainer,
-                      sectionLink.path === currentSection && !open && classes.listItemCollapsed
-                    )}>
-                    <img
-                      src={
-                        sectionLink.path === currentSection || index === currentHoveredElement
-                          ? sectionLink.hoverIcon
-                          : sectionLink.navIcon
-                      }
-                      className={clsx(
-                        classes.navIcon,
-                        disabled && sectionLink.path !== 'session-creator' && classes.disabledElement
-                      )}
-                      alt={sectionLink.name}
-                    />
-                    <span
-                      style={{textDecoration: 'none'}}
-                      className={clsx(disabled && sectionLink.path !== 'session-creator' && classes.disabledElement)}>
-                      {sectionLink.name}
-                    </span>
-                  </div>
+                  <StyledNavIconContainer
+                    isDisabled={sectionLink.path !== 'session-creator' && disabled}
+                    sx={{marginLeft: sectionLink.path === currentSection && !open ? theme.spacing(-0.5) : '0'}}>
+                    <Box>{sectionLink.navIcon}</Box>
+
+                    <span>{sectionLink.name}</span>
+                  </StyledNavIconContainer>
                 </SideBarListItem>
               </NavLink>
             </div>
           ))}
-      </ul>
-    </Drawer>
+      </List>
+    </DrawerStyled>
   )
 }
 

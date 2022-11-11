@@ -13,7 +13,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
     '&$listItemActive': {
       borderLeft: '4px solid #BCD5E4',
-      backgroundColor: '#FAFAFA',
+      backgroundColor: '#9499C7',
+
       paddingLeft: theme.spacing(1.5),
     },
     '&$listItemCollapsed': {
@@ -23,17 +24,24 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       paddingLeft: theme.spacing(0.5),
     },
     '&:hover': {
-      backgroundColor: '#f7f7f7',
+      backgroundColor: '#EDEEF2;',
     },
   },
   studyBuilderListItem: {
     color: theme.palette.action.active,
     height: '48px',
-    paddingLeft: theme.spacing(1),
-    '&$listItemActive': {
-      borderLeft: '4px solid #BCD5E4',
-      backgroundColor: '#FAFAFA',
-      paddingLeft: theme.spacing(0.5),
+    paddingLeft: theme.spacing(0),
+    '&$listItemActive, &$listItemActive:hover': {
+      backgroundColor: '#9499C7',
+      color: '#fff',
+      '& span': {
+        color: '#fff',
+      },
+      '& svg': {
+        fill: '#fff',
+      },
+
+      // paddingLeft: theme.spacing(0.5),
     },
     '&$listItemCollapsed': {
       paddingLeft: theme.spacing(0),

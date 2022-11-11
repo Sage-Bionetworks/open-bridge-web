@@ -32,12 +32,12 @@ import SingleSessionContainer from './SingleSessionContainer'
 export const useStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    padding: theme.spacing(2),
+    padding: theme.spacing(2, 0),
     gridTemplateColumns: 'repeat(auto-fill,280px)',
-    gridColumnGap: theme.spacing(2),
-    gridRowGap: theme.spacing(2),
+    gridColumnGap: theme.spacing(8),
+    gridRowGap: theme.spacing(6),
     minHeight: theme.spacing(50),
-    backgroundColor: '#fefefe',
+    //  backgroundColor: '#fefefe',
   },
 
   closeButton: {
@@ -51,10 +51,19 @@ export const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     backgroundColor: '#F2f2f2',
   },
+  sessionContainer2: {
+    height: '1px',
+    backgroundColor: '#EAECEE',
+
+    marginTop: theme.spacing(1),
+
+    gridColumnStart: 1,
+    gridColumnEnd: -1,
+  },
   actionButtons: {
-    borderTop: '1px solid black',
-    backgroundColor: '#FFF',
-    padding: theme.spacing(2, 1),
+    // borderTop: '1px solid black',
+    //  backgroundColor: '#FFF',
+    // padding: theme.spacing(2, 1),
     display: 'flex',
     justifyContent: 'space-between',
   },
@@ -226,6 +235,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                 numberOfSessions={schedule.sessions.length}></SingleSessionContainer>
             </Paper>
           ))}
+          <Box className={classes.sessionContainer2} />
         </Box>
         <Box className={classes.actionButtons} key="actionButtons">
           <SessionActionButtons

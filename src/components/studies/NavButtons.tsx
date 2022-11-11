@@ -1,10 +1,8 @@
-import {Box} from '@mui/material'
+import {Box, Button} from '@mui/material'
 import StudyService from '@services/study.service'
 import {Study} from '@typedefs/types'
 import React from 'react'
 import {NavLink} from 'react-router-dom'
-import {ReactComponent as ArrowIcon} from '../../assets/arrow_long.svg'
-import {NextButton, PrevButton} from '../widgets/StyledComponents'
 import {getStudyBuilderSections, StudySection} from './sections'
 
 export interface NavButtonsProps {
@@ -35,9 +33,9 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   const next = currentIndex + 1 < sectionLinks.length ? sectionLinks[currentIndex + 1] : undefined
   const prevButton = prev ? (
     <NavLink to={`/studies/builder/${study.identifier}/${prev.path}`} style={{textDecoration: 'none'}}>
-      <PrevButton variant="outlined" color="primary">
-        <ArrowIcon /> {prev.buttonName || prev.name}
-      </PrevButton>
+      <Button variant="outlined" color="primary" disabled={disabled || false}>
+        {prev.buttonName || prev.name}
+      </Button>
     </NavLink>
   ) : (
     <></>
@@ -45,9 +43,9 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
 
   const nextButton = next ? (
     <NavLink to={disabled ? '#' : `/studies/builder/${study.identifier}/${next.path}`} style={{textDecoration: 'none'}}>
-      <NextButton variant="contained" color="primary" disabled={disabled || false}>
-        {next.buttonName || next.name} <ArrowIcon />
-      </NextButton>
+      <Button variant="contained" color="primary" disabled={disabled || false}>
+        {next.buttonName || next.name}
+      </Button>
     </NavLink>
   ) : (
     <></>
@@ -61,7 +59,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   }
 
   return (
-    <Box py={2} textAlign="right">
+    <Box py={2} textAlign="right" mr={2}>
       {prev && <> {prevButton} &nbsp;&nbsp; </>}
       {nextButton}
     </Box>
