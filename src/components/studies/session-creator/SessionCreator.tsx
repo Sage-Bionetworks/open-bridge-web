@@ -32,7 +32,7 @@ import SingleSessionContainer from './SingleSessionContainer'
 export const useStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    padding: theme.spacing(2, 0),
+    padding: theme.spacing(0, 0, 2, 0),
     gridTemplateColumns: 'repeat(auto-fill,280px)',
     gridColumnGap: theme.spacing(8),
     gridRowGap: theme.spacing(6),

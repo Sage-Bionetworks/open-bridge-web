@@ -1,24 +1,16 @@
-import {TextField, TextFieldProps} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import {styled, TextField, TextFieldProps} from '@mui/material'
 import React from 'react'
-import {ThemeType} from '../../style/theme'
 
-interface StyleProps {
+const StyledTextField = styled(TextField, {label: 'StyledTextField'})<{
   width: number
-}
+}>(({theme, width}) => ({
+  marginBottom: theme.spacing(2),
+  width: theme.spacing(width),
 
-const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
-  root: {
-    marginBottom: theme.spacing(2),
+  '& input': {
+    padding: theme.spacing(1),
+    width: theme.spacing(width),
   },
-  text: props => ({
-    width: theme.spacing(props.width),
-
-    '& input': {
-      padding: theme.spacing(1),
-      width: theme.spacing(props.width),
-    },
-  }),
 }))
 
 export interface SmallTextBoxProps {
@@ -32,8 +24,6 @@ const SmallTextBox: React.FunctionComponent<SmallTextBoxProps & TextFieldProps> 
   onChange,
   ...other
 }) => {
-  const classes = useStyles({width: inputWidth})
-
   const change = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     if (!onChange) {
       return
@@ -54,7 +44,7 @@ const SmallTextBox: React.FunctionComponent<SmallTextBoxProps & TextFieldProps> 
     onChange(e)
   }
 
-  return <TextField className={classes.text} {...other} onChange={e => change(e)} variant="outlined" />
+  return <StyledTextField width={inputWidth} {...other} onChange={e => change(e)} variant="outlined" />
 }
 
 export default SmallTextBox

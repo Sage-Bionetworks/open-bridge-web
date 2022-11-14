@@ -199,7 +199,7 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({survey, error}: Sur
                 </NavLink>
               ))}
           </Toolbar>
-          <Toolbar className={classes.toolbar} style={{width: '160px', overflow: 'hidden'}}>
+          <Toolbar className={classes.toolbar} style={{width: '200px', overflow: 'hidden'}}>
             {(Utility.isInAdminRole() || true) /* enable all aggess*/ && (
               <NavLink
                 to={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', survey?.guid ?? '')}

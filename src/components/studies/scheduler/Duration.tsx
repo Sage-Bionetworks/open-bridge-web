@@ -2,22 +2,15 @@ import SelectWithEnum from '@components/widgets/SelectWithEnum'
 import SmallTextBox from '@components/widgets/SmallTextBox'
 import Utility from '@helpers/utility'
 import ClearIcon from '@mui/icons-material/HighlightOff'
-import {IconButton, StandardTextFieldProps} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import {Box, IconButton, StandardTextFieldProps, styled} from '@mui/material'
 import React from 'react'
 import {getValueFromPeriodString} from './utility'
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  clear: {
-    minWidth: 'auto',
-    padding: 0,
-    marginRight: theme.spacing(1),
-    marginLeft: theme.spacing(-0.75),
-  },
+const StyledIconButton = styled(IconButton, {label: 'StyledIconButton'})(({theme}) => ({
+  minWidth: 'auto',
+  padding: 0,
+  marginRight: theme.spacing(1),
+  marginLeft: theme.spacing(-0.75),
 }))
 
 export interface DurationProps {
@@ -50,7 +43,6 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
   isShowClear = true,
   ...props
 }: DurationProps) => {
-  const classes = useStyles()
   const [unt, setUnit] = React.useState<string | undefined>(undefined)
   const [num, setNum] = React.useState<number | undefined>(undefined)
 
@@ -106,10 +98,10 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
   }
 
   return (
-    <div className={classes.root} onBlur={triggerChange}>
+    <Box sx={{display: 'flex', alignItems: 'center'}} onBlur={triggerChange}>
       <SmallTextBox
         disabled={!!disabled}
-        style={{width: '60px'}}
+        sx={{width: '60px', marginBottom: 0}}
         value={num || ''}
         aria-label={numberLabel}
         type="number"
@@ -131,11 +123,11 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
         onChange={e => changeValue(num, e.target.value as string)}
         style={selectWidth ? {width: `${selectWidth}px`} : {width: '100px'}}></SelectWithEnum>
       {isShowClear && (
-        <IconButton className={classes.clear} onClick={_e => onChange({target: {value: undefined}})} size="large">
+        <StyledIconButton onClick={_e => onChange({target: {value: undefined}})} size="large">
           <ClearIcon />
-        </IconButton>
+        </StyledIconButton>
       )}
-    </div>
+    </Box>
   )
 }
 

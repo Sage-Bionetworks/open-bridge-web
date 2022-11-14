@@ -44,13 +44,6 @@ import {getFormattedTimeDateFromPeriodString} from './utility'
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    sessionContainer: {
-      marginBottom: theme.spacing(2),
-      display: 'flex',
-      '&:last-child': {
-        marginBottom: 0,
-      },
-    },
     labelDuration: {
       paddingTop: theme.spacing(1),
       paddingRight: theme.spacing(2),
@@ -104,7 +97,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 0,
       flexShrink: 0,
       padding: theme.spacing(1),
-      backgroundColor: '#BCD5E4',
+      backgroundColor: theme.palette.grey[100],
     },
     row: {
       display: 'flex',
@@ -478,16 +471,16 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                     }
                   />
                 )}
-                <DialogButtonPrimary
+                <Button
+                  variant="contained"
+                  size="small"
                   onClick={() => onSave(true)}
-                  style={{
-                    padding: '4px 8px',
+                  sx={{
                     marginTop: '-1px',
-                    borderColor: 'transparent',
                   }}>
                   {' '}
                   Save Changes
-                </DialogButtonPrimary>
+                </Button>
                 <Box fontSize="12px" ml={2} fontFamily={latoFont} fontWeight="bold">
                   The study duration must be shorter than 5 years.
                 </Box>
@@ -578,19 +571,26 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
         <DialogActions className={classes.dialogAction}>
           <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>Cancel</DialogButtonSecondary>
 
-          <DialogButtonPrimary
+          <Button
+            variant="contained"
             onClick={() => {
               ref1.current?.save()
             }}>
             Save Changes
-          </DialogButtonPrimary>
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={openStudySession !== undefined} maxWidth="lg" scroll="body">
         <DialogContent style={{padding: 0}}>
           {openStudySession && !isReadOnly && (
             <Box
-              className={classes.sessionContainer}
+              sx={{
+                marginBottom: theme.spacing(2),
+                display: 'flex',
+                '&:last-child': {
+                  marginBottom: 0,
+                },
+              }}
               key={getOpenStudySession().guid}
               border={
                 schedulerErrorState.get(
@@ -679,18 +679,23 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
         </DialogContent>
         <DialogActions>
           {!isReadOnly ? (
-            <DialogButtonSecondary onClick={() => onCancelSessionUpdate()}>Cancel</DialogButtonSecondary>
+            <Button variant="outlined" onClick={() => onCancelSessionUpdate()}>
+              Cancel
+            </Button>
           ) : (
-            <DialogButtonPrimary onClick={() => onCancelSessionUpdate()}>Close</DialogButtonPrimary>
+            <Button variant="contained" onClick={() => onCancelSessionUpdate()}>
+              Close
+            </Button>
           )}
 
           {!isReadOnly && (
-            <DialogButtonPrimary
+            <Button
+              variant="contained"
               onClick={() => {
                 onSave(true).then(() => setOpenStudySession(undefined))
               }}>
               {saveLoader ? <CircularProgress /> : <span>Save Changes</span>}
-            </DialogButtonPrimary>
+            </Button>
           )}
         </DialogActions>
       </Dialog>

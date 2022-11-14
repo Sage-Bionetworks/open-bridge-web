@@ -286,7 +286,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                   <MTBHeadingH1 sx={{textAlign: 'left'}}>{subtitles[section as string]}</MTBHeadingH1>
                 </Box>
               </Box>
-              <Box pl={8}>
+              <Box pl={8} pt={3}>
                 <LoadingComponent
                   reqStatusLoading={isStudyLoading || isScheduleLoading}
                   variant="small"

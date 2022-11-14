@@ -68,7 +68,7 @@ const StyledNavIconContainer = styled(Box, {label: 'StyledNavIconContainer'})<{i
       fontWeight: 900,
       fontSize: '14px',
       lineHeight: '16px',
-      color: theme.palette.grey[800],
+
       fontFamily: latoFont,
     },
   })

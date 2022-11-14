@@ -1,86 +1,83 @@
-import {Button} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import clsx from 'clsx'
+import {Button, ListItem, styled} from '@mui/material'
+import {Theme} from '@mui/system'
 import React from 'react'
-import {poppinsFont, ThemeType} from '../../style/theme'
+import {latoFont} from '../../style/theme'
 
-const useStyles = makeStyles((theme: ThemeType) => ({
-  root: {},
-
-  listItem: {
-    color: theme.palette.action.active,
-    paddingLeft: theme.spacing(2),
-
-    '&$listItemActive': {
-      borderLeft: '4px solid #BCD5E4',
-      backgroundColor: '#9499C7',
-
-      paddingLeft: theme.spacing(1.5),
-    },
-    '&$listItemCollapsed': {
-      paddingLeft: theme.spacing(1),
-    },
-    '&$listItemActive&$listItemCollapsed': {
-      paddingLeft: theme.spacing(0.5),
-    },
-    '&:hover': {
-      backgroundColor: '#EDEEF2;',
-    },
+const StyledNonSBListItemStyles = (theme: Theme, isActive?: boolean, isOpen?: boolean) => ({
+  color: theme.palette.action.active,
+  paddingLeft: isActive
+    ? isOpen
+      ? theme.spacing(1.5)
+      : theme.spacing(0.5)
+    : isOpen
+    ? theme.spacing(2)
+    : theme.spacing(1),
+  borderLeft: isActive ? '4px solid #BCD5E4' : 'none',
+  '&:hover': {
+    backgroundColor: '#EDEEF2;',
   },
-  studyBuilderListItem: {
-    color: theme.palette.action.active,
-    height: '48px',
-    paddingLeft: theme.spacing(0),
-    '&$listItemActive, &$listItemActive:hover': {
-      backgroundColor: '#9499C7',
-      color: '#fff',
-      '& span': {
-        color: '#fff',
-      },
-      '& svg': {
-        fill: '#fff',
-      },
+})
 
-      // paddingLeft: theme.spacing(0.5),
-    },
-    '&$listItemCollapsed': {
-      paddingLeft: theme.spacing(0),
-    },
-    '&:hover': {
-      backgroundColor: '#f7f7f7',
-    },
+const StyledSBListItemStyles = (theme: Theme, isActive?: boolean, isOpen?: boolean) => ({
+  color: isActive ? '#fff' : theme.palette.action.active,
+  height: '48px',
+  paddingLeft: isOpen ? theme.spacing(0) : theme.spacing(0),
+  backgroundColor: isActive ? '#9499C7' : 'transparent',
+  marginBottom: theme.spacing(0.5),
+
+  '&:hover': {
+    backgroundColor: isActive ? '#9499C7' : '#f7f7f7',
   },
-  listItemDark: {
-    height: theme.spacing(9),
-    display: 'flex',
+
+  '& span': {
+    color: isActive ? '#fff' : theme.palette.grey[800],
+  },
+
+  '& svg': {
+    fill: isActive ? '#fff' : '#878E95',
+  },
+})
+
+const StyledDarkListItemStyles = (theme: Theme, isActive?: boolean) => ({
+  height: theme.spacing(9),
+  display: 'flex',
+  color: theme.palette.common.white,
+  '& button': {
     color: theme.palette.common.white,
-    '& button': {
-      color: theme.palette.common.white,
-    },
-
-    '&$listItemActive': {
-      borderLeft: '4px solid #FFE500',
-      backgroundColor: '#444',
-    },
-    '&:hover': {
-      backgroundColor: '#333',
-    },
+    borderRadius: 0,
   },
-  listItemActive: {},
-  listItemCollapsed: {},
-
-  link: {
-    fontFamily: poppinsFont,
-    justifyContent: 'flex-start',
-    color: '#282828',
-
-    width: '100%',
-    textDecoration: 'none',
-    '&:hover': {
-      backgroundColor: 'inherit',
-    },
+  backgroundColor: isActive ? '#444' : 'inherit',
+  borderLeft: isActive ? '4px solid #FFE500' : 'none',
+  '&:hover': {
+    backgroundColor: '#333',
   },
-}))
+})
+
+const StyledListItem = styled(ListItem, {label: 'StyledListItem'})<{
+  inStudyBuilder?: boolean
+  isActive?: boolean
+  isOpen?: boolean
+  isDark?: boolean
+}>(({theme, inStudyBuilder, isActive, isOpen, isDark}) => {
+  if (isDark) {
+    return StyledDarkListItemStyles(theme, isActive)
+  } else if (inStudyBuilder) {
+    return StyledSBListItemStyles(theme, isActive, isOpen)
+  }
+  return StyledNonSBListItemStyles(theme, isActive, isOpen)
+})
+
+const StyledLinkButton = styled(Button, {label: 'StyledLinkButton'})<{isActive?: boolean; isOpen?: boolean}>({
+  fontFamily: latoFont,
+  justifyContent: 'flex-start',
+  //color: '#282828',
+  padding: '0px',
+  width: '100%',
+  textDecoration: 'none',
+  '&:hover': {
+    backgroundColor: 'inherit',
+  },
+})
 
 export interface SideBarListItemProps {
   isOpen: boolean
@@ -101,25 +98,15 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
   styleProps,
   inStudyBuilder,
 }: SideBarListItemProps) => {
-  const classes = useStyles()
   const handleClick = () => {
     if (!inStudyBuilder) {
       onClick()
     }
   }
   return (
-    <li
-      className={clsx({
-        [classes.listItem]: !inStudyBuilder,
-        [classes.studyBuilderListItem]: inStudyBuilder,
-        [classes.listItemDark]: variant === 'dark',
-        [classes.listItemActive]: isActive,
-        [classes.listItemCollapsed]: !isOpen,
-      })}>
-      <Button onClick={handleClick} className={clsx(classes.link, styleProps && styleProps)}>
-        {children}
-      </Button>
-    </li>
+    <StyledListItem isActive={isActive} isOpen={isOpen} inStudyBuilder={inStudyBuilder} isDark={variant === 'dark'}>
+      <StyledLinkButton onClick={handleClick}>{children}</StyledLinkButton>
+    </StyledListItem>
   )
 }
 

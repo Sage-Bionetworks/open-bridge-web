@@ -4,7 +4,7 @@ import {AlertWithText, BlueButton} from '@components/widgets/StyledComponents'
 import {Box, Switch} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
-import {latoFont, ThemeType} from '@style/theme'
+import {latoFont, theme, ThemeType} from '@style/theme'
 import {
   AssessmentWindow as AssessmentWindowType,
   ScheduleNotification,
@@ -237,7 +237,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   }
 
   return (
-    <Box bgcolor="#F8F8F8" flexGrow="1" pb={0} pl={4}>
+    <Box sx={{backgroundColor: '#fff', flexGrow: '1', paddingBottom: 0, paddingLeft: theme.spacing(4)}}>
       {sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
         <Box className={classes.firstAlertStyling}>
           {sessionErrorState.generalErrorMessage.map((el, index) => {

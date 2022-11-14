@@ -4,8 +4,11 @@ import BreadCrumb from '@components/widgets/BreadCrumb'
 import HideWhen from '@components/widgets/HideWhen'
 import MobileDrawerMenuHeader from '@components/widgets/MobileDrawerMenuHeader'
 import Utility from '@helpers/utility'
+import BuildTwoToneIcon from '@mui/icons-material/BuildTwoTone'
+import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone'
 import MenuIcon from '@mui/icons-material/Menu'
 import PeopleIcon from '@mui/icons-material/People'
+import PersonSearchTwoToneIcon from '@mui/icons-material/PersonSearchTwoTone'
 import {Alert, Box, Drawer, Hidden, IconButton, LinearProgress} from '@mui/material'
 import Toolbar from '@mui/material/Toolbar'
 import makeStyles from '@mui/styles/makeStyles'
@@ -15,6 +18,11 @@ import {ExtendedError, Study, StudyPhase} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {NavLink} from 'react-router-dom'
+
+//import BuildTwoToneIcon from '@mui/icons-material/BuildTwoTone'; builder
+//import PersonSearchTwoToneIcon from '@mui/icons-material/PersonSearchTwoTone'; pmanager
+//import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone'; adherence
+//import PollTwoToneIcon from '@mui/icons-material/PollTwoTone'; rdata
 
 const useStyles = makeStyles(theme => ({
   rootStudyTopNav: {
@@ -50,7 +58,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   selectedLink: {
-    borderBottom: '4px solid black',
+    borderBottom: '4px solid #9499C7',
     paddingBottom: theme.spacing(2),
   },
   menuButton: {
@@ -87,14 +95,23 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: '#F8F8F8',
   },
   toolbarLink: {
-    padding: theme.spacing(2),
-    flexGrow: 1,
+    padding: theme.spacing(2, 1, 1.5, 1),
+    margin: theme.spacing(0, 2),
+    display: 'flex',
+    alignItems: 'center',
     fontFamily: latoFont,
-    fontSize: '15px',
+    flexGrow: 1,
 
+    fontSize: '16px',
+    fontWeight: 900,
+    textTransform: 'capitalize',
     textDecoration: 'none',
     color: 'inherit',
     flexShrink: 0,
+    '& svg': {
+      marginRight: theme.spacing(1),
+      fontSize: '20px',
+    },
 
     '&:first-child': {
       // paddingLeft: theme.spacing(0.5),
@@ -144,23 +161,26 @@ type StudyTopNavProps = {
 }
 
 const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyTopNavProps) => {
-  const allLinks: {path: string; name: string; status: StudyPhase[]}[] = [
+  const allLinks: {path: string; name: string; status: StudyPhase[]; icon: React.ReactElement}[] = [
     {
       path: `${constants.restrictedPaths.STUDY_BUILDER}`,
-      name: 'STUDY BUILDER',
+      name: 'study builder',
       status: ['design', 'in_flight', 'recruitment', 'completed', 'withdrawn'],
+      icon: <BuildTwoToneIcon />,
     },
     {
       path: constants.restrictedPaths.PARTICIPANT_MANAGER,
-      name: 'PARTICIPANT MANAGER',
+      name: 'participant manager',
       status: constants.constants.IS_TEST_MODE
         ? ['in_flight', 'legacy', 'recruitment', 'design', 'completed']
         : ['in_flight', 'completed', 'withdrawn', 'recruitment'],
+      icon: <PersonSearchTwoToneIcon />,
     },
     {
       path: constants.restrictedPaths.ADHERENCE_DATA,
-      name: 'ADHERENCE DATA',
+      name: 'adherence data',
       status: ['in_flight', 'legacy', 'recruitment'],
+      icon: <EventAvailableTwoToneIcon />,
     },
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
@@ -215,16 +235,18 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyT
                     key={section.path}
                     className={classes.toolbarLink}
                     activeClassName={classes.selectedLink}>
+                    {section.icon}
                     {section.name}
                   </NavLink>
                 ) : (
                   <span key={section.path} style={{opacity: 0.45}} className={classes.toolbarLink}>
+                    {section.icon}
                     {section.name}
                   </span>
                 )
               )}
           </Toolbar>
-          <Toolbar className={classes.toolbar} style={{width: '160px', overflow: 'hidden'}}>
+          <Toolbar className={classes.toolbar} style={{width: '200px', overflow: 'hidden'}}>
             {(Utility.isInAdminRole() || true) /* enable all aggess*/ && (
               <NavLink
                 to={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', study.identifier)}

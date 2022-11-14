@@ -133,6 +133,15 @@ const theme: Theme = createTheme({
     },
     MuiButton: {
       styleOverrides: {
+        root: ({ownerState}) => ({
+          height: '50px',
+          padding: '0 40px',
+          ...(ownerState.size === 'small' &&
+            ownerState.variant === 'contained' && {
+              height: '40px',
+              padding: '0 30px',
+            }),
+        }),
         contained: {
           borderRadius: '4px',
           fontSize: '12px',
@@ -163,9 +172,6 @@ const theme: Theme = createTheme({
         */,
 
         containedPrimary: {
-          height: '50px',
-          padding: '0 40px',
-
           fontWeight: 900,
           fontSize: '16px',
 
@@ -218,6 +224,9 @@ const theme: Theme = createTheme({
           color: '#000',
         },
       },
+    },
+    MuiLink: {
+      styleOverrides: {},
     },
     MuiIcon: {
       defaultProps: {
@@ -294,7 +303,8 @@ const theme: Theme = createTheme({
     MuiInputBase: {
       styleOverrides: {
         input: {
-          backgroundColor: '#BCD5E4',
+          backgroundColor: '#F1F3F5',
+          outlineColor: '#F1F3F5',
         },
         colorSecondary: {
           '& input': {
@@ -305,9 +315,19 @@ const theme: Theme = createTheme({
     },
     MuiOutlinedInput: {
       styleOverrides: {
-        root: {borderRadius: 0},
+        root: {
+          borderRadius: 0,
+          '&:hover': {
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#dee1e4',
+            },
+          },
+        },
         notchedOutline: {
-          borderColor: '#6e6e6e',
+          borderColor: '#F1F3F5',
+          '&:hover': {
+            borderColor: '#F1F3F5',
+          },
         },
         input: {
           padding: '9px 14px',
