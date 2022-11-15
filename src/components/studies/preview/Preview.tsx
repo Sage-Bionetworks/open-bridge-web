@@ -152,7 +152,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   tosContainerStudyDemo: {
     position: 'absolute',
-    top: '-60px',
+    top: '10px',
     right: '100px',
   },
   tosContainerAssessment: {

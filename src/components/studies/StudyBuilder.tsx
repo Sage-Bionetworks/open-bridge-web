@@ -222,48 +222,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   return (
     <Box bgcolor={section === 'scheduler' ? '#E5E5E5' : '#f7f7f7'}>
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-        <Box display="flex" bgcolor="#f7f7f7">
-          <AlertBanner
-            backgroundColor={feedbackBannerType?.bgColor!}
-            textColor={feedbackBannerType?.textColor!}
-            onClose={() => {
-              //setCancelBanner(true)
-              setDisplayFeedbackBanner(false)
-            }}
-            isVisible={displayFeedbackBanner}
-            icon={feedbackBannerType?.icon[0]!}
-            isSelfClosing={feedbackBannerType?.type === 'success'}
-            displayBottomOfPage={false}
-            displayText={feedbackBannerType?.displayText[0]!}></AlertBanner>
-          {study && (
-            <AlertBanner
-              backgroundColor={editabilityBannerType?.bgColor!}
-              textColor={editabilityBannerType?.textColor!}
-              onClose={() => {
-                // setCancelBanner(true)
-                setDisplayEditabilityBanner(false)
-              }}
-              isVisible={displayEditabilityBanner}
-              icon={
-                isSectionEditableWhenLive(section) && StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
-                  ? editabilityBannerType?.icon[1]!
-                  : editabilityBannerType?.icon[0]!
-              }
-              isSelfClosing={false}
-              displayBottomOfPage={true}
-              displayText={
-                isSectionEditableWhenLive(section) && StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
-                  ? editabilityBannerType?.displayText[1]!
-                  : editabilityBannerType?.displayText[0]!
-              }></AlertBanner>
-          )}
-          <Box width={open ? 210 : 56} flexShrink={0} pl={5} pt={2}>
-            <StudyIdWithPhaseImage study={study} excludedPhase="DRAFT" />
-          </Box>
-          <Box className={getClasses()} pt={8} pl={2}>
-            <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
-          </Box>
-        </Box>
         <Container
           maxWidth="xl"
           className={classes.studyComponentContainer}
@@ -276,7 +234,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                 ? '#f7f7f7'
                 : 'inherit',
           }}>
-          <Box paddingTop={2} display="flex" position="relative">
+          <Box paddingTop={0} sx={{display: 'flex', position: 'relative', minHeight: '100vh'}}>
             <StudyLeftNav
               open={open}
               onToggle={() => setOpen(prev => !prev)}
@@ -284,7 +242,51 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
               study={study!}
               disabled={!allSessionsHaveAssessments()}></StudyLeftNav>
             <Box className={classes.mainAreaWrapper}>
-              <Box className={getClasses()}>
+              <Box bgcolor="#f7f7f7">
+                <AlertBanner
+                  backgroundColor={feedbackBannerType?.bgColor!}
+                  textColor={feedbackBannerType?.textColor!}
+                  onClose={() => {
+                    //setCancelBanner(true)
+                    setDisplayFeedbackBanner(false)
+                  }}
+                  isVisible={displayFeedbackBanner}
+                  icon={feedbackBannerType?.icon[0]!}
+                  isSelfClosing={feedbackBannerType?.type === 'success'}
+                  displayBottomOfPage={false}
+                  displayText={feedbackBannerType?.displayText[0]!}></AlertBanner>
+                {study && (
+                  <AlertBanner
+                    backgroundColor={editabilityBannerType?.bgColor!}
+                    textColor={editabilityBannerType?.textColor!}
+                    onClose={() => {
+                      // setCancelBanner(true)
+                      setDisplayEditabilityBanner(false)
+                    }}
+                    isVisible={displayEditabilityBanner}
+                    icon={
+                      isSectionEditableWhenLive(section) &&
+                      StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
+                        ? editabilityBannerType?.icon[1]!
+                        : editabilityBannerType?.icon[0]!
+                    }
+                    isSelfClosing={false}
+                    displayBottomOfPage={true}
+                    displayText={
+                      isSectionEditableWhenLive(section) &&
+                      StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
+                        ? editabilityBannerType?.displayText[1]!
+                        : editabilityBannerType?.displayText[0]!
+                    }></AlertBanner>
+                )}
+                <Box pl={8} pt={2}>
+                  <StudyIdWithPhaseImage study={study} excludedPhase={undefined} />
+                </Box>
+                <Box pt={2} pl={8}>
+                  <MTBHeadingH1 sx={{textAlign: 'left'}}>{subtitles[section as string]}</MTBHeadingH1>
+                </Box>
+              </Box>
+              <Box pl={8} pt={3}>
                 <LoadingComponent
                   reqStatusLoading={isStudyLoading || isScheduleLoading}
                   variant="small"

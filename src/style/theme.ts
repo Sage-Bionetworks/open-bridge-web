@@ -1,3 +1,5 @@
+import {Color} from '@mui/material'
+import {grey} from '@mui/material/colors'
 import {createTheme, Theme} from '@mui/material/styles'
 import {CSSProperties} from '@mui/styles'
 
@@ -20,6 +22,49 @@ export type CssVariablesType = {
 
   activeBorder: string
 }
+
+const gray: Partial<Color> = {
+  100: '#FBFBF',
+  200: '#F1F3F5',
+  300: '#EAECEE',
+  400: '#DFE2E6',
+  500: '#D0D4D9',
+
+  600: '#AEB5BC',
+  700: '#878E95',
+  800: '#4A5056', //
+  900: '#353A3F', //Base text color. Used for body copy and table text.
+  A100: '#22252A', //Used for headline styles.
+}
+/*
+declare module '@mui/material/styles' {
+  interface Theme {
+    status: {
+      danger: React.CSSProperties['color']
+    }
+  }
+
+  interface Palette {
+    neutral: Palette['primary']
+  }
+
+  interface PaletteOptions {
+    neutral: PaletteOptions['primary']
+    //Gray 300Divider lines, borders and scroll bars.
+  }
+
+  interface PaletteColor {
+    darker?: string
+  }
+  interface SimplePaletteColorOptions {
+    darker?: string
+  }
+  interface ThemeOptions {
+    status: {
+      danger: React.CSSProperties['color']
+    }
+  }
+}*/
 
 export type ThemeType = Theme & CssVariablesType
 
@@ -88,6 +133,15 @@ const theme: Theme = createTheme({
     },
     MuiButton: {
       styleOverrides: {
+        root: ({ownerState}) => ({
+          height: '50px',
+          padding: '0 40px',
+          ...(ownerState.size === 'small' &&
+            ownerState.variant === 'contained' && {
+              height: '40px',
+              padding: '0 30px',
+            }),
+        }),
         contained: {
           borderRadius: '4px',
           fontSize: '12px',
@@ -97,7 +151,7 @@ const theme: Theme = createTheme({
         containedSecondary: {
           borderRadius: '4px',
           border: 'none',
-        },
+        } /*
         containedPrimary: {
           backgroundColor: '#3a3a3a',
           border: '1px solid #3a3a3a',
@@ -115,28 +169,64 @@ const theme: Theme = createTheme({
             backgroundColor: '#634848',
           },
         },
+        */,
+
+        containedPrimary: {
+          fontWeight: 900,
+          fontSize: '16px',
+
+          color: '#fff',
+          boxShadow: 'none',
+          background: '#4F527D',
+          borderRadius: '5px',
+
+          '&:hover': {
+            backgroundColor: '#383A5A',
+            boxShadow: 'none',
+          },
+          '&:focus': {
+            backgroundColor: '#383948',
+          },
+          '&.Mui-disabled': {
+            backgroundColor: '#D0D4D9',
+            color: '#AEB5BC',
+          },
+        },
         outlinedPrimary: {
           backgroundColor: '#fff',
-          borderRadius: '0px',
-          boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-          border: '1px solid black',
+          borderRadius: '5px',
+          // boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+          border: '1px solid #4F527D',
           fontFamily: latoFont,
 
-          fontWeight: 'normal',
-          fontSize: '14px',
-          lineHeight: '17px',
-          padding: '16px',
+          fontWeight: 900,
+          fontSize: '16px',
+          height: '50px',
 
-          color: '#3a3a3a',
+          padding: '0 40px',
+
+          color: '#4F527D',
           '&:hover': {
-            backgroundColor: '#fafaf1',
-            borderColor: '#000',
+            borderColor: '#383A5A',
+            backgroundColor: '#fff',
+            color: '#383A5A',
+          },
+          '&:focus': {
+            borderColor: '#383948',
+            color: '#3383948',
+          },
+          '&.Mui-disabled': {
+            borderColor: '#AEB5BC',
+            color: '#AEB5BC',
           },
         },
         textPrimary: {
           color: '#000',
         },
       },
+    },
+    MuiLink: {
+      styleOverrides: {},
     },
     MuiIcon: {
       defaultProps: {
@@ -213,7 +303,8 @@ const theme: Theme = createTheme({
     MuiInputBase: {
       styleOverrides: {
         input: {
-          backgroundColor: '#BCD5E4',
+          backgroundColor: '#F1F3F5',
+          outlineColor: '#F1F3F5',
         },
         colorSecondary: {
           '& input': {
@@ -224,9 +315,19 @@ const theme: Theme = createTheme({
     },
     MuiOutlinedInput: {
       styleOverrides: {
-        root: {borderRadius: 0},
+        root: {
+          borderRadius: 0,
+          '&:hover': {
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#dee1e4',
+            },
+          },
+        },
         notchedOutline: {
-          borderColor: '#6e6e6e',
+          borderColor: '#F1F3F5',
+          '&:hover': {
+            borderColor: '#F1F3F5',
+          },
         },
         input: {
           padding: '9px 14px',
@@ -261,6 +362,12 @@ const theme: Theme = createTheme({
       color: '#3E3E3E',
       lineHeight: '18px',
     },
+    h1: {
+      fontFamily: latoFont,
+      fontSize: '48px',
+      fontWeight: 700,
+      color: gray.A100,
+    },
 
     h3: {
       fontFamily: poppinsFont,
@@ -287,26 +394,38 @@ const theme: Theme = createTheme({
   },
 
   palette: {
-    divider: '#282828',
+    grey: grey,
+    divider: grey[300],
+    accent: {
+      blue: '#47A4DD',
+      purple: '#9499C7',
+      green: '#63A650',
+    },
+    transparency: {
+      purple1: '#EDEEF2',
+      purple2: '#FAFAFB',
+    },
     common: {
       black: '#2E2E2E',
     },
     background: {
       default: '#e5e5e5',
+
       paper: '#fff',
     },
     text: {
-      primary: '#000',
+      primary: grey[900],
       secondary: '#2A2A2A',
     },
     secondary: {
-      main: '#6e818a',
+      main: '#C22E49',
       contrastText: '#E7BDBD', //pale red
     },
     primary: {
-      main: '#2196f3',
+      main: '#4F527D',
       dark: '#BCD5E4',
     },
+
     error: {
       main: '#EE6070',
       light: '#FCD2D2',
