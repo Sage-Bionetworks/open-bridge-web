@@ -191,7 +191,7 @@ async function updateSurveyAssessment(appId: string, assessment: Assessment, tok
     result = await update(assessmentToUpdate)
   } catch (error) {
     if ((error as ExtendedError).statusCode === 409) {
-      assessmentToUpdate.version = assessmentToUpdate.version + 1
+      assessmentToUpdate.version = assessmentToUpdate.version! + 1
 
       result = await update(assessmentToUpdate)
     } else {
