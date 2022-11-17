@@ -1,7 +1,7 @@
 import {Color} from '@mui/material'
 import {grey} from '@mui/material/colors'
 import {createTheme, Theme} from '@mui/material/styles'
-import {CSSProperties} from '@mui/styles'
+import {CSSProperties} from 'react'
 
 type cssGlobalClasses = {
   [key: string]: CSSProperties
@@ -358,27 +358,53 @@ const theme: Theme = createTheme({
     fontSize: 12,
     body1: {
       fontFamily: latoFont,
-      fontSize: '15px',
-      color: '#3E3E3E',
+      fontSize: '14px',
+      fontWeight: 400,
+      color: grey[900],
       lineHeight: '18px',
     },
+    body2: {
+      //large body copy
+      fontFamily: latoFont,
+      fontSize: '20px',
+      fontWeight: 400,
+      color: gray.A100,
+    },
+
     h1: {
       fontFamily: latoFont,
       fontSize: '48px',
       fontWeight: 700,
       color: gray.A100,
     },
+    h2: {
+      fontFamily: latoFont,
+      fontSize: '32px',
+      fontWeight: 700,
+      color: gray.A100,
+    },
 
     h3: {
-      fontFamily: poppinsFont,
-      fontWeight: 600,
+      fontFamily: latoFont,
+      fontSize: '24px',
+      fontWeight: 400,
+      color: gray.A100,
     },
     h4: {
-      fontFamily: poppinsFont,
-      fontWeight: 300,
+      fontFamily: latoFont,
+      fontWeight: 700,
       fontSize: '14px',
       margin: 0,
     },
+    subtitle1: {
+      //Small Copy/Breadcrumb-Card
+      fontFamily: latoFont,
+      fontSize: '14px',
+      fontWeight: 400,
+      color: grey[800],
+      textTransform: 'uppercase',
+    },
+
     subtitle2: {
       fontFamily: playfairDisplayFont,
       fontWeight: 400,
@@ -409,7 +435,7 @@ const theme: Theme = createTheme({
       black: '#2E2E2E',
     },
     background: {
-      default: '#e5e5e5',
+      default: '#fff',
 
       paper: '#fff',
     },
