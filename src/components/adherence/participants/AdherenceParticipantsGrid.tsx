@@ -4,10 +4,16 @@ import {
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
 import {Box, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+
+import {getSessionSymbolName} from '@components/widgets/SessionIcon'
 import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
 import {theme} from '@style/theme'
-import {AdherenceWeeklyReport, ProgressionStatus} from '@typedefs/types'
+import {
+  AdherenceWeeklyReport,
+  ProgressionStatus,
+  SessionDisplayInfo,
+} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {Link} from 'react-router-dom'
@@ -46,7 +52,7 @@ export const useStyles = makeStyles(theme => ({
 
 type AdherenceParticipantsGridProps = {
   studyId: string
-
+  sessions: SessionDisplayInfo[]
   adherenceWeeklyReport: {items: AdherenceWeeklyReport[]; total: number}
 }
 
@@ -73,7 +79,7 @@ const AdherenceCell: FunctionComponent<{
 }
 
 const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProps> =
-  ({studyId, adherenceWeeklyReport}) => {
+  ({studyId, adherenceWeeklyReport, sessions}) => {
     const classes = {...useCommonStyles(), ...useStyles()}
 
     const ref = React.useRef<HTMLDivElement>(null)
@@ -181,7 +187,14 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                                 }
                                 timeZone={item.clientTimeZone}
                                 dayWidth={dayWidthInPx}
-                                sessionSymbol={info.sessionSymbol}
+                                sessionSymbol={
+                                  info.sessionSymbol ||
+                                  getSessionSymbolName(
+                                    sessions.findIndex(
+                                      s => s.sessionGuid === info.sessionGuid
+                                    )
+                                  )
+                                }
                                 numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(
                                   adherenceWeeklyReport.items
                                 )}

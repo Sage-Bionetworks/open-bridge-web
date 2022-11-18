@@ -187,11 +187,12 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
             </Button>
           )}
           <Box display="flex" mt={0} mb={2}>
-            {sessions?.map(s => (
+            {sessions?.map((s, index) => (
               <SessionLegend
                 key={s.sessionGuid}
                 symbolKey={s.sessionSymbol}
                 sessionName={s.sessionName}
+                sessionIndex={index}
               />
             ))}
           </Box>
@@ -203,6 +204,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
               <AdherenceParticipantsGrid
                 studyId={studyId}
                 adherenceWeeklyReport={adherenceWeeklyReport!}
+                sessions={sessions}
               />
 
               <TablePagination

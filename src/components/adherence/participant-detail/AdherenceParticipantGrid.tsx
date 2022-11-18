@@ -2,6 +2,7 @@ import {
   PlotDaysDisplay,
   useGetPlotAndUnitWidth,
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
+import {getSessionSymbolName} from '@components/widgets/SessionIcon'
 import UtilityObject from '@helpers/utility'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
@@ -11,6 +12,7 @@ import {
   AdherenceDetailReport,
   EventStreamDay,
   ParticipantClientData,
+  SessionDisplayInfo,
 } from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
@@ -64,6 +66,7 @@ const useStyles = makeStyles(theme => ({
 type AdherenceParticipantGridProps = {
   adherenceReport: AdherenceDetailReport
   clientData: ParticipantClientData | undefined
+  sessions: SessionDisplayInfo[]
 }
 
 const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({
@@ -90,7 +93,7 @@ const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/SessionCompletionState.java
 
 const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> =
-  ({adherenceReport, clientData}) => {
+  ({adherenceReport, clientData, sessions}) => {
     const ref = React.useRef<HTMLDivElement>(null)
     const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
     const classes = {...useCommonStyles(), ...useStyles()}
@@ -192,7 +195,14 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                             week.adherencePercent
                           )}
                           dayWidth={dayWidthInPx}
-                          sessionSymbol={row.sessionSymbol}
+                          sessionSymbol={
+                            row.sessionSymbol ||
+                            getSessionSymbolName(
+                              sessions.findIndex(
+                                s => s.sessionGuid === row.sessionGuid
+                              )
+                            )
+                          }
                           numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(
                             adherenceReport.weeks
                           )}
