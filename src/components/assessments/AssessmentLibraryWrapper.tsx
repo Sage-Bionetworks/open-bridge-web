@@ -12,7 +12,7 @@ import {NavLink} from 'react-router-dom'
 type AssessmentLibraryWrapperProps = {
   assessments: Assessment[]
   tags?: StringDictionary<number>
-  children: ReactNode[]
+  children: ReactNode | ReactNode[]
   onChangeTags: Function
   onChangeViewMode: (v: ViewType) => void
   viewMode?: ViewType
@@ -54,7 +54,7 @@ const StyledCardGrid = styled(Box, {label: 'StyledCardGrid'})<{layoutType?: View
     ? {
         display: 'grid',
         padding: theme.spacing(0),
-        gridTemplateColumns: `repeat(auto-fill,224px)`,
+        gridTemplateColumns: `repeat(auto-fill,602px)`,
         gridColumnGap: theme.spacing(2),
         justifyContent: 'center',
         gridRowGap: theme.spacing(2),
@@ -125,7 +125,7 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
   const surveyToggle = useFeatureToggles<FeatureToggles>()
 
   return (
-    <StyledOuterContainer isBlue={!token && isAssessmentLibrary}>
+    <StyledOuterContainer isBlue={!token && false /* TODO are they different?*/}>
       {/* Filtering will not be present in the october release */}
       {/* <AssessmentLibraryFilter
         tags={tags}

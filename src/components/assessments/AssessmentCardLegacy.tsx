@@ -87,16 +87,16 @@ const AssessmentCardLegacy: FunctionComponent<AssessmentCardLegacyProps> = ({ass
         <Typography variant="subtitle2" className={classes.tags}>
           {assessment.tags.join(', ')}
         </Typography>
-      </AssessmentImage>
-      <CardContent classes={{root: classes.content}}>
         <Typography gutterBottom className={classes.title}>
           {assessment.title}
         </Typography>
 
         <Typography className={classes.summary}>{assessment.summary}</Typography>
-      </CardContent>
+      </AssessmentImage>
+      <CardContent classes={{root: classes.content}}>scoring, reliability</CardContent>
       <CardActions className={classes.bottom}>
-        <div>{`${assessment.minutesToComplete} min.`} </div>
+        <div> Duration{`${assessment.minutesToComplete} min.`} </div>
+        Age, Language
         <img src={validated} alt="validated" />
       </CardActions>
     </Card>
