@@ -459,4 +459,8 @@ const theme: Theme = createTheme({
   },
 })
 
-export {theme, globals, cssVariables}
+function shouldForwardProp(prop: PropertyKey) {
+  return !prop.toString().startsWith('$')
+}
+
+export {theme, globals, cssVariables, shouldForwardProp}

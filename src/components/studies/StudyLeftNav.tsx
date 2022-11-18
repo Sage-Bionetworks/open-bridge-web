@@ -13,7 +13,9 @@ import {getStudyBuilderSections, StudySection} from './sections'
 
 const drawerWidth = 212
 
-const DrawerStyled = styled(Drawer, {label: 'DrawerStyled'})<{isOpen?: boolean}>(({theme, isOpen}) => ({
+const DrawerStyled = styled(Drawer, {label: 'DrawerStyled', shouldForwardProp: prop => prop !== 'isOpen'})<{
+  isOpen?: boolean
+}>(({theme, isOpen}) => ({
   width: isOpen ? drawerWidth : theme.spacing(6),
 
   flexShrink: 0,
@@ -143,7 +145,6 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
                   isOpen={open}
                   onClick={_.noop}
                   isActive={sectionLink.path === currentSection}
-                  styleProps={classes.listItems}
                   inStudyBuilder={true}>
                   <StyledNavIconContainer
                     isDisabled={sectionLink.path !== 'session-creator' && disabled}
