@@ -1,7 +1,8 @@
-import {Button, ListItem, styled} from '@mui/material'
-import {Theme} from '@mui/system'
+import {Button, ListItem} from '@mui/material'
+import {styled, Theme} from '@mui/system'
 import React from 'react'
-import {latoFont} from '../../style/theme'
+
+import {latoFont, shouldForwardProp} from '@style/theme'
 
 const StyledNonSBListItemStyles = (theme: Theme, isActive?: boolean, isOpen?: boolean) => ({
   color: theme.palette.action.active,
@@ -53,29 +54,40 @@ const StyledDarkListItemStyles = (theme: Theme, isActive?: boolean) => ({
   },
 })
 
-const StyledListItem = styled(ListItem, {label: 'StyledListItem'})<{
-  inStudyBuilder?: boolean
-  isActive?: boolean
-  isOpen?: boolean
-  isDark?: boolean
-}>(({theme, inStudyBuilder, isActive, isOpen, isDark}) => {
-  if (isDark) {
-    return StyledDarkListItemStyles(theme, isActive)
-  } else if (inStudyBuilder) {
-    return StyledSBListItemStyles(theme, isActive, isOpen)
+type StyledListItemProps = {
+  $inStudyBuilder?: boolean
+  $isActive?: boolean
+  $isOpen?: boolean
+  $isDark?: boolean
+}
+const StyledListItem = styled(ListItem, {
+  label: 'StyledListItem',
+  shouldForwardProp: shouldForwardProp,
+})<StyledListItemProps>(({theme, $inStudyBuilder, $isActive, $isOpen, $isDark}) => {
+  if ($isDark) {
+    return StyledDarkListItemStyles(theme, $isActive)
+  } else if ($inStudyBuilder) {
+    return StyledSBListItemStyles(theme, $isActive, $isOpen)
   }
-  return StyledNonSBListItemStyles(theme, isActive, isOpen)
+  return StyledNonSBListItemStyles(theme, $isActive, $isOpen)
 })
 
-const StyledLinkButton = styled(Button, {label: 'StyledLinkButton'})<{isActive?: boolean; isOpen?: boolean}>({
+//  ,
+
+const StyledLinkButton = styled(Button, {
+  label: 'StyledLinkButton',
+  shouldForwardProp: shouldForwardProp,
+})<{$isActive?: boolean; $isOpen?: boolean}>({
   fontFamily: latoFont,
   justifyContent: 'flex-start',
   //color: '#282828',
   padding: '0px',
   width: '100%',
   textDecoration: 'none',
+  height: 'auto',
   '&:hover': {
     backgroundColor: 'inherit',
+    height: 'auto',
   },
 })
 
@@ -85,7 +97,7 @@ export interface SideBarListItemProps {
   onClick: Function
   children: React.ReactNode
   variant?: 'light' | 'dark'
-  styleProps?: string
+
   inStudyBuilder?: boolean
 }
 
@@ -95,7 +107,7 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
   onClick,
   children,
   variant = 'light',
-  styleProps,
+
   inStudyBuilder,
 }: SideBarListItemProps) => {
   const handleClick = () => {
@@ -104,7 +116,7 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
     }
   }
   return (
-    <StyledListItem isActive={isActive} isOpen={isOpen} inStudyBuilder={inStudyBuilder} isDark={variant === 'dark'}>
+    <StyledListItem $isActive={isActive} $isOpen={isOpen} $inStudyBuilder={inStudyBuilder} $isDark={variant === 'dark'}>
       <StyledLinkButton onClick={handleClick}>{children}</StyledLinkButton>
     </StyledListItem>
   )

@@ -16,7 +16,7 @@ import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_par
 import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import TablePagination from '@components/widgets/pagination/TablePagination'
-import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
+import NonDraftHeaderFunctionComponent from '@components/widgets/StudyWithPhaseImage'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import {Box, Button, CircularProgress, Container, Tab, Tabs} from '@mui/material'

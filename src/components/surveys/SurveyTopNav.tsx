@@ -1,5 +1,5 @@
 import ParticipantsIcon from '@assets/group_participants_icon.svg'
-import Logo from '@assets/logo_mtb.svg'
+import Logo from '@assets/logo_mtb_large.svg'
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import MobileDrawerMenuHeader from '@components/widgets/MobileDrawerMenuHeader'
 import Utility from '@helpers/utility'

@@ -21,7 +21,7 @@ const routes = [
 
   {
     path: '/assessments',
-    name: 'ASSESSMENT LIBRARY',
+    name: 'Assessment Library',
     Component: AssessmentLibrary,
     exact: false,
   },

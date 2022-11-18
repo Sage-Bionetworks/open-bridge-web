@@ -1,9 +1,9 @@
-import Logo from '@assets/logo_mtb.svg'
+import LogoLarge from '@assets/logo_mtb_large.svg'
+import Logo from '@assets/logo_mtb_small.svg'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import MenuIcon from '@mui/icons-material/Menu'
-import {Divider, Drawer, Hidden, IconButton, Menu, MenuItem, Paper} from '@mui/material'
+import {Box, Divider, Drawer, Hidden, IconButton, Menu, MenuItem, styled, Toolbar} from '@mui/material'
 import Button from '@mui/material/Button'
-import Toolbar from '@mui/material/Toolbar'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import {NavRouteType, UserSessionData} from '@typedefs/types'
@@ -16,40 +16,49 @@ import MobileDrawerMenuHeader from './MobileDrawerMenuHeader'
 
 const drawerWidth = '320px'
 
-const useStyles = makeStyles(theme => ({
-  toolbarWrapper: {
-    height: '104px',
+const StyledAppNav = styled(Box, {label: 'StyledAppTopNav', shouldForwardProp: prop => prop !== 'hasSubNav'})<{
+  hasSubNav?: boolean
+}>(({theme, hasSubNav}) => ({
+  height: hasSubNav ? 'auto' : '122px',
+  marginBottom: '4px',
+
+  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.05)',
+  padding: hasSubNav ? theme.spacing(0, 4) : theme.spacing(0, 5),
+
+  borderBottom: hasSubNav ? 'none: ' : '1px solid #EAEAEA',
+  '&  div.first-of-type': {
     display: 'flex',
-    borderBottom: '1px solid #EAEAEA',
+
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: theme.spacing(0, 3),
   },
+}))
+const StyledToolBar = styled(Toolbar, {label: 'StyledToolBar', shouldForwardProp: prop => prop !== 'hasSubNav'})<{
+  hasSubNav?: boolean
+}>(({theme, hasSubNav}) => ({
+  padding: hasSubNav ? theme.spacing(3, 2) : theme.spacing(4, 2),
+  justifyContent: 'space-between',
+  overflowX: 'auto',
+  minHeight: '40px',
+}))
 
-  toolbar: {
-    padding: theme.spacing(4, 2),
-    justifyContent: 'space-between',
-    overflowX: 'auto',
-    minHeight: '40px',
-  },
-  toolbarLink: {
-    padding: theme.spacing(1),
-    textDecoration: 'none',
+const StyledToolBarLink = styled(NavLink, {label: 'StyledToolBarLink'})(({theme}) => ({
+  padding: theme.spacing(1),
+  textDecoration: 'none',
 
-    flexShrink: 0,
-    //agendel todo Lato
-    fontFamily: latoFont,
-    fontStyle: 'normal',
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
-    color: '#393434',
-  },
-  selectedLink: {
-    fontWeight: 'bold',
-    color: '#393434;',
-  },
+  flexShrink: 0,
+  //agendel todo Lato
+  fontFamily: latoFont,
+  fontStyle: 'normal',
+  fontWeight: 400,
+  fontSize: '18px',
+  lineHeight: '18px',
+  color: '#353A3F',
+}))
+
+const useStyles = makeStyles(theme => ({
+  selectedLink: {},
   menuButton: {
     marginRight: theme.spacing(2),
     float: 'right',
@@ -59,11 +68,7 @@ const useStyles = makeStyles(theme => ({
       clear: 'both',
     },
   },
-  login: {
-    borderLeft: '1px solid #EAEAEA',
-    padding: theme.spacing(4, 2),
-    margin: theme.spacing(-4, 0, -4, 2),
-  },
+
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
@@ -165,27 +170,29 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type AppTopNavProps = {
+  hasSubNav?: boolean
   routes: NavRouteType[]
   appId: string
   sessionData?: UserSessionData
+  children?: React.ReactNode
 }
 
 const MenuLinks: FunctionComponent<
   AppTopNavProps & {
-    className: string
-    activeClassName: string
     setIsMobileOpen: Function
   }
-> = ({routes, className, activeClassName, setIsMobileOpen}) => {
+> = ({routes, setIsMobileOpen}) => {
   let links = routes.map(route => (
-    <NavLink
+    <StyledToolBarLink
       to={route.path}
       key={route.name}
-      className={className}
-      activeClassName={activeClassName}
+      activeStyle={{
+        fontWeight: 800,
+        color: '#4F527D',
+      }}
       onClick={() => setIsMobileOpen(false)}>
       {route.name}
-    </NavLink>
+    </StyledToolBarLink>
   ))
 
   return <>{links}</>
@@ -193,15 +200,13 @@ const MenuLinks: FunctionComponent<
 
 const MenuLinksRhs: FunctionComponent<
   AppTopNavProps & {
-    className: string
-    activeClassName: string
     isRightHandSide?: boolean
     setIsMobileOpen: Function
   }
-> = ({routes, sessionData, className, activeClassName, children, isRightHandSide, setIsMobileOpen}) => {
+> = ({routes, sessionData, children, isRightHandSide, setIsMobileOpen}) => {
   const classes = useStyles()
 
-  function getClassName(routeName: String, isRightHandSide: boolean) {
+  /*function getClassName(routeName: String, isRightHandSide: boolean) {
     if (!isRightHandSide) return className
     if (routeName === 'CREATE ACCOUNT') {
       return clsx(className, classes.drawerAuthOptions, classes.createAccountLink)
@@ -210,27 +215,21 @@ const MenuLinksRhs: FunctionComponent<
       return clsx(className, classes.drawerProfileOptionsDisabled)
     }
     return className
-  }
+  }*/
 
   let links: React.ReactNode[] = routes.map(route => {
-    if (route.name === 'Edit Profile' || route.name === 'Settings') {
-      return (
-        <div key={`rhs_${route.name}`} className={getClassName(route.name, isRightHandSide || false)}>
-          {route.name}
-        </div>
-      )
-    } else {
-      return (
-        <NavLink
-          to={route.path}
-          key={`rhs_${route.name}`}
-          className={getClassName(route.name, isRightHandSide || false)}
-          activeClassName={activeClassName}
-          onClick={() => setIsMobileOpen(false)}>
-          {route.name}
-        </NavLink>
-      )
-    }
+    return (
+      <StyledToolBarLink
+        to={route.path}
+        key={`rhs_${route.name}`}
+        activeStyle={{
+          fontWeight: 800,
+          color: '#4F527D',
+        }}
+        onClick={() => setIsMobileOpen(false)}>
+        {route.name}
+      </StyledToolBarLink>
+    )
   })
   if (Array.isArray(children)) {
     if (sessionData?.token) {
@@ -243,7 +242,14 @@ const MenuLinksRhs: FunctionComponent<
   return <>{links}</>
 }
 
-const AppTopNav: FunctionComponent<AppTopNavProps> = ({routes, appId, sessionData, ...props}: AppTopNavProps) => {
+const AppTopNav: FunctionComponent<AppTopNavProps> = ({
+  routes,
+  appId,
+  sessionData,
+  hasSubNav,
+  children,
+  ...props
+}: AppTopNavProps) => {
   const classes = useStyles()
   const location = useLocation()
 
@@ -289,49 +295,57 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({routes, appId, sessionDat
         </IconButton>
       </Hidden>
       <Hidden lgDown>
-        <Paper className={classes.toolbarWrapper} elevation={0}>
-          <img src={Logo} key="Mobile Toolbox" className={classes.toolbar} alt="logo" />
-          <Toolbar component="nav" variant="dense" disableGutters className={classes.toolbar}>
-            <MenuLinks
-              appId={appId}
-              className={classes.toolbarLink}
-              activeClassName={classes.selectedLink}
-              routes={routes.filter(route => route.name && !route.isRhs)}
-              setIsMobileOpen={setIsMobileOpen}
-            />
-          </Toolbar>
-          <Toolbar component="nav" variant="dense" disableGutters className={classes.toolbar}>
-            {!sessionData && (
-              <MenuLinksRhs
-                appId={appId}
-                className={classes.toolbarLink}
-                activeClassName={classes.selectedLink}
-                routes={routes.filter(route => route.name && route.isRhs)}
-                sessionData={sessionData}
-                setIsMobileOpen={setIsMobileOpen}>
-                <></>
-                {window.location.pathname !== '/' && (
-                  <div className={classes.login}>
-                    <Button
-                      disabled={isLoginButtonDisabled}
-                      variant="text"
-                      className={classes.toolbarLink}
-                      href={'/sign-in'}>
-                      LOG IN
-                    </Button>
+        <StyledAppNav hasSubNav={hasSubNav}>
+          <Box
+            sx={{
+              display: 'flex',
+
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <img src={hasSubNav ? Logo : LogoLarge} key="Mobile Toolbox" alt="logo" />
+            <Box sx={{display: 'flex'}}>
+              <StyledToolBar disableGutters hasSubNav={hasSubNav}>
+                <MenuLinks
+                  appId={appId}
+                  routes={routes.filter(route => route.name && !route.isRhs)}
+                  setIsMobileOpen={setIsMobileOpen}
+                />
+              </StyledToolBar>
+              <StyledToolBar disableGutters hasSubNav={hasSubNav}>
+                {!sessionData && (
+                  <MenuLinksRhs
+                    appId={appId}
+                    routes={routes.filter(route => route.name && route.isRhs)}
+                    sessionData={sessionData}
+                    setIsMobileOpen={setIsMobileOpen}>
+                    <></>
+                    {window.location.pathname !== '/' && (
+                      <div>
+                        <Button
+                          disabled={isLoginButtonDisabled}
+                          variant="text"
+                          sx={{fontSize: '15px', lineHeight: '18px', color: '#393434'}}
+                          href={'/sign-in'}>
+                          LOG IN
+                        </Button>
+                      </div>
+                    )}
+                  </MenuLinksRhs>
+                )}
+                {sessionData && (
+                  <div onClick={event => setMenuAnchor(event.currentTarget)} style={{paddingLeft: '8px'}}>
+                    <div className={clsx(classes.userCircle, !!menuAnchor && classes.userCircleActive)}>
+                      {getInitials()}
+                    </div>
                   </div>
                 )}
-              </MenuLinksRhs>
-            )}
-            {sessionData && (
-              <div onClick={event => setMenuAnchor(event.currentTarget)} style={{paddingLeft: '8px'}}>
-                <div className={clsx(classes.userCircle, !!menuAnchor && classes.userCircleActive)}>
-                  {getInitials()}
-                </div>
-              </div>
-            )}
-          </Toolbar>
-        </Paper>
+              </StyledToolBar>
+            </Box>
+          </Box>
+          {children}
+        </StyledAppNav>
       </Hidden>
       <nav className={classes.drawer}>
         <Drawer
@@ -350,31 +364,37 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({routes, appId, sessionDat
             type={sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'}></MobileDrawerMenuHeader>
           <MenuLinks
             appId={appId}
-            className={classes.drawerMenuItem}
-            activeClassName={classes.drawerMenuSelectedLink}
+            //  className={classes.drawerMenuItem}
+
             routes={routes.filter(route => route.name && !route.isRhs)}
             setIsMobileOpen={setIsMobileOpen}
           />
           {sessionData && <Divider className={classes.divider}></Divider>}
+          {children && (
+            <>
+              {children}
+              <Divider className={classes.divider}></Divider>
+            </>
+          )}
           <MenuLinksRhs
             appId={appId}
-            className={classes.drawerMenuItem}
-            activeClassName={classes.drawerMenuSelectedLink}
+            //  className={classes.drawerMenuItem}
+
             routes={routes.filter(route => route.name && route.isRhs)}
             sessionData={sessionData}
             isRightHandSide={true}
             setIsMobileOpen={setIsMobileOpen}>
             <Logout
               element={
-                <Button variant="text" className={clsx(classes.drawerMenuItem, classes.drawerProfileOptions)}>
+                <Button variant="contained" sx={{width: '150px', margin: '0 auto'}}>
                   Sign out
                 </Button>
               }></Logout>
             {window.location.pathname !== '/' && (
               <Button
+                variant="contained"
+                sx={{width: '150px', margin: '20px auto'}}
                 disabled={isLoginButtonDisabled}
-                variant="text"
-                className={clsx(classes.drawerAuthOptions, classes.drawerMenuItem)}
                 href={'/sign-in'}>
                 Log in
               </Button>

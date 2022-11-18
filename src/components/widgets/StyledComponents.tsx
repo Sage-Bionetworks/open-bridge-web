@@ -5,6 +5,7 @@ import {
   InputLabel,
   Select,
   styled,
+  Theme,
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material'
@@ -278,3 +279,34 @@ export const StyledToggleButton = styled(ToggleButton)(({theme}) => ({
       },
     },
 }))
+
+export const getStyledToolbarLinkStyle = (theme: Theme) => ({
+  padding: theme.spacing(2, 0, 1.5, 0),
+  margin: theme.spacing(0, 3),
+
+  display: 'flex',
+  alignItems: 'center',
+  fontFamily: latoFont,
+  flexGrow: 1,
+
+  fontSize: '16px',
+  fontWeight: 900,
+
+  textDecoration: 'none',
+  color: 'inherit',
+  flexShrink: 0,
+  '& svg': {
+    marginRight: theme.spacing(1),
+    fontSize: '20px',
+  },
+
+  '&:last-child': {
+    paddingRight: theme.spacing(0.5),
+    paddingLeft: theme.spacing(0.5),
+  },
+
+  '& .selectedLink': {
+    borderBottom: '4px solid #9499C7',
+    paddingBottom: theme.spacing(2),
+  },
+})

@@ -20,9 +20,10 @@ const Wrapper: FunctionComponent<RouteComponentProps & {sessionData: UserSession
     id: string
     section: StudySection
   }>()
+  const pathName = useLocation().pathname
+  const isAssessmentPath = pathName.includes(`/assessments/${id}`)
+  const isSurveyPath = pathName.includes(`/surveys/${id}`)
 
-  const isAssessmentPath = useLocation().pathname.includes(`/assessments/${id}`)
-  const isSurveyPath = useLocation().pathname.includes(`/surveys/${id}`)
   const notStudyId = isAssessmentPath || isSurveyPath
   const {data: study, error: studyError} = useStudy(notStudyId ? undefined : id)
   const {data: survey, error: surveyError} = useSurveyAssessment(true, isSurveyPath ? id : undefined)
@@ -38,13 +39,19 @@ const Wrapper: FunctionComponent<RouteComponentProps & {sessionData: UserSession
 
   return (
     <>
-      {isSurveyPath ? (
-        <SurveyTopNav survey={survey} error={surveyError}></SurveyTopNav>
-      ) : !study ? (
-        <TopNav routes={PrivateRoutes} sessionData={sessionData} appId={sessionData.appId} />
-      ) : (
-        <StudyTopNav study={study} error={studyError} currentSection={studySection}></StudyTopNav>
-      )}
+      <TopNav
+        routes={PrivateRoutes}
+        sessionData={sessionData}
+        appId={sessionData.appId}
+        hasSubNav={pathName.includes('/surveys') || pathName.includes('/studies')}>
+        {isSurveyPath ? (
+          <SurveyTopNav survey={survey} error={surveyError}></SurveyTopNav>
+        ) : study ? (
+          <StudyTopNav study={study} error={studyError} currentSection={studySection}></StudyTopNav>
+        ) : (
+          <></>
+        )}
+      </TopNav>
       <main>{children}</main>
     </>
   )
