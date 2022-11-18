@@ -199,16 +199,23 @@ const AdherenceParticipant: FunctionComponent<
             {enrollment ? enrollment.healthCode : ''}
 
             <Box display="flex" mt={4} mb={2}>
-              {participantSessions?.map(s => (
+              {participantSessions?.map((s, index) => (
                 <SessionLegend
                   key={s.sessionGuid}
                   symbolKey={s.sessionSymbol}
+                  sessionIndex={index}
                   sessionName={s.sessionName}
                 />
               ))}
             </Box>
           </Box>
-          {<AdherenceParticipantGrid adherenceReport={adherenceReport!} clientData={participant?.clientData} />}
+          {
+            <AdherenceParticipantGrid
+              adherenceReport={adherenceReport!}
+              clientData={participant?.clientData}
+              sessions={participantSessions}
+            />
+          }
           <Box display="flex">
             <Button
               className={classes.editEventDate}

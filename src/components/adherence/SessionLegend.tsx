@@ -1,8 +1,9 @@
+import {getSessionSymbolName} from '@components/widgets/SessionIcon'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import {AdherenceWindowState} from '@typedefs/types'
-import React, {FunctionComponent} from 'react'
+import {FunctionComponent} from 'react'
 import AdherenceSessionIcon from './participant-detail/AdherenceSessionIcon'
 
 const useStyles = makeStyles(theme => ({
@@ -23,7 +24,8 @@ const useStyles = makeStyles(theme => ({
 const SessionLegend: FunctionComponent<{
   symbolKey: string
   sessionName: string
-}> = ({symbolKey, sessionName}) => {
+  sessionIndex: number
+}> = ({symbolKey, sessionName, sessionIndex}) => {
   const classes = useStyles()
   const arr: {label: string; state: AdherenceWindowState}[] = [
     {label: 'Upcoming', state: 'not_yet_available'},
@@ -37,7 +39,7 @@ const SessionLegend: FunctionComponent<{
       {arr.map(e => (
         <div key={e.label}>
           <AdherenceSessionIcon
-            sessionSymbol={symbolKey}
+            sessionSymbol={symbolKey || getSessionSymbolName(sessionIndex)}
             windowState={e.state}
             isInLegend={true}>
             {e.label}
