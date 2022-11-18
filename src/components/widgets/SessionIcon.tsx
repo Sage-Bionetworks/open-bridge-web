@@ -155,6 +155,11 @@ const SessionSymbolsArray: any[] = [
   <S20c> </S20c>,
 ]
 
+export function getSessionSymbolName(index: number): string {
+  const keysArray = Array.from(SessionSymbols.keys())
+  return keysArray[index]
+}
+
 export const SessionSymbols = new Map([
   ['Session1Circle', [<S01cg />, <S01p />, <S01i />, <S01pR />, <S01iR />]],
   ['Session2Triangle', [<S02cg />, <S02p />, <S02i />, <S02pR />, <S02iR />]],
