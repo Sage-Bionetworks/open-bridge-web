@@ -1,4 +1,3 @@
-import {ReactComponent as CheckBlue} from '@assets/adherence/round_check_blue.svg'
 import {Box, styled, Typography} from '@mui/material'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import {ParticipantClientData, ParticipantRequestInfo} from '@typedefs/types'
@@ -87,9 +86,9 @@ const AdditionalAdherenceParticipantInfo: React.FunctionComponent<AdditionalAdhe
                   <Td>
                     Burst {index + 1}&nbsp; Earnings:&nbsp;&nbsp; {e}
                   </Td>
-                  <Td width="20px">
+                  {/*<Td width="20px">
                     <CheckBlue />
-                  </Td>
+              </Td>*/}
                 </tr>
               ))}
             </Table>
