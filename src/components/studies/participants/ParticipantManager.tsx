@@ -18,7 +18,7 @@ import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyWithPhaseImage'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import Utility from '@helpers/utility'
+import {default as Utility} from '@helpers/utility'
 import {Box, Button, CircularProgress, Container, Tab, Tabs} from '@mui/material'
 import Alert from '@mui/material/Alert'
 import {JOINED_EVENT_ID} from '@services/event.service'
@@ -300,7 +300,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               variant="standard"
               onChange={handleTabChange}
               TabIndicatorProps={{hidden: true}}>
-              <GoToDownloadPageLinkSC />
+              {!Utility.isArcApp() && <GoToDownloadPageLinkSC />}
               {TAB_DEFs.map((tabDef, index) => (
                 <Tab
                   key={`tab_${tabDef.label}`}
@@ -336,7 +336,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 collapseButton={<CollapseIcon className={clsx(tab === 'TEST' && classes.collapsedAddTestUser)} />}
                 onToggleClick={(open: boolean) => setIsAddOpen(open)}
                 expandButton={
-                  tab === 'ACTIVE' ? (
+                  Utility.isArcApp() ? (
+                    <></>
+                  ) : tab === 'ACTIVE' ? (
                     <AddParticipantsIcon title="Add Participant" />
                   ) : (
                     <AddTestParticipantsIconSC title="Add Test Participant" />
