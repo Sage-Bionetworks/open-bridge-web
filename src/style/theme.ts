@@ -316,6 +316,7 @@ const theme: Theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
+          backgroundColor: '#F1F3F5',
           borderRadius: 0,
           '&:hover': {
             '& .MuiOutlinedInput-notchedOutline': {

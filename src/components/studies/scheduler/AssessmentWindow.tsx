@@ -1,41 +1,11 @@
-import {Box, IconButton, Paper} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import DeleteIcon from '@mui/icons-material/Close'
-import clsx from 'clsx'
+import SelectWithEnum from '@components/widgets/SelectWithEnum'
+import {Box, FormGroup, InputLabel, Paper} from '@mui/material'
+import {theme} from '@style/theme'
+import {AssessmentWindow as AssessmentWindowType, HDWMEnum} from '@typedefs/scheduling'
 import React from 'react'
-import {AssessmentWindow as AssessmentWindowType, HDWMEnum} from '../../../types/scheduling'
-import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
-import SchedulingFormSection from './SchedulingFormSection'
+import {StyledSmallSectionHeader} from './SharedComponents'
 import {getDropdownTimeItems} from './utility'
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    backgroundColor: '#ECF1F4',
-    paddingBottom: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  windowNumber: {
-    backgroundColor: theme.palette.primary.dark,
-    height: theme.spacing(6),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: theme.spacing(6),
-    color: '#000',
-  },
-  smallLabel: {
-    minWidth: '200px',
-    maxWidth: '300px',
-    '& span': {
-      display: 'block',
-      fontSize: '12px',
-    },
-  },
-  redBorder: {
-    border: `1px solid ${theme.palette.error.main}`,
-  },
-}))
 
 export interface AssessmentWindowProps {
   window: AssessmentWindowType
@@ -52,25 +22,16 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   index,
   errorText,
 }: AssessmentWindowProps) => {
-  const classes = useStyles()
   return (
-    <Paper className={clsx(classes.root, errorText && classes.redBorder)} elevation={2}>
-      <Box position="relative">
-        <Box className={classes.windowNumber}>{index + 1}.</Box>
-        <IconButton
-          style={{position: 'absolute', top: '12px', right: '16px'}}
-          edge="end"
-          size="small"
-          onClick={() => onDelete()}>
-          <DeleteIcon></DeleteIcon>
-        </IconButton>
-      </Box>
-      <Box mx="auto" width="auto">
-        <SchedulingFormSection
-          label={'Start'}
-          variant="small"
-          border={false}
-          style={{margin: '24px 0px 0px 0', paddingBottom: 0}}>
+    <Paper
+      sx={{margin: theme.spacing(2, 0), border: errorText ? `1px solid ${theme.palette.error.main}` : 'none'}}
+      elevation={2}>
+      <StyledSmallSectionHeader onClick={() => onDelete()} title={`Session Window ${index + 1}`} />
+
+      <Box sx={{display: 'flex', padding: theme.spacing(0, 3, 2, 3)}}>
+        <FormGroup row={true} style={{alignItems: 'center'}}>
+          <InputLabel htmlFor="from"> Start:&nbsp;&nbsp;</InputLabel>
+
           <SelectWithEnum
             value={window.startTime}
             style={{marginLeft: 0}}
@@ -82,13 +43,10 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
                 startTime: e.target.value as string,
               })
             }></SelectWithEnum>
-        </SchedulingFormSection>
+        </FormGroup>
 
-        <SchedulingFormSection
-          label={'Expire after'}
-          variant="small"
-          border={false}
-          style={{margin: '0px 0px 16px 0px', paddingBottom: 0}}>
+        <FormGroup row={true} style={{alignItems: 'center'}}>
+          <InputLabel htmlFor="expire">Expire after: &nbsp;&nbsp;</InputLabel>
           <Box display="inline-flex" alignItems="center">
             <Duration
               onChange={e =>
@@ -99,12 +57,13 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               }
               durationString={window.expiration || ''}
               unitDefault={HDWMEnum.H}
+              id="expire"
               unitLabel="Expire after"
               numberLabel="expiration"
               placeHolder="hours"
               unitData={HDWMEnum}></Duration>
           </Box>
-        </SchedulingFormSection>
+        </FormGroup>
       </Box>
     </Paper>
   )

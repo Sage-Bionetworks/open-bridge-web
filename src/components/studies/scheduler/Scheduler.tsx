@@ -571,7 +571,9 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
           />
         </DialogContent>
         <DialogActions className={classes.dialogAction}>
-          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>Cancel</DialogButtonSecondary>
+          <Button variant="outlined" onClick={() => setOpenModal(undefined)}>
+            Cancel
+          </Button>
 
           <Button
             variant="contained"

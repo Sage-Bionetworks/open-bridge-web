@@ -1,7 +1,16 @@
+import {styled} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {ReactNode} from 'react'
-import {latoFont, poppinsFont} from '../../../style/theme'
+
+const StyledLabel = styled('label', {label: 'StyledLabel'})(({theme}) => ({
+  fontWeight: 700,
+  fontSize: '14px',
+  lineHeight: '16px',
+  display: 'block',
+}))
+
+const StyledSection = styled('section', {label: 'StyledSection'})(({theme}) => ({}))
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -14,7 +23,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   formControl: {
-    flexDirection: 'row',
+    /*  flexDirection: 'row',
     textAlign: 'left',
 
     display: 'flex',
@@ -25,11 +34,11 @@ const useStyles = makeStyles(theme => ({
     '&.small': {
       alignItems: 'center',
       margin: '0 40px',
-    },
+    },*/
   },
   label: {
-    paddingTop: theme.spacing(1),
-    paddingRight: theme.spacing(4),
+    /* paddingTop: theme.spacing(1),
+   // paddingRight: theme.spacing(4),
     lineHeight: '27px',
     width: theme.spacing(28),
 
@@ -59,7 +68,7 @@ const useStyles = makeStyles(theme => ({
           width: 0,
         },
       },
-    },
+    },*/
   },
   disabled: {
     opacity: 0.3,
@@ -96,7 +105,7 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
 
   return (
     <>
-      <section
+      <StyledSection
         className={clsx(
           classes.root,
           variant === 'small' && 'small',
@@ -107,17 +116,17 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
         <div
           style={{justifyContent: justifyContent}}
           className={clsx(classes.formControl, variant === 'small' && 'small')}>
-          <label
+          <StyledLabel
             className={clsx(
               /*typeof label === 'string'*/ true && classes.label,
               variant === 'small' && 'small',
               isCollapseLabelSmall && 'collapseLabelSmall'
             )}>
             {!isHideLabel ? label : ''}
-          </label>
+          </StyledLabel>
           {children}
         </div>
-      </section>
+      </StyledSection>
     </>
   )
 }
