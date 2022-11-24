@@ -1,7 +1,7 @@
 import '@mui/material/styles'
 declare module '@super-effective/react-color-picker'
 declare module 'react-json-to-csv'
-declare module 'react-pluralize'
+
 declare module 'react-imask'
 
 declare module '@mui/material/styles' {
@@ -37,3 +37,5 @@ declare module '@mui/material/styles' {
     transparency: TransparencyPaletteColor
   }
 }
+
+declare module 'react-pluralize'

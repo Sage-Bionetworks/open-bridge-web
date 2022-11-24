@@ -479,6 +479,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                   onClick={() => onSave(true)}
                   sx={{
                     marginTop: '-1px',
+                    marginLeft: '16px',
                   }}>
                   {' '}
                   Save Changes
