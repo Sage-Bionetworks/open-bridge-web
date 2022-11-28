@@ -1,5 +1,4 @@
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
-import StudyIdWithPhaseImage from '@components/widgets/StudyIdWithPhaseImage'
 import {Alert, Box, Container} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useSchedule} from '@services/scheduleHooks'
@@ -27,6 +26,7 @@ import IntroInfo from './scheduler/IntroInfo'
 import Scheduler from './scheduler/Scheduler'
 import {isSectionEditableWhenLive, StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
+import StudyBuilderHeader from './StudyBuilderHeader'
 import StudyLeftNav from './StudyLeftNav'
 
 const subtitles: StringDictionary<string> = {
@@ -279,9 +279,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                         : editabilityBannerType?.displayText[0]!
                     }></AlertBanner>
                 )}
-                <Box pl={8} pt={2}>
-                  <StudyIdWithPhaseImage study={study} excludedPhase={undefined} />
-                </Box>
+
+                {study && <StudyBuilderHeader study={study} />}
                 <Box pt={2} pl={8}>
                   <MTBHeadingH1 sx={{textAlign: 'left'}}>{subtitles[section as string]}</MTBHeadingH1>
                 </Box>

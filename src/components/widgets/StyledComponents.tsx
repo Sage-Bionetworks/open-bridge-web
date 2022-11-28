@@ -1,16 +1,17 @@
 import {
   Button,
   FormControlLabel,
-  InputBase,
   InputLabel,
   Select,
   styled,
+  TextField,
+  Theme,
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material'
 import Alert from '@mui/material/Alert'
 import withStyles from '@mui/styles/withStyles'
-import {latoFont, poppinsFont} from '../../style/theme'
+import {latoFont} from '../../style/theme'
 
 export const ButtonWithSelectButton = withStyles(theme => ({
   root: {
@@ -146,9 +147,12 @@ export const DialogButtonPrimary = withStyles(theme => ({
 }))(Button)
 
 export const SimpleTextLabel = styled(InputLabel, {label: 'SimpleTextLabel'})(({theme}) => ({
-  fontFamily: [poppinsFont, 'Roboto'].join(','),
-  fontWeight: 500,
+  fontWeight: 700,
   fontSize: '14px',
+  lineHeight: '16px',
+  display: 'flex',
+  alignItems: 'center',
+  color: '#4A5056',
   transform: 'none',
   maxWidth: '100%',
   paddingLeft: theme.spacing(0),
@@ -158,14 +162,14 @@ export const SimpleTextLabel = styled(InputLabel, {label: 'SimpleTextLabel'})(({
   },
 }))
 
-export const SimpleTextInput = styled(InputBase, {label: 'SimpleTextInput'})(({theme}) => ({
-  border: `1px solid ${theme.palette.text.secondary}`,
-  backgroundColor: '#fff',
+export const SimpleTextInput = styled(TextField, {label: 'SimpleTextInput'})(({theme}) => ({
+  // border: `1px solid ${theme.palette.text.secondary}`,
+  //backgroundColor: '#fff',
   'label + &': {
-    marginTop: theme.spacing(2.5),
+    marginTop: theme.spacing(3),
   },
   '&.Mui-focused': {
-    borderColor: theme.palette.primary.light,
+    // borderColor: theme.palette.primary.light,
   },
   '.error > &': {
     borderColor: theme.palette.error.main,
@@ -186,7 +190,7 @@ export const SimpleTextInput = styled(InputBase, {label: 'SimpleTextInput'})(({t
     borderRadius: '1px',
     // borderRadius: 0,
     position: 'relative',
-    backgroundColor: theme.palette.common.white,
+    // backgroundColor: theme.palette.common.white,
     fontSize: '14px',
     width: 'auto',
     padding: '10px 12px',
@@ -278,3 +282,34 @@ export const StyledToggleButton = styled(ToggleButton)(({theme}) => ({
       },
     },
 }))
+
+export const getStyledToolbarLinkStyle = (theme: Theme) => ({
+  padding: theme.spacing(2, 0, 1.5, 0),
+  margin: theme.spacing(0, 3),
+
+  display: 'flex',
+  alignItems: 'center',
+  fontFamily: latoFont,
+  flexGrow: 1,
+
+  fontSize: '16px',
+  fontWeight: 900,
+
+  textDecoration: 'none',
+  color: 'inherit',
+  flexShrink: 0,
+  '& svg': {
+    marginRight: theme.spacing(1),
+    fontSize: '20px',
+  },
+
+  '&:last-child': {
+    paddingRight: theme.spacing(0.5),
+    paddingLeft: theme.spacing(0.5),
+  },
+
+  '& .selectedLink': {
+    borderBottom: '4px solid #9499C7',
+    paddingBottom: theme.spacing(2),
+  },
+})

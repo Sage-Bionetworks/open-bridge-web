@@ -34,6 +34,7 @@ import {useStudy, useUpdateStudyDetail} from '../../../services/studyHooks'
 import AssessmentList from './AssessmentList'
 import ConfigureBurstTab from './ConfigureBurstTab'
 import Duration from './Duration'
+import OpenSessionHeader from './OpenSessionHeader'
 import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {ActionTypes, SessionScheduleAction} from './scheduleActions'
@@ -92,13 +93,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       border: 0,
       opacity: 0.7,
     },
-    assessments: {
-      width: '286px',
-      flexGrow: 0,
-      flexShrink: 0,
-      padding: theme.spacing(1),
-      backgroundColor: theme.palette.grey[100],
-    },
+
     row: {
       display: 'flex',
       flexDirection: 'row',
@@ -203,6 +198,13 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
   React.useEffect(() => {
     if (_schedule) {
       console.log('----setting schedule----')
+      //if there is an open study session -- update it with the new schedule
+      if (openStudySession) {
+        const session = _schedule.sessions.find(s => s.guid === openStudySession.guid)
+        if (session) {
+          setOpenStudySession(session)
+        }
+      }
       setSchedule({..._schedule})
     }
   }, [_schedule])
@@ -477,6 +479,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                   onClick={() => onSave(true)}
                   sx={{
                     marginTop: '-1px',
+                    marginLeft: '16px',
                   }}>
                   {' '}
                   Save Changes
@@ -569,7 +572,9 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
           />
         </DialogContent>
         <DialogActions className={classes.dialogAction}>
-          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>Cancel</DialogButtonSecondary>
+          <Button variant="outlined" onClick={() => setOpenModal(undefined)}>
+            Cancel
+          </Button>
 
           <Button
             variant="contained"
@@ -581,6 +586,16 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
         </DialogActions>
       </Dialog>
       <Dialog open={openStudySession !== undefined} maxWidth="lg" scroll="body">
+        <DialogTitle sx={{borderBottom: '1px solid #EAECEE', padding: theme.spacing(5, 5, 2, 5)}}>
+          <OpenSessionHeader session={openStudySession!} />
+          <IconButton
+            aria-label="close"
+            className={classes.closeModalButton}
+            onClick={() => onCancelSessionUpdate()}
+            size="large">
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
         <DialogContent style={{padding: 0}}>
           {openStudySession && !isReadOnly && (
             <Box
@@ -599,20 +614,19 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                   ? `1px solid ${theme.palette.error.main}`
                   : ''
               }>
-              <IconButton
-                aria-label="close"
-                className={classes.closeModalButton}
-                onClick={() => onCancelSessionUpdate()}
-                size="large">
-                <CloseIcon />
-              </IconButton>
-              <Box className={classes.assessments}>
+              <Box
+                sx={{
+                  width: '336px',
+                  flexGrow: 0,
+                  flexShrink: 0,
+                  padding: theme.spacing(3, 5),
+                  backgroundColor: theme.palette.grey[100],
+                }}>
                 <AssessmentList
-                  studySessionIndex={schedule.sessions.findIndex(s => s.guid === openStudySession.guid)}
-                  studySession={getOpenStudySession()}
+                  studySession={openStudySession}
                   onChangePerformanceOrder={(performanceOrder: PerformanceOrder) => {
                     const schedule = {
-                      ...getOpenStudySession(),
+                      ...openStudySession,
                       performanceOrder,
                     }
 

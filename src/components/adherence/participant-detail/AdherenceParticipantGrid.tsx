@@ -1,10 +1,11 @@
 import {PlotDaysDisplay, useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
+import {getSessionSymbolName} from '@components/widgets/SessionIcon'
 import UtilityObject from '@helpers/utility'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
 import {latoFont} from '@style/theme'
-import {AdherenceDetailReport, EventStreamDay, ParticipantClientData} from '@typedefs/types'
+import {AdherenceDetailReport, EventStreamDay, ParticipantClientData, SessionDisplayInfo} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import AdherenceUtility from '../adherenceUtility'
@@ -57,6 +58,7 @@ const useStyles = makeStyles(theme => ({
 type AdherenceParticipantGridProps = {
   adherenceReport: AdherenceDetailReport
   clientData: ParticipantClientData | undefined
+  sessions: SessionDisplayInfo[]
 }
 
 const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({startEventIds}) => {
@@ -79,7 +81,11 @@ const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({startEve
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/AdherenceUtils.java
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/SessionCompletionState.java
 
-const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> = ({adherenceReport, clientData}) => {
+const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> = ({
+  adherenceReport,
+  clientData,
+  sessions,
+}) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
   const classes = {...useCommonStyles(), ...useStyles()}
@@ -154,7 +160,10 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                         )}
                         isCompliant={AdherenceUtility.isCompliant(week.adherencePercent)}
                         dayWidth={dayWidthInPx}
-                        sessionSymbol={row.sessionSymbol}
+                        sessionSymbol={
+                          row.sessionSymbol ||
+                          getSessionSymbolName(sessions.findIndex(s => s.sessionGuid === row.sessionGuid))
+                        }
                         numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(adherenceReport.weeks)}
                         timeZone={adherenceReport.clientTimeZone}
                       />

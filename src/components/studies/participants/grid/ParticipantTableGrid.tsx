@@ -48,7 +48,11 @@ import GridCellExpand from './GridCellExpand'
 
 const useStyles = makeStyles(theme => ({
   root: {},
+  gridHeaderTitle: {
+    fontWeight: 700,
+  },
   gridHeader: {
+    fontWeight: 700,
     '& .MuiDataGrid-columnSeparator': {
       display: 'none',
     },
@@ -616,13 +620,14 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
   return (
     <>
-      <Paper elevation={0}>
+      <Paper elevation={0} sx={{fontSize: '14px'}}>
         <div style={{display: 'flex', height: '90vh'}}>
           <div style={{flexGrow: 1}}>
             <DataGrid
               rows={rows}
+              sx={{fontSize: '14px'}}
               loading={isParticipantUpdating}
-              classes={{columnHeader: classes.gridHeader}}
+              classes={{columnHeader: classes.gridHeader, columnHeaderTitle: classes.gridHeaderTitle}}
               density="standard"
               columns={participantColumns}
               checkboxSelection={false}

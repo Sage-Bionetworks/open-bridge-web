@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {UserSessionData} from '../types/types'
-import Utility from './utility'
+import {default as Utility, default as UtilityObject} from './utility'
 
 type ActionType = 'LOGIN' | 'LOGOUT' | 'SET_ALERT' | 'CLEAR_ALERT'
 
@@ -14,7 +14,7 @@ const initialState = {
   dataGroups: [],
   roles: [],
   id: '',
-  appId: '',
+  appId: UtilityObject.getAppId(),
   demoExternalId: '',
 }
 

@@ -4,7 +4,7 @@ import {useAdherence} from '@components/studies/adherenceHooks'
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
-import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
+import NonDraftHeaderFunctionComponent from '@components/widgets/StudyWithPhaseImage'
 import CheckIcon from '@mui/icons-material/CheckCircleTwoTone'
 import {Box, Button, Paper, styled, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
@@ -167,12 +167,23 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
             {enrollment ? enrollment.healthCode : ''}
 
             <Box display="flex" mt={4} mb={2}>
-              {participantSessions?.map(s => (
-                <SessionLegend key={s.sessionGuid} symbolKey={s.sessionSymbol} sessionName={s.sessionName} />
+              {participantSessions?.map((s, index) => (
+                <SessionLegend
+                  key={s.sessionGuid}
+                  symbolKey={s.sessionSymbol}
+                  sessionIndex={index}
+                  sessionName={s.sessionName}
+                />
               ))}
             </Box>
           </Box>
-          {<AdherenceParticipantGrid adherenceReport={adherenceReport!} clientData={participant?.clientData} />}
+          {
+            <AdherenceParticipantGrid
+              adherenceReport={adherenceReport!}
+              clientData={participant?.clientData}
+              sessions={participantSessions}
+            />
+          }
           <Box display="flex">
             <Button className={classes.editEventDate} variant="text" onClick={() => setIsEditParticipant(true)}>
               <img src={EditIcon}></img>

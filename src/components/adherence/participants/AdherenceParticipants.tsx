@@ -160,15 +160,24 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> = () 
           </Button>
         )}
         <Box display="flex" mt={0} mb={2}>
-          {sessions?.map(s => (
-            <SessionLegend key={s.sessionGuid} symbolKey={s.sessionSymbol} sessionName={s.sessionName} />
+          {sessions?.map((s, index) => (
+            <SessionLegend
+              key={s.sessionGuid}
+              symbolKey={s.sessionSymbol}
+              sessionName={s.sessionName}
+              sessionIndex={index}
+            />
           ))}
         </Box>
       </LoadingComponent>
       <LoadingComponent reqStatusLoading={adhStatus === 'idle' || adhStatus === 'loading'}>
         {adherenceWeeklyReport && (
           <div>
-            <AdherenceParticipantsGrid studyId={studyId} adherenceWeeklyReport={adherenceWeeklyReport!} />
+            <AdherenceParticipantsGrid
+              studyId={studyId}
+              adherenceWeeklyReport={adherenceWeeklyReport!}
+              sessions={sessions}
+            />
 
             <TablePagination
               totalItems={adherenceWeeklyReport!.total}

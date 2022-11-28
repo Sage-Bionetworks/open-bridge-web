@@ -1,4 +1,4 @@
-import {Box, FormControlLabel, Radio, RadioGroup, Theme} from '@mui/material'
+import {Box, FormControlLabel, FormGroup, Radio, RadioGroup, Theme} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
 
@@ -198,30 +198,33 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   )
   const followUpMultiDay = (
     <SchedulingFormSection label={'Send a reminder notification:'} variant="small" border={false}>
-      <SmallTextBox
-        type="number"
-        isLessThanOneAllowed={false}
-        value={daysForMultidayOffset}
-        onChange={e =>
-          changeMultidayOffset({
-            days: Number(e.target.value),
-            time: timeForMultidayOffset,
-          })
-        }
-      />
+      <FormGroup row sx={{alignItems: 'center'}}>
+        <SmallTextBox
+          sx={{marginBottom: 0}}
+          type="number"
+          isLessThanOneAllowed={false}
+          value={daysForMultidayOffset}
+          onChange={e =>
+            changeMultidayOffset({
+              days: Number(e.target.value),
+              time: timeForMultidayOffset,
+            })
+          }
+        />
 
-      <Box mx={0.5}>day(s) after at:</Box>
-      <SelectWithEnum
-        value={timeForMultidayOffset || windowStartTime}
-        style={{marginLeft: 0}}
-        sourceData={getDropdownTimeItems()}
-        id="from"
-        onChange={e =>
-          changeMultidayOffset({
-            days: daysForMultidayOffset,
-            time: e.target.value as string,
-          })
-        }></SelectWithEnum>
+        <Box mx={0.5}>day(s) after at:</Box>
+        <SelectWithEnum
+          value={timeForMultidayOffset || windowStartTime}
+          style={{marginLeft: 0}}
+          sourceData={getDropdownTimeItems()}
+          id="from"
+          onChange={e =>
+            changeMultidayOffset({
+              days: daysForMultidayOffset,
+              time: e.target.value as string,
+            })
+          }></SelectWithEnum>
+      </FormGroup>
     </SchedulingFormSection>
   )
 

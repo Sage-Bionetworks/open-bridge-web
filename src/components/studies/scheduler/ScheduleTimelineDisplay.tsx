@@ -2,59 +2,50 @@ import {ReactComponent as NotificationsIcon} from '@assets/scheduler/notificatio
 import {ReactComponent as TimerIcon} from '@assets/scheduler/timer_icon.svg'
 import AssessmentImage from '@components/assessments/AssessmentImage'
 import SessionIcon from '@components/widgets/SessionIcon'
-import {Box} from '@mui/material'
-import Tooltip, {TooltipProps} from '@mui/material/Tooltip'
-import makeStyles from '@mui/styles/makeStyles'
-import {latoFont, poppinsFont} from '@style/theme'
+import {Box, Button, styled} from '@mui/material'
+import Tooltip, {tooltipClasses, TooltipProps} from '@mui/material/Tooltip'
 import {Schedule, ScheduleTimeline, StudySession, StudySessionTimeline} from '@typedefs/scheduling'
 import React from 'react'
 import Pluralize from 'react-pluralize'
 import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
 
-const useStyles = makeStyles(theme => ({
-  stats: {
-    fontFamily: latoFont,
-    fontWeight: 'bold',
-    fontSize: '12px',
-    display: 'flex',
-    alignItems: 'center',
+const StyledSessionButton = styled(Button, {label: 'StyledSessionButton'})(({theme}) => ({
+  marginRight: theme.spacing(2),
+  marginBottom: theme.spacing(0.25),
+  padding: theme.spacing(1, 2),
+  borderRadius: '21px',
+  height: '42px',
+  fontSize: '14px',
+  '& svg': {
+    '& path, circle, triangle, rect': {
+      fill: 'white',
+    },
+    fill: 'white',
+  },
+}))
 
-    '& span': {
-      padding: theme.spacing(2, 3, 2, 1),
-    },
-  },
-  legend: {
-    margin: theme.spacing(1, 0, 2, 0),
-    display: 'flex',
-    '&>div': {
-      marginRight: theme.spacing(2),
-      marginBottom: theme.spacing(0.25),
-      padding: theme.spacing(1, 2),
-      border: '1px solid black',
-      borderRadius: '22px',
-      fontFamily: poppinsFont,
-      fontSize: '14px',
-      '&:hover': {
-        backgroundColor: '#BCD5E4',
-      },
-    },
-    maxWidth: '90%',
-    flexWrap: 'wrap',
-  },
-  toolTip: {
-    backgroundColor: theme.palette.primary.dark,
-    padding: theme.spacing(1, 1, 0.1, 1),
-    boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.2)',
-  },
-  arrow: {
+const StyledLegend = styled(Box, {label: 'StyledLegend'})(({theme}) => ({
+  marginRight: theme.spacing(2),
+  marginBottom: theme.spacing(0.25),
+  margin: theme.spacing(1, 0, 2, 0),
+  display: 'flex',
+
+  maxWidth: '90%',
+  flexWrap: 'wrap',
+}))
+
+const StyledTooltip = styled(({className, ...props}: TooltipProps) => (
+  <Tooltip {...props} arrow classes={{popper: className}} />
+))(({theme}) => ({
+  [`& .${tooltipClasses.arrow}`]: {
     backgroundColor: 'transparent',
-    color: theme.palette.primary.dark,
+    color: '#F1F3F5',
     fontSize: '20px',
   },
-  assessmentBox: {
-    width: '100%',
-    height: '100px',
-    marginBottom: '8px',
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: '#F1F3F5',
+    padding: theme.spacing(1, 1, 0.1, 1),
+    boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.2)',
   },
 }))
 
@@ -71,16 +62,17 @@ export const TooltipHoverDisplay: React.FunctionComponent<{
   tooltipProps?: Partial<TooltipProps>
   children: React.ReactNode
 }> = ({session, tooltipProps, children}) => {
-  const classes = useStyles()
   return (
-    <Tooltip
+    <StyledTooltip
       key={`session_${session.guid}`}
       {...tooltipProps}
       title={
         <Box width="115px">
           {session.assessments?.map((assessment, index) => {
             return (
-              <Box className={classes.assessmentBox} key={`assmnt_${assessment.guid}_${index}`}>
+              <Box
+                sx={{width: '100%', height: '100px', marginBottom: '8px'}}
+                key={`assmnt_${assessment.guid}_${index}`}>
                 <AssessmentImage
                   resources={assessment.resources}
                   variant="small"
@@ -95,13 +87,9 @@ export const TooltipHoverDisplay: React.FunctionComponent<{
           })}
         </Box>
       }
-      arrow
-      classes={{
-        tooltip: classes.toolTip,
-        arrow: classes.arrow,
-      }}>
+      arrow>
       <Box style={{cursor: 'pointer'}}>{children}</Box>
-    </Tooltip>
+    </StyledTooltip>
   )
 }
 
@@ -112,7 +100,6 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
   isDefault,
   onSelectSession,
 }: TimelineProps) => {
-  const classes = useStyles()
   const tooltipProps: Partial<TooltipProps> = {
     placement: 'top',
   }
@@ -130,26 +117,36 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
         </>
       )}
       {timeline && (
-        <div className={classes.stats}>
-          <NotificationsIcon /> <Pluralize singular={'notification'} count={timeline.totalNotifications} />
-          <TimerIcon /> <Pluralize singular={'total minute'} count={timeline.totalMinutes} />
-        </div>
+        <Box
+          sx={{
+            fontWeight: 'bold',
+            fontSize: '12px',
+            display: 'flex',
+            alignItems: 'center',
+          }}>
+          <NotificationsIcon /> &nbsp;
+          <Pluralize singular={'notification'} count={timeline.totalNotifications} />
+          &nbsp; &nbsp;
+          <TimerIcon /> &nbsp;
+          <Pluralize singular={'total minute'} count={timeline.totalMinutes} />
+        </Box>
       )}
       <Box display="flex" justifyContent="space-between">
-        <Box className={classes.legend}>
+        <StyledLegend>
           {schedFromDisplay?.sessions?.map((s, index) => (
             <TooltipHoverDisplay key={s.guid} session={s} tooltipProps={tooltipProps}>
-              <div
+              <StyledSessionButton
+                variant="contained"
                 onClick={() => {
                   onSelectSession(s)
                 }}>
                 <SessionIcon index={index} key={s.guid} symbolKey={s.symbol}>
                   {getSession(s.guid!)?.label}
                 </SessionIcon>
-              </div>
+              </StyledSessionButton>
             </TooltipHoverDisplay>
           ))}
-        </Box>
+        </StyledLegend>
       </Box>
       {timeline?.schedule && (
         <TimelineBurstPlot studyId={studyId} timeline={timeline}>

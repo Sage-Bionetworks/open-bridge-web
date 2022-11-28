@@ -8,7 +8,7 @@ import Link from '@mui/material/Link'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {useStudies, useUpdateStudyInList} from '@services/studyHooks'
-import {latoFont} from '@style/theme'
+import {latoFont, theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {AdminRole, DisplayStudyPhase, Study, StudyPhase} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
     alignItems: 'center',
-    backgroundColor: '#F3EFE5',
+    backgroundColor: '#fbfbfc',
     height: '100%',
     minHeight: 'calc(100vh - 104px)',
     [theme.breakpoints.down('lg')]: {
@@ -83,20 +83,6 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-block',
   },
 
-  createStudyButton: {
-    margin: theme.spacing(5, 2, 3),
-    borderRadius: '4px',
-    width: '160px',
-    height: '49px',
-    fontSize: '12px',
-    backgroundColor: '#3A3A3A',
-    color: 'white',
-    '&:hover': {
-      transform: 'translateY(1px)',
-      backgroundColor: '#3A3A3A',
-    },
-    fontFamily: 'Lato',
-  },
   list: {
     fontFamily: latoFont,
     fontSize: '14px',
@@ -384,8 +370,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             <Button
               disabled={!Utility.isPathAllowed('any', constants.restrictedPaths.STUDY_BUILDER)}
               variant="contained"
-              onClick={() => createStudy()}
-              className={classes.createStudyButton}>
+              sx={{margin: theme.spacing(1.5, 0)}}
+              onClick={() => createStudy()}>
               + Create New Study
             </Button>
           </Box>

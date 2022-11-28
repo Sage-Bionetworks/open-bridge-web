@@ -462,7 +462,7 @@ function isArcApp(appId?: string) {
   return [constants.constants.ARC_APP_ID, constants.constants.INV_ARC_APP_ID].includes(_appId)
 }
 
-const UtilityObject = {
+const Utility = {
   areArraysEqual,
   areObjectsEqual,
   capitalize,
@@ -493,4 +493,4 @@ const UtilityObject = {
   getOauthEnvironmentFromLocation,
 }
 
-export default UtilityObject
+export default Utility

@@ -1,28 +1,28 @@
 import DefaultImg from '@assets/sage.svg'
-import {CardMedia} from '@mui/material'
-import createStyles from '@mui/styles/createStyles'
-import makeStyles from '@mui/styles/makeStyles'
+import {Box, styled, SxProps} from '@mui/material'
+import {theme} from '@style/theme'
 import {AssessmentResource} from '@typedefs/types'
 import React, {FunctionComponent, ReactNode} from 'react'
 
-const useStyles = makeStyles(theme =>
-  createStyles({
-    media: {
-      height: 180,
-      padding: `${theme.spacing(2)} ${theme.spacing(2)} 0 ${theme.spacing(2)}`,
-      backgroundPositionY: 'top',
-      display: 'flex',
-      flexShrink: 0,
-      flexDirection: 'row',
-    },
-    detailImageContainer: {
-      padding: theme.spacing(0),
-      '& img': {
-        width: '100%',
-      },
-    },
-  })
-)
+const CardTop = styled(Box, {label: 'StyledCardMedia'})(({theme}) => ({
+  height: 150,
+  padding: 0, //`${theme.spacing(2)} ${theme.spacing(2)} 0 ${theme.spacing(2)}`,
+  backgroundPositionY: 'top',
+  display: 'flex',
+  flexShrink: 0,
+  textAlign: 'left',
+  flexDirection: 'row',
+  '& img': {
+    width: '150px',
+    height: '150px',
+    backgroundColor: 'pink',
+  },
+  '> div': {
+    height: '150px',
+    width: '100%',
+    padding: theme.spacing(2, 3),
+  },
+}))
 
 type AssessmentImageProps = {
   resources: AssessmentResource[] | undefined
@@ -32,15 +32,14 @@ type AssessmentImageProps = {
   smallVariantProperties?: React.CSSProperties
 }
 
-const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
+const AssessmentImage: FunctionComponent<AssessmentImageProps & SxProps> = ({
   resources,
   name,
   variant = 'normal',
   children = <></>,
   smallVariantProperties,
+  ...sxProps
 }: AssessmentImageProps) => {
-  const classes = useStyles()
-
   const screen = resources?.find(
     resource =>
       resource.category === 'icon' &&
@@ -58,17 +57,24 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
     }
     case 'detail': {
       image = (
-        <div className={classes.detailImageContainer}>
+        <Box
+          sx={{
+            padding: theme.spacing(0),
+            '& img': {
+              width: '100%',
+            },
+          }}>
           <img src={screen?.url || DefaultImg} alt={name} height="100%" style={smallVariantProperties} />
-        </div>
+        </Box>
       )
       break
     }
     default: {
       image = (
-        <CardMedia className={classes.media} image={screen?.url || DefaultImg} title={name}>
-          {children}
-        </CardMedia>
+        <CardTop title={name} {...sxProps}>
+          <img src={screen?.url || DefaultImg} alt={name} />
+          <div>{children}</div>
+        </CardTop>
       )
     }
   }

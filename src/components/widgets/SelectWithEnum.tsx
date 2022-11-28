@@ -77,6 +77,7 @@ const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps & SelectProps>
         classes={{select: clsx(size === 'small' && classes.small)}}
         labelId={`${id}-label`}
         id={id}
+        sx={{minWidth: '80px'}}
         value={value || ''}
         {...rest}>
         {getDropdownItems(sourceData)}

@@ -39,10 +39,9 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({occurrences, onChange}:
                 control={
                   <SmallTextBox
                     onFocus={() => changeEndDate('N_OCCURRENCES')}
-                    color="secondary"
                     id="occurrences"
+                    sx={{marginBottom: 0, marginRight: '10px'}}
                     isLessThanOneAllowed={false}
-                    style={{marginRight: '10px'}}
                     onChange={e => onChange(e.target.value)}
                     value={occurrences || ''}
                   />

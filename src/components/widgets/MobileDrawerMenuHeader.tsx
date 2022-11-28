@@ -1,15 +1,11 @@
-import BlackXIcon from '@assets/black_x_icon.svg'
-import Logo from '@assets/logo_mtb.svg'
+import Logo from '@assets/logo_mtb_small.svg'
+import ClearIcon from '@mui/icons-material/Clear'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import React from 'react'
 import {NavLink} from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
-  blackXIcon: {
-    width: '16px',
-    height: '16px',
-  },
   mobileToolBarLink: {
     fontFamily: latoFont,
     textDecoration: 'none',
@@ -21,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   mobileHomeOptionContainer: {
+    position: 'relative',
     display: 'flex',
     flexDirection: 'row',
     width: '100%',
@@ -59,7 +56,9 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = (
   return (
     <div className={classes.mobileHomeOptionContainer}>
       {logoElement}
-      <img alt="close" src={BlackXIcon} onClick={() => setIsMobileOpen(false)} className={classes.blackXIcon}></img>
+      <ClearIcon
+        onClick={() => setIsMobileOpen(false)}
+        sx={{top: '5px', right: '5px', position: 'absolute'}}></ClearIcon>
     </div>
   )
 }

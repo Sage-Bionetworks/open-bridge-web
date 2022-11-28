@@ -1,4 +1,4 @@
-import MTBLogoLarge from '@assets/mtb_logo_large.svg'
+import MTBLogoLarge from '@assets/logo_mtb_large.svg'
 import appStoreBtn from '@assets/preview/appStoreBtn.png'
 import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
 import QrCode from '@assets/qr_code.png'
