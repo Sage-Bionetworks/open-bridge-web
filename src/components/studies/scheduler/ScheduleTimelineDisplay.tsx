@@ -1,13 +1,17 @@
-import {ReactComponent as NotificationsIcon} from '@assets/scheduler/notifications_icon.svg'
-import {ReactComponent as TimerIcon} from '@assets/scheduler/timer_icon.svg'
 import AssessmentImage from '@components/assessments/AssessmentImage'
 import SessionIcon from '@components/widgets/SessionIcon'
+import AccessTimeTwoToneIcon from '@mui/icons-material/AccessTimeTwoTone'
+import NotificationsTwoToneIcon from '@mui/icons-material/NotificationsTwoTone'
 import {Box, Button, styled} from '@mui/material'
 import Tooltip, {tooltipClasses, TooltipProps} from '@mui/material/Tooltip'
 import {Schedule, ScheduleTimeline, StudySession, StudySessionTimeline} from '@typedefs/scheduling'
+import * as dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import React from 'react'
-import Pluralize from 'react-pluralize'
 import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
+dayjs.extend(duration)
+dayjs.extend(relativeTime)
 
 const StyledSessionButton = styled(Button, {label: 'StyledSessionButton'})(({theme}) => ({
   marginRight: theme.spacing(2),
@@ -124,11 +128,17 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
             display: 'flex',
             alignItems: 'center',
           }}>
-          <NotificationsIcon /> &nbsp;
-          <Pluralize singular={'notification'} count={timeline.totalNotifications} />
+          <NotificationsTwoToneIcon /> {timeline.totalNotifications}{' '}
+          {timeline.totalNotifications > 1 ? 'notifications' : 'notification'}
           &nbsp; &nbsp;
-          <TimerIcon /> &nbsp;
-          <Pluralize singular={'total minute'} count={timeline.totalMinutes} />
+          <AccessTimeTwoToneIcon /> &nbsp;
+          {dayjs
+            .duration(timeline.totalMinutes, 'minutes')
+            .format(
+              `H [Hour${timeline.totalMinutes > 120 || timeline.totalMinutes < 60 ? 's' : ''}] m [Minute${
+                timeline.totalMinutes % 60 === 1 ? '' : 's'
+              }]`
+            )}
         </Box>
       )}
       <Box display="flex" justifyContent="space-between">

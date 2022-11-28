@@ -1,9 +1,10 @@
 import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
-import {ReactComponent as BurstIcon} from '@assets/scheduler/burst_icon.svg'
+
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
 import LoadingComponent from '@components/widgets/Loader'
 import {DialogButtonPrimary, DialogButtonSecondary} from '@components/widgets/StyledComponents'
+import AddToPhotosTwoToneIcon from '@mui/icons-material/AddToPhotosTwoTone'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
@@ -527,8 +528,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                 disabled={isScheduleDefault(schedule) && !hasBeenSaved}
                 className={classes.burstButton}
                 onClick={() => setOpenModal('BURSTS')}>
-                <BurstIcon style={isScheduleDefault(schedule) && !hasBeenSaved ? {opacity: '0.3'} : {}} /> Configure
-                Study Bursts
+                <AddToPhotosTwoToneIcon style={isScheduleDefault(schedule) && !hasBeenSaved ? {opacity: '0.3'} : {}} />{' '}
+                Configure Study Bursts
               </Button>
             )}
             {!timeline ? (
@@ -715,7 +716,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
       </Dialog>
       <Dialog open={openModal === 'BURSTS'} maxWidth="md" scroll="body">
         <DialogTitle className={classes.dialogTitle}>
-          <BurstIcon />
+          <AddToPhotosTwoToneIcon />
           &nbsp;&nbsp; Configure Study bursts
           <IconButton
             aria-label="close"
