@@ -4,6 +4,8 @@ declare module 'react-json-to-csv'
 
 declare module 'react-imask'
 
+declare module 'react-pluralize'
+
 declare module '@mui/material/styles' {
   interface AccentPaletteColorOptions {
     blue: string
@@ -37,5 +39,3 @@ declare module '@mui/material/styles' {
     transparency: TransparencyPaletteColor
   }
 }
-
-declare module 'react-pluralize'
