@@ -4,7 +4,7 @@ import SideBarListItem from '@components/widgets/SideBarListItem'
 import {Box, Drawer, IconButton, List, styled} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
-import {latoFont, theme, ThemeType} from '@style/theme'
+import {latoFont, ThemeType} from '@style/theme'
 import {Study} from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
@@ -146,9 +146,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
                   onClick={_.noop}
                   isActive={sectionLink.path === currentSection}
                   inStudyBuilder={true}>
-                  <StyledNavIconContainer
-                    isDisabled={sectionLink.path !== 'session-creator' && disabled}
-                    sx={{marginLeft: sectionLink.path === currentSection && !open ? theme.spacing(-0.5) : '0'}}>
+                  <StyledNavIconContainer isDisabled={sectionLink.path !== 'session-creator' && disabled}>
                     <Box>{sectionLink.navIcon}</Box>
 
                     <span>{sectionLink.name}</span>
