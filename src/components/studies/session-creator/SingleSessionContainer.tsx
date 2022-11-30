@@ -245,7 +245,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
         <Box className={classes.actions}>
           <FormControlLabel
             disabled={_.isEmpty(studySession.assessments)}
-            control={<Switch color="secondary" value={isEditable} onChange={e => setIsEditable(e.target.checked)} />}
+            control={<Switch color="primary" value={isEditable} onChange={e => setIsEditable(e.target.checked)} />}
             label="Edit"
           />
 

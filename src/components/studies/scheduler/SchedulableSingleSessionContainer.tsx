@@ -1,10 +1,10 @@
 import AlertIcon from '@assets/alert_icon.svg'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
-import {AlertWithText, BlueButton} from '@components/widgets/StyledComponents'
-import {Box, Switch} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import {AlertWithText} from '@components/widgets/StyledComponents'
+import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone'
+import {Box, Button, Switch, Tooltip} from '@mui/material'
 import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
-import {latoFont, theme, ThemeType} from '@style/theme'
+import {theme} from '@style/theme'
 import {
   AssessmentWindow as AssessmentWindowType,
   ScheduleNotification,
@@ -25,21 +25,8 @@ import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
 dayjs.extend(duration)
-
+/*
 export const useStyles = makeStyles((theme: ThemeType) => ({
-  formSection: {
-    padding: theme.spacing(2, 4, 0),
-    textAlign: 'left',
-  },
-  firstAlertStyling: {
-    marginTop: theme.spacing(4),
-    marginLeft: theme.spacing(2),
-  },
-  errorText: {
-    color: theme.palette.error.main,
-    backgroundColor: 'transparent',
-    fontSize: '15px',
-  },
   notifySwitch: {
     fontFamily: latoFont,
     fontSize: '15px',
@@ -49,7 +36,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     justifyContent: 'flex-start',
     fontWeight: 'normal',
   },
-}))
+}))*/
 
 export const defaultSchedule: SessionSchedule = {
   performanceOrder: 'participant_choice',
@@ -92,8 +79,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   onOpenEventsEditor,
   hasCriticalStartEvent,
 }) => {
-  const classes = useStyles()
-
   const [schedulableSession, setSchedulableSession] = React.useState<StudySession>(studySession || defaultSchedule)
 
   const [windowErrors, setWindowErrors] = React.useState<windowErrorArrayType[]>([])
@@ -239,7 +224,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   return (
     <Box sx={{backgroundColor: '#fff', flexGrow: '1', paddingBottom: 0, paddingLeft: theme.spacing(4)}}>
       {sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
-        <Box className={classes.firstAlertStyling}>
+        <Box sx={{marginTop: theme.spacing(4), marginLeft: theme.spacing(2)}}>
           {sessionErrorState.generalErrorMessage.map((el, index) => {
             return (
               <AlertWithText
@@ -253,7 +238,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
       )}
       <form noValidate autoComplete="off">
-        <Box className={classes.formSection}>
+        <Box>
           <StartDate
             onOpenEventsEditor={onOpenEventsEditor}
             startEventId={
@@ -288,10 +273,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
             />
           </StartDate>
         </Box>
-        <Box className={classes.formSection}>
+        <Box>
           <EndDate occurrences={schedulableSession.occurrences} onChange={handleEndDateChange}></EndDate>
         </Box>
-        <Box className={classes.formSection}>
+        <Box>
           <RepeatFrequency
             onChange={(interval: string | undefined) => {
               updateSessionSchedule({
@@ -303,7 +288,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
             occurrences={schedulableSession.occurrences}></RepeatFrequency>
         </Box>
 
-        <Box className={classes.formSection}>
+        <Box>
           <Box ml={-2}>
             {windowErrors.map((el, index) => {
               return (
@@ -317,7 +302,19 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
             })}
           </Box>
 
-          <SchedulingFormSection label="Session Window*:">
+          <SchedulingFormSection
+            label="Session Window"
+            isRequired={true}
+            postLabel={
+              <Tooltip title="Add assessment window">
+                <InfoTwoToneIcon sx={{fontSize: '15px'}} />
+              </Tooltip>
+            }
+            rightElement={
+              <Button onClick={addNewWindow} size="small" variant="outlined" disabled={hasWindowLongerThan24h()}>
+                Add Window
+              </Button>
+            }>
             <Box flexGrow={1}>
               {schedulableSession.timeWindows?.map((window, index) => (
                 <AssessmentWindow
@@ -330,15 +327,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   window={window}
                   errorText={sessionErrorState?.sessionWindowErrors.get(index + 1) || ''}></AssessmentWindow>
               ))}
-
-              <BlueButton
-                style={{marginLeft: 0}}
-                color="secondary"
-                onClick={addNewWindow}
-                variant="contained"
-                disabled={hasWindowLongerThan24h()}>
-                +Add new window
-              </BlueButton>
             </Box>
           </SchedulingFormSection>
           <Box ml={-2}>
@@ -349,7 +337,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                     severity="error"
                     icon={<img src={AlertIcon} style={{height: '24px'}} alt={'notification-error-' + index}></img>}
                     key={index}
-                    className={classes.errorText}>
+                    sx={{color: theme.palette.error.main, backgroundColor: 'transparent', fontSize: '15px'}}>
                     Session {studySession.name} in {`${el.notificationName}: ${el.notficationError}`}
                   </AlertWithText>
                 )
@@ -357,25 +345,34 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
           </Box>
           <SchedulingFormSection
             border={false}
-            label={
-              <>
-                <label>Session Notifications:</label>{' '}
-                <Box className={classes.notifySwitch}>
-                  <Switch
-                    color="primary"
-                    checked={!_.isEmpty(schedulableSession.notifications)}
-                    onChange={e => {
-                      if (e.target.checked) {
-                        addNewNotification()
-                      } else {
-                        deleteAllNotifications()
-                      }
-                    }}
-                    style={{marginLeft: 0, marginRight: '8px'}}></Switch>{' '}
-                  {!_.isEmpty(schedulableSession.notifications) ? 'On' : 'Off'}
-                </Box>
-              </>
-            }>
+            postLabel={
+              <Box sx={{display: 'flex', alignItems: 'center'}}>
+                <Switch
+                  color="primary"
+                  checked={!_.isEmpty(schedulableSession.notifications)}
+                  onChange={e => {
+                    if (e.target.checked) {
+                      addNewNotification()
+                    } else {
+                      deleteAllNotifications()
+                    }
+                  }}
+                  style={{marginLeft: 0, marginRight: '4px'}}></Switch>{' '}
+                {!_.isEmpty(schedulableSession.notifications) ? 'On' : 'Off'}
+              </Box>
+            }
+            rightElement={
+              !schedulableSession.notifications ? (
+                <Button size="small" variant="outlined" onClick={addNewNotification}>
+                  +Add new notification
+                </Button>
+              ) : schedulableSession.notifications?.length === 1 ? (
+                <Button size="small" variant="outlined" onClick={addNewNotification}>
+                  +Add a reminder notification
+                </Button>
+              ) : undefined
+            }
+            label={'Session Notifications'}>
             <Box flexGrow={1}>
               {schedulableSession.notifications?.map((notification, index) => (
                 <NotificationWindow
@@ -413,18 +410,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   />
                 </NotificationWindow>
               ))}
-
-              {!schedulableSession.notifications && (
-                <BlueButton onClick={addNewNotification} color="secondary" style={{marginLeft: 0}} variant="contained">
-                  +Add new notification
-                </BlueButton>
-              )}
-
-              {schedulableSession.notifications?.length === 1 && (
-                <BlueButton onClick={addNewNotification} color="secondary" style={{marginLeft: 0}} variant="contained">
-                  +Add a reminder notification
-                </BlueButton>
-              )}
             </Box>
           </SchedulingFormSection>
         </Box>

@@ -1,5 +1,5 @@
 import {Color} from '@mui/material'
-import {grey} from '@mui/material/colors'
+
 import {createTheme, Theme} from '@mui/material/styles'
 import {CSSProperties} from 'react'
 
@@ -23,8 +23,8 @@ export type CssVariablesType = {
   activeBorder: string
 }
 
-const gray: Partial<Color> = {
-  100: '#FBFBF',
+const gray_custom: Partial<Color> = {
+  100: '#FBFBFC',
   200: '#F1F3F5',
   300: '#EAECEE',
   400: '#DFE2E6',
@@ -139,7 +139,12 @@ const theme: Theme = createTheme({
           ...(ownerState.size === 'small' &&
             ownerState.variant === 'contained' && {
               height: '40px',
-              padding: '0 30px',
+              padding: '0 20px',
+            }),
+          ...(ownerState.size === 'small' &&
+            ownerState.variant === 'outlined' && {
+              height: '40px',
+              padding: '0 20px',
             }),
         }),
         contained: {
@@ -203,7 +208,7 @@ const theme: Theme = createTheme({
           fontSize: '16px',
           height: '50px',
 
-          padding: '0 40px',
+          //  padding: '0 40px',
 
           color: '#4F527D',
           '&:hover': {
@@ -284,8 +289,9 @@ const theme: Theme = createTheme({
             color: '#fff',
 
             '& + .MuiSwitch-track': {
-              backgroundColor: '#7FC7F0',
-              borderColor: '#7FC7F0',
+              backgroundColor: '#4F527D',
+              borderColor: '#4F527D',
+              opacity: 1,
             },
           },
         },
@@ -361,7 +367,7 @@ const theme: Theme = createTheme({
       fontFamily: latoFont,
       fontSize: '14px',
       fontWeight: 400,
-      color: grey[900],
+      color: gray_custom[900],
       lineHeight: '18px',
     },
     body2: {
@@ -369,27 +375,27 @@ const theme: Theme = createTheme({
       fontFamily: latoFont,
       fontSize: '20px',
       fontWeight: 400,
-      color: gray.A100,
+      color: gray_custom.A100,
     },
 
     h1: {
       fontFamily: latoFont,
       fontSize: '48px',
       fontWeight: 700,
-      color: gray.A100,
+      color: gray_custom.A100,
     },
     h2: {
       fontFamily: latoFont,
       fontSize: '32px',
       fontWeight: 700,
-      color: gray.A100,
+      color: gray_custom.A100,
     },
 
     h3: {
       fontFamily: latoFont,
       fontSize: '24px',
       fontWeight: 400,
-      color: gray.A100,
+      color: gray_custom.A100,
     },
     h4: {
       fontFamily: latoFont,
@@ -402,7 +408,7 @@ const theme: Theme = createTheme({
       fontFamily: latoFont,
       fontSize: '14px',
       fontWeight: 400,
-      color: grey[800],
+      color: gray_custom[800],
       textTransform: 'uppercase',
     },
 
@@ -421,8 +427,8 @@ const theme: Theme = createTheme({
   },
 
   palette: {
-    grey: grey,
-    divider: grey[300],
+    grey: gray_custom,
+    divider: gray_custom[300],
     accent: {
       blue: '#47A4DD',
       purple: '#9499C7',
@@ -441,7 +447,7 @@ const theme: Theme = createTheme({
       paper: '#fff',
     },
     text: {
-      primary: grey[900],
+      primary: gray_custom[900],
       secondary: '#2A2A2A',
     },
     secondary: {

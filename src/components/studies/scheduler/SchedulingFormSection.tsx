@@ -1,131 +1,96 @@
-import {styled} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import clsx from 'clsx'
-import React, {ReactNode} from 'react'
+import {Box, styled} from '@mui/material'
+import {latoFont, theme} from '@style/theme'
+import React, {ReactElement, ReactNode} from 'react'
 
 const StyledLabel = styled('label', {label: 'StyledLabel'})(({theme}) => ({
+  fontFamily: latoFont,
   fontWeight: 700,
   fontSize: '14px',
   lineHeight: '16px',
   display: 'block',
+  marginRight: '5px',
 }))
 
-const StyledSection = styled('section', {label: 'StyledSection'})(({theme}) => ({}))
+const StyledSection = styled('section', {label: 'StyledSection'})(({theme}) => ({
+  padding: theme.spacing(2, 4, 2, 0),
+  textAlign: 'left',
+  marginBottom: theme.spacing(2),
+}))
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    marginBottom: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    borderBottom: '1px solid #BBC3CD',
+const Header = styled(Box, {label: 'Header'})(({theme}) => ({
+  display: 'flex',
+  alignItem: 'center',
 
-    '&.no-border': {
-      border: 'none',
-    },
-  },
-  formControl: {
-    /*  flexDirection: 'row',
-    textAlign: 'left',
-
+  justifyContent: 'space-between',
+  '&> div': {
     display: 'flex',
-
-    alignContent: 'center',
-    alignItems: 'flex-start',
-
-    '&.small': {
-      alignItems: 'center',
-      margin: '0 40px',
-    },*/
-  },
-  label: {
-    /* paddingTop: theme.spacing(1),
-   // paddingRight: theme.spacing(4),
-    lineHeight: '27px',
-    width: theme.spacing(28),
-
-    fontFamily: poppinsFont,
-    fontSize: '18px',
-    fontStyle: 'normal',
-    fontWeight: 600,
-    flexShrink: 0,
-    textAlign: 'left',
-    [theme.breakpoints.down('lg')]: {
-      fontSize: '16px',
-      width: theme.spacing(10),
-    },
-    '&.Mui-focused': {
-      color: 'inherit',
-    },
-
-    '&.small': {
-      paddingRight: theme.spacing(2),
-      width: theme.spacing(12),
-      lineHeight: 1.4,
-      fontWeight: 400,
-      fontSize: '14px',
-      fontFamily: latoFont,
-      [theme.breakpoints.down('lg')]: {
-        '&.collapseLabelSmall': {
-          width: 0,
-        },
-      },
-    },*/
-  },
-  disabled: {
-    opacity: 0.3,
-    pointerEvents: 'none',
+    alignItems: 'center',
   },
 }))
 
 export interface SchedulingFormSectionProps {
   label: ReactNode
+  rightElement?: ReactElement
+  postLabel?: ReactElement
+  isRequired?: boolean
   altLabel?: string
   children: ReactNode
   style?: React.CSSProperties
-  variant?: 'small'
+
+  justifyContent?: 'flex-start' | 'space-between'
+
   border?: boolean
   isHideLabel?: boolean
-  isCollapseLabelSmall?: boolean
-  justifyContent?: 'flex-start' | 'space-between'
+
   disabled?: boolean
+}
+
+function getLabel(isRequired?: boolean, label?: ReactNode) {
+  if (isRequired) {
+    return (
+      <Box display="flex" alignItems="center">
+        {label}
+        <span style={{color: theme.palette.secondary.main, marginLeft: '1px'}}>*</span>
+      </Box>
+    )
+  }
+  return label
 }
 
 const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps> = ({
   label,
-  style,
-  variant,
+  rightElement,
+  isRequired,
   children,
   isHideLabel,
-  altLabel,
-  isCollapseLabelSmall,
-  border = true,
+  postLabel,
   justifyContent = 'flex-start',
+  style,
+  border = true,
+
   disabled = false,
 }: SchedulingFormSectionProps) => {
-  const classes = useStyles()
-
   return (
     <>
       <StyledSection
-        className={clsx(
-          classes.root,
-          variant === 'small' && 'small',
-          border === false && 'no-border',
-          disabled && classes.disabled
-        )}
+        sx={{
+          borderBottom: border === false ? 'none' : '1px solid #EAECEE',
+          opacity: disabled ? 0.3 : 1,
+          pointerEvents: disabled ? 'none' : 'auto',
+        }}
         style={style}>
-        <div
-          style={{justifyContent: justifyContent}}
-          className={clsx(classes.formControl, variant === 'small' && 'small')}>
-          <StyledLabel
-            className={clsx(
-              /*typeof label === 'string'*/ true && classes.label,
-              variant === 'small' && 'small',
-              isCollapseLabelSmall && 'collapseLabelSmall'
-            )}>
-            {!isHideLabel ? label : ''}
-          </StyledLabel>
+        <Box sx={{justifyContent: justifyContent}}>
+          <Header sx={{marginBottom: rightElement || postLabel ? theme.spacing(2) : theme.spacing(0.5)}}>
+            <div>
+              <StyledLabel>{isHideLabel ? '' : getLabel(isRequired, label)}</StyledLabel> {postLabel}
+            </div>
+            {
+              rightElement
+              /* React.cloneElement(rightElement, {sx: {position: 'absolute', top: '-20px', right: '-10px'}})*/
+            }
+          </Header>
           {children}
-        </div>
+        </Box>
       </StyledSection>
     </>
   )
