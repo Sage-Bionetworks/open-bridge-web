@@ -1,4 +1,4 @@
-import BlackBorderDropdown from '@components/widgets/BlackBorderDropdown'
+import Dropdown from '@components/widgets/Dropdown'
 import timezoneList from '@helpers/timezones.json'
 import React from 'react'
 
@@ -25,7 +25,7 @@ const TimezoneDropdown: React.FunctionComponent<{
   }
   const timezones = React.useMemo(getAllTimezones, [])
   return (
-    <BlackBorderDropdown
+    <Dropdown
       width="100%"
       dropdown={timezones}
       isRequired={isRequired}
