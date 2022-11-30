@@ -27,7 +27,7 @@ const NotificationInterval: React.FunctionComponent<NotificationIntervalProps> =
   const [hasInterval, setHasInterval] = React.useState(repeatInterval !== undefined)
 
   return (
-    <SchedulingFormSection label={''} variant="small" border={false}>
+    <SchedulingFormSection label={''} style={{paddingTop: 0, paddingBottom: 0, marginBottom: 0}} border={false}>
       {' '}
       <div style={{flexBasis: '100%', display: 'block'}}>
         <FormControlLabel

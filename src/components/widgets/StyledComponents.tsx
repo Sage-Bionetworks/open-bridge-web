@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import Alert from '@mui/material/Alert'
 import withStyles from '@mui/styles/withStyles'
-import {latoFont} from '../../style/theme'
+import {latoFont, shouldForwardProp} from '../../style/theme'
 
 export const ButtonWithSelectButton = withStyles(theme => ({
   root: {
@@ -162,7 +162,9 @@ export const SimpleTextLabel = styled(InputLabel, {label: 'SimpleTextLabel'})(({
   },
 }))
 
-export const SimpleTextInput = styled(TextField, {label: 'SimpleTextInput'})(({theme}) => ({
+export const SimpleTextInput = styled(TextField, {label: 'SimpleTextInput', shouldForwardProp: shouldForwardProp})<{
+  $readOnly?: boolean
+}>(({theme, $readOnly}) => ({
   // border: `1px solid ${theme.palette.text.secondary}`,
   //backgroundColor: '#fff',
   'label + &': {

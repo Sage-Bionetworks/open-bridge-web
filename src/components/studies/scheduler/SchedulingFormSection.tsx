@@ -70,6 +70,7 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
 
   disabled = false,
 }: SchedulingFormSectionProps) => {
+  console.log(style)
   return (
     <>
       <StyledSection
@@ -77,8 +78,8 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
           borderBottom: border === false ? 'none' : '1px solid #EAECEE',
           opacity: disabled ? 0.3 : 1,
           pointerEvents: disabled ? 'none' : 'auto',
-        }}
-        style={style}>
+          ...style,
+        }}>
         <Box sx={{justifyContent: justifyContent}}>
           <Header sx={{marginBottom: rightElement || postLabel ? theme.spacing(2) : theme.spacing(0.5)}}>
             <div>
