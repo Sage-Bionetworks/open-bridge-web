@@ -9,9 +9,6 @@ const useStyles = makeStyles(theme => ({
   firstFormElement: {
     marginTop: theme.spacing(2.5),
   },
-  studyNameInput: {
-    width: '70%',
-  },
 }))
 
 type StudySummarySectionProps = {
@@ -45,7 +42,6 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
               onUpdate(e.target.value, studySummaryBody)
             }}
             titleText="Study Name*"
-            extraClassname={classes.studyNameInput}
             hasError={studyTitleHasError}
           />
         </FormControl>

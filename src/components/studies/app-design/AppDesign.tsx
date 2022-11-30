@@ -135,7 +135,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     flexDirection: 'column',
     maxWidth: theme.spacing(51),
     '& .MuiTextField-root': {
-      margin: theme.spacing(1),
+      // margin: theme.spacing(1),
       width: '100%',
     },
   },
@@ -231,11 +231,11 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 const SimpleTextInputStyles = {
-  fontSize: '15px',
+  /*  fontSize: '15px',
   width: '100%',
   height: '44px',
   paddingTop: '8px',
-  boxSizing: 'border-box',
+  boxSizing: 'border-box',*/
 } as React.CSSProperties
 
 export type ContactType = 'principal_investigator' | 'irb' | 'sponsor' | 'study_support'
@@ -854,7 +854,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
                             rows={2}
                             rowsMax={4}
                             titleText="Main Header"
-                            alternativeTextInputClassName={classes.headlineStyle}
                           />
                         </FormControl>
                         <FormControl>
@@ -867,7 +866,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
                             rows={4}
                             placeholder="What are the first things you want participants to know about the study."
                             titleText="Body Copy (maximum 250 characters)"
-                            alternativeTextInputClassName={'none'}
                             maxWordCount={250}
                           />
                         </FormControl>
