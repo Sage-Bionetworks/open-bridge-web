@@ -1,17 +1,14 @@
-import {Box, Button, Container} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import {ReactComponent as Preview_Icon} from '@assets/launch/preview_icon.svg'
+import {Box, Button, Container, List, ListItem, Paper, styled, Typography} from '@mui/material'
+import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
 import StudyService from '@services/study.service'
+import {theme} from '@style/theme'
+import constants from '@typedefs/constants'
+import {Schedule, ScheduleNotification} from '@typedefs/scheduling'
+import {Contact, Study} from '@typedefs/types'
 import _ from 'lodash'
 import React from 'react'
 import {NavLink} from 'react-router-dom'
-import {ReactComponent as Alert_Icon} from '../../../assets/alert_icon.svg'
-import {ReactComponent as Preview_Icon} from '../../../assets/launch/preview_icon.svg'
-import {DEFAULT_NOTIFICATION} from '../../../services/schedule.service'
-import {latoFont, ThemeType} from '../../../style/theme'
-import constants from '../../../types/constants'
-import {Schedule, ScheduleNotification} from '../../../types/scheduling'
-import {Contact, Study} from '../../../types/types'
-import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {isAppBackgroundColorValid} from '../app-design/AppDesign'
 import {isSameAsDefaultSchedule} from '../scheduler/utility'
 import {getStudyBuilderSections, StudySection} from '../sections'
@@ -23,82 +20,32 @@ type DataToValidate = {
 
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
-const useStyles = makeStyles((theme: ThemeType) => ({
-  /*root: {
-    padding: theme.spacing(3),
-  },*/
-  section: {
-    borderTop: '1px solid black',
-    padding: theme.spacing(4, 3, 4, 1),
-    textAlign: 'left',
-  },
-  sectionHeader: {
-    fontFamily: latoFont,
-    fontSize: '15px',
-    fontStyle: 'normal',
-    fontWeight: 700,
-    lineHeight: '18px',
-    display: 'flex',
-    alignItems: 'center',
-    position: 'relative',
-    paddingLeft: '30px',
-  },
-  navIcon: {
-    position: 'absolute',
-    top: '-15px',
-    left: '-19px',
-  },
-  errorDescription: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    fontSize: '14px',
-    fontFamily: latoFont,
-    marginTop: theme.spacing(2),
+const StyledPaper = styled(Paper, {label: 'StyledPaper'})(({theme}) => ({
+  padding: theme.spacing(3, 5),
+  textAlign: 'left',
+}))
 
-    '& .MuiButton-root': {
-      fontSize: '14px',
-    },
+const StyledListItem = styled(ListItem, {label: 'StyledListItem'})(({theme}) => ({
+  padding: theme.spacing(3, 0),
+  fontWeight: 400,
+  fontSize: '20px',
+  lineHeight: '24px',
+  borderTop: '1px solid #EAECEE',
+  justifyContent: 'space-between',
+}))
+
+const PreviewBox = styled(Box, {label: 'PreviewBox'})(({theme}) => ({
+  border: '1px solid black',
+  marginTop: theme.spacing(5),
+  marginBottom: theme.spacing(2),
+  padding: theme.spacing(4, 6),
+  display: 'flex',
+  alignContent: 'center',
+  '& a': {
+    fontWeight: 'bold',
   },
-  alertIcon: {
-    width: '20px',
-    marginLeft: theme.spacing(-4.5),
+  '& svg': {
     marginRight: theme.spacing(2),
-  },
-  reviewIgnoreButtons: {
-    display: 'flex',
-    flexShrink: 0,
-    justifyContent: 'space-between',
-    marginLeft: theme.spacing(2),
-    width: '146px',
-  },
-  mustReviewButton: {
-    flexShrink: 0,
-    backgroundColor: '#EE6070',
-    color: 'black',
-    marginLeft: theme.spacing(2),
-    borderRadius: '0',
-    width: '146px',
-    height: '38px',
-
-    '&:hover': {
-      backgroundColor: '#EE6070',
-      fontWeight: 'bold',
-    },
-  },
-  previewBox: {
-    border: '1px solid black',
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(2),
-    padding: theme.spacing(4, 6),
-    display: 'flex',
-    alignContent: 'center',
-    '& a': {
-      fontWeight: 'bold',
-    },
-    '& svg': {
-      marginRight: theme.spacing(2),
-    },
   },
 }))
 
@@ -294,47 +241,41 @@ const StudyAlertComponent: React.FunctionComponent<StudyAlertSection & {onIgnore
   onIgnore,
   study,
 }: StudyAlertSection & {onIgnore: Function; study: Study}) => {
-  const classes = useStyles()
   const sections = getStudyBuilderSections(StudyService.isStudyInDesign(study))
   const _section = sections.find(s => s.path === section)
-  // const indexedSection = sections[sectionIndex]
 
   return (
-    <div className={classes.section}>
-      <div className={classes.sectionHeader}>
-        <img src={_section!.navIcon} className={classes.navIcon} alt={_section!.name} />
-        <span>{_section!.name}</span>
-      </div>
-      {errors.map((error, errorIndex) => (
-        <div className={classes.errorDescription} key={error.errorText + errorIndex}>
-          <div style={{display: 'flex', alignItems: 'center'}}>
-            {!error.isDismissable && <Alert_Icon className={classes.alertIcon} />}
+    <StyledPaper>
+      <Typography variant="h3" sx={{marginBottom: theme.spacing(2)}}>
+        {_section!.name}
+      </Typography>
 
-            {error.errorText}
-          </div>
-          {error.isDismissable && (
-            <Box className={classes.reviewIgnoreButtons}>
+      <List>
+        {errors.map((error, errorIndex) => (
+          <StyledListItem key={error.errorText + errorIndex}>
+            <div>{error.errorText}</div>
+            {error.isDismissable && (
+              <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                <NavLink
+                  style={{textDecoration: 'none'}}
+                  to={`${_section!.path}?from=launch${error.anchor ? '&anchor=' + error.anchor : ''}`}>
+                  <Button variant="text">Review</Button>
+                </NavLink>
+
+                <Button onClick={() => onIgnore(_section!.path, errorIndex)}>Ignore</Button>
+              </Box>
+            )}
+            {!error.isDismissable && (
               <NavLink
                 style={{textDecoration: 'none'}}
                 to={`${_section!.path}?from=launch${error.anchor ? '&anchor=' + error.anchor : ''}`}>
-                <Button>Review</Button>
+                <Button variant="contained">Review Required</Button>
               </NavLink>
-
-              <Button onClick={() => onIgnore(_section!.path, errorIndex)}>Ignore</Button>
-            </Box>
-          )}
-          {!error.isDismissable && (
-            <NavLink
-              style={{textDecoration: 'none'}}
-              to={`${_section!.path}?from=launch${error.anchor ? '&anchor=' + error.anchor : ''}`}>
-              <Button variant="contained" className={classes.mustReviewButton}>
-                Review Required
-              </Button>
-            </NavLink>
-          )}
-        </div>
-      ))}
-    </div>
+            )}
+          </StyledListItem>
+        ))}
+      </List>
+    </StyledPaper>
   )
 }
 
@@ -343,8 +284,6 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
   schedule,
   onEnableNext,
 }: LaunchAlertsProps) => {
-  const classes = useStyles()
-
   const [alerts, setAlerts] = React.useState<StudyAlertSection[]>([])
 
   React.useEffect(() => {
@@ -395,32 +334,35 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
   }
 
   return (
-    <Container maxWidth="sm">
+    <>
       <Box textAlign="left">
-        <MTBHeadingH1 style={{marginBottom: '24px'}}>{study.name}</MTBHeadingH1>
         {alerts?.length > 0 && (
-          <MTBHeadingH2 style={{marginBottom: '40px'}}>Please review the following alerts: </MTBHeadingH2>
+          <Typography sx={{fontWeight: 400, fontSize: '24px', marginBottom: theme.spacing(2)}}>
+            Please Review The Following Alerts{' '}
+          </Typography>
         )}
       </Box>
-      {study &&
-        alerts.map((alert, index) => (
-          <StudyAlertComponent
-            study={study}
-            key={index}
-            {...alert}
-            onIgnore={(sectionPath: string, index: number) => {
-              ignore(sectionPath, index)
-            }}></StudyAlertComponent>
-        ))}
+      <Container maxWidth="md">
+        {study &&
+          alerts.map((alert, index) => (
+            <StudyAlertComponent
+              study={study}
+              key={index}
+              {...alert}
+              onIgnore={(sectionPath: string, index: number) => {
+                ignore(sectionPath, index)
+              }}></StudyAlertComponent>
+          ))}
 
-      <div className={classes.previewBox}>
-        <Preview_Icon />
-        <span>
-          Please remember to&nbsp;
-          <NavLink to={`/studies/builder/${study.identifier}/preview`}>Preview Your Study</NavLink> before launching.
-        </span>
-      </div>
-    </Container>
+        <PreviewBox>
+          <Preview_Icon />
+          <span>
+            Please remember to&nbsp;
+            <NavLink to={`/studies/builder/${study.identifier}/preview`}>Preview Your Study</NavLink> before launching.
+          </span>
+        </PreviewBox>
+      </Container>
+    </>
   )
 }
 

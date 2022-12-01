@@ -1,4 +1,4 @@
-import {FormControl} from '@mui/material'
+import {FormControl, Link} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 import constants from '../../../types/constants'
@@ -78,6 +78,10 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
                 <u>Access Settings</u>
               </strong>
             </a>{' '}
+            ALINA
+            <Link href={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', studyIdentifier)}>
+              Access Settings
+            </Link>{' '}
             tab on the top right hand side.{' '}
           </p>
         </FormControl>

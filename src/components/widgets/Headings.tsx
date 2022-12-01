@@ -1,6 +1,6 @@
 import {styled} from '@mui/material/styles'
 import Heading from '@mui/material/Typography'
-import {latoFont, playfairDisplayFont, poppinsFont} from '../../style/theme'
+import {latoFont, playfairDisplayFont, poppinsFont, theme} from '../../style/theme'
 
 export const MTBHeading = styled(Heading, {
   shouldForwardProp: prop => prop !== 'variant',
@@ -16,12 +16,12 @@ export const MTBHeading = styled(Heading, {
 }))
 
 export const MTBHeadingH1 = styled(Heading)({
-  fontFamily: playfairDisplayFont,
-  fontStyle: 'italic',
-  fontWeight: 'normal',
-  fontSize: '21px',
+  fontFamily: latoFont,
+
+  fontWeight: 700,
+  fontSize: '32px',
   lineHeight: '28px',
-  color: '#050505',
+  color: theme.palette.grey.A100,
 })
 
 export const MTBHeadingH2 = styled(Heading)({

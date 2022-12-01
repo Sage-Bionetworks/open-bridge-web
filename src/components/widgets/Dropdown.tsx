@@ -108,6 +108,7 @@ const Dropdown: React.FunctionComponent<SelectProps & DropdownStyleProps> = ({
   isRequired,
   ...other
 }) => {
+  console.log('EMV', emptyValueLabel)
   const classes = useStyles({width, itemHeight})
   const selectMenu = (
     <Select
@@ -127,7 +128,7 @@ const Dropdown: React.FunctionComponent<SelectProps & DropdownStyleProps> = ({
         },
       }}
       displayEmpty
-      renderValue={value => (value ? value : {emptyValueLabel})}>
+      renderValue={value => (value ? value : emptyValueLabel)}>
       {dropdown.map((el, index) => (
         <MenuItem key={index} value={el.value} id={`investigator-${index}`}>
           {el.label}

@@ -8,7 +8,6 @@ import {getStyledToolbarLinkStyle} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import {styled} from '@mui/material'
 import StudyService from '@services/study.service'
-import {theme} from '@style/theme'
 import {NavLink} from 'react-router-dom'
 
 const BG_COLOR: Record<DisplayStudyPhase, string> = {
@@ -18,6 +17,14 @@ const BG_COLOR: Record<DisplayStudyPhase, string> = {
   WITHDRAWN: 'rgba(135, 142, 149, .1)',
 }
 
+const StyledStudyHeader = styled(Box, {label: 'StyledStudyHeader'})(({theme}) => ({
+  display: 'flex',
+  marginLeft: '-3px',
+  padding: theme.spacing(3, 7, 2, 7),
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: theme.spacing(4),
+}))
 const StyledAccessLink = styled(NavLink, {label: 'StyledAccessLink'})(({theme}) => ({
   ...getStyledToolbarLinkStyle(theme),
   fontSize: '14px',
@@ -29,13 +36,8 @@ const StyledAccessLink = styled(NavLink, {label: 'StyledAccessLink'})(({theme}) 
 
 const StudyBuilderHeader: React.FunctionComponent<{study: Study}> = ({study}) => {
   return (
-    <Box
+    <StyledStudyHeader
       sx={{
-        display: 'flex',
-        marginLeft: '-3px',
-        padding: theme.spacing(3, 7, 2, 7),
-        justifyContent: 'space-between',
-        alignItems: 'center',
         backgroundColor: BG_COLOR[StudyService.getDisplayStatusForStudyPhase(study.phase)],
       }}>
       <StudyWithPhaseImage study={study} />
@@ -48,7 +50,7 @@ const StudyBuilderHeader: React.FunctionComponent<{study: Study}> = ({study}) =>
           &nbsp; Access settings
         </StyledAccessLink>
       )}
-    </Box>
+    </StyledStudyHeader>
   )
 }
 

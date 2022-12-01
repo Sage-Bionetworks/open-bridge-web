@@ -1,11 +1,10 @@
-import {Box, CircularProgress, FormControl, FormControlLabel, Radio, RadioGroup} from '@mui/material'
+import {Box, Button, CircularProgress, FormControl, FormControlLabel, Radio, RadioGroup} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
 import Utility from '../../../helpers/utility'
 import {Contact} from '../../../types/types'
 import AlertWithTextWrapper from '../../widgets/AlertWithTextWrapper'
-import SaveButton from '../../widgets/SaveButton'
 import {ContactType} from './AppDesign'
 import FormGroupWrapper from './widgets/FormGroupWrapper'
 import Subsection from './widgets/Subsection'
@@ -203,7 +202,9 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             <CircularProgress color="primary" size={25} />
           </div>
         ) : (
-          <SaveButton onClick={() => saveInfo()} id="save-button-study-builder-2" />
+          <Button variant="contained" onClick={() => saveInfo()} id="save-button-study-builder-2">
+            Save Changes to App
+          </Button>
         )}
       </Box>
     </Subsection>

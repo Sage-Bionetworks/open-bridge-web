@@ -90,6 +90,7 @@ const StyledLinkButton = styled(Button, {
   '&:hover': {
     backgroundColor: 'transparent',
     height: 'auto',
+    textDecoration: 'none',
   },
 })
 

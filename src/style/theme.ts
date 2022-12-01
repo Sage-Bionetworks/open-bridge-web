@@ -110,13 +110,15 @@ const theme: Theme = createTheme({
     },
     MuiRadio: {
       defaultProps: {
-        color: 'secondary',
+        // color: 'secondary',
+        // color: 'green'
       },
       styleOverrides: {
-        colorPrimary: '#000',
+        colorPrimary: '#D0D4D9',
         root: {
+          color: '#D0D4D9',
           '&.Mui-checked': {
-            color: '#000',
+            color: '#9499C7',
           },
         },
       },
@@ -136,6 +138,8 @@ const theme: Theme = createTheme({
         root: ({ownerState}) => ({
           height: '50px',
           padding: '0 40px',
+          fontWeight: 900,
+          fontSize: '16px',
           ...(ownerState.size === 'small' &&
             ownerState.variant === 'contained' && {
               height: '40px',
@@ -146,6 +150,9 @@ const theme: Theme = createTheme({
               height: '40px',
               padding: '0 20px',
             }),
+          ...(ownerState.variant === 'text' && {
+            padding: '0 20px',
+          }),
         }),
         contained: {
           borderRadius: '4px',
@@ -226,7 +233,22 @@ const theme: Theme = createTheme({
           },
         },
         textPrimary: {
-          color: '#000',
+          padding: '0, 10px',
+          color: '#4F527D',
+          background: 'transparent',
+          '&:hover': {
+            backgroundColor: 'transparent',
+            textDecoration: 'underline',
+            color: '#383A5A',
+          },
+          '&:focus': {
+            color: '#383948',
+            backgroundColor: 'transparent',
+          },
+          '&.Mui-disabled': {
+            backgroundColor: 'transparent',
+            color: '#AEB5BC;',
+          },
         },
       },
     },
@@ -242,7 +264,9 @@ const theme: Theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          color: '#1c1c1c',
+          boxShadow: '0px 4px 4px #EAECEE',
+          marginBottom: '8px',
+          borderRadius: '0',
         },
       },
     },

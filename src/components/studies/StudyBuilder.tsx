@@ -37,7 +37,7 @@ const subtitles: StringDictionary<string> = {
   customize: 'Customize your App',
   'enrollment-type-selector': 'Participant Study Enrollment',
   'passive-features': 'Optional Background Monitoring',
-  launch: 'Launch study requirements',
+  launch: 'Launch Study Requirements',
 }
 
 const useStyles = makeStyles((theme: ThemeType) => ({
