@@ -35,6 +35,7 @@ const StyledSBListItemStyles = (theme: Theme, isActive?: boolean, isOpen?: boole
   },
 
   '& svg': {
+    // transition: 'fill .5s ease-out',
     fill: isActive ? '#fff' : '#878E95',
   },
 })
@@ -80,14 +81,16 @@ const StyledLinkButton = styled(Button, {
 })<{$isActive?: boolean; $isOpen?: boolean}>({
   fontFamily: latoFont,
   justifyContent: 'flex-start',
-  //color: '#282828',
+  backgroundColor: 'transparent',
   padding: '0px',
   width: '100%',
   textDecoration: 'none',
   height: 'auto',
+
   '&:hover': {
-    backgroundColor: 'inherit',
+    backgroundColor: 'transparent',
     height: 'auto',
+    textDecoration: 'none',
   },
 })
 

@@ -1,9 +1,9 @@
-import {Box, MenuItem, Select, SelectProps, TextField} from '@mui/material'
+import {Box, FormControl, MenuItem, Select, SelectProps, TextField} from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
 import makeStyles from '@mui/styles/makeStyles'
-import clsx from 'clsx'
 import React from 'react'
-import {poppinsFont, ThemeType} from '../../style/theme'
+import {ThemeType} from '../../style/theme'
+import {SimpleTextLabel} from './StyledComponents'
 
 interface StyleProps {
   width: string //px or %
@@ -79,7 +79,7 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   },
 }))
 
-export interface BlackBorderDropdownStyleProps {
+export interface DropdownStyleProps {
   width: string
   itemHeight?: string
   value: string
@@ -93,7 +93,7 @@ export interface BlackBorderDropdownStyleProps {
   isRequired?: boolean
 }
 
-const BlackBorderDropdown: React.FunctionComponent<SelectProps & BlackBorderDropdownStyleProps> = ({
+const Dropdown: React.FunctionComponent<SelectProps & DropdownStyleProps> = ({
   value,
   onChange,
   dropdown,
@@ -108,26 +108,16 @@ const BlackBorderDropdown: React.FunctionComponent<SelectProps & BlackBorderDrop
   isRequired,
   ...other
 }) => {
-  console.log(hasError)
+  console.log('EMV', emptyValueLabel)
   const classes = useStyles({width, itemHeight})
   const selectMenu = (
     <Select
       labelId={id}
       id={id}
-      color="secondary"
-      variant="filled"
       value={value}
       onChange={onChange}
       disableUnderline
-      classes={{
-        select: clsx(true && classes.selectBase, hasError && classes.errorBorder, !hasError && classes.regularBorder),
-      }}
       MenuProps={{
-        classes: {
-          list: classes.listPadding,
-          paper: classes.listBorder,
-        },
-
         anchorOrigin: {
           vertical: 'bottom',
           horizontal: 'center',
@@ -137,12 +127,10 @@ const BlackBorderDropdown: React.FunctionComponent<SelectProps & BlackBorderDrop
           horizontal: 'center',
         },
       }}
-      displayEmpty>
-      <MenuItem value="" disabled style={{display: 'none'}}>
-        {emptyValueLabel}
-      </MenuItem>
+      displayEmpty
+      renderValue={value => (value ? value : emptyValueLabel)}>
       {dropdown.map((el, index) => (
-        <MenuItem className={classes.optionClass} key={index} value={el.value} id={`investigator-${index}`}>
+        <MenuItem key={index} value={el.value} id={`investigator-${index}`}>
           {el.label}
         </MenuItem>
       ))}
@@ -150,8 +138,8 @@ const BlackBorderDropdown: React.FunctionComponent<SelectProps & BlackBorderDrop
   )
 
   const searchableDropdown = (
-    <Box>
-      <Box style={{fontSize: '14px', fontFamily: poppinsFont}}>{`${controlLabel || ''}${isRequired ? '*' : ''}`}</Box>
+    <FormControl fullWidth sx={{label: {position: 'relative'}}}>
+      <SimpleTextLabel sx={{marginBottom: '8px'}}>{`${controlLabel || ''}${isRequired ? '*' : ''}`}</SimpleTextLabel>
       <Autocomplete
         value={{value: value, label: value}}
         id={id}
@@ -166,10 +154,10 @@ const BlackBorderDropdown: React.FunctionComponent<SelectProps & BlackBorderDrop
           searchableOnChange(newValue?.value || '')
         }}
       />
-    </Box>
+    </FormControl>
   )
 
   return <Box>{isSearchable ? searchableDropdown : selectMenu}</Box>
 }
 
-export default BlackBorderDropdown
+export default Dropdown

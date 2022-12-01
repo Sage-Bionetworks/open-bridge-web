@@ -1,25 +1,14 @@
-import {Box, MenuItem} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import {Box, Button, MenuItem, Select, styled} from '@mui/material'
+import {theme} from '@style/theme'
+import {StudySession} from '@typedefs/scheduling'
 import React, {FunctionComponent, useEffect} from 'react'
-import {StudySession} from '../../../types/scheduling'
-import {BlueButton, ButtonWithSelectButton, ButtonWithSelectSelect} from '../../widgets/StyledComponents'
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    flexShrink: 0,
-    paddingTop: theme.spacing(2),
-  },
-  label: {
-    fontSize: 18,
-    textTransform: 'uppercase',
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    whiteSpace: 'nowrap',
-  },
+const StyledActionButtons = styled(Box, {label: 'StyledActionButtons'})(({theme}) => ({
+  display: 'flex',
+  alignItems: 'center',
+
+  flexShrink: 0,
+  paddingTop: theme.spacing(2),
 }))
 
 type SessionActionButtonsProps = {
@@ -33,7 +22,6 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   sessions,
   disabled,
 }: SessionActionButtonsProps) => {
-  const classes = useStyles()
   const [selectedSessionId, setSelectedSessionId] = React.useState<string | undefined>(
     sessions.length > 0 ? sessions[0].guid : undefined
   )
@@ -54,25 +42,19 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   }
 
   return (
-    <Box className={classes.root}>
-      <BlueButton
-        disabled={disabled}
-        key="add_session"
-        variant="contained"
-        color="secondary"
-        onClick={() => onAddSession(sessions, [])}>
-        + Create new session
-      </BlueButton>
+    <StyledActionButtons>
+      <Button disabled={disabled} key="add_session" variant="contained" onClick={() => onAddSession(sessions, [])}>
+        Create new session
+      </Button>
 
       {selectedSessionId && (
         <>
-          <ButtonWithSelectSelect
+          <Select
+            sx={{margin: theme.spacing(0, 2)}}
             key="session_select"
             value={selectedSessionId}
             onChange={e => setSelectedSessionId(e.target.value as string)}
             displayEmpty
-            color="secondary"
-            variant="filled"
             inputProps={{'aria-label': 'Select Sessions'}}
             disableUnderline={true}>
             {sessions.map((session, index) => (
@@ -80,19 +62,18 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
                 {session.name}
               </MenuItem>
             ))}
-          </ButtonWithSelectSelect>
+          </Select>
 
-          <ButtonWithSelectButton
+          <Button
             disabled={disabled}
             key="duplicate_session"
-            variant="contained"
-            color="secondary"
+            variant="text"
             onClick={() => duplicateSession(selectedSessionId)}>
             Duplicate
-          </ButtonWithSelectButton>
+          </Button>
         </>
       )}
-    </Box>
+    </StyledActionButtons>
   )
 }
 

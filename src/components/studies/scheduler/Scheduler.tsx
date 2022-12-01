@@ -1,9 +1,10 @@
 import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
-import {ReactComponent as BurstIcon} from '@assets/scheduler/burst_icon.svg'
+
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
 import LoadingComponent from '@components/widgets/Loader'
 import {DialogButtonPrimary, DialogButtonSecondary} from '@components/widgets/StyledComponents'
+import AddToPhotosTwoToneIcon from '@mui/icons-material/AddToPhotosTwoTone'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
@@ -15,6 +16,7 @@ import {
   DialogTitle,
   FormControlLabel,
   IconButton,
+  styled,
   Theme,
 } from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
@@ -112,6 +114,18 @@ export const useStyles = makeStyles((theme: Theme) =>
     readOnly: {},
   })
 )
+
+const StyledButtonBar = styled(Box, {label: 'StyledButtonBar'})(({theme}) => ({
+  display: 'flex',
+  borderTop: '1px solid #EAECEE',
+  marginLeft: theme.spacing(5),
+  justifyContent: 'flex-end',
+
+  paddingTop: theme.spacing(2),
+  '& > button': {
+    marginLeft: theme.spacing(2),
+  },
+}))
 
 export type SchedulerErrorType = {
   errors: any
@@ -527,8 +541,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                 disabled={isScheduleDefault(schedule) && !hasBeenSaved}
                 className={classes.burstButton}
                 onClick={() => setOpenModal('BURSTS')}>
-                <BurstIcon style={isScheduleDefault(schedule) && !hasBeenSaved ? {opacity: '0.3'} : {}} /> Configure
-                Study Bursts
+                <AddToPhotosTwoToneIcon style={isScheduleDefault(schedule) && !hasBeenSaved ? {opacity: '0.3'} : {}} />{' '}
+                Configure Study Bursts
               </Button>
             )}
             {!timeline ? (
@@ -585,7 +599,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={openStudySession !== undefined} maxWidth="lg" scroll="body">
+      {/* ----------- Study Session Scheduling -----------  */}
+      <Dialog open={openStudySession !== undefined} fullWidth maxWidth="xl" scroll="body">
         <DialogTitle sx={{borderBottom: '1px solid #EAECEE', padding: theme.spacing(5, 5, 2, 5)}}>
           <OpenSessionHeader session={openStudySession!} />
           <IconButton
@@ -596,8 +611,9 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent style={{padding: 0}}>
-          {openStudySession && !isReadOnly && (
+        <DialogContent sx={{padding: theme.spacing(0, 8, 2.5, 0)}}>
+          {/* editable schedule*/}
+          {openStudySession && (
             <Box
               sx={{
                 marginBottom: theme.spacing(2),
@@ -623,6 +639,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                   backgroundColor: theme.palette.grey[100],
                 }}>
                 <AssessmentList
+                  isReadOnly={isReadOnly}
                   studySession={openStudySession}
                   onChangePerformanceOrder={(performanceOrder: PerformanceOrder) => {
                     const schedule = {
@@ -642,80 +659,80 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                 />
               </Box>
               {/* This is what is being displayed as the card */}
-              <SchedulableSingleSessionContainer
-                onOpenEventsEditor={() => setOpenModal('EVENTS')}
-                key={getOpenStudySession().guid}
-                customEvents={study?.customEvents}
-                studySession={getOpenStudySession()}
-                hasCriticalStartEvent={sessionHasCriticalStudyStartEvent(getOpenStudySession())}
-                burstOriginEventId={_.first(schedule.studyBursts)?.originEventId}
-                onUpdateSessionSchedule={(
-                  session: StudySession,
-                  shouldInvalidateBurst: boolean,
-                  shouldUpdaeStudyStartEvent: boolean
-                ) => {
-                  if (shouldUpdaeStudyStartEvent && session.startEventIds.length > 0 && session.startEventIds[0]) {
-                    console.log('UPDAING')
-                    updateStudyStartEventId(session.startEventIds[0])
-                  }
-                  scheduleUpdateFn({
-                    type: ActionTypes.UpdateSessionSchedule,
-                    payload: {
-                      sessionId: getOpenStudySession().guid!,
-                      schedule: session,
-                      shouldInvalidateBurst,
-                    },
-                  })
-                }}
-                sessionErrorState={schedulerErrorState.get(
-                  `${getOpenStudySession().name}-${
-                    schedule.sessions.findIndex(s => s.guid === openStudySession.guid) + 1
-                  }`
-                )}></SchedulableSingleSessionContainer>
+              <Box sx={{flexGrow: 1}}>
+                {!isReadOnly ? (
+                  <>
+                    <SchedulableSingleSessionContainer
+                      onOpenEventsEditor={() => setOpenModal('EVENTS')}
+                      key={getOpenStudySession().guid}
+                      customEvents={study?.customEvents}
+                      studySession={getOpenStudySession()}
+                      hasCriticalStartEvent={sessionHasCriticalStudyStartEvent(getOpenStudySession())}
+                      burstOriginEventId={_.first(schedule.studyBursts)?.originEventId}
+                      onUpdateSessionSchedule={(
+                        session: StudySession,
+                        shouldInvalidateBurst: boolean,
+                        shouldUpdaeStudyStartEvent: boolean
+                      ) => {
+                        if (
+                          shouldUpdaeStudyStartEvent &&
+                          session.startEventIds.length > 0 &&
+                          session.startEventIds[0]
+                        ) {
+                          console.log('UPDAING')
+                          updateStudyStartEventId(session.startEventIds[0])
+                        }
+                        scheduleUpdateFn({
+                          type: ActionTypes.UpdateSessionSchedule,
+                          payload: {
+                            sessionId: getOpenStudySession().guid!,
+                            schedule: session,
+                            shouldInvalidateBurst,
+                          },
+                        })
+                      }}
+                      sessionErrorState={schedulerErrorState.get(
+                        `${getOpenStudySession().name}-${
+                          schedule.sessions.findIndex(s => s.guid === openStudySession.guid) + 1
+                        }`
+                      )}></SchedulableSingleSessionContainer>
+
+                    <StyledButtonBar>
+                      <Button variant="outlined" onClick={() => onCancelSessionUpdate()}>
+                        Cancel
+                      </Button>
+
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          onSave(true).then(() => setOpenStudySession(undefined))
+                        }}>
+                        {saveLoader ? <CircularProgress /> : <span>Save Changes</span>}
+                      </Button>
+                    </StyledButtonBar>
+                  </>
+                ) : (
+                  <>
+                    <ReadOnlyScheduler
+                      originEventId={_.first(schedule.studyBursts)?.originEventId}
+                      session={openStudySession}
+                      studySessionIndex={schedule.sessions.findIndex(s => s.guid === openStudySession.guid)}
+                    />
+                    <StyledButtonBar>
+                      <Button variant="contained" onClick={() => onCancelSessionUpdate()}>
+                        Close
+                      </Button>
+                    </StyledButtonBar>
+                  </>
+                )}
+              </Box>
             </Box>
           )}
-          {openStudySession && isReadOnly && (
-            <>
-              <IconButton
-                aria-label="close"
-                className={classes.closeModalButton}
-                onClick={() => onCancelSessionUpdate()}
-                size="large">
-                <CloseIcon />
-              </IconButton>
-              <ReadOnlyScheduler
-                originEventId={_.first(schedule.studyBursts)?.originEventId}
-                session={openStudySession}
-                studySessionIndex={schedule.sessions.findIndex(s => s.guid === openStudySession.guid)}
-              />
-            </>
-          )}
         </DialogContent>
-        <DialogActions>
-          {!isReadOnly ? (
-            <Button variant="outlined" onClick={() => onCancelSessionUpdate()}>
-              Cancel
-            </Button>
-          ) : (
-            <Button variant="contained" onClick={() => onCancelSessionUpdate()}>
-              Close
-            </Button>
-          )}
-
-          {!isReadOnly && (
-            <Button
-              variant="contained"
-              onClick={() => {
-                onSave(true).then(() => setOpenStudySession(undefined))
-              }}>
-              {saveLoader ? <CircularProgress /> : <span>Save Changes</span>}
-            </Button>
-          )}
-        </DialogActions>
       </Dialog>
       <Dialog open={openModal === 'BURSTS'} maxWidth="md" scroll="body">
         <DialogTitle className={classes.dialogTitle}>
-          <BurstIcon />
+          <AddToPhotosTwoToneIcon />
           &nbsp;&nbsp; Configure Study bursts
           <IconButton
             aria-label="close"

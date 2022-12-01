@@ -1,3 +1,10 @@
+import Alert_Icon from '@assets/alert_icon.svg'
+import {ReactComponent as ArrowIcon} from '@assets/arrow_long.svg'
+import {ReactComponent as EnvelopeImg} from '@assets/launch/envelope_icon.svg'
+import DatePicker from '@components/widgets/DatePicker'
+import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
+import {AlertWithText, SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
   Button,
@@ -11,20 +18,13 @@ import {
   RadioGroup,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import StudyService from '@services/study.service'
+import {theme, ThemeType} from '@style/theme'
+import constants from '@typedefs/constants'
+import {Contact, Study} from '@typedefs/types'
 import dayjs from 'dayjs'
 import React, {useEffect} from 'react'
 import {NavLink, Redirect} from 'react-router-dom'
-import Alert_Icon from '../../../assets/alert_icon.svg'
-import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
-import {ReactComponent as EnvelopeImg} from '../../../assets/launch/envelope_icon.svg'
-import {useUserSessionDataState} from '../../../helpers/AuthContext'
-import StudyService from '../../../services/study.service'
-import {ThemeType} from '../../../style/theme'
-import constants from '../../../types/constants'
-import {Contact, Study} from '../../../types/types'
-import DatePicker from '../../widgets/DatePicker'
-import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
-import {AlertWithText, SimpleTextInput, SimpleTextLabel} from '../../widgets/StyledComponents'
 import LeadInvestigatorDropdown from '../app-design/LeadInvestigatorDropdown'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -108,10 +108,6 @@ const LastScreen: React.FunctionComponent<{
       )}
     </Box>
   )
-}
-
-type irbStudyDataType = {
-  irbRecordSameInstitutionalAffiliation: boolean
 }
 
 export const getDateWithTimeZone = (date: Date) => {
@@ -349,9 +345,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
 
             <Grid item xs={6}>
               <FormControl fullWidth>
-                <Box fontSize="14px" fontFamily="Poppins" mb={-1}>
-                  What is your IRB of record?*
-                </Box>
+                <SimpleTextLabel sx={{marginBottom: theme.spacing(-1)}}>What is your IRB of record?*</SimpleTextLabel>
                 <Box pl={4} mt={2}>
                   <RadioGroup
                     aria-label="irb of record"
@@ -409,7 +403,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     inputProps={{
                       style: inputStyles,
                     }}
-                    readOnly={irbRecordSameInstAffiliation}
+                    $readOnly={irbRecordSameInstAffiliation}
                   />
                 </Box>
               </FormControl>
@@ -453,6 +447,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     <Box style={{display: 'flex', flexDirection: 'row'}}>
                       <FormControl style={{marginRight: '8px'}}>
                         <DatePicker
+                          label="Date of IRB Approval"
                           id="approvalDate"
                           value={irbDecisionIsApproved ? irbDecisionDate : null}
                           onChange={e => {
@@ -467,6 +462,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                       </FormControl>
                       <FormControl>
                         <DatePicker
+                          label="Date of Approval Expiration"
                           id="expirationDate"
                           value={irbDecisionIsApproved ? irbExpirationDate : null}
                           onChange={e => {
@@ -487,10 +483,16 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         Please make sure that expiration date is the same or after approval date.
                       </FormHelperText>
                     )}
-                    <FormControlLabel control={<Radio />} label="Exempt" value="irb_exempt" />
+                    <FormControlLabel
+                      sx={{marginTop: theme.spacing(2)}}
+                      control={<Radio />}
+                      label="Exempt"
+                      value="irb_exempt"
+                    />
                     <FormControl>
                       <DatePicker
                         id="exemptionDate"
+                        label="Date of Exemption"
                         value={!irbDecisionIsApproved ? irbDecisionDate || null : null}
                         onChange={e => {
                           const updatedStudy = {

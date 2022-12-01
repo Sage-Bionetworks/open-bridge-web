@@ -3,10 +3,10 @@ import DesktopDatePicker from '@mui/lab/DesktopDatePicker'
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 //import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
-import {FormControl, TextField} from '@mui/material'
+import {FormControl} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import React, {FunctionComponent} from 'react'
-import {SimpleTextLabel} from './StyledComponents'
+import {SimpleTextInput, SimpleTextLabel} from './StyledComponents'
 
 const useStyles = makeStyles(theme => ({
   datePicker: {
@@ -28,8 +28,7 @@ type DatePickerProps = {
   isYearOnly?: boolean
 }
 
-// -----------------  Add participant control
-const DatePicker2: FunctionComponent<DatePickerProps> = ({onChange, value, label, id, disabled, isYearOnly}) => {
+const DatePicker: FunctionComponent<DatePickerProps> = ({onChange, value, label, id, disabled, isYearOnly}) => {
   const classes = useStyles()
 
   const handleDateChange = (date: Date | null) => {
@@ -44,11 +43,19 @@ const DatePicker2: FunctionComponent<DatePickerProps> = ({onChange, value, label
           clearable={true}
           value={value}
           onChange={e => handleDateChange(e || null)}
-          renderInput={params => <TextField {...params} id={id} disabled={disabled} className={classes.datePicker} />}
+          renderInput={params => (
+            <SimpleTextInput
+              {...params}
+              sx={{width: 'fit-content'}}
+              id={id}
+              disabled={disabled}
+              className={classes.datePicker}
+            />
+          )}
         />
       </FormControl>
     </LocalizationProvider>
   )
 }
 
-export default DatePicker2
+export default DatePicker

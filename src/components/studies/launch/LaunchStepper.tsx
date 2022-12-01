@@ -1,4 +1,4 @@
-import {StepButton} from '@mui/material'
+import {Container, StepButton} from '@mui/material'
 import Step from '@mui/material/Step'
 import StepConnector from '@mui/material/StepConnector'
 import {StepIconProps} from '@mui/material/StepIcon'
@@ -93,7 +93,6 @@ function ColorlibStepIcon(props: StepIconProps) {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      width: '100%',
       height: '130px',
       position: 'relative',
     },
@@ -119,7 +118,7 @@ const LaunchStepper: React.FunctionComponent<LaunchStepperProps> = ({
   const classes = useStyles()
 
   return (
-    <div className={classes.root}>
+    <Container maxWidth="md" sx={{position: 'relative', height: '130px'}}>
       <Stepper
         alternativeLabel
         activeStep={activeStep}
@@ -133,7 +132,7 @@ const LaunchStepper: React.FunctionComponent<LaunchStepperProps> = ({
           </Step>
         ))}
       </Stepper>
-    </div>
+    </Container>
   )
 }
 

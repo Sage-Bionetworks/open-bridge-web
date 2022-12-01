@@ -84,7 +84,6 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
           rows={2}
           rowsMax={4}
           titleText="Main Header"
-          alternativeTextInputClassName={classes.headlineStyle}
         />
       </FormControl>
       <FormControl>
@@ -106,7 +105,6 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
           rowsMax={6}
           placeholder="What are the first things you want participants to know about the study."
           titleText="Body Copy (maximum 250 characters)"
-          alternativeTextInputClassName={'none'}
           maxWordCount={250}
         />
       </FormControl>

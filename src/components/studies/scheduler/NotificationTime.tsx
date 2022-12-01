@@ -125,7 +125,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   }
 
   const initialWindow = (
-    <SchedulingFormSection label={'Notify participant:'} variant="small" border={false}>
+    <SchedulingFormSection label={'Notify participant:'} border={false}>
       <RadioGroup
         aria-label="Session Starts On"
         name="startDate"
@@ -159,7 +159,10 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   )
 
   const followUpSingleDay = (
-    <SchedulingFormSection label={'Send a reminder notification:'} variant="small" border={false}>
+    <SchedulingFormSection
+      label={'Send a reminder notification:'}
+      style={{paddingBottom: 0, marginBottom: 0}}
+      border={false}>
       <Duration
         onChange={e => {
           onChange({notifyAt: notifyAt, offset: e.target.value})
@@ -197,7 +200,10 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     </SchedulingFormSection>
   )
   const followUpMultiDay = (
-    <SchedulingFormSection label={'Send a reminder notification:'} variant="small" border={false}>
+    <SchedulingFormSection
+      label={'Send a reminder notification:'}
+      style={{paddingBottom: 0, marginBottom: 0}}
+      border={false}>
       <FormGroup row sx={{alignItems: 'center'}}>
         <SmallTextBox
           sx={{marginBottom: 0}}

@@ -185,10 +185,12 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
             />
           }
           <Box display="flex">
-            <Button className={classes.editEventDate} variant="text" onClick={() => setIsEditParticipant(true)}>
-              <img src={EditIcon}></img>
-              &nbsp;Edit Participant Events
-            </Button>
+            {events && events?.customEvents?.length > 0 && (
+              <Button className={classes.editEventDate} variant="text" onClick={() => setIsEditParticipant(true)}>
+                <img src={EditIcon}></img>
+                &nbsp;Edit Participant Events
+              </Button>
+            )}
             <Box
               marginLeft="auto"
               className={clsx(

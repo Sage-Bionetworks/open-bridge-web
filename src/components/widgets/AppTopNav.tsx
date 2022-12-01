@@ -20,12 +20,9 @@ const StyledAppNav = styled(Box, {label: 'StyledAppTopNav', shouldForwardProp: p
   hasSubNav?: boolean
 }>(({theme, hasSubNav}) => ({
   height: hasSubNav ? 'auto' : '122px',
-  marginBottom: '4px',
 
-  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.05)',
+  borderBottom: '1px solid #EAECEE',
   padding: hasSubNav ? theme.spacing(0, 4) : theme.spacing(0, 5),
-
-  borderBottom: hasSubNav ? 'none: ' : '1px solid #EAEAEA',
   '&  div.first-of-type': {
     display: 'flex',
 
@@ -304,7 +301,14 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <img src={hasSubNav ? Logo : LogoLarge} key="Mobile Toolbox" alt="logo" />
+            {sessionData?.token ? (
+              <NavLink to="/studies">
+                <img src={hasSubNav ? Logo : LogoLarge} key="Mobile Toolbox" alt="logo" />
+              </NavLink>
+            ) : (
+              <img src={hasSubNav ? Logo : LogoLarge} key="Mobile Toolbox" alt="logo" />
+            )}
+
             <Box sx={{display: 'flex'}}>
               <StyledToolBar disableGutters hasSubNav={hasSubNav}>
                 <MenuLinks

@@ -1,12 +1,13 @@
+import Dropdown from '@components/widgets/Dropdown'
+import {SimpleTextLabel} from '@components/widgets/StyledComponents'
+import Utility from '@helpers/utility'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import AccessService from '@services/access.service'
+import {ThemeType} from '@style/theme'
+import {OrgUser} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {useEffect, useState} from 'react'
-import Utility from '../../../helpers/utility'
-import AccessService from '../../../services/access.service'
-import {ThemeType} from '../../../style/theme'
-import {OrgUser} from '../../../types/types'
-import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 
 type LeadInvestigatorDropdownProps = {
   onChange: Function
@@ -61,10 +62,10 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
 
   return (
     <div>
-      <Box ml={1} className={clsx(hasError && classes.errorText)}>
-        Lead Principal Investigator*
+      <Box className={clsx(hasError && classes.errorText)} sx={{marginBottom: '6px'}}>
+        <SimpleTextLabel sx={{position: 'relative'}}>Lead Principal Investigator*</SimpleTextLabel>
       </Box>
-      <BlackBorderDropdown
+      <Dropdown
         id="lead-investigator-drop-down"
         dropdown={leadInvestigatorOptions.map(item => ({
           value: item.name,

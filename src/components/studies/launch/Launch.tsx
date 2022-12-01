@@ -1,14 +1,11 @@
-import {ReactComponent as ArrowIcon} from '@assets/arrow_long.svg'
 import {ReactComponent as LockIcon} from '@assets/launch/lock_icon.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import SaveButton from '@components/widgets/SaveButton'
-import {NextButton, PrevButton} from '@components/widgets/StyledComponents'
-import {Box, Button, Paper} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+
+import {Box, Button, Container} from '@mui/material'
+
 import {useSchedule} from '@services/scheduleHooks'
 import StudyService from '@services/study.service'
 import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
-import {ThemeType} from '@style/theme'
 import {Schedule} from '@typedefs/scheduling'
 import {Study} from '@typedefs/types'
 import React, {useState} from 'react'
@@ -18,19 +15,6 @@ import IrbDetails from './IrbDetails'
 import LaunchAlerts from './LaunchAlerts'
 import LaunchStepper from './LaunchStepper'
 import ReadOnlyIrbDetails from './read-only-components/ReadOnlyIrbDetails'
-
-const useStyles = makeStyles((theme: ThemeType) => ({
-  root: {
-    padding: theme.spacing(3, 8),
-  },
-  button: {
-    marginRight: theme.spacing(1),
-  },
-  instructions: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-}))
 
 export interface LaunchProps {
   id: string
@@ -88,7 +72,6 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
 }
 
 const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedback}: LaunchProps) => {
-  const classes = useStyles()
   const {data: sourceStudy} = useStudy(id)
   const {data: schedule} = useSchedule(id, false)
   const [study, setStudy] = React.useState<Study>()
@@ -174,10 +157,10 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
   if (isReadOnly) {
     return <ReadOnlyIrbDetails study={study} />
   }
-  const showNextButton = !isReadOnly && ((!isStudyLive && activeStep < 2) || (isStudyLive && activeStep === 0))
+  const showButton = !isReadOnly && ((!isStudyLive && activeStep < 2) || (isStudyLive && activeStep === 0))
 
   return (
-    <Paper className={classes.root} elevation={2} id="container">
+    <Box id="container">
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
         {({onConfirm, onCancel}) => (
           <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
@@ -187,7 +170,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
         <LaunchStepper steps={steps} activeStep={activeStep} setActiveStepFn={handleStepClick}></LaunchStepper>
       )}
 
-      <div className={classes.instructions}>
+      <div>
         <StepContent
           study={study}
           schedule={schedule}
@@ -199,7 +182,13 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
             onUpdate(study)
           }}
         />{' '}
-        <div>
+        <Container
+          maxWidth="sm"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
           {!isFinished && (
             <Box py={2} textAlign="right">
               {activeStep < 3 && (
@@ -207,19 +196,23 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
                   {activeStep === 0 ? (
                     children
                   ) : (
-                    <PrevButton variant="outlined" color="primary" onClick={handleBack}>
-                      <ArrowIcon /> {steps[activeStep - 1]?.label}
-                    </PrevButton>
+                    <Button variant="outlined" color="primary" onClick={handleBack}>
+                      {steps[activeStep - 1]?.label}
+                    </Button>
                   )}
                   &nbsp;&nbsp;
                 </>
               )}
 
-              {showNextButton && (
-                <NextButton variant="contained" color="primary" onClick={handleNext} disabled={!isNextEnabled}>
-                  {steps[activeStep + 1]?.label}
-                  <ArrowIcon />
-                </NextButton>
+              {showButton && (
+                <Button
+                  variant="contained"
+                  sx={{width: '180px'}}
+                  color="primary"
+                  onClick={handleNext}
+                  disabled={!isNextEnabled}>
+                  Next
+                </Button>
               )}
 
               {activeStep === 2 && (
@@ -230,15 +223,15 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
               )}
 
               {activeStep === 1 && isStudyLive && (
-                <SaveButton variant="contained" color="primary" disabled={!isNextEnabled} onClick={() => onSave()}>
-                  Save to App
-                </SaveButton>
+                <Button variant="contained" disabled={!isNextEnabled} onClick={() => onSave()}>
+                  Save Changes to App
+                </Button>
               )}
             </Box>
           )}
-        </div>
+        </Container>
       </div>
-    </Paper>
+    </Box>
   )
 }
 
