@@ -2,7 +2,6 @@ import {
   Button,
   FormControlLabel,
   InputLabel,
-  Select,
   styled,
   TextField,
   Theme,
@@ -12,44 +11,6 @@ import {
 import Alert from '@mui/material/Alert'
 import withStyles from '@mui/styles/withStyles'
 import {latoFont, shouldForwardProp} from '../../style/theme'
-
-export const ButtonWithSelectButton = withStyles(theme => ({
-  root: {
-    height: '40px',
-    marginBottom: theme.spacing(1),
-    color: 'black',
-    backgroundColor: theme.palette.primary.dark,
-    '&:disabled': {
-      boxShadow: '1px 2px 2px rgb(0 0 0 / 25%)',
-    },
-    '&:hover': {
-      backgroundColor: theme.palette.primary.dark,
-      boxShadow: `1px 2px 2px rgba(0, 0, 0, 0.25)`,
-      fontWeight: 'bolder',
-    },
-    fontFamily: 'Lato',
-    boxShadow: `1px 2px 2px rgba(0, 0, 0, 0.25)`,
-    borderRadius: '0 2px 2px 0',
-  },
-}))(Button)
-
-export const ButtonWithSelectSelect = withStyles(theme => ({
-  select: {
-    marginTop: 0,
-
-    padding: '12px 16px',
-    fontSize: '14px',
-    height: '40px',
-    borderRadius: '2px 0 0 2px',
-
-    boxShadow: `1px 2px 2px rgba(0, 0, 0, 0.25)`,
-    outline: 'none',
-    // boxSizing: 'border-box',
-    backgroundColor: '#F2F2F2',
-    fontFamily: 'Lato',
-    cursor: 'pointer',
-  },
-}))(Select)
 
 export const BlueButton = withStyles(theme => ({
   root: {
@@ -194,7 +155,7 @@ export const SimpleTextInput = styled(TextField, {label: 'SimpleTextInput', shou
     position: 'relative',
     // backgroundColor: theme.palette.common.white,
     fontSize: '14px',
-    width: 'auto',
+    width: '100%',
     padding: '10px 12px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [latoFont, 'Roboto'].join(','),

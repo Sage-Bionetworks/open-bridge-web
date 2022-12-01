@@ -233,7 +233,7 @@ const theme: Theme = createTheme({
           },
         },
         textPrimary: {
-          padding: '0, 10px',
+          padding: 0,
           color: '#4F527D',
           background: 'transparent',
           '&:hover': {

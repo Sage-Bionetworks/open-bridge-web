@@ -220,20 +220,22 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   }
 
   return (
-    <Box bgcolor={section === 'scheduler' ? '#E5E5E5' : '#f7f7f7'}>
+    <Box sx={{backgroundColor: 'rgba(135, 142, 149, 0.1)'}}>
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
         <Container
           maxWidth="xl"
           className={classes.studyComponentContainer}
-          style={{
-            backgroundColor:
+          style={
+            {
+              /*  backgroundColor:
               section === 'session-creator' ||
               section === 'scheduler' ||
               section === 'enrollment-type-selector' ||
               section === 'preview'
-                ? '#f7f7f7'
-                : 'inherit',
-          }}>
+                ? 'rgba(135, 142, 149, 0.1)'
+                : 'inherit',*/
+            }
+          }>
           <Box paddingTop={0} sx={{display: 'flex', position: 'relative', minHeight: '100vh'}}>
             <StudyLeftNav
               open={open}
@@ -242,7 +244,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
               study={study!}
               disabled={!allSessionsHaveAssessments()}></StudyLeftNav>
             <Box className={classes.mainAreaWrapper}>
-              <Box bgcolor="#f7f7f7">
+              <Box>
                 <AlertBanner
                   backgroundColor={feedbackBannerType?.bgColor!}
                   textColor={feedbackBannerType?.textColor!}

@@ -255,7 +255,14 @@ const StudyAlertComponent: React.FunctionComponent<StudyAlertSection & {onIgnore
           <StyledListItem key={error.errorText + errorIndex}>
             <div>{error.errorText}</div>
             {error.isDismissable && (
-              <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  width: '200px',
+                  padding: theme.spacing(0, 2),
+                  marginLeft: theme.spacing(3),
+                }}>
                 <NavLink
                   style={{textDecoration: 'none'}}
                   to={`${_section!.path}?from=launch${error.anchor ? '&anchor=' + error.anchor : ''}`}>
