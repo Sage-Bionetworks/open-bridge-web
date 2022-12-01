@@ -301,7 +301,14 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <img src={hasSubNav ? Logo : LogoLarge} key="Mobile Toolbox" alt="logo" />
+            {sessionData?.token ? (
+              <NavLink to="/studies">
+                <img src={hasSubNav ? Logo : LogoLarge} key="Mobile Toolbox" alt="logo" />
+              </NavLink>
+            ) : (
+              <img src={hasSubNav ? Logo : LogoLarge} key="Mobile Toolbox" alt="logo" />
+            )}
+
             <Box sx={{display: 'flex'}}>
               <StyledToolBar disableGutters hasSubNav={hasSubNav}>
                 <MenuLinks
