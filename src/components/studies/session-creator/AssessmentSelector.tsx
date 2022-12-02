@@ -1,8 +1,9 @@
 import AssessmentCard from '@components/assessments/AssessmentCard'
 import AssessmentLibraryWrapper from '@components/assessments/AssessmentLibraryWrapper'
-import AssessmentSmall from '@components/assessments/AssessmentSmall'
+import AssessmentTable from '@components/assessments/AssessmentsTable'
 import Loader from '@components/widgets/Loader'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
+
 import CheckIcon from '@mui/icons-material/Check'
 import {ToggleButton, ToggleButtonGroup} from '@mui/material'
 import {styled} from '@mui/material/styles'
@@ -14,14 +15,11 @@ import React, {FunctionComponent, useState} from 'react'
 const StyledToggleButton = styled(ToggleButton, {label: 'StyledToggleButton'})<{
   disabled?: boolean
   selected?: boolean
-  viewMode?: ViewType
-}>(({theme, disabled, selected, viewMode}) => ({
+}>(({theme, disabled, selected}) => ({
   position: 'relative',
   padding: '0',
   border: disabled ? 'none' : selected ? '2px solid #ccc' : '0px solid transparent',
   opacity: disabled ? '.3' : selected ? 0.8 : 1,
-  display: viewMode === 'LIST' ? 'block' : 'inherit',
-  width: viewMode === 'LIST' ? '100%' : 'inherit',
 
   '& div.overlay': {
     position: 'absolute',
@@ -59,7 +57,6 @@ const StyledToggleButton = styled(ToggleButton, {label: 'StyledToggleButton'})<{
 }))
 
 type AssessmentSelectorProps = {
-  //active: {group: Group, session: StudySession | undefined}
   activeSession: StudySession | undefined
   onUpdateAssessments: Function
   selectedAssessments: Assessment[]
@@ -71,24 +68,15 @@ const SelectableAssessment: FunctionComponent<{
   isDisabled: boolean
   onUpdateAssessments: (a: Assessment[]) => void
   value: Assessment[]
-  viewMode?: ViewType
-}> = ({assessment, index, isDisabled, onUpdateAssessments, value, viewMode}) => {
+}> = ({assessment, index, isDisabled, onUpdateAssessments, value}) => {
   const toggleAssessment = (event: React.MouseEvent<HTMLElement>, selectedAssessments: Assessment[]) => {
     onUpdateAssessments(selectedAssessments)
   }
   return (
-    <ToggleButtonGroup
-      value={value}
-      onChange={toggleAssessment}
-      aria-label={assessment.title}
-      key={assessment.guid}
-      sx={{display: viewMode === 'LIST' ? 'block' : 'inherit'}}>
-      <StyledToggleButton aria-label="bold" value={assessment} disabled={isDisabled} viewMode={viewMode}>
-        {viewMode === 'GRID' ? (
-          <AssessmentCard index={index} assessment={assessment} key={assessment.guid}></AssessmentCard>
-        ) : (
-          <AssessmentSmall assessment={assessment} key={assessment.guid}></AssessmentSmall>
-        )}
+    <ToggleButtonGroup value={value} onChange={toggleAssessment} aria-label={assessment.title} key={assessment.guid}>
+      <StyledToggleButton aria-label="bold" value={assessment} disabled={isDisabled}>
+        <AssessmentCard index={index} assessment={assessment} key={assessment.guid}></AssessmentCard>
+
         <div className="overlay">
           <div className="overlayBackdrop" />
           <div className="overlayBg">
@@ -140,16 +128,31 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
             assessments={data.assessments}
             onChangeAssessmentsType={t => setAssessmentsType(t)}
             onChangeTags={(assessments: Assessment[]) => setFilteredAssessments(assessments) /*setFilterTags(tags)*/}>
-            {getAssessments().map((a, index) => (
-              <SelectableAssessment
-                value={selectedAssessments}
-                assessment={a}
-                index={index}
-                viewMode={viewMode}
-                onUpdateAssessments={a => onUpdateAssessments(a)}
-                isDisabled={!activeSession || isAssessmentInSession(activeSession, a.guid!)}
-              />
-            ))}
+            {viewMode === 'GRID' ? (
+              getAssessments().map((a, index) => (
+                <SelectableAssessment
+                  value={selectedAssessments}
+                  assessment={a}
+                  index={index}
+                  onUpdateAssessments={a => onUpdateAssessments(a)}
+                  isDisabled={!activeSession || isAssessmentInSession(activeSession, a.guid!)}
+                />
+              ))
+            ) : (
+              <>
+                <AssessmentTable
+                  selectedAssessments={selectedAssessments}
+                  assessments={getAssessments()}
+                  onSelectAssessment={row => {
+                    if (selectedAssessments.find(a => a.guid === row.guid) === undefined) {
+                      onUpdateAssessments([...selectedAssessments, row])
+                    } else {
+                      onUpdateAssessments(selectedAssessments.filter(a => a.guid !== row.guid))
+                    }
+                  }}
+                />
+              </>
+            )}
           </AssessmentLibraryWrapper>
         </div>
       )}

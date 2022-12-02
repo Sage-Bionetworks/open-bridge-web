@@ -4,8 +4,9 @@ import {useHistory} from 'react-router-dom'
 
 export default function useViewToggle(search: string): [ViewType, () => void] {
   const history = useHistory()
-  const view = new URLSearchParams(search).get('view')
-  const [value, setValue] = React.useState<ViewType>(view ? (view as ViewType) : 'GRID')
+  const view = new URLSearchParams(search).get('viewType')
+  const [value, setValue] = React.useState<ViewType>(view === 'LIST' ? 'LIST' : 'GRID')
+
   const toggle = React.useCallback(() => {
     setValue(prev => {
       const val = prev === 'GRID' ? 'LIST' : 'GRID'

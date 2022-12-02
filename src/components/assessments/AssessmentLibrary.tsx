@@ -1,8 +1,7 @@
-import {Box, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow} from '@mui/material'
+import {TableCell, tableCellClasses} from '@mui/material'
 import {styled} from '@mui/styles'
 import makeStyles from '@mui/styles/makeStyles'
 import {useAssessmentsWithResources} from '@services/assessmentHooks'
-import {theme} from '@style/theme'
 import {FunctionComponent, useState} from 'react'
 
 import {Link, RouteComponentProps, useLocation} from 'react-router-dom'
@@ -10,6 +9,7 @@ import {Assessment, ExtendedError} from '../../types/types'
 import Loader from '../widgets/Loader'
 import AssessmentCard from './AssessmentCard'
 import AssessmentLibraryWrapper from './AssessmentLibraryWrapper'
+import AssessmentTable from './AssessmentsTable'
 import useViewToggle from './ViewHook'
 
 type AssessmentLibraryOwnProps = {
@@ -110,29 +110,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: A
               ))}
             </>
           ) : (
-            <TableContainer component={Box}>
-              <Table
-                sx={{minWidth: 650, border: `1px solid ${theme.palette.grey[300]}`}}
-                aria-label="simple table"
-                size="small">
-                <TableHead>
-                  <TableRow>
-                    <StyledTableCell>Title</StyledTableCell>
-                    <StyledTableCell>Tags</StyledTableCell>
-                    <StyledTableCell>Minutes</StyledTableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(filteredAssessments || data.assessments).map((row, index) => (
-                    <StyledTableRow key={row.guid} to={`${match.url}/${row.guid}`}>
-                      <StyledTableCell>{row.title}</StyledTableCell>
-                      <StyledTableCell>{row.tags.join(', ')}</StyledTableCell>
-                      <StyledTableCell>{row.minutesToComplete}</StyledTableCell>
-                    </StyledTableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <AssessmentTable assessments={filteredAssessments || data.assessments} match={match} />
           )}
         </AssessmentLibraryWrapper>
       )}
