@@ -1,3 +1,5 @@
+import OfficialMobileToolboxVersion from '@assets/official_mobile_toolbox_icon.svg'
+import ScientificallyValidatedIcon from '@assets/validated.svg'
 import Loader from '@components/widgets/Loader'
 import {Box, Container, Divider, Paper, Typography} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
@@ -6,10 +8,8 @@ import {useAssessmentWithResources} from '@services/assessmentHooks'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {RouteComponentProps, useParams} from 'react-router-dom'
+import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
 import ClockIcon from '../../assets/clock.svg'
-import OfficialMobileToolboxVersion from '../../assets/official_mobile_toolbox_icon.svg'
-import ScientificallyValidatedIcon from '../../assets/validated.svg'
 import {playfairDisplayFont, poppinsFont} from '../../style/theme'
 import BreadCrumb from '../widgets/BreadCrumb'
 import AssessmentImage from './AssessmentImage'
@@ -101,7 +101,8 @@ type AssessmentDetailProps = AssessmentDetailOwnProps & RouteComponentProps
 
 const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
   const classes = useStyles()
-  const links = [{url: '/assessments', text: 'Assessments'}]
+
+  const [view] = React.useState(new URLSearchParams(useLocation().search).get('viewType'))
   let {id} = useParams<{id: string}>()
   const handleError = useErrorHandler()
 
@@ -119,7 +120,9 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
   return (
     <div className={classes.overallContainer}>
       <Paper className={classes.breadCrumbs}>
-        <BreadCrumb links={links} currentItem={data.title}></BreadCrumb>
+        <BreadCrumb
+          links={[{url: `/assessments?viewType=${view}`, text: 'Assessments'}]}
+          currentItem={data.title}></BreadCrumb>
       </Paper>
       <Container maxWidth="lg" className={classes.overallBackground}>
         <Paper className="classes.container">

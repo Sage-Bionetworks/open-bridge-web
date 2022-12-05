@@ -12,6 +12,7 @@ import {
   DialogTitle,
   IconButton,
   Paper,
+  styled,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AssessmentService from '@services/assessment.service'
@@ -28,6 +29,14 @@ import ReadOnlySessionCreator from './read-only-pages/ReadOnlySessionCreator'
 import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, {SessionAction, Types} from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
+
+const StyledSessionContainer = styled(Paper, {label: 'StyledSessionContainer'})(({theme}) => ({
+  width: '280px',
+  padding: theme.spacing(2),
+  background: ' #FFFFFF',
+  boxShadow: '0px 5px 14px #EAECEE',
+  borderRadius: '5px',
+}))
 
 export const useStyles = makeStyles(theme => ({
   root: {
@@ -46,11 +55,7 @@ export const useStyles = makeStyles(theme => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
-  sessionContainer: {
-    width: '280px',
-    padding: theme.spacing(2),
-    backgroundColor: '#F2f2f2',
-  },
+
   sessionContainer2: {
     height: '1px',
     backgroundColor: '#EAECEE',
@@ -212,7 +217,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
       <>
         <Box className={classes.root} key="sessions">
           {schedule.sessions.map((session, index) => (
-            <Paper className={classes.sessionContainer} key={session.guid! + '_' + index}>
+            <StyledSessionContainer key={session.guid! + '_' + index}>
               <SingleSessionContainer
                 key={session.guid}
                 sessionIndex={index}
@@ -233,7 +238,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                 }
                 onUpdateAssessmentList={updateAssessmentList}
                 numberOfSessions={schedule.sessions.length}></SingleSessionContainer>
-            </Paper>
+            </StyledSessionContainer>
           ))}
           <Box className={classes.sessionContainer2} />
         </Box>
@@ -255,7 +260,8 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
         </Box>
         {children}
         <Dialog
-          maxWidth="lg"
+          maxWidth="xl"
+          fullWidth
           scroll="body"
           open={isAssessmentDialogOpen}
           onClose={cancelAssessmentSelector}

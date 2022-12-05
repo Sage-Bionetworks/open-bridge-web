@@ -1,6 +1,8 @@
 import LogoLarge from '@assets/logo_mtb_large.svg'
 import Logo from '@assets/logo_mtb_small.svg'
+import LogoSymbol from '@assets/logo_mtb_symbol.svg'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
+import ClearIcon from '@mui/icons-material/Clear'
 import MenuIcon from '@mui/icons-material/Menu'
 import {Box, Divider, Drawer, Hidden, IconButton, Menu, MenuItem, styled, Toolbar} from '@mui/material'
 import Button from '@mui/material/Button'
@@ -12,7 +14,6 @@ import React, {FunctionComponent} from 'react'
 import {useLocation} from 'react-router'
 import {NavLink} from 'react-router-dom'
 import Logout from '../account/Logout'
-import MobileDrawerMenuHeader from './MobileDrawerMenuHeader'
 
 const drawerWidth = '320px'
 
@@ -281,15 +282,33 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     <>
       {' '}
       <Hidden lgUp>
-        <IconButton
-          color="inherit"
-          aria-label="Open drawer"
-          edge="end"
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className={classes.menuButton}
-          size="large">
-          <MenuIcon></MenuIcon>
-        </IconButton>
+        <StyledAppNav hasSubNav={hasSubNav}>
+          <Box
+            sx={{
+              display: 'flex',
+
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            {sessionData?.token ? (
+              <NavLink to="/studies">
+                <img src={LogoSymbol} key="Mobile Toolbox" alt="logo" />
+              </NavLink>
+            ) : (
+              <img src={LogoSymbol} key="Mobile Toolbox" alt="logo" />
+            )}
+            <IconButton
+              color="inherit"
+              aria-label="Open drawer"
+              edge="end"
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+              className={classes.menuButton}
+              size="large">
+              <MenuIcon></MenuIcon>
+            </IconButton>
+          </Box>
+        </StyledAppNav>
       </Hidden>
       <Hidden lgDown>
         <StyledAppNav hasSubNav={hasSubNav}>
@@ -363,9 +382,9 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}>
-          <MobileDrawerMenuHeader
-            setIsMobileOpen={setIsMobileOpen}
-            type={sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'}></MobileDrawerMenuHeader>
+          <ClearIcon
+            onClick={() => setIsMobileOpen(false)}
+            sx={{top: '5px', right: '5px', position: 'absolute'}}></ClearIcon>
           <MenuLinks
             appId={appId}
             //  className={classes.drawerMenuItem}

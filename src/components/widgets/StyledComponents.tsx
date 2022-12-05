@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import Alert from '@mui/material/Alert'
 import withStyles from '@mui/styles/withStyles'
+import {Link} from 'react-router-dom'
 import {latoFont, shouldForwardProp} from '../../style/theme'
 
 export const BlueButton = withStyles(theme => ({
@@ -106,6 +107,15 @@ export const DialogButtonPrimary = withStyles(theme => ({
     },
   },
 }))(Button)
+
+export const StyledLink = styled(Link, {label: 'StyledLink', shouldForwardProp})(({theme}) => ({
+  color: ' #4F527D',
+  fontWeight: 900,
+  textDecoration: 'none',
+  '&:hover': {
+    textDecoration: 'underline',
+  },
+}))
 
 export const SimpleTextLabel = styled(InputLabel, {label: 'SimpleTextLabel'})(({theme}) => ({
   fontWeight: 700,
