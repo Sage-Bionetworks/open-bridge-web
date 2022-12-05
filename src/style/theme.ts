@@ -234,6 +234,7 @@ const theme: Theme = createTheme({
         },
         textPrimary: {
           padding: 0,
+          minWidth: 'auto',
           color: '#4F527D',
           background: 'transparent',
           '&:hover': {

@@ -81,6 +81,7 @@ const useStyles = makeStyles(theme => ({
 
   filterItem: {
     display: 'inline-block',
+    marginRight: theme.spacing(2),
   },
 
   list: {
