@@ -4,12 +4,23 @@ import LogoSymbol from '@assets/logo_mtb_symbol.svg'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import ClearIcon from '@mui/icons-material/Clear'
 import MenuIcon from '@mui/icons-material/Menu'
-import {Box, Divider, Drawer, Hidden, IconButton, Menu, MenuItem, styled, Toolbar} from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Drawer,
+  drawerClasses,
+  Hidden,
+  IconButton,
+  Menu,
+  MenuItem,
+  styled,
+  SxProps,
+  Toolbar,
+  Typography,
+} from '@mui/material'
 import Button from '@mui/material/Button'
-import makeStyles from '@mui/styles/makeStyles'
-import {latoFont} from '@style/theme'
+import {latoFont, shouldForwardProp, theme} from '@style/theme'
 import {NavRouteType, UserSessionData} from '@typedefs/types'
-import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useLocation} from 'react-router'
 import {NavLink} from 'react-router-dom'
@@ -41,8 +52,10 @@ const StyledToolBar = styled(Toolbar, {label: 'StyledToolBar', shouldForwardProp
   minHeight: '40px',
 }))
 
-const StyledToolBarLink = styled(NavLink, {label: 'StyledToolBarLink'})(({theme}) => ({
-  padding: theme.spacing(1),
+const StyledToolBarLink = styled(NavLink, {label: 'StyledToolBarLink', shouldForwardProp: shouldForwardProp})<{
+  $isDrawerLink?: boolean
+}>(({theme, $isDrawerLink}) => ({
+  padding: $isDrawerLink ? theme.spacing(2.5, 0) : theme.spacing(1),
   textDecoration: 'none',
 
   flexShrink: 0,
@@ -55,115 +68,21 @@ const StyledToolBarLink = styled(NavLink, {label: 'StyledToolBarLink'})(({theme}
   color: '#353A3F',
 }))
 
-const useStyles = makeStyles(theme => ({
-  selectedLink: {},
-  menuButton: {
-    marginRight: theme.spacing(2),
-    float: 'right',
-    '&::after': {
-      content: '',
-      display: 'table',
-      clear: 'both',
-    },
-  },
+const StyledDrawer = styled(Drawer, {label: 'StyledDrawer'})(({theme}) => ({
+  width: drawerWidth,
+  flexShrink: 0,
 
-  drawer: {
+  [`& .${drawerClasses.paper}`]: {
     width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerMenuItem: {
-    fontFamily: latoFont,
-    fontSize: '15px',
-    textDecoration: 'none',
-    color: 'inherit',
-    flexShrink: 0,
-    height: '56px',
-    boxSizing: 'border-box',
-    paddingLeft: theme.spacing(3),
-    '&:hover': {
-      backgroundColor: '#fff',
-    },
 
-    '&$drawerProfileOptionsDisabled:hover': {
-      backgroundColor: 'inherit',
-      cursor: 'default',
+    padding: theme.spacing(8, 2, 2, 3),
+    '& svg': {
+      top: '16px',
+      right: '16px',
+      fontSize: '36px',
+      position: 'absolute',
+      color: '#878E95',
     },
-    display: 'flex',
-    alignItems: 'center',
-    borderLeft: '4px solid transparent',
-  },
-  drawerMenuSelectedLink: {
-    borderLeft: '4px solid #353535',
-    fontWeight: 'bold',
-  },
-  drawerMenuSeparator: {
-    height: '2px',
-    margin: '20px 0px',
-    backgroundColor: '#2A2A2A',
-  },
-
-  drawerPaper: {
-    width: drawerWidth,
-    backgroundColor: '#F8F8F8',
-  },
-
-  l: {
-    backgroundColor: '#F3F3EC',
-    padding: 0,
-
-    '& li': {
-      padding: theme.spacing(2),
-    },
-    '& a, & a:hover,  & a:visited, & a:active': {
-      textDecoration: 'none',
-      color: '#000',
-    },
-
-    '& li:hover': {
-      backgroundColor: '#fff',
-    },
-  },
-  userCircle: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-    fontFamily: latoFont,
-    cursor: 'pointer',
-    backgroundColor: '#F3F3EC',
-    alignItems: 'center',
-    justifyContent: 'center',
-    display: 'flex',
-    '&:hover, &:active': {
-      border: '1px solid black',
-    },
-    '&$userCircleActive': {
-      border: '1px solid black',
-    },
-  },
-  userCircleActive: {},
-  createAccountLink: {
-    marginTop: theme.spacing(7),
-    borderBottom: '1px solid #EAEAEA',
-  },
-  drawerAuthOptions: {
-    justifyContent: 'flex-start',
-    height: '56px',
-    textTransform: 'uppercase',
-  },
-  drawerProfileOptions: {
-    justifyContent: 'flex-start',
-    height: '56px',
-  },
-  drawerProfileOptionsDisabled: {
-    justifyContent: 'flex-start',
-    height: '56px',
-    opacity: 0.5,
-  },
-  divider: {
-    border: '1px solid #EAEAEA',
-    width: '100%',
-    marginTop: theme.spacing(3.5),
-    marginBottom: theme.spacing(3.5),
   },
 }))
 
@@ -178,10 +97,12 @@ type AppTopNavProps = {
 const MenuLinks: FunctionComponent<
   AppTopNavProps & {
     setIsMobileOpen: Function
+    isDrawerLink?: boolean
   }
-> = ({routes, setIsMobileOpen}) => {
+> = ({routes, setIsMobileOpen, isDrawerLink}) => {
   let links = routes.map(route => (
     <StyledToolBarLink
+      $isDrawerLink={isDrawerLink}
       to={route.path}
       key={route.name}
       activeStyle={{
@@ -196,25 +117,34 @@ const MenuLinks: FunctionComponent<
   return <>{links}</>
 }
 
+const UserAvatar: FunctionComponent<{sessionData?: UserSessionData; onClick: (e: React.MouseEvent) => void} & SxProps> =
+  React.memo(({sessionData, onClick, ...otherSxProps}) => {
+    const initials = React.useMemo(() => {
+      if (!sessionData) {
+        return '?'
+      }
+      let initial = sessionData.userName?.substring(0, 1)
+      if (sessionData.firstName) {
+        initial = `${sessionData.firstName.substring(0, 1)}${sessionData.lastName?.substring(0, 1)}`
+      }
+      return initial?.toUpperCase() || '?'
+    }, [sessionData])
+    return (
+      <Avatar
+        sx={{bgcolor: '#EDEEF2', color: theme.palette.accent.purple, cursor: 'pointer', ...otherSxProps}}
+        onClick={onClick}>
+        {initials}
+      </Avatar>
+    )
+  })
+
 const MenuLinksRhs: FunctionComponent<
   AppTopNavProps & {
     isRightHandSide?: boolean
     setIsMobileOpen: Function
+    isDrawerLink?: boolean
   }
-> = ({routes, sessionData, children, isRightHandSide, setIsMobileOpen}) => {
-  const classes = useStyles()
-
-  /*function getClassName(routeName: String, isRightHandSide: boolean) {
-    if (!isRightHandSide) return className
-    if (routeName === 'CREATE ACCOUNT') {
-      return clsx(className, classes.drawerAuthOptions, classes.createAccountLink)
-    }
-    if (routeName === 'Edit Profile' || routeName === 'Settings') {
-      return clsx(className, classes.drawerProfileOptionsDisabled)
-    }
-    return className
-  }*/
-
+> = ({routes, sessionData, children, setIsMobileOpen}) => {
   let links: React.ReactNode[] = routes.map(route => {
     return (
       <StyledToolBarLink
@@ -248,7 +178,6 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
   children,
   ...props
 }: AppTopNavProps) => {
-  const classes = useStyles()
   const location = useLocation()
 
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
@@ -259,16 +188,6 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     setMenuAnchor(null)
   }
 
-  const getInitials = () => {
-    if (!sessionData) {
-      return '?'
-    }
-    let initial = sessionData.userName?.substr(0, 1)
-    if (sessionData.firstName) {
-      initial = `${sessionData.firstName.substr(0, 1)}${sessionData.lastName?.substr(0, 1)}`
-    }
-    return initial?.toUpperCase() || '?'
-  }
   // Hide the app store download page and also the sign in page from the nav.
   routes = routes.filter(
     route => route.name !== 'APP STORE' && route.name !== 'SIGN IN' && (!route.toggle || toggle[route.toggle!] === true)
@@ -280,13 +199,13 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
 
   return (
     <>
-      {' '}
+      {/* mobile view */}
       <Hidden lgUp>
         <StyledAppNav hasSubNav={hasSubNav}>
           <Box
             sx={{
               display: 'flex',
-
+              borderBottom: '1px solid #EAECEE',
               alignItems: 'center',
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -303,13 +222,14 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
               aria-label="Open drawer"
               edge="end"
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className={classes.menuButton}
               size="large">
               <MenuIcon></MenuIcon>
             </IconButton>
           </Box>
+          {children}
         </StyledAppNav>
       </Hidden>
+      {/* desktop view */}
       <Hidden lgDown>
         <StyledAppNav hasSubNav={hasSubNav}>
           <Box
@@ -358,11 +278,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                   </MenuLinksRhs>
                 )}
                 {sessionData && (
-                  <div onClick={event => setMenuAnchor(event.currentTarget)} style={{paddingLeft: '8px'}}>
-                    <div className={clsx(classes.userCircle, !!menuAnchor && classes.userCircleActive)}>
-                      {getInitials()}
-                    </div>
-                  </div>
+                  <UserAvatar sessionData={sessionData} onClick={event => setMenuAnchor(event.target as HTMLElement)} />
                 )}
               </StyledToolBar>
             </Box>
@@ -370,73 +286,68 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           {children}
         </StyledAppNav>
       </Hidden>
-      <nav className={classes.drawer}>
-        <Drawer
-          variant="temporary"
-          anchor="right"
-          open={isMobileOpen}
-          onClose={() => setIsMobileOpen(false)}
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}>
-          <ClearIcon
-            onClick={() => setIsMobileOpen(false)}
-            sx={{top: '5px', right: '5px', position: 'absolute'}}></ClearIcon>
-          <MenuLinks
-            appId={appId}
-            //  className={classes.drawerMenuItem}
+      {/* mobile drawer */}
 
-            routes={routes.filter(route => route.name && !route.isRhs)}
-            setIsMobileOpen={setIsMobileOpen}
-          />
-          {sessionData && <Divider className={classes.divider}></Divider>}
-          {children && (
-            <>
-              {children}
-              <Divider className={classes.divider}></Divider>
-            </>
-          )}
-          <MenuLinksRhs
-            appId={appId}
-            //  className={classes.drawerMenuItem}
+      <StyledDrawer
+        variant="temporary"
+        anchor="right"
+        open={isMobileOpen}
+        onClose={() => setIsMobileOpen(false)}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}>
+        <ClearIcon onClick={() => setIsMobileOpen(false)}></ClearIcon>
+        <MenuLinks
+          isDrawerLink={true}
+          appId={appId}
+          routes={routes.filter(route => route.name && !route.isRhs)}
+          setIsMobileOpen={setIsMobileOpen}
+        />
 
-            routes={routes.filter(route => route.name && route.isRhs)}
-            sessionData={sessionData}
-            isRightHandSide={true}
-            setIsMobileOpen={setIsMobileOpen}>
-            <Logout
-              element={
-                <Button variant="contained" sx={{width: '150px', margin: '0 auto'}}>
-                  Sign out
-                </Button>
-              }></Logout>
-            {window.location.pathname !== '/' && (
+        <MenuLinksRhs
+          appId={appId}
+          isDrawerLink={true}
+          routes={routes.filter(route => route.name && route.isRhs)}
+          sessionData={sessionData}
+          isRightHandSide={true}
+          setIsMobileOpen={setIsMobileOpen}>
+          <Box sx={{display: 'flex', alignItems: 'center', cursor: 'pointer', marginTop: theme.spacing(14)}}>
+            <UserAvatar
+              sessionData={sessionData}
+              onClick={event => setMenuAnchor(event.currentTarget as HTMLElement)}
+            />
+            <Logout element={<Typography sx={{marginLeft: theme.spacing(1), fontSize: '18px'}}>Log Out</Typography>} />
+          </Box>
+
+          {window.location.pathname !== '/' && window.location.pathname !== '/sign-in' && (
+            <Box sx={{display: 'flex', alignItems: 'center', cursor: 'pointer', marginTop: theme.spacing(14)}}>
+              <UserAvatar
+                sessionData={sessionData}
+                onClick={event => setMenuAnchor(event.currentTarget as HTMLElement)}
+              />
               <Button
-                variant="contained"
-                sx={{width: '150px', margin: '20px auto'}}
-                disabled={isLoginButtonDisabled}
+                variant="text"
+                disabled={/*isLoginButtonDisabled*/ false}
+                sx={{marginLeft: theme.spacing(1)}}
                 href={'/sign-in'}>
                 Log in
               </Button>
-            )}
-          </MenuLinksRhs>
-        </Drawer>
-      </nav>
+            </Box>
+          )}
+        </MenuLinksRhs>
+      </StyledDrawer>
+
       <Menu
-        classes={{list: classes.l}}
-        id="simple-menu"
+        id="logout-menu"
         anchorEl={menuAnchor}
         keepMounted
         anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
+          vertical: 'bottom',
+          horizontal: 'center',
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right',
+          horizontal: 'center',
         }}
         open={Boolean(menuAnchor)}
         onClose={handleMenuClose}>
