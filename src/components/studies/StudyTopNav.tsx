@@ -1,16 +1,15 @@
+import CollapsableMenu from '@components/surveys/widgets/MenuDropdown'
 import {getStyledToolbarLinkStyle} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import BuildTwoToneIcon from '@mui/icons-material/BuildTwoTone'
 import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone'
 import PersonSearchTwoToneIcon from '@mui/icons-material/PersonSearchTwoTone'
-import {Alert, Box, Hidden, styled, Typography} from '@mui/material'
+import {Alert, Box, styled, Typography} from '@mui/material'
 import Toolbar from '@mui/material/Toolbar'
-import makeStyles from '@mui/styles/makeStyles'
-import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
 import {ExtendedError, Study, StudyPhase} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
-import {NavLink} from 'react-router-dom'
+import {NavLink, useHistory} from 'react-router-dom'
 
 const StyledStudyToolbar = styled(Toolbar, {label: 'StyledStudyToolbar'})(({theme}) => ({
   alignItems: 'center',
@@ -38,29 +37,6 @@ const StyledToolbarLinkDisabled = styled(Typography, {label: 'StyledToolbarLinkD
   ...getStyledToolbarLinkStyle(theme),
   opacity: 0.45,
   textTransform: 'capitalize',
-}))
-
-const useStyles = makeStyles(theme => ({
-  mobileToolBarLink: {
-    fontFamily: latoFont,
-    fontSize: '15px',
-    textDecoration: 'none',
-    color: 'inherit',
-    flexShrink: 0,
-    height: '56px',
-    boxSizing: 'border-box',
-    paddingLeft: theme.spacing(3),
-    '&:hover': {
-      backgroundColor: '#fff',
-    },
-    display: 'flex',
-    alignItems: 'center',
-    borderLeft: '4px solid transparent',
-  },
-  mobileSelectedLink: {
-    borderLeft: '4px solid #353535',
-    fontWeight: 'bolder',
-  },
 }))
 
 type StudyTopNavProps = {
@@ -93,59 +69,37 @@ const allLinks: {path: string; name: string; status: StudyPhase[]; icon: React.R
 ]
 
 const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyTopNavProps) => {
-  const classes = useStyles()
+  const links = allLinks
+    .filter(link => Utility.isPathAllowed(study.identifier, link.path) && link.name)
+    .map(link => ({
+      ...link,
+      enabled: link.status.includes(study.phase),
+      path: link.path.replace(':id', study.identifier),
+      display: link.icon + link.name,
+      id: link.path,
+    }))
 
-  const links = allLinks.filter(link => Utility.isPathAllowed(study.identifier, link.path))
+  const history = useHistory()
 
   return (
     <Box>
-      <Hidden lgDown>
-        <Box id="hight">
-          <StyledStudyToolbar>
-            {links
-              .filter(section => section.name)
-              .map(section =>
-                section.status.includes(study?.phase) ? (
-                  <StyledToolbarLink
-                    to={section.path.replace(':id', study.identifier)}
-                    key={section.path}
-                    activeStyle={{
-                      boxShadow: 'inset 0px -4px 0px 0px #9499C7',
-                    }}>
-                    {section.icon}
-                    {section.name}
-                  </StyledToolbarLink>
-                ) : (
-                  <StyledToolbarLinkDisabled key={section.path}>
-                    {section.icon}
-                    {section.name}
-                  </StyledToolbarLinkDisabled>
-                )
-              )}
-          </StyledStudyToolbar>
-        </Box>
-      </Hidden>
-      <Hidden lgUp>
-        <nav>
-          {links
-            .filter(section => section.name)
-            .map(section =>
-              section.status.includes(study?.phase) ? (
-                <NavLink
-                  to={section.path.replace(':id', study.identifier)}
-                  key={section.path}
-                  className={classes.mobileToolBarLink}
-                  activeClassName={classes.mobileSelectedLink}>
-                  {section.name}
-                </NavLink>
-              ) : (
-                <span key={section.path} style={{opacity: 0.45}} className={classes.mobileToolBarLink}>
-                  {section.name}
-                </span>
-              )
-            )}
-        </nav>
-      </Hidden>
+      <CollapsableMenu
+        items={links}
+        selectedFn={section => history.location.pathname.includes(section.path)}
+        displayMobileItem={(section, isSelected) => (
+          <>
+            {section.icon} &nbsp;{section.name}
+          </>
+        )}
+        displayDesktopItem={(section, isSelected) => (
+          <>
+            {' '}
+            {section.icon}
+            {section.name}
+          </>
+        )}
+        onClick={section => history.push(section.path)}
+      />
 
       {error && (
         <Box mx="auto" textAlign="center">
