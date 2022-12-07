@@ -1,12 +1,11 @@
-import MenuDropdown from '@components/surveys/widgets/MenuDropdown'
+import CollapsableMenu from '@components/surveys/widgets/MenuDropdown'
 import {getStyledToolbarLinkStyle} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import BuildTwoToneIcon from '@mui/icons-material/BuildTwoTone'
 import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone'
 import PersonSearchTwoToneIcon from '@mui/icons-material/PersonSearchTwoTone'
-import {Alert, Box, Hidden, styled, Typography} from '@mui/material'
+import {Alert, Box, styled, Typography} from '@mui/material'
 import Toolbar from '@mui/material/Toolbar'
-import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {ExtendedError, Study, StudyPhase} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -76,59 +75,31 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({study, error}: StudyT
       ...link,
       enabled: link.status.includes(study.phase),
       path: link.path.replace(':id', study.identifier),
+      display: link.icon + link.name,
+      id: link.path,
     }))
 
   const history = useHistory()
 
   return (
     <Box>
-      <Hidden lgDown>
-        <Box id="hight">
-          <StyledStudyToolbar>
-            {links.map(section =>
-              section.enabled ? (
-                <StyledToolbarLink
-                  to={section.path}
-                  key={section.path}
-                  activeStyle={{
-                    boxShadow: 'inset 0px -4px 0px 0px #9499C7',
-                  }}>
-                  {section.icon}
-                  {section.name}
-                </StyledToolbarLink>
-              ) : (
-                <StyledToolbarLinkDisabled key={section.path}>
-                  {section.icon}
-                  {section.name}
-                </StyledToolbarLinkDisabled>
-              )
-            )}
-          </StyledStudyToolbar>
-        </Box>
-      </Hidden>
-      <Hidden lgUp>
-        <MenuDropdown
-          items={links}
-          selectedFn={section => section.path === history.location.pathname}
-          displayItem={(section, isSelected) => (
-            <Box
-              sx={{
-                textTransform: 'capitalize',
-                alignItems: 'center',
-                justifyContent: 'center',
-                display: 'flex',
-                width: '100%',
-                fontSize: isSelected ? '16px' : '18px',
-                fontWeight: isSelected ? 900 : 700,
-                color: isSelected ? theme.palette.grey.A100 : theme.palette.grey[700],
-                height: theme.spacing(6),
-              }}>
-              {section.icon} &nbsp;{section.name}
-            </Box>
-          )}
-          onClick={section => history.push(section.path)}
-        />
-      </Hidden>
+      <CollapsableMenu
+        items={links}
+        selectedFn={section => history.location.pathname.includes(section.path)}
+        displayMobileItem={(section, isSelected) => (
+          <>
+            {section.icon} &nbsp;{section.name}
+          </>
+        )}
+        displayDesktopItem={(section, isSelected) => (
+          <>
+            {' '}
+            {section.icon}
+            {section.name}
+          </>
+        )}
+        onClick={section => history.push(section.path)}
+      />
 
       {error && (
         <Box mx="auto" textAlign="center">

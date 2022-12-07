@@ -1,18 +1,87 @@
+import {getStyledToolbarLinkStyle} from '@components/widgets/StyledComponents'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import {Box, Button, Menu, MenuItem} from '@mui/material'
+import {Box, Button, Hidden, Menu, MenuItem, styled, Toolbar, Typography} from '@mui/material'
+import {shouldForwardProp, theme} from '@style/theme'
 import React from 'react'
 import {useGetPlotWidth} from '../survey-branching/UseGetPlotWidth'
+
+const StyledStudyToolbar = styled(Toolbar, {label: 'StyledStudyToolbar'})(({theme}) => ({
+  alignItems: 'center',
+  minHeight: 'unset !important',
+  display: 'flex',
+  maxWidth: 'fit-content',
+  margin: '0 auto',
+  padding: 0,
+  justifyContent: 'space-between',
+  marginTop: theme.spacing(2),
+
+  '&:last-child': {
+    paddingRight: 0,
+  },
+  '&:first-child': {
+    paddingLeft: 0,
+  },
+}))
+
+const StyledToolbarLink = styled(Button, {label: 'StyledToolbarLink', shouldForwardProp: shouldForwardProp})<{
+  $isSelected: boolean
+}>(({theme, $isSelected}) => ({
+  ...getStyledToolbarLinkStyle(theme),
+  textTransform: 'capitalize',
+
+  boxShadow: $isSelected ? 'inset 0px -4px 0px 0px #9499C7' : 'none',
+  '&:hover': {textDecoration: 'none'},
+}))
+const StyledToolbarLinkDisabled = styled(Typography, {label: 'StyledToolbarLinkDisabled'})(({theme}) => ({
+  ...getStyledToolbarLinkStyle(theme),
+  opacity: 0.45,
+  textTransform: 'capitalize',
+}))
 
 type MenuDropdownProps<T> = {
   items: T[]
   selectedFn: (a: T) => boolean
-  displayItem: (a: T, isSelected?: boolean) => React.ReactElement
   onClick: (a: T) => void
   width?: number
 }
 
-const MenuDropdown = <T extends unknown>({items, selectedFn, onClick, displayItem, width}: MenuDropdownProps<T>) => {
+export const MenuDesktop = <T extends unknown>({
+  items,
+  selectedFn,
+  onClick,
+  displayItem,
+  width,
+}: MenuDropdownProps<T> & {displayItem: (a: T, isSelected?: boolean) => React.ReactElement}) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const {width: fullWidth} = useGetPlotWidth()
+
+  const open = Boolean(anchorEl)
+
+  return (
+    <Box id="hight">
+      <StyledStudyToolbar>
+        {items.map((section: any) =>
+          section.enabled ? (
+            <StyledToolbarLink key={section.id} onClick={() => onClick(section)} $isSelected={selectedFn(section)}>
+              {displayItem(section)}
+            </StyledToolbarLink>
+          ) : (
+            <StyledToolbarLinkDisabled key={section.id}>{displayItem(section)}</StyledToolbarLinkDisabled>
+          )
+        )}
+      </StyledStudyToolbar>
+    </Box>
+  )
+}
+
+export const MenuDropdown = <T extends unknown>({
+  items,
+  selectedFn,
+  onClick,
+  displayItem,
+  width,
+}: MenuDropdownProps<T> & {displayItem: (a: T, isSelected?: boolean) => React.ReactElement}) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const {width: fullWidth} = useGetPlotWidth()
 
@@ -29,6 +98,23 @@ const MenuDropdown = <T extends unknown>({items, selectedFn, onClick, displayIte
     setAnchorEl(null)
   }
 
+  const wrapItem = (item: React.ReactElement, isSelected: boolean) => (
+    <Box
+      sx={{
+        textTransform: 'capitalize',
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        width: '100%',
+        fontSize: isSelected ? '16px' : '18px',
+        fontWeight: isSelected ? 900 : 700,
+        color: isSelected ? theme.palette.grey.A100 : theme.palette.grey[700],
+        height: theme.spacing(6),
+      }}>
+      {item}
+    </Box>
+  )
+
   return (
     <Box>
       <Button
@@ -42,7 +128,7 @@ const MenuDropdown = <T extends unknown>({items, selectedFn, onClick, displayIte
         endIcon={open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         fullWidth>
         <Box sx={{display: 'flex', width: 'fit-content'}}>
-          {selectedItem ? displayItem(selectedItem, true) : 'Select'}
+          {selectedItem ? wrapItem(displayItem(selectedItem, true), true) : 'Select'}
         </Box>
       </Button>
       <Menu
@@ -71,15 +157,15 @@ const MenuDropdown = <T extends unknown>({items, selectedFn, onClick, displayIte
         {myItems.map((section: any) =>
           section.enabled ? (
             <MenuItem
-              key={section.path}
+              key={section.id}
               selected={selectedFn(section)}
               onClick={() => onClick(section)}
               sx={{padding: 0, width: width || fullWidth, textAlign: 'center'}}>
-              {displayItem(section)}
+              {wrapItem(displayItem(section), false)}
             </MenuItem>
           ) : (
-            <MenuItem disabled key={section.path} sx={{padding: 0, width: width || fullWidth}}>
-              {displayItem(section)}
+            <MenuItem disabled key={section.id} sx={{padding: 0, width: width || fullWidth}}>
+              {wrapItem(displayItem(section), false)}
             </MenuItem>
           )
         )}
@@ -88,4 +174,22 @@ const MenuDropdown = <T extends unknown>({items, selectedFn, onClick, displayIte
   )
 }
 
-export default MenuDropdown
+const CollapsableMenu = <T extends unknown>(
+  props: MenuDropdownProps<T> & {
+    displayMobileItem: (a: T, isSelected?: boolean) => React.ReactElement
+    displayDesktopItem: (a: T, isSelected?: boolean) => React.ReactElement
+  }
+) => {
+  return (
+    <>
+      <Hidden lgDown>
+        <MenuDesktop {...props} displayItem={props.displayDesktopItem} />
+      </Hidden>
+      <Hidden lgUp>
+        <MenuDropdown {...props} displayItem={props.displayMobileItem} />
+      </Hidden>
+    </>
+  )
+}
+
+export default CollapsableMenu
