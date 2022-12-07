@@ -4,9 +4,8 @@ import {MTBHeading} from '@components/widgets/Headings'
 import Loader from '@components/widgets/Loader'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Button, Container, Menu, MenuItem} from '@mui/material'
+import {Box, Button, Container, Menu, MenuItem, styled} from '@mui/material'
 import Link from '@mui/material/Link'
-import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {useStudies, useUpdateStudyInList} from '@services/studyHooks'
 import {latoFont, theme} from '@style/theme'
@@ -36,69 +35,34 @@ type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME' | 'VIEW' | 'WITH
 
 const studyCardWidth = '290'
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: '100%',
-    alignItems: 'center',
-    backgroundColor: '#fbfbfc',
-    height: '100%',
-    minHeight: 'calc(100vh - 104px)',
-    [theme.breakpoints.down('lg')]: {
-      minHeight: '100vh',
-    },
+const StyledStudyListGrid = styled(Box, {label: 'StyledStudyListGrid'})(({theme}) => ({
+  display: 'grid',
+  padding: theme.spacing(0),
+  gridTemplateColumns: `repeat(auto-fill,${studyCardWidth}px)`,
+  gridColumnGap: theme.spacing(2),
+  gridRowGap: theme.spacing(2),
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(3),
+    justifyContent: 'center',
+    gridRowGap: theme.spacing(4),
   },
-  /*studyContainer: {
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    [theme.breakpoints.down('md')]: {
-      maxWidth: '600px',
-    },
-    height: '100%',
-  },*/
-  cardGrid: {
-    //const cardWidth = 300
-    display: 'grid',
-    padding: theme.spacing(0),
-    gridTemplateColumns: `repeat(auto-fill,${studyCardWidth}px)`,
-    gridColumnGap: theme.spacing(2),
-    gridRowGap: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
-      padding: theme.spacing(3),
-      justifyContent: 'center',
-      gridRowGap: theme.spacing(4),
-    },
-  },
-  divider: {
-    margin: `${theme.spacing(1)} 0 ${theme.spacing(5)} 0`,
-  },
+}))
 
-  filters: {
-    listStyle: 'none',
-    alignSelf: 'flex-end',
-    margin: '0',
-    paddingLeft: 0,
-  },
-
-  filterItem: {
-    display: 'inline-block',
-    marginRight: theme.spacing(2),
-  },
-
-  list: {
-    fontFamily: latoFont,
-    fontSize: '14px',
-    lineHeight: '17px',
-    paddingTop: theme.spacing(0),
-    paddingBottom: theme.spacing(0),
-  },
-  paper: {
+const StyledContextMenu = styled(Menu, {label: 'StyledContextMenu'})(({theme}) => ({
+  '& .MuiPaper-root': {
     marginLeft: theme.spacing(3.5),
     borderRadius: '0px',
     '& li': {
       padding: theme.spacing(1.25, 2, 1.25, 2),
     },
     boxShadow: '2px 1.5px 2px 1px rgba(0, 0, 0, 0.15)',
+  },
+  '& .MuiMenu-list': {
+    fontFamily: latoFont,
+    fontSize: '14px',
+    lineHeight: '17px',
+    paddingTop: theme.spacing(0),
+    paddingBottom: theme.spacing(0),
   },
 }))
 
@@ -163,7 +127,6 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   highlightedStudyId,
   menuAnchor,
 }: StudySublistProps) => {
-  const classes = useStyles()
   const section = sections.find(section => section.sectionStatus === status)!
   const displayStudies = studies.filter(study => section.studyStatus.includes(study.phase))
 
@@ -189,7 +152,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
       <MTBHeading variant="h2" align={'left'}>
         {section.title}
       </MTBHeading>
-      <Box className={classes.cardGrid}>
+      <StyledStudyListGrid>
         {displayStudies.map((study, index) => (
           <Link
             style={{textDecoration: 'none'}}
@@ -211,7 +174,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               isMenuOpen={menuAnchor?.study?.identifier === study.identifier}></StudyCard>
           </Link>
         ))}
-      </Box>
+      </StyledStudyListGrid>
     </>
   )
 }
@@ -232,7 +195,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     anchorEl: HTMLElement
   }>(null)
   const [renameStudyId, setRenameStudyId] = React.useState('')
-  const classes = useStyles()
+
   const handleMenuClose = () => {
     setMenuAnchor(null)
   }
@@ -417,7 +380,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               ))}
 
             {menuAnchor && (
-              <Menu
+              <StyledContextMenu
                 id="study-menu"
                 anchorEl={menuAnchor.anchorEl}
                 keepMounted
@@ -453,7 +416,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   <MenuItem onClick={() => setIsConfirmDialogOpen('WITHDRAW_STUDY')}>Withdraw Study</MenuItem>,
                   <MenuItem onClick={() => setIsConfirmDialogOpen('CLOSE_STUDY')}>Close Study</MenuItem>,
                 ]}
-              </Menu>
+              </StyledContextMenu>
             )}
 
             <ConfirmationDialog
