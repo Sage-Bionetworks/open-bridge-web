@@ -12,13 +12,14 @@ import {
   useUpdateSurveyResource,
 } from '@services/assessmentHooks'
 import {ChoiceQuestion, Question, Step, Survey} from '@typedefs/surveys'
-import {Assessment, ExtendedError} from '@typedefs/types'
+import {Assessment, AssessmentImageResource, ExtendedError} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useIsFetching, useIsMutating} from 'react-query'
 import {Redirect, Route, RouteComponentProps, Switch, useHistory, useLocation, useParams} from 'react-router-dom'
 // default styling
 
 import NavigationPrompt from 'react-router-navigation-prompt'
+import {SURVEY_ICONS} from '../widgets/SurveyIcon'
 import IntroInfo from './IntroInfo'
 import AddQuestionMenu from './left-panel/AddQuestionMenu'
 import LeftPanel from './left-panel/LeftPanel'
@@ -177,7 +178,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     setCurrentStepIndex(getQuestionIndexFromSearchString(location.search))
   }, [location])
 
-  // fns used  to subcomponent callbackss
+  // fns used  to subcomponent callbacks
   const saveIconResource = async () => {
     if (assessment) {
       const r = assessment.resources?.find(r => r.category === 'icon')
@@ -222,6 +223,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     if (!survey) {
       return
     }
+
     const indexToUpdate = stepIndex ?? currentStepIndex
     if (indexToUpdate !== undefined) {
       let steps = [...survey!.config.steps]
@@ -233,6 +235,43 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           steps,
         },
       }))
+      const isOverviewStep = step.type === 'overview'
+      if (!assessment) {
+        throw new Error('no assessment')
+      }
+      if (isOverviewStep) {
+        const {image} = step
+        if (image) {
+          const imageResource: AssessmentImageResource = {
+            name: image.imageName,
+            module: 'sage_survey',
+            labels: [
+              {
+                lang: 'en',
+                value: SURVEY_ICONS.get(image.imageName)?.title || 'Default',
+              },
+            ],
+            type: 'ImageResource',
+          }
+
+          const updatedAssessment = {
+            ...assessment,
+            imageResource: imageResource,
+          }
+          setAssessment(updatedAssessment)
+          mutateAssessment(
+            {assessment: updatedAssessment, action: 'UPDATE'},
+            {
+              onSuccess: () => {
+                setHasObjectChanged(true)
+              },
+              onError: error => {
+                console.log(error)
+              },
+            }
+          )
+        }
+      }
       setHasObjectChanged(true)
     }
   }

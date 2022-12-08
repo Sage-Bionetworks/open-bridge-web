@@ -4,6 +4,8 @@ import {Schedule, ScheduleNotification, SchedulingEvent} from './scheduling'
 
 /* *** General Types ********************************/
 //usage example type JsonPrimitive = SubType<Person, number | string>;
+
+export type Language = 'en' | 'es_es'
 export type SubType<Base, Condition> = Pick<
   Base,
   {
@@ -144,11 +146,22 @@ export type Assessment = {
   minutesToComplete?: number
   resources?: AssessmentResource[]
   originGuid?: string
+  imageResource?: AssessmentImageResource
 }
 
 export type AssessmentConfig = {
   guid: string
   config: JSON
+}
+export type AssessmentImageResource = {
+  name: string
+
+  module: 'sage_survey'
+  labels: {
+    lang: Language
+    value: string
+  }[]
+  type: 'ImageResource'
 }
 
 /* *** Study ********************************/
