@@ -331,7 +331,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
             selectedFn={section => isSelectedFilter(section)}
             displayMobileItem={(section, isSelected) => <>{section.filterTitle}</>}
-            displayDesktopItem={(section, isSelected) => <> {section.filterTitle}</>}
+            displayDesktopItem={(section, isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
             onClick={section =>
               section.sectionStatus ? setStatusFilters([section.sectionStatus]) : resetStatusFilters()
             }
@@ -393,8 +393,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   horizontal: 'left',
                 }}
                 open={Boolean(menuAnchor.anchorEl)}
-                onClose={handleMenuClose}
-                classes={{paper: classes.paper, list: classes.list}}>
+                onClose={handleMenuClose}>
                 <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>View</MenuItem>
                 {(getPhase() === 'DRAFT' || getPhase() === 'LIVE') && (
                   <MenuItem
