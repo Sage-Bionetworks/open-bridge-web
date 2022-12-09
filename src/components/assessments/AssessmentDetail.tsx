@@ -1,18 +1,46 @@
-import OfficialMobileToolboxVersion from '@assets/official_mobile_toolbox_icon.svg'
-import ScientificallyValidatedIcon from '@assets/validated.svg'
+import {ReactComponent as MtbSymbol} from '@assets/logo_mtb_symbol.svg'
+import BreadCrumb from '@components/widgets/BreadCrumb'
 import Loader from '@components/widgets/Loader'
-import {Box, Container, Divider, Paper, Typography} from '@mui/material'
+import ArticleTwoToneIcon from '@mui/icons-material/ArticleTwoTone'
+import CakeTwoToneIcon from '@mui/icons-material/CakeTwoTone'
+import ChatBubbleTwoToneIcon from '@mui/icons-material/ChatBubbleTwoTone'
+import FactCheckTwoToneIcon from '@mui/icons-material/FactCheckTwoTone'
+import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone'
+import StarsTwoToneIcon from '@mui/icons-material/StarsTwoTone'
+import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone'
+import VerifiedTwoToneIcon from '@mui/icons-material/VerifiedTwoTone'
+import {Box, Container, Divider, Grid, Hidden, styled, Typography} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
 import {useAssessmentWithResources} from '@services/assessmentHooks'
-import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
+import {latoFont, playfairDisplayFont, poppinsFont, theme} from '@style/theme'
+import React, {FunctionComponent, ReactElement} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
-import ClockIcon from '../../assets/clock.svg'
-import {playfairDisplayFont, poppinsFont} from '../../style/theme'
-import BreadCrumb from '../widgets/BreadCrumb'
 import AssessmentImage from './AssessmentImage'
+
+const ImageTextRow = styled(Box)(({theme}) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginLeft: theme.spacing(2),
+  // marginLeft: theme.spacing(-3.5),
+  marginTop: theme.spacing(2.5),
+  marginBottom: theme.spacing(2.5),
+}))
+
+const InfoTextInContainer = styled(Box)(({theme}) => ({
+  fontSize: '14px',
+  lineHeight: '18px',
+  fontFamily: poppinsFont,
+}))
+
+const StyledDivider = styled(Divider)(({theme}) => ({
+  marginTop: theme.spacing(5),
+  marginBottom: theme.spacing(5),
+  width: '100%',
+  backgroundColor: '#EAECEE',
+}))
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -99,6 +127,26 @@ type AssessmentDetailOwnProps = {}
 
 type AssessmentDetailProps = AssessmentDetailOwnProps & RouteComponentProps
 
+const SectionWithIcon: FunctionComponent<{icon: ReactElement; heading: string; text: string}> = ({
+  icon,
+  heading,
+  text,
+}) => {
+  return (
+    <Box>
+      <Box sx={{display: 'flex', alignItems: 'center'}}>
+        {icon}
+        <Typography variant="h4" sx={{marginLeft: theme.spacing(1)}}>
+          {heading}
+        </Typography>
+      </Box>
+      <Typography variant="body1" component={'p'} sx={{display: 'block', margin: theme.spacing(0.5, 0, 4, 0)}}>
+        {text}
+      </Typography>
+    </Box>
+  )
+}
+
 const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
   const classes = useStyles()
 
@@ -117,60 +165,132 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
 
   const correctResource = data?.resources?.find(resource => resource.category === 'website')
 
+  const Header = (
+    <>
+      <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+        <Typography
+          component={'p'}
+          sx={{
+            fontWeight: '400',
+            fontSize: '14px',
+            lineHeight: '18px',
+            textTransform: 'uppercase',
+          }}>
+          {data.tags.join(', ')}
+        </Typography>
+        <Box sx={{display: 'flex'}}>
+          <MtbSymbol
+            title="official_mobile_toolbox_icon"
+            style={{
+              marginRight: '8px',
+              width: '20px',
+              height: '20px',
+            }}
+          />
+
+          <Typography component="span">Official Mobile Toolbox version</Typography>
+        </Box>
+      </Box>
+      <Typography variant="h2" my={2}>
+        {data.title}
+      </Typography>
+    </>
+  )
+
   return (
-    <div className={classes.overallContainer}>
-      <Paper className={classes.breadCrumbs}>
-        <BreadCrumb
-          links={[{url: `/assessments?viewType=${view}`, text: 'Assessments'}]}
-          currentItem={data.title}></BreadCrumb>
-      </Paper>
-      <Container maxWidth="lg" className={classes.overallBackground}>
-        <Paper className="classes.container">
-          <Box display="flex" className={classes.informationBox}>
-            <Box width="530px" marginRight="32px" style={{textAlign: 'left'}}>
-              <AssessmentImage name={`${data.title}_img`} resources={data.resources} variant="detail"></AssessmentImage>
-            </Box>
-            <Box textAlign="left">
-              <Typography variant="subtitle2" className={classes.categories}>
-                {data.tags.join(', ')}
-              </Typography>
-              <div className={classes.titleText}>{data.title}</div>
-              <Box>{data.summary}</Box>
-              <Divider className={classes.divider} />
-              <div className={clsx(classes.imageTextRow, classes.imageTextRowValidatedIcon)}>
-                <img
-                  className={classes.validatedIcon}
-                  src={ScientificallyValidatedIcon}
-                  alt="scientifically_validated_icon"></img>
-                <div className={classes.informationTextInContainer}>Validation and Norming in progress</div>
-              </div>
-              <div className={classes.imageTextRow}>
-                <img
-                  className={classes.icon}
-                  src={OfficialMobileToolboxVersion}
-                  alt="official_mobile_toolbox_icon"></img>
-                <div className={classes.informationTextInContainer}>Official Mobile Toolbox version</div>
-              </div>
-              <div className={classes.imageTextRow}>
-                <img className={classes.icon} src={ClockIcon} alt="clock_icon"></img>
-                <div className={classes.informationTextInContainer}>{data.minutesToComplete} min</div>
-              </div>
-              {/*<div className={classes.informationText}>[Age: 18 +]</div>*/}
-              <div className={clsx(classes.informationText, classes.row)}>
-                <div style={{width: '100px'}}>Designed By:</div>
-                <div>{correctResource && correctResource.creators ? correctResource.creators.join(', ') : ''}</div>
-              </div>
-              {/* <div className={classes.informationText}>
-                  [Used in <u>15 published studies</u>]
-                </div>
-                <div className={classes.informationText}>
-                  [2840 participants]
-                    </div>*/}
-            </Box>
-          </Box>
-        </Paper>
+    <Box sx={{backgroundColor: '#fff'}}>
+      <Container
+        maxWidth="lg"
+        sx={{
+          textAlign: 'center',
+          paddingBottom: theme.spacing(6),
+          backgroundColor: '#fff',
+
+          minHeight: '100vh',
+        }}>
+        <Box
+          sx={{
+            padding: theme.spacing(3, 5, 0, 3),
+            boxShadow: '0 0 0 0',
+            marginBottom: 6,
+          }}>
+          <BreadCrumb
+            links={[{url: `/assessments?viewType=${view}`, text: 'Back to Assessments'}]}
+            sx={{fontSize: '16px'}}></BreadCrumb>
+        </Box>
+
+        <InfoTextInContainer>
+          <Grid
+            container
+            spacing={'32px'}
+            sx={{
+              padding: theme.spacing(7.5),
+              borderRadius: '0px',
+            }}>
+            <Grid item xs={12} lg={6}>
+              <Box maxWidth="530px" style={{textAlign: 'left'}}>
+                <Hidden lgUp>
+                  {/*  */}
+                  {Header}
+                </Hidden>
+                <AssessmentImage
+                  name={`${data.title}_img`}
+                  resources={data.resources}
+                  variant="detail"></AssessmentImage>
+
+                {/*  <ThemeProvider theme={theme}>
+                    <Box mt={5}>
+                      <Typography component="p" paragraph>
+                        {' '}
+                        To learn more about this assessment and try it out
+                        please log into Mobile Toolbox.
+                      </Typography>
+                      <Button variant="outlined" color="secondary">
+                        Go to Login
+                      </Button>
+                    </Box>
+                  </ThemeProvider>*/}
+              </Box>
+            </Grid>
+            <Grid item xs={12} lg={6}>
+              <Box textAlign="left" sx={{fontFamily: latoFont}}>
+                {' '}
+                <Hidden lgDown>{Header}</Hidden>
+                <Box fontSize="16px" lineHeight="20px">
+                  {data.summary}
+                </Box>
+                <StyledDivider />
+                <Box sx={{width: '100%', '> div': {width: '50%', float: 'left'}}}>
+                  <Box>
+                    <SectionWithIcon
+                      icon={<VerifiedTwoToneIcon />}
+                      heading="Validation"
+                      text="Scientifically Validated"
+                    />
+
+                    <SectionWithIcon icon={<CakeTwoToneIcon />} heading="Age" text="todo: age" />
+                  </Box>
+                  <Box>
+                    <SectionWithIcon
+                      icon={<TimerTwoToneIcon />}
+                      heading="Duration"
+                      text={`${data.minutesToComplete} min`}
+                    />
+                    <SectionWithIcon icon={<ChatBubbleTwoToneIcon />} heading="Language" text="todo:" />
+                  </Box>
+                </Box>
+                <Box sx={{clear: 'left'}}>
+                  <SectionWithIcon icon={<StarsTwoToneIcon />} heading="Score" text="todo: " />
+                  <SectionWithIcon icon={<FactCheckTwoToneIcon />} heading="Reliability" text="todo: " />
+                  <SectionWithIcon icon={<ArticleTwoToneIcon />} heading="Publications" text="todo: " />
+                  <SectionWithIcon icon={<MenuBookTwoToneIcon />} heading="Technical Manual" text="" />
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </InfoTextInContainer>
       </Container>
-    </div>
+    </Box>
   )
 }
 
