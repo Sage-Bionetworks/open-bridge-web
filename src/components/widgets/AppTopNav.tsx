@@ -46,7 +46,7 @@ const StyledAppNav = styled(Box, {label: 'StyledAppTopNav', shouldForwardProp: p
 const StyledToolBar = styled(Toolbar, {label: 'StyledToolBar', shouldForwardProp: prop => prop !== 'hasSubNav'})<{
   hasSubNav?: boolean
 }>(({theme, hasSubNav}) => ({
-  padding: hasSubNav ? theme.spacing(3, 2) : theme.spacing(4, 2),
+  padding: hasSubNav ? theme.spacing(2.5, 2) : theme.spacing(4, 2),
   justifyContent: 'space-between',
   overflowX: 'auto',
   minHeight: '40px',

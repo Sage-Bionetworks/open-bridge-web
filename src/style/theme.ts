@@ -428,6 +428,8 @@ const theme: Theme = createTheme({
       fontWeight: 700,
       fontSize: '14px',
       margin: 0,
+
+      color: gray_custom.A100,
     },
     subtitle1: {
       //Small Copy/Breadcrumb-Card
