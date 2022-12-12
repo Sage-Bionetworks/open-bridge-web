@@ -226,11 +226,11 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
         <InfoTextInContainer>
           <Grid
             container
-            spacing={0}
+            columnSpacing={{xs: 0, lg: 4}}
             sx={{
               padding: {
                 lg: theme.spacing(1, 4),
-                md: theme.spacing(3, 4),
+                md: theme.spacing(3, 3),
               },
               borderRadius: '0px',
             }}>
