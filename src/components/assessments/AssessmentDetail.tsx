@@ -24,7 +24,7 @@ const ImageTextRow = styled(Box)(({theme}) => ({
   flexDirection: 'row',
   alignItems: 'center',
   marginLeft: theme.spacing(2),
-  // marginLeft: theme.spacing(-3.5),
+
   marginTop: theme.spacing(2.5),
   marginBottom: theme.spacing(2.5),
 }))
@@ -191,7 +191,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
           <Typography component="span">Official Mobile Toolbox version</Typography>
         </Box>
       </Box>
-      <Typography variant="h2" my={2}>
+      <Typography variant="h2" sx={{margin: {lg: theme.spacing(2, 0), md: theme.spacing(4, 0)}}}>
         {data.title}
       </Typography>
     </>
@@ -200,13 +200,17 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
   return (
     <Box sx={{backgroundColor: '#fff'}}>
       <Container
-        maxWidth="lg"
         sx={{
           textAlign: 'center',
           paddingBottom: theme.spacing(6),
           backgroundColor: '#fff',
 
           minHeight: '100vh',
+
+          maxWidth: {
+            lg: theme.breakpoints.values['lg'],
+            xs: theme.breakpoints.values['sm'],
+          },
         }}>
         <Box
           sx={{
@@ -222,13 +226,16 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
         <InfoTextInContainer>
           <Grid
             container
-            spacing={'32px'}
+            spacing={0}
             sx={{
-              padding: theme.spacing(7.5),
+              padding: {
+                lg: theme.spacing(1, 4),
+                md: theme.spacing(3, 4),
+              },
               borderRadius: '0px',
             }}>
             <Grid item xs={12} lg={6}>
-              <Box maxWidth="530px" style={{textAlign: 'left'}}>
+              <Box style={{textAlign: 'left'}}>
                 <Hidden lgUp>
                   {/*  */}
                   {Header}
@@ -237,26 +244,13 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                   name={`${data.title}_img`}
                   resources={data.resources}
                   variant="detail"></AssessmentImage>
-
-                {/*  <ThemeProvider theme={theme}>
-                    <Box mt={5}>
-                      <Typography component="p" paragraph>
-                        {' '}
-                        To learn more about this assessment and try it out
-                        please log into Mobile Toolbox.
-                      </Typography>
-                      <Button variant="outlined" color="secondary">
-                        Go to Login
-                      </Button>
-                    </Box>
-                  </ThemeProvider>*/}
               </Box>
             </Grid>
             <Grid item xs={12} lg={6}>
               <Box textAlign="left" sx={{fontFamily: latoFont}}>
                 {' '}
                 <Hidden lgDown>{Header}</Hidden>
-                <Box fontSize="16px" lineHeight="20px">
+                <Box sx={{fontSize: '16px', lineHeight: '20px', marginTop: {lg: 0, md: theme.spacing(3)}}}>
                   {data.summary}
                 </Box>
                 <StyledDivider />

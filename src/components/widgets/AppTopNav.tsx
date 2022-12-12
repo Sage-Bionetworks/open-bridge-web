@@ -35,6 +35,10 @@ const StyledAppNav = styled(Box, {label: 'StyledAppTopNav', shouldForwardProp: p
 
   borderBottom: '1px solid #EAECEE',
   padding: hasSubNav ? theme.spacing(0, 4) : theme.spacing(0, 5),
+  [theme.breakpoints.down('lg')]: {
+    borderBottom: 'none',
+    height: 'auto',
+  },
   '&  div.first-of-type': {
     display: 'flex',
 

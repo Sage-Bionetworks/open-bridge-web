@@ -1,6 +1,6 @@
+import assDetailFrame from '@assets/assessments/assessment_detail_frame.svg'
 import DefaultImg from '@assets/sage.svg'
 import {Box, styled, SxProps} from '@mui/material'
-import {theme} from '@style/theme'
 import {AssessmentResource} from '@typedefs/types'
 import React, {FunctionComponent, ReactNode} from 'react'
 
@@ -21,6 +21,21 @@ const CardTop = styled(Box, {label: 'StyledCardMedia'})(({theme}) => ({
     height: '150px',
     width: '100%',
     padding: theme.spacing(2, 3),
+  },
+}))
+
+const DetailImageContainer = styled(Box, {label: 'DetailImageContainer'})(({theme}) => ({
+  padding: theme.spacing(0),
+  backgroundImage: `url(${assDetailFrame})`,
+  backgroundRepeat: 'no-repeat',
+  height: '270px',
+  width: '530px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  '& img': {
+    width: '100%',
   },
 }))
 
@@ -57,15 +72,9 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps & SxProps> = ({
     }
     case 'detail': {
       image = (
-        <Box
-          sx={{
-            padding: theme.spacing(0),
-            '& img': {
-              width: '100%',
-            },
-          }}>
+        <DetailImageContainer>
           <img src={screen?.url || DefaultImg} alt={name} height="100%" style={smallVariantProperties} />
-        </Box>
+        </DetailImageContainer>
       )
       break
     }
