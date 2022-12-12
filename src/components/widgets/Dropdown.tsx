@@ -116,7 +116,7 @@ const Dropdown: React.FunctionComponent<SelectProps & DropdownStyleProps> = ({
       id={id}
       value={value}
       onChange={onChange}
-      disableUnderline
+      disableUnderline={true}
       MenuProps={{
         anchorOrigin: {
           vertical: 'bottom',

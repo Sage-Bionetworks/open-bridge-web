@@ -12,7 +12,7 @@ const StyledStudyToolbar = styled(Toolbar, {label: 'StyledStudyToolbar'})(({them
   display: 'flex',
   maxWidth: 'fit-content',
   margin: '0 auto',
-  padding: 0,
+
   justifyContent: 'space-between',
   marginTop: theme.spacing(2),
 
@@ -31,6 +31,7 @@ const StyledToolbarLink = styled(Button, {label: 'StyledToolbarLink', shouldForw
   textTransform: 'capitalize',
 
   boxShadow: $isSelected ? 'inset 0px -4px 0px 0px #9499C7' : 'none',
+  fontWeight: $isSelected ? 600 : 400,
   '&:hover': {textDecoration: 'none'},
 }))
 const StyledToolbarLinkDisabled = styled(Typography, {label: 'StyledToolbarLinkDisabled'})(({theme}) => ({
@@ -106,8 +107,8 @@ export const MenuDropdown = <T extends unknown>({
         justifyContent: 'center',
         display: 'flex',
         width: '100%',
-        fontSize: isSelected ? '16px' : '18px',
-        fontWeight: isSelected ? 900 : 700,
+        fontSize: isSelected ? '18px' : '18px',
+        fontWeight: isSelected ? 900 : 400,
         color: isSelected ? theme.palette.grey.A100 : theme.palette.grey[700],
         height: theme.spacing(6),
       }}>
@@ -159,7 +160,10 @@ export const MenuDropdown = <T extends unknown>({
             <MenuItem
               key={section.id}
               selected={selectedFn(section)}
-              onClick={() => onClick(section)}
+              onClick={() => {
+                handleClose()
+                onClick(section)
+              }}
               sx={{padding: 0, width: width || fullWidth, textAlign: 'center'}}>
               {wrapItem(displayItem(section), false)}
             </MenuItem>

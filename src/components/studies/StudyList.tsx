@@ -1,6 +1,5 @@
 import {default as CollapsableMenu} from '@components/surveys/widgets/MenuDropdown'
 import ConfirmationDialog, {ConfirmationDialogType} from '@components/widgets/ConfirmationDialog'
-import {MTBHeading} from '@components/widgets/Headings'
 import Loader from '@components/widgets/Loader'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
@@ -19,7 +18,7 @@ import StudyCard from './StudyCard'
 type StudyListOwnProps = {}
 
 type StudySublistProps = {
-  status: DisplayStudyPhase
+  status: DisplayStudyPhase | null
   userRoles: AdminRole[]
   studies: Study[]
   onStudyCardClick: Function
@@ -33,7 +32,7 @@ type StudySublistProps = {
 
 type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME' | 'VIEW' | 'WITHDRAW' | 'CLOSE'
 
-const studyCardWidth = '290'
+const studyCardWidth = '357'
 
 const StyledStudyListGrid = styled(Box, {label: 'StyledStudyListGrid'})(({theme}) => ({
   display: 'grid',
@@ -41,6 +40,7 @@ const StyledStudyListGrid = styled(Box, {label: 'StyledStudyListGrid'})(({theme}
   gridTemplateColumns: `repeat(auto-fill,${studyCardWidth}px)`,
   gridColumnGap: theme.spacing(2),
   gridRowGap: theme.spacing(2),
+  justifyContent: 'center',
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(3),
     justifyContent: 'center',
@@ -128,9 +128,9 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   menuAnchor,
 }: StudySublistProps) => {
   const section = sections.find(section => section.sectionStatus === status)!
-  const displayStudies = studies.filter(study => section.studyStatus.includes(study.phase))
+  const displayStudies = section ? studies.filter(study => section.studyStatus.includes(study.phase)) : studies
 
-  if (!displayStudies.length || !section.sectionStatus) {
+  if (!displayStudies.length /*|| !section.sectionStatus*/) {
     return <></>
   }
 
@@ -149,9 +149,6 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   }
   return (
     <>
-      <MTBHeading variant="h2" align={'left'}>
-        {section.title}
-      </MTBHeading>
       <StyledStudyListGrid>
         {displayStudies.map((study, index) => (
           <Link
@@ -170,7 +167,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
                 onStudyCardClick(study, 'ANCHOR', e)
               }}
               isNewlyAddedStudy={highlightedStudyId === study.identifier}
-              section={section.sectionStatus}
+              // section={section.sectionStatus}
               isMenuOpen={menuAnchor?.study?.identifier === study.identifier}></StudyCard>
           </Link>
         ))}
@@ -206,7 +203,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<ConfirmationDialogType | undefined>(undefined)
 
-  const [statusFilters, setStatusFilters] = React.useState<DisplayStudyPhase[]>(getAllFilters())
+  const [statusFilter, setStatusFilter] = React.useState<DisplayStudyPhase | null>(null)
 
   const [highlightedStudyId, setHighlightedStudyId] = React.useState<string | null>(null)
   const [redirectLink, setRedirectLink] = React.useState('')
@@ -218,14 +215,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }
 
   const resetStatusFilters = () => {
-    setStatusFilters(getAllFilters())
+    setStatusFilter(null)
   }
   React.useEffect(() => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
     })
-  }, [statusFilters])
+  }, [statusFilter])
 
   const createStudy = async (study?: Study) => {
     //if study is provided -- we are duplicating
@@ -298,9 +295,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const isSelectedFilter = (section: typeof sections[1]) => {
     if (!section.sectionStatus) {
-      return statusFilters.length > 2
+      return !statusFilter
     }
-    return statusFilters.indexOf(section.sectionStatus) > -1 && statusFilters.length === 1
+    return statusFilter === section.sectionStatus
   }
 
   if (redirectLink) {
@@ -325,22 +322,21 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             position: 'relative',
             height: '120px',
             borderBottom: '1px solid #DFE2E6',
-            paddingTop: ['32px', '32px', '32px', '54px'],
+            padding: theme.spacing(0, 4),
+            paddingTop: [theme.spacing(4), theme.spacing(4), theme.spacing(4), theme.spacing(6.75)],
           }}>
           <CollapsableMenu
             items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
             selectedFn={section => isSelectedFilter(section)}
             displayMobileItem={(section, isSelected) => <>{section.filterTitle}</>}
-            displayDesktopItem={(section, isSelected) => <> {section.filterTitle}</>}
-            onClick={section =>
-              section.sectionStatus ? setStatusFilters([section.sectionStatus]) : resetStatusFilters()
-            }
+            displayDesktopItem={(section, isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
+            onClick={section => (section.sectionStatus ? setStatusFilter(section.sectionStatus) : resetStatusFilters())}
           />
 
           <Button
             disabled={!Utility.isPathAllowed('any', constants.restrictedPaths.STUDY_BUILDER)}
             variant="contained"
-            sx={{position: 'absolute', top: '34px', right: '10px'}}
+            sx={{position: 'absolute', top: '34px', right: theme.spacing(4)}}
             onClick={() => createStudy()}>
             + Create New Study
           </Button>
@@ -348,36 +344,34 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
         <Box sx={{backgroundColor: 'rgba(135, 142, 149, 0.1)', paddingTop: theme.spacing(7)}}>
           <Container maxWidth="lg">
-            {studies &&
-              studies.length > 0 &&
-              statusFilters.map((status, index) => (
-                <Box style={{paddingBottom: index < 3 ? '24px' : '0'}} key={status}>
-                  <StudySublist
-                    userRoles={roles}
-                    studies={studies!}
-                    renameStudyId={renameStudyId}
-                    status={status}
-                    onStudyCardClick={(s: Study, action: StudyAction, e: any) => {
-                      switch (action) {
-                        case 'ANCHOR':
-                          setMenuAnchor({study: s, anchorEl: e})
-                          break
-                        case 'VIEW':
-                          handleMenuClose()
-                          navigateToStudy(s)
-                          break
-                        case 'RENAME':
-                          onAction(s, 'RENAME')
-                          break
-                        default:
-                          console.log('unknown study action')
-                      }
-                    }}
-                    highlightedStudyId={highlightedStudyId}
-                    menuAnchor={menuAnchor}
-                  />
-                </Box>
-              ))}
+            {studies && studies.length > 0 && (
+              <Box sx={{paddingBottom: '24px'}} key={statusFilter || 'all'}>
+                <StudySublist
+                  userRoles={roles}
+                  studies={studies!}
+                  renameStudyId={renameStudyId}
+                  status={statusFilter}
+                  onStudyCardClick={(s: Study, action: StudyAction, e: any) => {
+                    switch (action) {
+                      case 'ANCHOR':
+                        setMenuAnchor({study: s, anchorEl: e})
+                        break
+                      case 'VIEW':
+                        handleMenuClose()
+                        navigateToStudy(s)
+                        break
+                      case 'RENAME':
+                        onAction(s, 'RENAME')
+                        break
+                      default:
+                        console.log('unknown study action')
+                    }
+                  }}
+                  highlightedStudyId={highlightedStudyId}
+                  menuAnchor={menuAnchor}
+                />
+              </Box>
+            )}
 
             {menuAnchor && (
               <StyledContextMenu
@@ -393,8 +387,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   horizontal: 'left',
                 }}
                 open={Boolean(menuAnchor.anchorEl)}
-                onClose={handleMenuClose}
-                classes={{paper: classes.paper, list: classes.list}}>
+                onClose={handleMenuClose}>
                 <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>View</MenuItem>
                 {(getPhase() === 'DRAFT' || getPhase() === 'LIVE') && (
                   <MenuItem

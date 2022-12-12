@@ -4,7 +4,8 @@ import {useUserSessionDataState} from '@helpers/AuthContext'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import ViewListIcon from '@mui/icons-material/ViewListTwoTone'
 import ViewModuleIcon from '@mui/icons-material/ViewModuleTwoTone'
-import {Box, Container, styled} from '@mui/material'
+import {Box, Container, styled, Typography} from '@mui/material'
+import {theme} from '@style/theme'
 import {Assessment, AssessmentsType, StringDictionary, ViewType} from '@typedefs/types'
 import {FunctionComponent, ReactNode} from 'react'
 import {NavLink} from 'react-router-dom'
@@ -27,6 +28,7 @@ const StyledOuterContainer = styled(Box, {
 })<{
   isBlue: boolean
 }>(({theme, isBlue}) => ({
+  /*
   flexGrow: 1,
   backgroundColor: isBlue ? '#BCD5E4' : theme.palette.background.default,
 
@@ -37,7 +39,7 @@ const StyledOuterContainer = styled(Box, {
   [theme.breakpoints.down('md')]: {
     maxWidth: '400px',
   },
-  paddingTop: theme.spacing(1),
+paddingTop: theme.spacing(1),}*/
 }))
 
 const StyledAssessmentContainer = styled(Container, {label: 'StyledAssessmentContainer'})(({theme}) => ({
@@ -132,6 +134,20 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
         assessments={assessments}
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
       /> */}
+      <Box
+        sx={{
+          background: 'linear-gradient(360deg, #EDEEF2 22.68%, #FAFAFB 85.05%)',
+          padding: theme.spacing(5.5, 0, 4.5, 0),
+        }}>
+        <Container maxWidth="lg">
+          <Typography variant="h2" sx={{marginBottom: theme.spacing(3)}}>
+            Assessments
+          </Typography>
+          <Typography component={'p'} sx={{fontSize: '16px'}}>
+            Need some text here
+          </Typography>
+        </Container>
+      </Box>
       <StyledAssessmentContainer maxWidth="xl">
         {isAssessmentLibrary && token && (
           <Box textAlign="right" mx={1} mb={6}>

@@ -1,43 +1,13 @@
 import CollapsableMenu from '@components/surveys/widgets/MenuDropdown'
-import {getStyledToolbarLinkStyle} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import BuildTwoToneIcon from '@mui/icons-material/BuildTwoTone'
 import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone'
 import PersonSearchTwoToneIcon from '@mui/icons-material/PersonSearchTwoTone'
-import {Alert, Box, styled, Typography} from '@mui/material'
-import Toolbar from '@mui/material/Toolbar'
+import {Alert, Box} from '@mui/material'
 import constants from '@typedefs/constants'
 import {ExtendedError, Study, StudyPhase} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
-import {NavLink, useHistory} from 'react-router-dom'
-
-const StyledStudyToolbar = styled(Toolbar, {label: 'StyledStudyToolbar'})(({theme}) => ({
-  alignItems: 'center',
-  minHeight: 'unset !important',
-  display: 'flex',
-  maxWidth: 'fit-content',
-  margin: '0 auto',
-  padding: 0,
-  justifyContent: 'space-between',
-  marginTop: theme.spacing(2),
-
-  '&:last-child': {
-    paddingRight: 0,
-  },
-  '&:first-child': {
-    paddingLeft: 0,
-  },
-}))
-
-const StyledToolbarLink = styled(NavLink, {label: 'StyledToolbarLink'})(({theme}) => ({
-  ...getStyledToolbarLinkStyle(theme),
-  textTransform: 'capitalize',
-}))
-const StyledToolbarLinkDisabled = styled(Typography, {label: 'StyledToolbarLinkDisabled'})(({theme}) => ({
-  ...getStyledToolbarLinkStyle(theme),
-  opacity: 0.45,
-  textTransform: 'capitalize',
-}))
+import {useHistory} from 'react-router-dom'
 
 type StudyTopNavProps = {
   study: Study

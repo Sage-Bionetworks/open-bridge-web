@@ -220,7 +220,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   }
 
   return (
-    <Box sx={{backgroundColor: 'rgba(135, 142, 149, 0.1)'}}>
+    <Box id="studyBuilder" sx={{backgroundColor: '#fbfbfc'}}>
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
         <Container
           maxWidth="xl"

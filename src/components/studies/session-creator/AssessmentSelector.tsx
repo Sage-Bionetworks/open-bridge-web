@@ -143,6 +143,9 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
                 <AssessmentTable
                   selectedAssessments={selectedAssessments}
                   assessments={getAssessments()}
+                  onSelectAll={(shouldSelect: boolean) => {
+                    onUpdateAssessments(shouldSelect ? getAssessments() : [])
+                  }}
                   onSelectAssessment={row => {
                     if (selectedAssessments.find(a => a.guid === row.guid) === undefined) {
                       onUpdateAssessments([...selectedAssessments, row])

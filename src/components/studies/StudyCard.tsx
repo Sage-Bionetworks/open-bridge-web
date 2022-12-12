@@ -1,127 +1,94 @@
-import WithdrawnIcon from '@assets/cancelled_study_icon.svg'
-import CompletedIcon from '@assets/completed_study_icon.svg'
-import LiveIcon from '@assets/live_study_icon.svg'
-import participants_icon from '@assets/participants_icon.svg'
+import {ReactComponent as ParticipantsIcon} from '@assets/participants_icon.svg'
 import Utility from '@helpers/utility'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import {Box, IconButton, TextField} from '@mui/material'
+import {Box, IconButton, styled, TextField} from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-import makeStyles from '@mui/styles/makeStyles'
-import {ThemeType} from '@style/theme'
-import {Study} from '@typedefs/types'
-import clsx from 'clsx'
+import StudyService from '@services/study.service'
+import {shouldForwardProp, theme} from '@style/theme'
+import {DisplayStudyPhase, Study} from '@typedefs/types'
 import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
 import {useAdherenceForWeek} from './adherenceHooks'
 
-const DraftIcon = () => {
-  return (
-    <Box width="100%" height="4px" borderRadius="5px" bgcolor="#C4C4C4" position="relative">
-      <Box width="20%" height="4px" borderRadius="5px 0 0 5px" bgcolor="#3E3030" position="absolute"></Box>
-    </Box>
-  )
-}
+const StyledCard = styled(Card, {label: 'StyledCard'})(({theme}) => ({
+  width: '357px',
+  height: '206px',
+  position: 'relative',
+  backgroundColor: '#FFFFFF',
+  cursor: 'pointer',
+  borderRadius: '0px',
+  //boxShadow: '0 4px 4px 0 rgb(0 0 0 / 35%)',
+  boxShadow: '0px 5px 14px #EAECEE',
+  boxSizing: 'border-box',
 
-const useStyles = makeStyles((theme: ThemeType) => ({
-  root: {
-    width: '290px',
-    height: '184px',
-    position: 'relative',
-    backgroundColor: '#FFFFFF',
-    cursor: 'pointer',
-    borderRadius: '0px',
-    boxShadow: '0 4px 4px 0 rgb(0 0 0 / 35%)',
-    boxSizing: 'border-box',
+  '&:hover': {
+    outline: `3px solid ${theme.palette.accent.purple}`,
+  },
+}))
 
-    '&:hover': {
-      outline: `4px solid ${theme.palette.primary.dark}`,
-    },
-  },
-  studyId: {
-    fontSize: 12,
-    fontFamily: 'Lato',
-    marginBottom: theme.spacing(2),
-  },
+const StyledCardTop = styled(Box, {label: 'StyledCardTop'})(({theme}) => ({
+  marginTop: theme.spacing(0.5),
+  width: '100%',
+  display: 'flex',
+  textAlign: 'left',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  height: '40px',
+}))
 
-  liveIconContainer: {
-    marginTop: theme.spacing(0.5),
-    marginRight: theme.spacing(0.5),
-  },
-  cardStatus: {
-    fontFamily: 'Playfair Display',
-    fontStyle: 'italic',
-    fontSize: 'small',
-    marginTop: theme.spacing(0.5),
-    marginRight: theme.spacing(1.25),
-  },
-  cardTopContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '40px',
-  },
-  lastEditedTest: {
-    fontFamily: 'Lato',
-    fontSize: '10px',
-    fontWeight: 'lighter',
-  },
-  participantsRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    width: '100%',
-    alignItems: 'center',
-    fontFamily: 'Lato',
-    fontSize: '12px',
-  },
-  participantsIcon: {
+const StyledCardBottom = styled(Box, {label: 'StyledCardBottom'})(({theme}) => ({
+  display: 'flex',
+  textAlign: 'left',
+  paddingTop: '8px',
+  position: 'absolute',
+  bottom: '8px',
+  left: '8px',
+  right: '8px',
+  justifyContent: 'space-between',
+  fontSize: '12px',
+  color: '#878E95',
+}))
+
+const ParticipantsIconContainer = styled(Box, {label: 'ParticipantsIconContainer'})(({theme}) => ({
+  display: 'flex',
+  alignItems: 'center',
+  '> svg': {
     width: '25px',
     height: '25px',
     marginRight: theme.spacing(0.5),
-  },
-  studyStatusRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    fontFamily: 'Lato',
-    fontWeight: 'lighter',
-    fontSize: '10px',
-  },
-  cardBottomContainer: {
-    width: '100%',
-    padding: theme.spacing(0.5),
-  },
-  studyNameText: {
-    fontFamily: 'Poppins',
-    fontSize: '18px',
-  },
-  studyCardTextField: {
-    marginBottom: theme.spacing(2),
-  },
-  isJustAdded: {
-    animation: '$pop-out 0.5s ease',
-    outline: `4px solid ${theme.palette.primary.dark}`,
-  },
-  /* '@keyframes pop-out': {
-    '0%': {
-      transform: 'scale(0)',
+    stroke: '#AEB5BC',
+    fill: '#AEB5BC',
+    '> path': {
+      stroke: '#AEB5BC',
+      fill: '#AEB5BC',
     },
-    '100%': {
-      transform: 'scale(1)',
-    },
-  },*/
-  menuBox: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    width: '28px',
-    height: '40px',
   },
+}))
+
+const textColor = (status: DisplayStudyPhase) => {
+  switch (status) {
+    case 'COMPLETED':
+      return '#47A4DD'
+    case 'DRAFT':
+      return '#C22E49'
+    case 'LIVE':
+      return '#63A650'
+    default:
+      return '#4f527d'
+  }
+}
+
+const StatusText = styled(Typography, {label: 'StatusText', shouldForwardProp: shouldForwardProp})<{
+  $displayStatus: DisplayStudyPhase
+}>(({theme, $displayStatus}) => ({
+  fontStyle: 'italic',
+  fontWeight: 400,
+  fontSize: '14px',
+  textAlign: 'right',
+  color: textColor($displayStatus),
 }))
 
 const cancelPropagation = (e: React.MouseEvent) => {
@@ -136,47 +103,34 @@ const getFormattedDate = (date: Date) => {
 const CardBottom: FunctionComponent<{
   study: Study
 }> = ({study}: {study: Study}) => {
-  const classes = useStyles()
-  //const [numParticipants, setNumParticipants] = React.useState('--')
   const date = new Date(study.phase === 'design' ? study.modifiedOn! : study.createdOn!)
   const {data: adherenceWeeklyInProcessCount} = useAdherenceForWeek(study.identifier, 0, 5, {
     progressionFilters: ['in_progress'],
   })
 
   return (
-    <Box display="flex" textAlign="left" paddingTop="8px" position="absolute" bottom="8px" left="8px" right="8px">
-      <div className={classes.cardBottomContainer}>
-        {study.phase === 'design' ? (
-          <div className={classes.lastEditedTest}>Last edited:</div>
-        ) : (
-          <div className={classes.participantsRow}>
-            <img src={participants_icon} className={classes.participantsIcon} alt="participant number" />
-            {adherenceWeeklyInProcessCount?.total.toString() || '--'}
-          </div>
-        )}
+    <StyledCardBottom>
+      <Box>
+        <strong>{study.phase === 'design' ? `Last Edited` : `Launched:`}</strong>
+        <br />
+        {`${getFormattedDate(date)}`}
+      </Box>
 
-        <div className={classes.studyStatusRow}>
-          <div>{study.phase === 'design' ? `${getFormattedDate(date)}` : `Launched: ${getFormattedDate(date)}`}</div>
-        </div>
-      </div>
-    </Box>
+      {study.phase !== 'design' && (
+        <ParticipantsIconContainer>
+          <ParticipantsIcon title="Number of Participants" />
+          {adherenceWeeklyInProcessCount?.total.toString() || '--'}
+        </ParticipantsIconContainer>
+      )}
+    </StyledCardBottom>
   )
 }
 
-const CardTop: FunctionComponent<StudyCardProps> = ({onSetAnchor, section, isMenuOpen}: StudyCardProps) => {
-  function getStatusIcon(section: string) {
-    if (section === 'LIVE') {
-      return LiveIcon
-    } else if (section === 'COMPLETED') {
-      return CompletedIcon
-    } else {
-      return WithdrawnIcon
-    }
-  }
-  const classes = useStyles()
+const CardTop: FunctionComponent<StudyCardProps> = ({onSetAnchor, study, isMenuOpen}: StudyCardProps) => {
+  const displayStatus = StudyService.getDisplayStatusForStudyPhase(study.phase)
 
   return (
-    <Box display="flex" textAlign="left" className={classes.cardTopContainer}>
+    <StyledCardTop>
       <IconButton
         style={{
           padding: '0',
@@ -184,21 +138,17 @@ const CardTop: FunctionComponent<StudyCardProps> = ({onSetAnchor, section, isMen
         onClick={e => {
           cancelPropagation(e)
           onSetAnchor(e.currentTarget)
-        }}
-        size="large">
-        <Box className={classes.menuBox} style={isMenuOpen ? {boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)'} : {}}>
-          <MoreVertIcon />
+        }}>
+        <Box //style={isMenuOpen ? {boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)'} : {}}
+        >
+          <MoreVertIcon sx={{fontSize: '32px'}} />
         </Box>
       </IconButton>
 
-      {section !== 'DRAFT' ? (
-        <div className={classes.liveIconContainer}>
-          <img src={getStatusIcon(section)} alt={section}></img>
-        </div>
-      ) : (
-        <div className={classes.cardStatus}>Draft</div>
-      )}
-    </Box>
+      <StatusText $displayStatus={displayStatus} sx={{marginTop: theme.spacing(0.5), marginRight: theme.spacing(1.25)}}>
+        {displayStatus.slice(0, 1).toUpperCase() + displayStatus.slice(1).toLowerCase()}
+      </StatusText>
+    </StyledCardTop>
   )
 }
 
@@ -208,7 +158,7 @@ type StudyCardProps = {
   isRename?: boolean
   onRename?: Function
   isNewlyAddedStudy?: boolean
-  section: string
+
   isMenuOpen: boolean
 }
 
@@ -218,10 +168,9 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   isRename,
   onRename,
   isNewlyAddedStudy,
-  section,
+  //section,
   isMenuOpen,
 }) => {
-  const classes = useStyles()
   const input = React.createRef<HTMLInputElement>()
 
   const handleKeyDown = (event: React.KeyboardEvent, name: string | undefined) => {
@@ -242,24 +191,22 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
 
   return (
     <>
-      <Card
-        className={clsx(classes.root, isNewlyAddedStudy && classes.isJustAdded)}
+      <StyledCard
+        sx={
+          isNewlyAddedStudy ? {animation: '$pop-out 0.5s ease', outline: `4px solid ${theme.palette.primary.dark}`} : {}
+        }
         onClick={e => {
           if (isRename) {
             cancelPropagation(e)
           }
         }}>
         <>
-          <CardTop section={section} study={study} onSetAnchor={onSetAnchor} isMenuOpen={isMenuOpen}></CardTop>
+          <CardTop study={study} onSetAnchor={onSetAnchor} isMenuOpen={isMenuOpen}></CardTop>
         </>
-        <CardContent>
+        <CardContent sx={{textAlign: 'center'}}>
           <div>
             {!isRename && (
-              <Typography
-                variant="h6"
-                color="textSecondary"
-                className={classes.studyNameText}
-                gutterBottom={study.phase === 'design' ? true : false}>
+              <Typography variant="h4" gutterBottom={study.phase === 'design' ? true : false}>
                 {study.name}
               </Typography>
             )}
@@ -268,7 +215,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
                 variant="outlined"
                 defaultValue={study.name}
                 size="small"
-                className={classes.studyCardTextField}
+                sx={{marginBottom: theme.spacing(2)}}
                 inputRef={input}
                 onBlur={e => onRename && onRename(input.current?.value)}
                 onKeyDown={e => handleKeyDown(e, input.current?.value)}
@@ -276,13 +223,16 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
               />
             )}
           </div>
-          <Typography className={classes.studyId} color="textSecondary">
+          <Typography
+            sx={{
+              color: '#878E95',
+              fontSize: '14px',
+            }}>
             Study ID: {Utility.formatStudyId(study.identifier)}
           </Typography>
-          {false && <DraftIcon />}
         </CardContent>
         <CardBottom study={study}></CardBottom>
-      </Card>
+      </StyledCard>
     </>
   )
 }

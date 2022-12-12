@@ -63,6 +63,7 @@ type AssessmentTableProps = {
   assessments: Assessment[]
   selectedAssessments?: Assessment[]
   onSelectAssessment?: (assessment: Assessment) => void
+  onSelectAll?: (checked: boolean) => void
   match?: match
 }
 
@@ -83,6 +84,7 @@ const AssessmentTable: FunctionComponent<AssessmentTableProps> = ({
   assessments,
   selectedAssessments,
   onSelectAssessment,
+  onSelectAll,
   match,
 }) => {
   const rowType = onSelectAssessment && selectedAssessments ? 'row' : 'link'
@@ -94,7 +96,16 @@ const AssessmentTable: FunctionComponent<AssessmentTableProps> = ({
         size="small">
         <TableHead>
           <TableRow>
-            <StyledTableCell colSpan={selectedAssessments ? 2 : 1}>Title</StyledTableCell>
+            {selectedAssessments && [
+              <StyledTableCell>
+                <Checkbox
+                  checked={selectedAssessments.length === assessments.length}
+                  onChange={e => (onSelectAll ? onSelectAll(e.target.checked) : undefined)}
+                />
+              </StyledTableCell>,
+            ]}
+            <StyledTableCell>Assessment Title</StyledTableCell>
+
             <StyledTableCell>Tags</StyledTableCell>
             <StyledTableCell>Minutes</StyledTableCell>
           </TableRow>
