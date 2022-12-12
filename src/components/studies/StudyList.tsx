@@ -322,7 +322,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             position: 'relative',
             height: '120px',
             borderBottom: '1px solid #DFE2E6',
-            paddingTop: ['32px', '32px', '32px', '54px'],
+            padding: theme.spacing(0, 4),
+            paddingTop: [theme.spacing(4), theme.spacing(4), theme.spacing(4), theme.spacing(6.75)],
           }}>
           <CollapsableMenu
             items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
@@ -335,7 +336,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           <Button
             disabled={!Utility.isPathAllowed('any', constants.restrictedPaths.STUDY_BUILDER)}
             variant="contained"
-            sx={{position: 'absolute', top: '34px', right: '10px'}}
+            sx={{position: 'absolute', top: '34px', right: theme.spacing(4)}}
             onClick={() => createStudy()}>
             + Create New Study
           </Button>

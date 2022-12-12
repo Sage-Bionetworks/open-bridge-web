@@ -24,7 +24,7 @@ const StyledCard = styled(Card, {label: 'StyledCard'})(({theme}) => ({
   boxSizing: 'border-box',
 
   '&:hover': {
-    outline: `4px solid ${theme.palette.primary.dark}`,
+    outline: `3px solid ${theme.palette.accent.purple}`,
   },
 }))
 

@@ -265,8 +265,8 @@ export const getStyledToolbarLinkStyle = (theme: Theme) => ({
   fontFamily: latoFont,
   flexGrow: 1,
 
-  fontSize: '16px',
-  fontWeight: 900,
+  fontSize: '18px',
+  fontWeight: 400,
 
   textDecoration: 'none',
   color: 'inherit',
@@ -281,8 +281,9 @@ export const getStyledToolbarLinkStyle = (theme: Theme) => ({
     paddingLeft: theme.spacing(0.5),
   },
 
-  '& .selectedLink': {
+  /*'& .selectedLink': {
     borderBottom: '4px solid #9499C7',
     paddingBottom: theme.spacing(2),
-  },
+    fontWeight: 900,
+  },*/
 })

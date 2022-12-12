@@ -49,7 +49,6 @@ const StyledToolBar = styled(Toolbar, {label: 'StyledToolBar', shouldForwardProp
   padding: hasSubNav ? theme.spacing(2.5, 2) : theme.spacing(4, 2),
   justifyContent: 'space-between',
   overflowX: 'auto',
-  minHeight: '40px',
 }))
 
 const StyledToolBarLink = styled(NavLink, {label: 'StyledToolBarLink', shouldForwardProp: shouldForwardProp})<{
@@ -256,7 +255,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                   setIsMobileOpen={setIsMobileOpen}
                 />
               </StyledToolBar>
-              <StyledToolBar disableGutters hasSubNav={hasSubNav}>
+              <StyledToolBar disableGutters hasSubNav={hasSubNav} sx={{paddingRight: 0}}>
                 {!sessionData && (
                   <MenuLinksRhs
                     appId={appId}
