@@ -65,12 +65,12 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     checked: {
-      color: '#FFF509',
-      '& .MuiSvgIcon-root': {
-        fill: '#FFF509',
-        backgroundColor: 'black',
-        clipPath: 'polygon(7% 6%, 95% 6%, 95% 95%, 7% 95%)',
-      },
+      // color: '#FFF509',
+      // '& .MuiSvgIcon-root': {
+      // fill: '#FFF509',
+      //   backgroundColor: 'black',
+      //  clipPath: 'polygon(7% 6%, 95% 6%, 95% 95%, 7% 95%)',
+      // },
     },
     burstSchedule: {
       alignItems: 'flex-end',
@@ -121,7 +121,7 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'center',
 
       '& input': {
-        backgroundColor: '#FFF509',
+        // backgroundColor: '#FFF509',
       },
     },
     assignBurstText: {
@@ -226,13 +226,12 @@ const BurstSelectorSC: React.FunctionComponent<{
               key={s.guid}
               control={
                 <Checkbox
-                  color="secondary"
                   classes={{checked: classes.checked}}
                   checked={burstSessionGuids.includes(s.guid!)}
                   onChange={e => updateSelection(s.guid!, e.target.checked)}
                   name="isburst"
                   style={{
-                    visibility: isEventSelected(key) ? 'visible' : 'hidden',
+                    visibility: isEventSelected(key) || eventKeys.length === 1 ? 'visible' : 'hidden',
                   }}
                 />
               }
