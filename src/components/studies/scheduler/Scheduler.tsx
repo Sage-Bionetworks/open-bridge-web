@@ -3,7 +3,6 @@ import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
 import LoadingComponent from '@components/widgets/Loader'
-import {DialogButtonPrimary, DialogButtonSecondary} from '@components/widgets/StyledComponents'
 import AddToPhotosTwoToneIcon from '@mui/icons-material/AddToPhotosTwoTone'
 import CloseIcon from '@mui/icons-material/Close'
 import {
@@ -14,7 +13,9 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  formControlClasses,
   FormControlLabel,
+  formControlLabelClasses,
   IconButton,
   styled,
   Theme,
@@ -47,23 +48,6 @@ import {getFormattedTimeDateFromPeriodString} from './utility'
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    labelDuration: {
-      paddingTop: theme.spacing(1),
-      paddingRight: theme.spacing(2),
-      fontFamily: poppinsFont,
-      fontSize: '18px',
-      fontStyle: 'normal',
-      fontWeight: 700,
-      '&$readOnly': {
-        '& > span ': {
-          paddingRight: '8px',
-        },
-        '& > strong': {
-          fontSize: '14px',
-          paddingTop: '8px',
-        },
-      },
-    },
     burstButton: {
       fontFamily: poppinsFont,
       display: 'flex',
@@ -90,10 +74,6 @@ export const useStyles = makeStyles((theme: Theme) =>
           marginLeft: theme.spacing(3),
         },
       },
-    },
-    inactiveBurstSaveButton: {
-      border: 0,
-      opacity: 0.7,
     },
 
     row: {
@@ -127,6 +107,17 @@ const StyledButtonBar = styled(Box, {label: 'StyledButtonBar'})(({theme}) => ({
   },
 }))
 
+const StyledFormControlLabel = styled(FormControlLabel, {label: 'StyledFormControlLabel'})(({theme}) => ({
+  alignItems: 'flex-start',
+  marginLeft: 0,
+
+  [`& .${formControlLabelClasses.label}`]: {
+    fontWeight: 700,
+  },
+  [`& .${formControlClasses.root}`]: {
+    margin: theme.spacing(0, 1, 0, 0),
+  },
+}))
 export type SchedulerErrorType = {
   errors: any
   entity: any
@@ -451,12 +442,16 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
           <div className={clsx(classes.scheduleHeader, isReadOnly && 'readOnly')} key="intro">
             {!isReadOnly ? (
               <Box>
-                <FormControlLabel
-                  classes={{label: classes.labelDuration}}
+                <StyledFormControlLabel
                   label="Study duration:"
-                  labelPlacement="start"
+                  labelPlacement="top"
+                  sx={{alignItems: 'flex-start'}}
                   control={
                     <Duration
+                      selectWidth={150}
+                      //inputWidth is theme.spacing
+                      inputWidth={18}
+                      sx={{marginBottom: 0}}
                       maxDurationDays={1825}
                       isShowClear={false}
                       onChange={e => {
@@ -472,11 +467,10 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                   }
                 />{' '}
                 {getEventsInSchedule().length > 0 && (
-                  <FormControlLabel
-                    classes={{label: classes.labelDuration}}
+                  <StyledFormControlLabel
                     label="Start Study on:"
-                    style={{marginRight: '8px'}}
-                    labelPlacement="start"
+                    labelPlacement="top"
+                    sx={{alignItems: 'flex-start'}}
                     control={
                       <StudyStartEvent
                         value={study.studyStartEventId || ''}
@@ -488,30 +482,30 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                   />
                 )}
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   size="small"
                   onClick={() => onSave(true)}
                   sx={{
-                    marginTop: '-1px',
-                    marginLeft: '16px',
+                    marginTop: '16px',
+                    marginLeft: '0px',
                   }}>
                   {' '}
                   Save Changes
                 </Button>
-                <Box fontSize="12px" ml={2} fontFamily={latoFont} fontWeight="bold">
+                <Box fontSize="12px" fontFamily={latoFont} fontWeight="bold">
                   The study duration must be shorter than 5 years.
                 </Box>
               </Box>
             ) : (
               <>
-                <div className={clsx(classes.labelDuration, classes.readOnly)}>
+                <div>
                   <span>Study duration:</span>
                   <strong>
                     {schedule.duration ? getFormattedTimeDateFromPeriodString(schedule.duration) : 'No duration set'}
                   </strong>
                 </div>
 
-                <div className={clsx(classes.labelDuration, classes.readOnly)}>
+                <div>
                   <span>Study starts on:</span>
                   <strong>
                     {study.studyStartEventId
@@ -753,16 +747,18 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
           />
         </DialogContent>
         <DialogActions>
-          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>Cancel</DialogButtonSecondary>
+          <Button variant="outlined" onClick={() => setOpenModal(undefined)}>
+            Cancel
+          </Button>
 
-          <DialogButtonPrimary
+          <Button
+            variant="contained"
             disabled={!!!hasBursts && schedule.studyBursts?.length === 0}
-            className={!!!hasBursts && schedule.studyBursts?.length === 0 ? classes.inactiveBurstSaveButton : ''}
             onClick={() => {
               ref2.current?.save()
             }}>
             Update burst to Schedule
-          </DialogButtonPrimary>
+          </Button>
         </DialogActions>
       </Dialog>
     </>

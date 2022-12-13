@@ -16,10 +16,11 @@ dayjs.extend(relativeTime)
 const StyledSessionButton = styled(Button, {label: 'StyledSessionButton'})(({theme}) => ({
   marginRight: theme.spacing(2),
   marginBottom: theme.spacing(0.25),
-  padding: theme.spacing(1, 2),
+  padding: theme.spacing(0, 2),
+
   borderRadius: '21px',
-  height: '42px',
-  fontSize: '14px',
+  height: theme.spacing(4.5),
+  fontSize: '16px',
   '& svg': {
     '& path, circle, triangle, rect': {
       fill: 'white',
