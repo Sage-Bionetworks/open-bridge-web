@@ -529,9 +529,10 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
               </div>
             )}
           </div>
-          <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
+          <Box bgcolor="#fff" pt={2} pb={0} mt={3} key="scheduler" id="scheduler">
             {!isReadOnly && (
               <Button
+                sx={{marginRight: theme.spacing(8)}}
                 disabled={isScheduleDefault(schedule) && !hasBeenSaved}
                 className={classes.burstButton}
                 onClick={() => setOpenModal('BURSTS')}>

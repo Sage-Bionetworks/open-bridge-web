@@ -115,49 +115,51 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
 
   return (
     <Box pt={0} pb={3} px={0}>
-      {!timeline && (
-        <>
-          This timeline viewer will update to provide a visual summary of the schedules you’ve defined below for each
-          session!.
-        </>
-      )}
-      {timeline && (
-        <Box
-          sx={{
-            fontWeight: 'bold',
-            fontSize: '12px',
-            display: 'flex',
-            alignItems: 'center',
-          }}>
-          <NotificationsTwoToneIcon /> {timeline.totalNotifications}{' '}
-          {timeline.totalNotifications > 1 ? 'notifications' : 'notification'}
-          &nbsp; &nbsp;
-          <AccessTimeTwoToneIcon /> &nbsp;
-          {dayjs
-            .duration(timeline.totalMinutes, 'minutes')
-            .format(
-              `H [Hour${timeline.totalMinutes > 120 || timeline.totalMinutes < 60 ? 's' : ''}] m [Minute${
-                timeline.totalMinutes % 60 === 1 ? '' : 's'
-              }]`
-            )}
+      <Box id="topArea" px={2}>
+        {!timeline && (
+          <>
+            This timeline viewer will update to provide a visual summary of the schedules you’ve defined below for each
+            session!.
+          </>
+        )}
+        {timeline && (
+          <Box
+            sx={{
+              fontWeight: 'bold',
+              fontSize: '12px',
+              display: 'flex',
+              alignItems: 'center',
+            }}>
+            <NotificationsTwoToneIcon /> {timeline.totalNotifications}{' '}
+            {timeline.totalNotifications > 1 ? 'notifications' : 'notification'}
+            &nbsp; &nbsp;
+            <AccessTimeTwoToneIcon /> &nbsp;
+            {dayjs
+              .duration(timeline.totalMinutes, 'minutes')
+              .format(
+                `H [Hour${timeline.totalMinutes > 120 || timeline.totalMinutes < 60 ? 's' : ''}] m [Minute${
+                  timeline.totalMinutes % 60 === 1 ? '' : 's'
+                }]`
+              )}
+          </Box>
+        )}
+        <Box display="flex" justifyContent="space-between">
+          <StyledLegend>
+            {schedFromDisplay?.sessions?.map((s, index) => (
+              <TooltipHoverDisplay key={s.guid} session={s} tooltipProps={tooltipProps}>
+                <StyledSessionButton
+                  variant="contained"
+                  onClick={() => {
+                    onSelectSession(s)
+                  }}>
+                  <SessionIcon index={index} key={s.guid} symbolKey={s.symbol}>
+                    {getSession(s.guid!)?.label}
+                  </SessionIcon>
+                </StyledSessionButton>
+              </TooltipHoverDisplay>
+            ))}
+          </StyledLegend>
         </Box>
-      )}
-      <Box display="flex" justifyContent="space-between">
-        <StyledLegend>
-          {schedFromDisplay?.sessions?.map((s, index) => (
-            <TooltipHoverDisplay key={s.guid} session={s} tooltipProps={tooltipProps}>
-              <StyledSessionButton
-                variant="contained"
-                onClick={() => {
-                  onSelectSession(s)
-                }}>
-                <SessionIcon index={index} key={s.guid} symbolKey={s.symbol}>
-                  {getSession(s.guid!)?.label}
-                </SessionIcon>
-              </StyledSessionButton>
-            </TooltipHoverDisplay>
-          ))}
-        </StyledLegend>
       </Box>
       {timeline?.schedule && (
         <TimelineBurstPlot studyId={studyId} timeline={timeline}>

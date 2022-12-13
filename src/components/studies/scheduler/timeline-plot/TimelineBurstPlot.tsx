@@ -17,7 +17,7 @@ const LayoutConstants = {
   bracketOverlay: 8,
   weekVPad: 10,
   height: 30,
-  singleSessionGraphHeight: 16,
+  singleSessionGraphHeight: 32,
   singleSessionGraphBottomMargin: 0, //5,
   weekMinHeight: 22,
 }
@@ -28,9 +28,9 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     position: 'absolute',
-    right: '-70px',
+    right: '-62px',
     '&> div:first-child': {
-      width: '14px',
+      width: '12px',
       border: '1px solid black',
       borderLeft: 'none',
     },
@@ -56,6 +56,7 @@ const useStyles = makeStyles(theme => ({
 
   graph: {
     display: 'flex',
+
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: `${LayoutConstants.singleSessionGraphBottomMargin}px`,
@@ -79,6 +80,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#F1F3F5',
   },
   weekTitle: {
     width: '82px',
@@ -152,7 +154,7 @@ const FrequencyBracket: React.FunctionComponent<{
 
 export const PlotDaysDisplay: React.FunctionComponent<{
   unitWidth: number
-  title: string
+  title: React.ReactNode
   endLabel?: React.ReactNode
   titleStyle?: React.CSSProperties
 }> = ({unitWidth, title, endLabel, titleStyle}) => {
@@ -160,10 +162,16 @@ export const PlotDaysDisplay: React.FunctionComponent<{
   const defaultTitleStyle = {
     width: `${99 + unitWidth / 2}px`,
     paddingLeft: '12px',
-    fontSize: '12px',
+    fontSize: '14px',
+    backgroundColor: '#F1F3F5',
+
+    height: '50px',
+    display: 'flex',
+
+    alignItems: 'center',
   }
   return (
-    <div className={classes.week}>
+    <div className={classes.week} id="week">
       <div style={{...defaultTitleStyle, ...titleStyle}}>{title}</div>
       <div className={classes.graph}>
         <div className={classes.sessionName}></div>
@@ -197,9 +205,6 @@ export function useGetPlotAndUnitWidth(ref: React.RefObject<HTMLDivElement>, nOf
   let [unitWidth, setUnitWidth] = React.useState(
     getUnitWidth(nOfUnits, ref?.current?.getBoundingClientRect()?.width, padding)
   )
-
-  // in this case useEffect will execute only once because
-  // it does not have any dependencies.
 
   function getUnitWidth(nOfUnits: number, width = 0, padding = 0) {
     return Math.round((width - padding) / nOfUnits)
@@ -425,7 +430,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
             plotData.sessions.length * LayoutConstants.singleSessionGraphHeight +
             (plotData.sessions.length - 1) * LayoutConstants.singleSessionGraphBottomMargin
           //add padding
-          pxGapBetweenBursts = pxGapBetweenBursts + LayoutConstants.weekVPad * 2
+          pxGapBetweenBursts = pxGapBetweenBursts //+ LayoutConstants.weekVPad * 2
 
           pxGapBetweenBursts = pxGapBetweenBursts + Math.max(weekHeight, LayoutConstants.weekMinHeight)
         }
@@ -441,7 +446,12 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
         titleStyle={{
           width: `${110 + unitWidth / 2}px`,
         }}
-        title="Schedule by week day"
+        title={
+          <strong>
+            Schedule by <br />
+            weekday
+          </strong>
+        }
       />
       <div style={{position: 'relative' /*, overflow: 'hidden'*/}}>
         {!isLoading && plotData && (
@@ -456,14 +466,18 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
               </div>
             )}
             {eventIds.map((evt, evtIndex) => (
-              <div key={`${evt}_${evtIndex}`}>
+              <div
+                key={`${evt}_${evtIndex}`}
+                id={evt.toString()}
+                style={{border: '1px solid #EAECEE', borderBottom: 'none'}}>
                 <div
                   className={classes.weekTitle}
                   style={{
                     width: 'auto',
                     fontWeight: 'bold',
-                    padding: `${LayoutConstants.weekVPad}px 16px 0 16px`,
-                    backgroundColor: plotData[evt]?.[0]?.burst ? 'yellow' : '#eee',
+                    padding: `${LayoutConstants.weekVPad}px 16px 2px 16px`,
+                    borderBottom: '1px solid #EAECEE',
+                    backgroundColor: plotData[evt]?.[0]?.burst ? 'rgba(148, 153, 199, 0.2);' : '#fbfbfc',
                   }}>
                   {' '}
                   {EventService.formatEventIdForDisplay(evt)}
@@ -474,14 +488,17 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
                     className={classes.week}
                     key={`week_${wk.name}_ ${wk.burstNum}`}
                     style={{
-                      marginBottom:
+                      /* marginBottom:
                         plotData[evt][index + 1] && plotData[evt][index + 1].burstNum === wk.burstNum
                           ? '0px'
-                          : `${LayoutConstants.marginGap}px`,
-                      padding: `${LayoutConstants.weekVPad}px 16px`,
+                          : `${LayoutConstants.marginGap}px`,*/
+                      marginBottom: 0,
+                      // padding: `${LayoutConstants.weekVPad}px 0 ${LayoutConstants.weekVPad}px 16px`,
+                      padding: '0 0 0 16px',
                       // height: `${LayoutConstants.height}px`,
-                      backgroundColor: wk.burst ? 'yellow' : '#eee',
+                      backgroundColor: wk.burst ? '#eaebf4' : index % 2 === 0 ? '#fff' : '#FBFBFC',
                       position: 'relative',
+                      borderBottom: '1px solid #EAECEE',
                     }}>
                     <FrequencyBracket
                       intervalInWeeks={getBurstIntervalInWeeks()}
@@ -507,6 +524,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
                           <SessionPlot
                             sessionIndex={sessionInfo.sessionIndex}
                             lineNumber={index}
+                            weekSessionNumber={sIndex}
                             xCoords={sessionInfo.coords}
                             sessionSymbol={sessionInfo.session.symbol}
                             unitPixelWidth={unitWidth}
