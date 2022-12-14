@@ -19,12 +19,10 @@ const StyledDayContainer = styled(Box, {label: 'StyledDayContainer', shouldForwa
   $hasTopBorder: boolean
 }>(({theme, $unitPixelWidth, $hasTopBorder}) => ({
   width: $unitPixelWidth + 'px',
-  //borderBottom: '1px solid black',
   borderLeft: '1px solid #EAECEE',
   display: 'flex',
   justifyContent: 'space-around',
   borderTop: $hasTopBorder ? '1px solid #EAECEE' : 'none',
-  // borderRight: index === 6 ? '1px solid black' : 'none',
   height: '38px',
   padding: 0,
   position: 'relative',
@@ -39,21 +37,6 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   weekSessionNumber,
   xCoords,
 }) => {
-  const dayDividers = [...new Array(8)].map((i, index) => (
-    <div
-      key={`day_${index}`}
-      id={`day_${index}`}
-      style={{
-        width: '1px',
-        height: '16px',
-        backgroundColor: 'black',
-        position: 'absolute',
-        zIndex: 100,
-        top: `0`,
-        left: `${index * unitPixelWidth}px`,
-      }}></div>
-  ))
-
   const table = [...new Array(7)].map((_i, index) => {
     const coords = xCoords.filter(c => Math.floor(c.c) === index)
 
