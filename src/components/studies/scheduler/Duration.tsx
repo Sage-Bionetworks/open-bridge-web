@@ -26,6 +26,7 @@ export interface DurationProps {
   isShowClear?: boolean
   placeHolder?: string
   selectWidth?: number
+  inputWidth?: number
 }
 
 const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> = ({
@@ -40,6 +41,7 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
   disabled,
   placeHolder,
   selectWidth,
+  inputWidth,
   isShowClear = true,
   ...props
 }: DurationProps) => {
@@ -101,7 +103,7 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
     <Box sx={{display: 'flex', alignItems: 'center'}} onBlur={triggerChange}>
       <SmallTextBox
         disabled={!!disabled}
-        sx={{width: '60px', marginBottom: 0}}
+        sx={{marginBottom: 0}}
         value={num || ''}
         aria-label={numberLabel}
         type="number"
@@ -110,7 +112,7 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           changeValue(Number(e.target.value as string), unt)
         }}
-        inputWidth={isIntro ? 10 : undefined}></SmallTextBox>
+        inputWidth={inputWidth}></SmallTextBox>
 
       <SelectWithEnum
         disabled={!!disabled}
@@ -121,7 +123,7 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
         sourceData={unitData}
         id={unitLabel.replace(' ', '')}
         onChange={e => changeValue(num, e.target.value as string)}
-        style={selectWidth ? {width: `${selectWidth}px`} : {width: '100px'}}></SelectWithEnum>
+        sx={{width: `${selectWidth || 100}px`}}></SelectWithEnum>
       {isShowClear && (
         <StyledIconButton onClick={_e => onChange({target: {value: undefined}})} size="large">
           <ClearIcon />

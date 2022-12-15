@@ -13,13 +13,14 @@ import SessionPlot from './SingleSessionPlot'
 import Utility, {CoordItem} from './utility'
 
 const LayoutConstants = {
-  marginGap: 4,
+  marginGap: 2,
   bracketOverlay: 8,
   weekVPad: 10,
   height: 30,
-  singleSessionGraphHeight: 16,
+  singleSessionGraphHeight: 32,
   singleSessionGraphBottomMargin: 0, //5,
   weekMinHeight: 22,
+  border: '1px solid #EAECEE',
 }
 
 const useStyles = makeStyles(theme => ({
@@ -28,9 +29,9 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     position: 'absolute',
-    right: '-70px',
+    right: '-62px',
     '&> div:first-child': {
-      width: '14px',
+      width: '12px',
       border: '1px solid black',
       borderLeft: 'none',
     },
@@ -56,6 +57,7 @@ const useStyles = makeStyles(theme => ({
 
   graph: {
     display: 'flex',
+
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: `${LayoutConstants.singleSessionGraphBottomMargin}px`,
@@ -79,6 +81,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#F1F3F5',
   },
   weekTitle: {
     width: '82px',
@@ -152,7 +155,7 @@ const FrequencyBracket: React.FunctionComponent<{
 
 export const PlotDaysDisplay: React.FunctionComponent<{
   unitWidth: number
-  title: string
+  title: React.ReactNode
   endLabel?: React.ReactNode
   titleStyle?: React.CSSProperties
 }> = ({unitWidth, title, endLabel, titleStyle}) => {
@@ -160,10 +163,16 @@ export const PlotDaysDisplay: React.FunctionComponent<{
   const defaultTitleStyle = {
     width: `${99 + unitWidth / 2}px`,
     paddingLeft: '12px',
-    fontSize: '12px',
+    fontSize: '14px',
+    backgroundColor: '#F1F3F5',
+
+    height: '50px',
+    display: 'flex',
+
+    alignItems: 'center',
   }
   return (
-    <div className={classes.week}>
+    <div className={classes.week} id="week">
       <div style={{...defaultTitleStyle, ...titleStyle}}>{title}</div>
       <div className={classes.graph}>
         <div className={classes.sessionName}></div>
@@ -197,9 +206,6 @@ export function useGetPlotAndUnitWidth(ref: React.RefObject<HTMLDivElement>, nOf
   let [unitWidth, setUnitWidth] = React.useState(
     getUnitWidth(nOfUnits, ref?.current?.getBoundingClientRect()?.width, padding)
   )
-
-  // in this case useEffect will execute only once because
-  // it does not have any dependencies.
 
   function getUnitWidth(nOfUnits: number, width = 0, padding = 0) {
     return Math.round((width - padding) / nOfUnits)
@@ -337,7 +343,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
 
     for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
       // do the non-burst sessions
-
       const nonBurstSessions = timeline.sessions.filter(s => !isSessionBurst(s.guid!) && s.startEventId === eventId)
       const dataForWeek = getDataForSessionsInWeek(schedItems, nonBurstSessions, weekNumber, maxWindows)
       if (dataForWeek.length) {
@@ -425,7 +430,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
             plotData.sessions.length * LayoutConstants.singleSessionGraphHeight +
             (plotData.sessions.length - 1) * LayoutConstants.singleSessionGraphBottomMargin
           //add padding
-          pxGapBetweenBursts = pxGapBetweenBursts + LayoutConstants.weekVPad * 2
+          pxGapBetweenBursts = pxGapBetweenBursts //+ LayoutConstants.weekVPad * 2
 
           pxGapBetweenBursts = pxGapBetweenBursts + Math.max(weekHeight, LayoutConstants.weekMinHeight)
         }
@@ -435,13 +440,18 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
   }
 
   return (
-    <div ref={ref} className={classes.plotContainer}>
+    <div ref={ref} className={classes.plotContainer} id="plotContainer">
       <PlotDaysDisplay
         unitWidth={unitWidth}
         titleStyle={{
           width: `${110 + unitWidth / 2}px`,
         }}
-        title="Schedule by week day"
+        title={
+          <strong>
+            Schedule by <br />
+            weekday
+          </strong>
+        }
       />
       <div style={{position: 'relative' /*, overflow: 'hidden'*/}}>
         {!isLoading && plotData && (
@@ -456,14 +466,18 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
               </div>
             )}
             {eventIds.map((evt, evtIndex) => (
-              <div key={`${evt}_${evtIndex}`}>
+              <div
+                key={`${evt}_${evtIndex}`}
+                id={evt.toString()}
+                style={{border: LayoutConstants.border, borderBottom: 'none'}}>
                 <div
                   className={classes.weekTitle}
                   style={{
                     width: 'auto',
                     fontWeight: 'bold',
-                    padding: `${LayoutConstants.weekVPad}px 16px 0 16px`,
-                    backgroundColor: plotData[evt]?.[0]?.burst ? 'yellow' : '#eee',
+                    padding: `${LayoutConstants.weekVPad}px 16px 2px 16px`,
+                    borderBottom: LayoutConstants.border,
+                    backgroundColor: plotData[evt]?.[0]?.burst ? 'rgba(148, 153, 199, 0.2)' : '#fbfbfc',
                   }}>
                   {' '}
                   {EventService.formatEventIdForDisplay(evt)}
@@ -478,10 +492,13 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
                         plotData[evt][index + 1] && plotData[evt][index + 1].burstNum === wk.burstNum
                           ? '0px'
                           : `${LayoutConstants.marginGap}px`,
-                      padding: `${LayoutConstants.weekVPad}px 16px`,
+                      //marginBottom: 0,
+                      // padding: `${LayoutConstants.weekVPad}px 0 ${LayoutConstants.weekVPad}px 16px`,
+                      padding: '0 0 0 16px',
                       // height: `${LayoutConstants.height}px`,
-                      backgroundColor: wk.burst ? 'yellow' : '#eee',
+                      backgroundColor: wk.burst ? '#eaebf4' : index % 2 === 0 ? '#fff' : '#FBFBFC',
                       position: 'relative',
+                      borderBottom: LayoutConstants.border,
                     }}>
                     <FrequencyBracket
                       intervalInWeeks={getBurstIntervalInWeeks()}
@@ -507,9 +524,11 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
                           <SessionPlot
                             sessionIndex={sessionInfo.sessionIndex}
                             lineNumber={index}
+                            weekSessionNumber={sIndex}
                             xCoords={sessionInfo.coords}
                             sessionSymbol={sessionInfo.session.symbol}
                             unitPixelWidth={unitWidth}
+                            isBurst={plotData[evt]?.[0]?.burst ? true : false}
                             sessionGuid={sessionInfo.session.guid!}
                           />
                         </div>

@@ -3,7 +3,7 @@ import ConfirmationDialog, {ConfirmationDialogType} from '@components/widgets/Co
 import Loader from '@components/widgets/Loader'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Button, Container, Menu, MenuItem, styled} from '@mui/material'
+import {Box, Button, Container, Menu, MenuItem, styled, Typography} from '@mui/material'
 import Link from '@mui/material/Link'
 import StudyService from '@services/study.service'
 import {useStudies, useUpdateStudyInList} from '@services/studyHooks'
@@ -440,7 +440,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
             <ConfirmationDialog
               isOpen={isConfirmDialogOpen === 'CLOSE_STUDY'}
-              title={'Close Study'}
+              title={'Close a Study'}
               type={'CLOSE_STUDY'}
               actionText="Yes, this study is complete"
               onCancel={closeConfirmationDialog}
@@ -453,14 +453,17 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   By closing this study, you are stopping enrollment of new participants and data collection from
                   existing participants will stop.
                 </p>
+                <Typography component="p" sx={{fontSize: '16px', fontWeight: 900, margin: theme.spacing(2, 0)}}>
+                  Are you sure you would like to close the following study?
+                </Typography>
+
                 <p>
-                  <strong>This action cannot be undone.</strong>
+                  <Typography sx={{fontSize: '16px'}}>{menuAnchor?.study.name}</Typography>
                 </p>
 
-                <p> Close the following study?</p>
-                <p>
-                  <strong>{menuAnchor?.study.name}</strong>
-                </p>
+                <Typography component="p" sx={{color: '#FF4164', fontWeight: 700}}>
+                  This action cannot be undone.
+                </Typography>
               </div>
             </ConfirmationDialog>
 
