@@ -12,18 +12,20 @@ export interface SingleSessionPlotProps {
   sessionSymbol?: string
   weekSessionNumber: number
   xCoords: CoordItem[]
+  isBurst: boolean
 }
 
 const StyledDayContainer = styled(Box, {label: 'StyledDayContainer', shouldForwardProp: shouldForwardProp})<{
   $unitPixelWidth: number
   $hasTopBorder: boolean
-}>(({theme, $unitPixelWidth, $hasTopBorder}) => ({
+  $isBurst: boolean
+}>(({theme, $unitPixelWidth, $hasTopBorder, $isBurst}) => ({
   width: $unitPixelWidth + 'px',
-  borderLeft: '1px solid #EAECEE',
+  borderLeft: `1px solid ${$isBurst ? '#ddd' : '#EAECEE'} `,
   display: 'flex',
   justifyContent: 'space-around',
-  borderTop: $hasTopBorder ? '1px solid #EAECEE' : 'none',
-  height: '38px',
+  borderTop: $hasTopBorder || true ? `1px solid ${$isBurst ? '#ddd' : '#EAECEE'}` : 'none',
+  height: '32px',
   padding: 0,
   position: 'relative',
 }))
@@ -36,12 +38,17 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   lineNumber,
   weekSessionNumber,
   xCoords,
+  isBurst,
 }) => {
   const table = [...new Array(7)].map((_i, index) => {
     const coords = xCoords.filter(c => Math.floor(c.c) === index)
 
     return (
-      <StyledDayContainer $unitPixelWidth={unitPixelWidth} $hasTopBorder={weekSessionNumber > 0} key={_i}>
+      <StyledDayContainer
+        $unitPixelWidth={unitPixelWidth}
+        $hasTopBorder={(!isBurst && weekSessionNumber > 0) || (isBurst && (lineNumber || 0) > 0)}
+        key={_i}
+        $isBurst={isBurst}>
         {coords.map(({c: i, expiration}) => (
           <Tooltip
             title={expiration}
@@ -56,7 +63,6 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
                 top: `${topOffset}px`,
                 left: `${(i - index) * unitPixelWidth - 6}px`,
               }}>
-              {/*i*/}
               <SessionIcon symbolKey={sessionSymbol} index={sessionIndex}></SessionIcon>
             </div>
           </Tooltip>

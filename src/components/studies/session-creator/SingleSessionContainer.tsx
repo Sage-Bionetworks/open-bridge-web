@@ -1,14 +1,15 @@
-import TrashIcon from '@assets/trash.svg'
 import AssessmentSmall from '@components/assessments/AssessmentSmall'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import EditableTextbox from '@components/widgets/EditableTextbox'
 import SessionIcon from '@components/widgets/SessionIcon'
-import ClockIcon from '@mui/icons-material/AccessTime'
+import AccessTimeTwoToneIcon from '@mui/icons-material/AccessTimeTwoTone'
 import AddIcon from '@mui/icons-material/Add'
 import ClearIcon from '@mui/icons-material/Clear'
-import {Box, Button, FormControlLabel, Switch} from '@mui/material'
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone'
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
+import {Box, Button, FormControlLabel, IconButton} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import {ThemeType} from '@style/theme'
+import {theme, ThemeType} from '@style/theme'
 import {StudySession} from '@typedefs/scheduling'
 import {Assessment} from '@typedefs/types'
 import clsx from 'clsx'
@@ -21,37 +22,45 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    /*'&.active': {
-      border: theme.activeBorder,
-    },*/
   },
   inner: {
     position: 'relative',
     textAlign: 'left',
     paddingBottom: theme.spacing(1),
-    borderBottom: '1px solid black',
+    borderBottom: '1px solid #DFE2E6',
+
+    '& h4': {
+      fontWeight: '700',
+      fontSize: '14px',
+      lineHeight: '20px',
+      textDecorationLine: 'underline',
+
+      color: '#4F527D',
+    },
   },
   btnDeleteSession: {
     padding: '0',
     minWidth: 'auto',
     position: 'absolute',
     right: '-3px',
-    top: '-3px',
+    top: '-6px',
   },
   btnDeleteAssessment: {
     padding: theme.spacing(1.25, 1.25),
     minWidth: 'auto',
     position: 'absolute',
-    top: '28px',
+    top: '24px',
+    backgroundColor: '#fff',
     right: theme.spacing(0),
-    backgroundColor: '#E8BEBE',
+
     borderRadius: '0px',
-    '&:hover': {
-      backgroundColor: '#E8BEBE',
+    '& svg': {
+      fontSize: '18px',
+      display: 'block',
     },
   },
   actions: {
-    borderTop: '1px solid black',
+    borderTop: '1px solid #DFE2E6',
     height: theme.spacing(6),
     display: 'flex',
     padding: 0,
@@ -175,9 +184,11 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
               <ClearIcon fontSize="small"></ClearIcon>
             </Button>
           )}
-          <Box fontSize="12px" textAlign="right">
-            {getTotalSessionTime(studySession.assessments) || 0} min.
-            <ClockIcon style={{fontSize: '12px', verticalAlign: 'middle'}}></ClockIcon>
+
+          <Box sx={{fontSize: '12px', textAlign: 'right', color: '#4A5056'}}>
+            {getTotalSessionTime(studySession.assessments) || 0} min
+            <AccessTimeTwoToneIcon
+              sx={{fontSize: '12px', verticalAlign: 'middle', marginLeft: theme.spacing(0.5)}}></AccessTimeTwoToneIcon>
           </Box>
         </Box>
 
@@ -212,13 +223,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                                   e.stopPropagation()
                                   removeAssessment(assessment.guid!)
                                 }}>
-                                <img
-                                  src={TrashIcon}
-                                  alt="remove assessment"
-                                  style={{
-                                    width: '10px',
-                                    height: '14px',
-                                  }}></img>
+                                <DeleteTwoToneIcon color="primary" />
                               </Button>
                             )}
                           </AssessmentSmall>
@@ -245,12 +250,19 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
         <Box className={classes.actions}>
           <FormControlLabel
             disabled={_.isEmpty(studySession.assessments)}
-            control={<Switch color="primary" value={isEditable} onChange={e => setIsEditable(e.target.checked)} />}
-            label="Edit"
+            control={
+              <IconButton
+                onClick={() => setIsEditable(!isEditable)}
+                size="small"
+                style={{padding: '0px', minWidth: 'auto', marginLeft: '0'}}>
+                <EditTwoToneIcon sx={{color: '#4F527D', '&:hover': {stroke: isEditable ? '#4F527D' : 'auto'}}} />
+              </IconButton>
+            }
+            label=""
           />
 
           <Button onClick={() => onShowAssessments()} variant="text" style={{padding: '0px', minWidth: 'auto'}}>
-            <AddIcon></AddIcon>
+            <AddIcon sx={{fontSize: '24px'}}></AddIcon>
           </Button>
         </Box>
       </Box>

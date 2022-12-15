@@ -193,7 +193,9 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
     <>
       <StyledCard
         sx={
-          isNewlyAddedStudy ? {animation: '$pop-out 0.5s ease', outline: `4px solid ${theme.palette.primary.dark}`} : {}
+          isNewlyAddedStudy
+            ? {animation: '$pop-out 0.5s ease', outline: `4px solid ${theme.palette.accent.purple}`}
+            : {}
         }
         onClick={e => {
           if (isRename) {

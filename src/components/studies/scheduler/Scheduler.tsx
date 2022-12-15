@@ -1,10 +1,10 @@
-import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
-
+//import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'/
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
 import LoadingComponent from '@components/widgets/Loader'
 import AddToPhotosTwoToneIcon from '@mui/icons-material/AddToPhotosTwoTone'
 import CloseIcon from '@mui/icons-material/Close'
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
 import {
   Box,
   Button,
@@ -562,7 +562,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
           style={{
             backgroundColor: '#f8f8f8',
           }}>
-          <EditIcon />
+          <EditTwoToneIcon sx={{color: '#4F527D'}} />
           &nbsp;&nbsp; Edit Event Drop Down
           <IconButton
             aria-label="close"

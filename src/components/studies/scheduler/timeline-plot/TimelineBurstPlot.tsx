@@ -13,13 +13,14 @@ import SessionPlot from './SingleSessionPlot'
 import Utility, {CoordItem} from './utility'
 
 const LayoutConstants = {
-  marginGap: 4,
+  marginGap: 2,
   bracketOverlay: 8,
   weekVPad: 10,
   height: 30,
   singleSessionGraphHeight: 32,
   singleSessionGraphBottomMargin: 0, //5,
   weekMinHeight: 22,
+  border: '1px solid #EAECEE',
 }
 
 const useStyles = makeStyles(theme => ({
@@ -342,7 +343,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
 
     for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
       // do the non-burst sessions
-
       const nonBurstSessions = timeline.sessions.filter(s => !isSessionBurst(s.guid!) && s.startEventId === eventId)
       const dataForWeek = getDataForSessionsInWeek(schedItems, nonBurstSessions, weekNumber, maxWindows)
       if (dataForWeek.length) {
@@ -440,7 +440,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
   }
 
   return (
-    <div ref={ref} className={classes.plotContainer}>
+    <div ref={ref} className={classes.plotContainer} id="plotContainer">
       <PlotDaysDisplay
         unitWidth={unitWidth}
         titleStyle={{
@@ -469,15 +469,15 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
               <div
                 key={`${evt}_${evtIndex}`}
                 id={evt.toString()}
-                style={{border: '1px solid #EAECEE', borderBottom: 'none'}}>
+                style={{border: LayoutConstants.border, borderBottom: 'none'}}>
                 <div
                   className={classes.weekTitle}
                   style={{
                     width: 'auto',
                     fontWeight: 'bold',
                     padding: `${LayoutConstants.weekVPad}px 16px 2px 16px`,
-                    borderBottom: '1px solid #EAECEE',
-                    backgroundColor: plotData[evt]?.[0]?.burst ? 'rgba(148, 153, 199, 0.2);' : '#fbfbfc',
+                    borderBottom: LayoutConstants.border,
+                    backgroundColor: plotData[evt]?.[0]?.burst ? 'rgba(148, 153, 199, 0.2)' : '#fbfbfc',
                   }}>
                   {' '}
                   {EventService.formatEventIdForDisplay(evt)}
@@ -488,17 +488,17 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
                     className={classes.week}
                     key={`week_${wk.name}_ ${wk.burstNum}`}
                     style={{
-                      /* marginBottom:
+                      marginBottom:
                         plotData[evt][index + 1] && plotData[evt][index + 1].burstNum === wk.burstNum
                           ? '0px'
-                          : `${LayoutConstants.marginGap}px`,*/
-                      marginBottom: 0,
+                          : `${LayoutConstants.marginGap}px`,
+                      //marginBottom: 0,
                       // padding: `${LayoutConstants.weekVPad}px 0 ${LayoutConstants.weekVPad}px 16px`,
                       padding: '0 0 0 16px',
                       // height: `${LayoutConstants.height}px`,
                       backgroundColor: wk.burst ? '#eaebf4' : index % 2 === 0 ? '#fff' : '#FBFBFC',
                       position: 'relative',
-                      borderBottom: '1px solid #EAECEE',
+                      borderBottom: LayoutConstants.border,
                     }}>
                     <FrequencyBracket
                       intervalInWeeks={getBurstIntervalInWeeks()}
@@ -528,6 +528,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
                             xCoords={sessionInfo.coords}
                             sessionSymbol={sessionInfo.session.symbol}
                             unitPixelWidth={unitWidth}
+                            isBurst={plotData[evt]?.[0]?.burst ? true : false}
                             sessionGuid={sessionInfo.session.guid!}
                           />
                         </div>

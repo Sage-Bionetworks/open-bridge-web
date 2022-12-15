@@ -23,7 +23,7 @@ export type CssVariablesType = {
   activeBorder: string
 }
 
-const gray_custom: Partial<Color> = {
+export const gray_custom: Partial<Color> = {
   100: '#FBFBFC',
   200: '#F1F3F5',
   300: '#EAECEE',
@@ -118,7 +118,7 @@ const theme: Theme = createTheme({
         root: {
           color: '#D0D4D9',
           '&.Mui-checked': {
-            color: '#9499C7',
+            color: '#4F527D',
           },
         },
       },

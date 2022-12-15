@@ -1,5 +1,4 @@
-import {ReactComponent as EditIcon} from '@assets/edit_pencil.svg'
-import {ReactComponent as RedEditIcon} from '@assets/edit_pencil_red.svg'
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
 import {FormControl, FormGroup, IconButton, MenuItem, Radio, RadioGroup, Select, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {JOINED_EVENT_ID} from '@services/event.service'
@@ -45,23 +44,12 @@ type ToolIconProps = {
 }
 const ToolIcon: FunctionComponent<ToolIconProps> = ({onOpenEventsEditor}) => {
   const classes = useStyles()
-  const [isHoveringEdit, setIsHoveringEdit] = React.useState(false)
-  const handleMouseOver = () => setIsHoveringEdit(true)
-  const handleMouseOut = () => setIsHoveringEdit(false)
+
   return (
     <Tooltip title="Edit Custom Event">
-      <IconButton
-        className={classes.editIcon}
-        onClick={() => onOpenEventsEditor()}
-        onMouseEnter={handleMouseOver}
-        onMouseLeave={handleMouseOut}
-        size="large">
+      <IconButton className={classes.editIcon} onClick={() => onOpenEventsEditor()} size="large">
         {' '}
-        {isHoveringEdit ? (
-          <EditIcon />
-        ) : (
-          <RedEditIcon style={{position: 'relative', bottom: '0.5px', right: '0.5px'}} />
-        )}
+        <EditTwoToneIcon sx={{color: '#4F527D', '&:hover': {stroke: '#4F527D'}}} />
       </IconButton>
     </Tooltip>
   )
