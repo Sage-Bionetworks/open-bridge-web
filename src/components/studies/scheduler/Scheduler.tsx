@@ -34,6 +34,7 @@ import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {useSchedule, useTimeline, useUpdateSchedule} from '../../../services/scheduleHooks'
 import {useStudy, useUpdateStudyDetail} from '../../../services/studyHooks'
+import {BuilderWrapper} from '../StudyBuilder'
 import AssessmentList from './AssessmentList'
 import ConfigureBurstTab from './ConfigureBurstTab'
 import Duration from './Duration'
@@ -431,7 +432,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
 
   return (
     <>
-      <Box>
+      <BuilderWrapper sectionName="Schedule Sessions">
         <NavigationPrompt when={hasObjectChanged} key="prompt">
           {({onConfirm, onCancel}) => (
             <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
@@ -554,8 +555,9 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
             )}
           </Box>
         </Box>
-        {children}
-      </Box>
+      </BuilderWrapper>
+      {children}
+
       <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body">
         <DialogTitle
           className={classes.dialogTitle}

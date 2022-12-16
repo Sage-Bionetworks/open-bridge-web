@@ -10,6 +10,7 @@ import {Schedule} from '@typedefs/scheduling'
 import {Study} from '@typedefs/types'
 import React, {useState} from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
+import {BuilderWrapper} from '../StudyBuilder'
 import AboutStudy from './AboutStudy'
 import IrbDetails from './IrbDetails'
 import LaunchAlerts from './LaunchAlerts'
@@ -160,30 +161,34 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
   const showButton = !isReadOnly && ((!isStudyLive && activeStep < 2) || (isStudyLive && activeStep === 0))
 
   return (
-    <Box id="container">
+    <>
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
         {({onConfirm, onCancel}) => (
           <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
         )}
       </NavigationPrompt>
-      {!isReadOnly && (
-        <LaunchStepper steps={steps} activeStep={activeStep} setActiveStepFn={handleStepClick}></LaunchStepper>
-      )}
 
       <div>
-        <StepContent
-          study={study}
-          schedule={schedule}
-          stepName={steps[activeStep]?.label}
-          onShowFeedback={onShowFeedback}
-          isFinished={isFinished}
-          onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}
-          onChange={(study: Study) => {
-            onUpdate(study)
-          }}
-        />{' '}
+        <BuilderWrapper sectionName="Launch Study Requirements">
+          {!isReadOnly && (
+            <LaunchStepper steps={steps} activeStep={activeStep} setActiveStepFn={handleStepClick}></LaunchStepper>
+          )}
+          <Box sx={{maxWidth: 'md'}}>
+            <StepContent
+              study={study}
+              schedule={schedule}
+              stepName={steps[activeStep]?.label}
+              onShowFeedback={onShowFeedback}
+              isFinished={isFinished}
+              onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}
+              onChange={(study: Study) => {
+                onUpdate(study)
+              }}
+            />
+          </Box>
+        </BuilderWrapper>
         <Container
-          maxWidth="sm"
+          maxWidth="md"
           sx={{
             display: 'flex',
             alignItems: 'center',
@@ -231,7 +236,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
           )}
         </Container>
       </div>
-    </Box>
+    </>
   )
 }
 

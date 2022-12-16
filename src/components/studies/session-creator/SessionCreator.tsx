@@ -24,6 +24,7 @@ import {StudySession} from '@typedefs/scheduling'
 import {Assessment} from '@typedefs/types'
 import React, {FunctionComponent, useState} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
+import {BuilderWrapper} from '../StudyBuilder'
 import AssessmentSelector from './AssessmentSelector'
 import ReadOnlySessionCreator from './read-only-pages/ReadOnlySessionCreator'
 import SessionActionButtons from './SessionActionButtons'
@@ -215,49 +216,51 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   if (schedule?.sessions) {
     return (
       <>
-        <Box className={classes.root} key="sessions">
-          {schedule.sessions.map((session, index) => (
-            <StyledSessionContainer key={session.guid! + '_' + index}>
-              <SingleSessionContainer
-                key={session.guid}
-                sessionIndex={index}
-                studySession={session}
-                onShowAssessments={() => setIsAssessmentDialogOpen(true)}
-                onSetActiveSession={(sessionId: string) => setActiveSession(sessionId)}
-                onRemoveSession={(sessionId: string) =>
-                  sessionsUpdateFn({
-                    type: Types.RemoveSession,
-                    payload: {sessionId},
-                  })
-                }
-                onUpdateSessionName={(sessionId: string, sessionName: string) =>
-                  sessionsUpdateFn({
-                    type: Types.UpdateSessionName,
-                    payload: {sessionId, sessionName},
-                  })
-                }
-                onUpdateAssessmentList={updateAssessmentList}
-                numberOfSessions={schedule.sessions.length}></SingleSessionContainer>
-            </StyledSessionContainer>
-          ))}
-          <Box className={classes.sessionContainer2} />
-        </Box>
-        <Box className={classes.actionButtons} key="actionButtons">
-          <SessionActionButtons
-            disabled={saveLoader}
-            key={'new_session'}
-            sessions={schedule.sessions}
-            onAddSession={(sessions: StudySession[], assessments: Assessment[], name: string) =>
-              sessionsUpdateFn({
-                type: Types.AddSession,
-                payload: {
-                  name: name || 'Session' + (sessions.length + 1).toString(),
-                  assessments,
-                },
-              })
-            }></SessionActionButtons>
-          {saveLoader && <CircularProgress />}
-        </Box>
+        <BuilderWrapper sectionName="Create Sessions">
+          <Box className={classes.root} key="sessions">
+            {schedule.sessions.map((session, index) => (
+              <StyledSessionContainer key={session.guid! + '_' + index}>
+                <SingleSessionContainer
+                  key={session.guid}
+                  sessionIndex={index}
+                  studySession={session}
+                  onShowAssessments={() => setIsAssessmentDialogOpen(true)}
+                  onSetActiveSession={(sessionId: string) => setActiveSession(sessionId)}
+                  onRemoveSession={(sessionId: string) =>
+                    sessionsUpdateFn({
+                      type: Types.RemoveSession,
+                      payload: {sessionId},
+                    })
+                  }
+                  onUpdateSessionName={(sessionId: string, sessionName: string) =>
+                    sessionsUpdateFn({
+                      type: Types.UpdateSessionName,
+                      payload: {sessionId, sessionName},
+                    })
+                  }
+                  onUpdateAssessmentList={updateAssessmentList}
+                  numberOfSessions={schedule.sessions.length}></SingleSessionContainer>
+              </StyledSessionContainer>
+            ))}
+            <Box className={classes.sessionContainer2} />
+          </Box>
+          <Box className={classes.actionButtons} key="actionButtons">
+            <SessionActionButtons
+              disabled={saveLoader}
+              key={'new_session'}
+              sessions={schedule.sessions}
+              onAddSession={(sessions: StudySession[], assessments: Assessment[], name: string) =>
+                sessionsUpdateFn({
+                  type: Types.AddSession,
+                  payload: {
+                    name: name || 'Session' + (sessions.length + 1).toString(),
+                    assessments,
+                  },
+                })
+              }></SessionActionButtons>
+            {saveLoader && <CircularProgress />}
+          </Box>
+        </BuilderWrapper>
         {children}
         <Dialog
           maxWidth="xl"

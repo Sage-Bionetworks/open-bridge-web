@@ -11,7 +11,7 @@ import ScheduleSessionsIcon from '@assets/preview/schedule_session_icon_no_paddi
 import QrCode from '@assets/qr_code.png'
 import AssessmentSmall from '@components/assessments/AssessmentSmall'
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
-import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
+import {MTBHeadingH1} from '@components/widgets/Headings'
 import {PrevButton, SimpleTextInput} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
@@ -25,6 +25,7 @@ import React, {useEffect} from 'react'
 import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
 import {NavLink} from 'react-router-dom'
 import {useSchedule} from '../../../services/scheduleHooks'
+import {BuilderWrapper} from '../StudyBuilder'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -261,7 +262,6 @@ const PreviewIdGenerated: React.FunctionComponent<{
   const classes = useStyles()
   const studyDemoIntro = (
     <>
-      <MTBHeadingH2>Preview your study</MTBHeadingH2>
       <p className={classes.reminderOfUseText}>Your draft study has been generated.</p>
       <p className={classes.reminderOfUseText}>
         Please download and/or open the <strong>Mobile Toolbox App</strong> and login with the following credentials
@@ -371,35 +371,36 @@ const PreviewIntroScreen: React.FunctionComponent<{
           </Box>
         </PrevButton>
       </Box>
-
-      <Container maxWidth="md" className={clsx(classes.root, isAssessmentDemo && classes.assessmentDemo)}>
-        <Box textAlign="center" display="flex" flexDirection="column" alignItems="center">
-          <MTBHeadingH1 className={classes.reminderOfUseHeader}>Reminder of use:</MTBHeadingH1>
-          <Box className={classes.remindersOfUseContainer}>
-            {text.map((text, index) => (
-              <Reminder key={index} text={text} img={icons[index]}></Reminder>
-            ))}
-          </Box>
-          {!isAssessmentDemo && (
-            <Box className={clsx(classes.scheduleSessionReminderContainer, classes.reminderOfUseText)}>
-              <Box>
-                Please remember to customize your study schedule on&nbsp;
-                <img className={classes.scheduleSessionsIcon} src={ScheduleSessionsIcon} alt="schedule session"></img>
-                &nbsp;
-                <NavLink to={'scheduler'} className={classes.scheduleSessionsButton}>
-                  Schedule Sessions
-                </NavLink>
-                &nbsp; page before previewing your app.
-              </Box>
+      <BuilderWrapper sectionName="Preview Your Study">
+        <Container maxWidth="md" className={clsx(classes.root, isAssessmentDemo && classes.assessmentDemo)}>
+          <Box textAlign="center" display="flex" flexDirection="column" alignItems="center">
+            <MTBHeadingH1 className={classes.reminderOfUseHeader}>Reminder of use:</MTBHeadingH1>
+            <Box className={classes.remindersOfUseContainer}>
+              {text.map((text, index) => (
+                <Reminder key={index} text={text} img={icons[index]}></Reminder>
+              ))}
             </Box>
-          )}
-          <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-            <Button color="primary" variant="contained" onClick={() => onGetParticipantId()}>
-              Continue
-            </Button>
-          </ErrorBoundary>
-        </Box>
-      </Container>
+            {!isAssessmentDemo && (
+              <Box className={clsx(classes.scheduleSessionReminderContainer, classes.reminderOfUseText)}>
+                <Box>
+                  Please remember to customize your study schedule on&nbsp;
+                  <img className={classes.scheduleSessionsIcon} src={ScheduleSessionsIcon} alt="schedule session"></img>
+                  &nbsp;
+                  <NavLink to={'scheduler'} className={classes.scheduleSessionsButton}>
+                    Schedule Sessions
+                  </NavLink>
+                  &nbsp; page before previewing your app.
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </Container>
+      </BuilderWrapper>
+      <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+        <Button color="primary" variant="contained" onClick={() => onGetParticipantId()}>
+          Continue
+        </Button>
+      </ErrorBoundary>
     </>
   )
 }
@@ -439,12 +440,12 @@ const Preview: React.FunctionComponent<PreviewProps> = ({id, isAssessmentDemo, c
         <PreviewIntroScreen isAssessmentDemo={isAssessmentDemo} onGetParticipantId={() => getTestParticipantId()} />
       )}
       {testParticipantId && (
-        <>
+        <BuilderWrapper sectionName="Preview Your  Study">
           <PreviewIdGenerated isAssessmentDemo={isAssessmentDemo} testParticipantId={testParticipantId} studyId={id}>
             {!isAssessmentDemo && false && <PreviewAssessments studyId={id} />}
           </PreviewIdGenerated>
           {!isAssessmentDemo && children}
-        </>
+        </BuilderWrapper>
       )}
     </>
   )

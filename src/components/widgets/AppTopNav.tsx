@@ -134,7 +134,13 @@ const UserAvatar: FunctionComponent<{sessionData?: UserSessionData; onClick: (e:
     }, [sessionData])
     return (
       <Avatar
-        sx={{bgcolor: '#EDEEF2', color: theme.palette.accent.purple, cursor: 'pointer', ...otherSxProps}}
+        sx={{
+          marginRight: theme.spacing(4),
+          bgcolor: '#EDEEF2',
+          color: theme.palette.accent.purple,
+          cursor: 'pointer',
+          ...otherSxProps,
+        }}
         onClick={onClick}>
         {initials}
       </Avatar>

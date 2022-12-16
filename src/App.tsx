@@ -1,5 +1,5 @@
 import {FeatureToggleProvider} from '@helpers/FeatureToggle'
-import {CssBaseline, StyledEngineProvider, ThemeProvider, Typography} from '@mui/material'
+import {Container, CssBaseline, StyledEngineProvider, ThemeProvider, Typography} from '@mui/material'
 import {createTheme, Theme} from '@mui/material/styles'
 import {deepmerge} from '@mui/utils'
 import React, {useEffect, useRef} from 'react'
@@ -145,13 +145,18 @@ function App() {
                 {redirect && <Redirect to={redirect}></Redirect>}
                 {/*  <React.StrictMode>*/}
                 <FeatureToggleProvider featureToggles={{'SURVEY BUILDER': true}}>
-                  {sessionData.id ? (
-                    <AuthenticatedApp />
-                  ) : (
-                    <Loader reqStatusLoading={getCode() !== null}>
-                      <UnauthenticatedApp appId={Utility.getAppId()} />
-                    </Loader>
-                  )}
+                  <Container
+                    id="outer"
+                    maxWidth="xl"
+                    sx={{borderLeft: '1px solid #DFE2E6', padding: {xs: 0}, borderRight: '1px solid #DFE2E6'}}>
+                    {sessionData.id ? (
+                      <AuthenticatedApp />
+                    ) : (
+                      <Loader reqStatusLoading={getCode() !== null}>
+                        <UnauthenticatedApp appId={Utility.getAppId()} />
+                      </Loader>
+                    )}
+                  </Container>
                 </FeatureToggleProvider>
                 {/*  </React.StrictMode>*/}
               </ErrorBoundary>

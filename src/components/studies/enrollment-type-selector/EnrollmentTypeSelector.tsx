@@ -11,6 +11,7 @@ import {latoFont, poppinsFont, ThemeType} from '../../../style/theme'
 import {SignInType, Study} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import {MTBHeadingH1} from '../../widgets/Headings'
+import {BuilderWrapper} from '../StudyBuilder'
 import ReadOnlyEnrollmentTypeSelector from './read-only-pages/ReadOnlyEnrollmentTypeSelector'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -212,129 +213,130 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
           <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
         )}
       </NavigationPrompt>
+      <BuilderWrapper sectionName="Participant Study Enrollment">
+        <Box pt={9} pr={12} pb={11} pl={6} bgcolor="#FAFAFA">
+          <MTBHeadingH1> How will you enroll your participants into this study? </MTBHeadingH1>
 
-      <Box pt={9} pr={12} pb={11} pl={6} bgcolor="#FAFAFA">
-        <MTBHeadingH1> How will you enroll your participants into this study? </MTBHeadingH1>
-
-        <Box display="flex" mt={9} className={classes.container}>
-          <Paper className={clsx(classes.column, classes.firstColumn)} elevation={2}>
-            <div>
-              <table width="100%" className={classes.table}>
-                <thead>
-                  <tr>
-                    <th>Select enrollment type:</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ROW_HEADINGS.map(item => (
-                    <tr key={item}>
-                      <td>{item}</td>
+          <Box display="flex" mt={9} className={classes.container}>
+            <Paper className={clsx(classes.column, classes.firstColumn)} elevation={2}>
+              <div>
+                <table width="100%" className={classes.table}>
+                  <thead>
+                    <tr>
+                      <th>Select enrollment type:</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Paper>
-          <Paper
-            className={clsx(
-              classes.column,
-              classes.notFirstColumnDisabled,
+                  </thead>
+                  <tbody>
+                    {ROW_HEADINGS.map(item => (
+                      <tr key={item}>
+                        <td>{item}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Paper>
+            <Paper
+              className={clsx(
+                classes.column,
+                classes.notFirstColumnDisabled,
 
-              study.signInTypes && study.signInTypes[0] === 'phone_password' && classes.selectedColumn
-            )}
-            elevation={2}
+                study.signInTypes && study.signInTypes[0] === 'phone_password' && classes.selectedColumn
+              )}
+              elevation={2}
 
-            /*onClick={() => updateStudy(['phone_password'] as SignInType[])}*/
-          >
-            <div>
-              <table width="100%" className={classes.table}>
-                <thead>
-                  <tr>
-                    <th>
-                      {' '}
-                      <span className={classes.heading}>
-                        ENROLL WITH
-                        <br /> PHONE NUMBERS
-                      </span>
-                      <Box className={classes.additionalInfo} hidden={!study.signInTypes.includes('phone_password')}>
-                        <Box px={0} py={2}>
-                          In using phone numbers, I confirm that I have participant consent to add their numbers.
+              /*onClick={() => updateStudy(['phone_password'] as SignInType[])}*/
+            >
+              <div>
+                <table width="100%" className={classes.table}>
+                  <thead>
+                    <tr>
+                      <th>
+                        {' '}
+                        <span className={classes.heading}>
+                          ENROLL WITH
+                          <br /> PHONE NUMBERS
+                        </span>
+                        <Box className={classes.additionalInfo} hidden={!study.signInTypes.includes('phone_password')}>
+                          <Box px={0} py={2}>
+                            In using phone numbers, I confirm that I have participant consent to add their numbers.
+                          </Box>
                         </Box>
-                      </Box>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {PHONE_SELECTIONS.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item ? <CheckIcon titleAccess={ROW_HEADINGS[index]} /> : ' '}</td>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Paper>
+                  </thead>
+                  <tbody>
+                    {PHONE_SELECTIONS.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item ? <CheckIcon titleAccess={ROW_HEADINGS[index]} /> : ' '}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Paper>
 
-          <Paper
-            className={clsx(
-              classes.column,
-              classes.notFirstColumn,
-              study.signInTypes.includes('external_id_password') && classes.selectedColumn
-            )}
-            onClick={() => updateStudy(['external_id_password'])}>
-            <div>
-              <table width="100%" className={classes.table}>
-                <thead>
-                  <tr>
-                    <th style={{height: '186px'}}>
-                      <span className={classes.heading}>
-                        ENROLL WITH <br />
-                        PARTICIPANT CODE
-                      </span>
-                      <Box
-                        className={classes.additionalInfo}
-                        style={{textAlign: 'left'}}
-                        hidden={!study.signInTypes.includes('external_id_password')}>
-                        <RadioGroup
-                          aria-label="How to generate Id"
-                          name="generateIds"
-                          style={{marginTop: '8px'}}
-                          value={study.clientData.generateIds || false}
-                          onClick={e => e.stopPropagation()}
-                          onChange={e => {
-                            e.preventDefault()
-                            e.stopPropagation()
+            <Paper
+              className={clsx(
+                classes.column,
+                classes.notFirstColumn,
+                study.signInTypes.includes('external_id_password') && classes.selectedColumn
+              )}
+              onClick={() => updateStudy(['external_id_password'])}>
+              <div>
+                <table width="100%" className={classes.table}>
+                  <thead>
+                    <tr>
+                      <th style={{height: '186px'}}>
+                        <span className={classes.heading}>
+                          ENROLL WITH <br />
+                          PARTICIPANT CODE
+                        </span>
+                        <Box
+                          className={classes.additionalInfo}
+                          style={{textAlign: 'left'}}
+                          hidden={!study.signInTypes.includes('external_id_password')}>
+                          <RadioGroup
+                            aria-label="How to generate Id"
+                            name="generateIds"
+                            style={{marginTop: '8px'}}
+                            value={study.clientData.generateIds || false}
+                            onClick={e => e.stopPropagation()}
+                            onChange={e => {
+                              e.preventDefault()
+                              e.stopPropagation()
 
-                            updateStudy(study.signInTypes, e.target.value === 'true')
-                          }}>
-                          <FormControlLabel
-                            value={false}
-                            control={<Radio color="secondary" size="small" />}
-                            label="Define my own IDs"
-                          />
+                              updateStudy(study.signInTypes, e.target.value === 'true')
+                            }}>
+                            <FormControlLabel
+                              value={false}
+                              control={<Radio color="secondary" size="small" />}
+                              label="Define my own IDs"
+                            />
 
-                          <FormControlLabel
-                            value={true}
-                            control={<Radio color="secondary" size="small" />}
-                            label="Generate IDs for me"
-                          />
-                        </RadioGroup>
-                      </Box>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ID_SELECTIONS.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item ? <CheckIcon titleAccess={ROW_HEADINGS[index]} /> : ' '}</td>
+                            <FormControlLabel
+                              value={true}
+                              control={<Radio color="secondary" size="small" />}
+                              label="Generate IDs for me"
+                            />
+                          </RadioGroup>
+                        </Box>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Paper>
+                  </thead>
+                  <tbody>
+                    {ID_SELECTIONS.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item ? <CheckIcon titleAccess={ROW_HEADINGS[index]} /> : ' '}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Paper>
+          </Box>
         </Box>
-      </Box>
+      </BuilderWrapper>
       {children}
     </>
   )

@@ -23,7 +23,7 @@ const StyledStudyHeader = styled(Box, {label: 'StyledStudyHeader'})(({theme}) =>
   padding: theme.spacing(3, 7, 2, 7),
   justifyContent: 'space-between',
   alignItems: 'center',
-  marginBottom: theme.spacing(4),
+  //marginBottom: theme.spacing(4),
 }))
 const StyledAccessLink = styled(NavLink, {label: 'StyledAccessLink'})(({theme}) => ({
   ...getStyledToolbarLinkStyle(theme),

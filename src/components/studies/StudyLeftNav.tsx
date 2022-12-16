@@ -27,6 +27,7 @@ const DrawerStyled = styled(Drawer, {label: 'DrawerStyled', shouldForwardProp: p
     duration: isOpen ? theme.transitions.duration.enteringScreen : theme.transitions.duration.leavingScreen,
   }),
   overflowX: isOpen ? 'auto' : 'hidden',
+  overflowY: 'hidden',
 
   '& .MuiDrawer-paper': {
     fontSize: '14px',
