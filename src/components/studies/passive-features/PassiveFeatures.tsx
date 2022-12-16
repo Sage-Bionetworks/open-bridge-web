@@ -9,6 +9,7 @@ import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
 import {latoFont, ThemeType} from '@style/theme'
 import {BackgroundRecorders} from '@typedefs/types'
 import React from 'react'
+import {BuilderWrapper} from '../StudyBuilder'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -194,55 +195,58 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
   const displayWeatherSection = !isReadOnly || (isReadOnly && features?.weather)
   return (
     <>
-      <div className={classes.root}>
-        {isReadOnly ? (
-          <MTBHeadingH3 style={{marginBottom: '24px'}}>
-            {Object.values(features).filter(o => o === true).length > 0
-              ? 'You’ve added the following Optional Monitoring to your study:'
-              : 'No Optional Monitoring was added to your study.'}
-          </MTBHeadingH3>
-        ) : (
-          <Box>
-            <MTBHeadingH3 className={classes.intro}>
-              Mobile Toolbox lets you add optional contextual/sensor monitoring to your study. This can be used to
-              assess the impact of environmental factors on test performance.
+      {' '}
+      <BuilderWrapper sectionName="Optional Background Monitoring">
+        <div className={classes.root}>
+          {isReadOnly ? (
+            <MTBHeadingH3 style={{marginBottom: '24px'}}>
+              {Object.values(features).filter(o => o === true).length > 0
+                ? 'You’ve added the following Optional Monitoring to your study:'
+                : 'No Optional Monitoring was added to your study.'}
             </MTBHeadingH3>
-            <MTBHeadingH3 className={classes.intro}>
-              When adding monitoring, please consider the impact on the participant's experience and potential added
-              burden. Participants' devices may perform differently based on their device type.
-            </MTBHeadingH3>
-            <MTBHeadingH3 className={classes.intro}>
-              Participants can turn optional monitoring on/off at any time. You may not receive any data if a
-              participant opts-out or you may receive incomplete data if a participant changes their opt-in status
-              during your study.
-            </MTBHeadingH3>
-          </Box>
-        )}
-        {displayMotionSection && (
-          <PFSection
-            recorderType={'motion'}
-            value={features?.motion}
-            callbackFn={(e: boolean) => {
-              onUpdate({...features, motion: e})
-            }}></PFSection>
-        )}
-        {displayMicrophoneSection && (
-          <PFSection
-            recorderType={'microphone'}
-            value={features?.microphone}
-            callbackFn={(e: boolean) => {
-              onUpdate({...features, microphone: e})
-            }}></PFSection>
-        )}
-        {displayWeatherSection && (
-          <PFSection
-            recorderType={'weather'}
-            value={features?.weather}
-            callbackFn={(e: boolean) => {
-              onUpdate({...features, weather: e})
-            }}></PFSection>
-        )}
-      </div>
+          ) : (
+            <Box>
+              <MTBHeadingH3 className={classes.intro}>
+                Mobile Toolbox lets you add optional contextual/sensor monitoring to your study. This can be used to
+                assess the impact of environmental factors on test performance.
+              </MTBHeadingH3>
+              <MTBHeadingH3 className={classes.intro}>
+                When adding monitoring, please consider the impact on the participant's experience and potential added
+                burden. Participants' devices may perform differently based on their device type.
+              </MTBHeadingH3>
+              <MTBHeadingH3 className={classes.intro}>
+                Participants can turn optional monitoring on/off at any time. You may not receive any data if a
+                participant opts-out or you may receive incomplete data if a participant changes their opt-in status
+                during your study.
+              </MTBHeadingH3>
+            </Box>
+          )}
+          {displayMotionSection && (
+            <PFSection
+              recorderType={'motion'}
+              value={features?.motion}
+              callbackFn={(e: boolean) => {
+                onUpdate({...features, motion: e})
+              }}></PFSection>
+          )}
+          {displayMicrophoneSection && (
+            <PFSection
+              recorderType={'microphone'}
+              value={features?.microphone}
+              callbackFn={(e: boolean) => {
+                onUpdate({...features, microphone: e})
+              }}></PFSection>
+          )}
+          {displayWeatherSection && (
+            <PFSection
+              recorderType={'weather'}
+              value={features?.weather}
+              callbackFn={(e: boolean) => {
+                onUpdate({...features, weather: e})
+              }}></PFSection>
+          )}
+        </div>
+      </BuilderWrapper>
       {children}
     </>
   )

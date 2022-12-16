@@ -6,7 +6,7 @@ import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Button, Checkbox, CircularProgress, FormControl, Paper, Switch} from '@mui/material'
+import {Box, Button, Checkbox, CircularProgress, Container, FormControl, Paper, Switch} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
@@ -19,6 +19,7 @@ import React, {ChangeEvent, useEffect, useState} from 'react'
 import {HexColorPicker} from 'react-colorful'
 import {useLocation} from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
+import {BuilderWrapper} from '../StudyBuilder'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
 import StudyPageBottomPhoneContent from './phone/StudyPageBottomPhoneContent'
@@ -37,7 +38,6 @@ const imgHeight = 80
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
 export const useStyles = makeStyles((theme: ThemeType) => ({
-  root: {counterReset: 'orderedlist'},
   section: {
     backgroundColor: '#fefefe',
     padding: theme.spacing(9, 9, 10, 17),
@@ -778,279 +778,285 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
     <>none</>
   ) : (
     <>
-      <Box className={classes.root}>
+      <BuilderWrapper sectionName="Customize your App" sx={{counterReset: 'orderedlist'}}>
         <NavigationPrompt when={hasObjectChanged} key="prompt">
           {({onConfirm, onCancel}) => (
             <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
           )}
         </NavigationPrompt>
-        <Paper className={classes.section} elevation={2} id="container">
-          <Box className={classes.fields}>
-            <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
-            <p className={classes.smallScreenText}>
-              When a participant downloads the app and signs into the study, they are greeted with a welcome screen.
-              <br></br>
-              <br></br>
-              Customize what you would like to display to participants below:
-            </p>
+        <Container maxWidth="md">
+          <Paper className={classes.section} elevation={2} id="container">
+            <Box className={classes.fields}>
+              <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
+              <p className={classes.smallScreenText}>
+                When a participant downloads the app and signs into the study, they are greeted with a welcome screen.
+                <br></br>
+                <br></br>
+                Customize what you would like to display to participants below:
+              </p>
 
-            <div>
-              <ol className={classes.steps}>
-                <UploadStudyLogoSection
-                  handleFileChange={handleFileChange}
-                  imgHeight={imgHeight}
-                  saveLoader={saveLoader}
-                  studyLogoUrl={getStudyLogoUrl()}
-                  isSettingStudyLogo={isSettingStudyLogo}
-                />
-                <a id="hex-color-picker"></a>
-                <Subsection heading="Select background color">
-                  <p>Select a background color that matches your institution or study to be seen beneath your logo.</p>
-                  <Box width="250px" height="230px" ml={-1.25}>
-                    <HexColorPicker color={color} onChange={updateColor} />
-                  </Box>
-                  <Box className={classes.hexcodeInputContainer}>
-                    Hexcode:
-                    <input
-                      className={classes.hexcodeInput}
-                      value={color === 'transparent' ? '' : color}
-                      onChange={event => updateColor(event.target.value)}></input>
-                    {!isAppBackgroundColorValid(study.colorScheme?.background) && (
-                      <Box ml={1.5} color="red">
-                        Please enter a valid hexcode
-                      </Box>
-                    )}
-                  </Box>
-                </Subsection>
-                <Subsection heading="Welcome screen messaging">
-                  <div className={classes.switchContainer}>
-                    <Box mr={1.5}>Use default message</Box>
-                    <Box mt={0.5}>
-                      <Switch
-                        color="primary"
-                        checked={!study.clientData.welcomeScreenData?.isUsingDefaultMessage || false}
-                        onChange={e => updateDefaultMessageToggle(e.target.checked)}
-                      />
+              <div>
+                <ol className={classes.steps}>
+                  <UploadStudyLogoSection
+                    handleFileChange={handleFileChange}
+                    imgHeight={imgHeight}
+                    saveLoader={saveLoader}
+                    studyLogoUrl={getStudyLogoUrl()}
+                    isSettingStudyLogo={isSettingStudyLogo}
+                  />
+                  <a id="hex-color-picker"></a>
+                  <Subsection heading="Select background color">
+                    <p>
+                      Select a background color that matches your institution or study to be seen beneath your logo.
+                    </p>
+                    <Box width="250px" height="230px" ml={-1.25}>
+                      <HexColorPicker color={color} onChange={updateColor} />
                     </Box>
-                    <Box ml={1.5}>Customize message</Box>
-                  </div>
-                  {!study.clientData.welcomeScreenData?.isUsingDefaultMessage && (
-                    <>
-                      <FormGroupWrapper>
-                        <FormControl className={classes.firstFormElement}>
-                          <TextInputWrapper
-                            SimpleTextInputStyles={
-                              {
-                                fontSize: '24px',
-                                width: '100%',
-                              } as React.CSSProperties
-                            }
-                            id="headline-input"
-                            placeholder="Main Header"
-                            value={study.clientData.welcomeScreenData?.welcomeScreenHeader || ''}
-                            onChange={e => updateWelcomeScreenMessaging('welcomeScreenHeader', e.target.value)}
-                            multiline
-                            rows={2}
-                            rowsMax={4}
-                            titleText="Main Header"
-                          />
-                        </FormControl>
-                        <FormControl>
-                          <TextInputWrapper
-                            SimpleTextInputStyles={{width: '100%'} as React.CSSProperties}
-                            id="outlined-textarea"
-                            value={study.clientData.welcomeScreenData?.welcomeScreenBody || ''}
-                            onChange={e => updateWelcomeScreenMessaging('welcomeScreenBody', e.target.value)}
-                            multiline
-                            rows={4}
-                            placeholder="What are the first things you want participants to know about the study."
-                            titleText="Body Copy (maximum 250 characters)"
-                            maxWordCount={250}
-                          />
-                        </FormControl>
-                        <FormControl>
-                          <TextInputWrapper
-                            SimpleTextInputStyles={SimpleTextInputStyles}
-                            id="salutations"
-                            value={study.clientData.welcomeScreenData?.welcomeScreenSalutation || ''}
-                            onChange={e => updateWelcomeScreenMessaging('welcomeScreenSalutation', e.target.value)}
-                            placeholder="Thank you for your contribution"
-                            titleText="Salutations"
-                          />
-                        </FormControl>
-                        <FormControl>
-                          <TextInputWrapper
-                            SimpleTextInputStyles={SimpleTextInputStyles}
-                            id="signature-textarea"
-                            value={study.clientData.welcomeScreenData?.welcomeScreenFromText || ''}
-                            onChange={e => updateWelcomeScreenMessaging('welcomeScreenFromText', e.target.value)}
-                            placeholder="Study team name"
-                            titleText="From"
-                          />
-                        </FormControl>
-                        <Box mt={2.5}>Add optional disclaimer:</Box>
-                        <div className={classes.optionalDisclaimerRow}>
-                          <Checkbox
-                            checked={study.clientData.welcomeScreenData?.useOptionalDisclaimer || false}
-                            inputProps={{'aria-label': 'primary checkbox'}}
-                            className={classes.checkBox}
-                            id="disclaimer-check-box"
-                            onChange={e =>
-                              updateWelcomeScreenMessaging('useOptionalDisclaimer', e.target.checked)
-                            }></Checkbox>
-                          <div className={classes.optionalDisclaimerText}>
-                            This is a research study and does not provide medical advice, diagnosis, or treatment.
+                    <Box className={classes.hexcodeInputContainer}>
+                      Hexcode:
+                      <input
+                        className={classes.hexcodeInput}
+                        value={color === 'transparent' ? '' : color}
+                        onChange={event => updateColor(event.target.value)}></input>
+                      {!isAppBackgroundColorValid(study.colorScheme?.background) && (
+                        <Box ml={1.5} color="red">
+                          Please enter a valid hexcode
+                        </Box>
+                      )}
+                    </Box>
+                  </Subsection>
+                  <Subsection heading="Welcome screen messaging">
+                    <div className={classes.switchContainer}>
+                      <Box mr={1.5}>Use default message</Box>
+                      <Box mt={0.5}>
+                        <Switch
+                          color="primary"
+                          checked={!study.clientData.welcomeScreenData?.isUsingDefaultMessage || false}
+                          onChange={e => updateDefaultMessageToggle(e.target.checked)}
+                        />
+                      </Box>
+                      <Box ml={1.5}>Customize message</Box>
+                    </div>
+                    {!study.clientData.welcomeScreenData?.isUsingDefaultMessage && (
+                      <>
+                        <FormGroupWrapper>
+                          <FormControl className={classes.firstFormElement}>
+                            <TextInputWrapper
+                              SimpleTextInputStyles={
+                                {
+                                  fontSize: '24px',
+                                  width: '100%',
+                                } as React.CSSProperties
+                              }
+                              id="headline-input"
+                              placeholder="Main Header"
+                              value={study.clientData.welcomeScreenData?.welcomeScreenHeader || ''}
+                              onChange={e => updateWelcomeScreenMessaging('welcomeScreenHeader', e.target.value)}
+                              multiline
+                              rows={2}
+                              rowsMax={4}
+                              titleText="Main Header"
+                            />
+                          </FormControl>
+                          <FormControl>
+                            <TextInputWrapper
+                              SimpleTextInputStyles={{width: '100%'} as React.CSSProperties}
+                              id="outlined-textarea"
+                              value={study.clientData.welcomeScreenData?.welcomeScreenBody || ''}
+                              onChange={e => updateWelcomeScreenMessaging('welcomeScreenBody', e.target.value)}
+                              multiline
+                              rows={4}
+                              placeholder="What are the first things you want participants to know about the study."
+                              titleText="Body Copy (maximum 250 characters)"
+                              maxWordCount={250}
+                            />
+                          </FormControl>
+                          <FormControl>
+                            <TextInputWrapper
+                              SimpleTextInputStyles={SimpleTextInputStyles}
+                              id="salutations"
+                              value={study.clientData.welcomeScreenData?.welcomeScreenSalutation || ''}
+                              onChange={e => updateWelcomeScreenMessaging('welcomeScreenSalutation', e.target.value)}
+                              placeholder="Thank you for your contribution"
+                              titleText="Salutations"
+                            />
+                          </FormControl>
+                          <FormControl>
+                            <TextInputWrapper
+                              SimpleTextInputStyles={SimpleTextInputStyles}
+                              id="signature-textarea"
+                              value={study.clientData.welcomeScreenData?.welcomeScreenFromText || ''}
+                              onChange={e => updateWelcomeScreenMessaging('welcomeScreenFromText', e.target.value)}
+                              placeholder="Study team name"
+                              titleText="From"
+                            />
+                          </FormControl>
+                          <Box mt={2.5}>Add optional disclaimer:</Box>
+                          <div className={classes.optionalDisclaimerRow}>
+                            <Checkbox
+                              checked={study.clientData.welcomeScreenData?.useOptionalDisclaimer || false}
+                              inputProps={{'aria-label': 'primary checkbox'}}
+                              className={classes.checkBox}
+                              id="disclaimer-check-box"
+                              onChange={e =>
+                                updateWelcomeScreenMessaging('useOptionalDisclaimer', e.target.checked)
+                              }></Checkbox>
+                            <div className={classes.optionalDisclaimerText}>
+                              This is a research study and does not provide medical advice, diagnosis, or treatment.
+                            </div>
                           </div>
-                        </div>
-                      </FormGroupWrapper>
-                    </>
-                  )}{' '}
-                </Subsection>
-              </ol>
-              <Box textAlign="left">
-                {saveLoader ? (
-                  <div className="text-center">
-                    <CircularProgress color="primary" size={25}></CircularProgress>
-                  </div>
-                ) : (
-                  <Button variant="contained" onClick={() => saveInfo()} id="save-button-study-builder-1">
-                    Save Changes to App
-                  </Button>
-                )}
-              </Box>
-            </div>
-          </Box>
-          <Box className={classes.phoneArea}>
-            <MTBHeadingH1>What participants will see: </MTBHeadingH1>
-            <WelcomeScreenDisplay study={study} studyLogoUrl={getStudyLogoUrl()} />
-          </Box>
-        </Paper>
-        <Paper className={classes.section} elevation={2}>
-          <Box className={classes.fields}>
-            <MTBHeadingH2>Study Page</MTBHeadingH2>
-            <p className={classes.smallScreenText}>
-              Within the app, there will be a dedicated page where you can describe your study further and list who to
-              contact for participant support.
-            </p>
-            <a id="summary" />
-            <ol className={classes.steps}>
-              <StudySummarySection
-                SimpleTextInputStyles={SimpleTextInputStyles}
-                onUpdate={(studyTitle: string, studySummaryBody: string) => {
-                  const updatedStudy = {...study}
-                  updatedStudy.name = studyTitle
-                  updatedStudy.details = studySummaryBody
-                  handleUpdate(updatedStudy)
-                }}
-                studyTitle={study.name || ''}
-                studySummaryBody={study.details || ''}
-                studyTitleHasError={hasError('studyTitleHasError')}
-                studySummaryCopyHasError={hasError('studySummaryCopyHasError')}
-              />
-              <a id="leadPI" />
-              <StudyLeadInformationSection
-                studyIdentifier={study.identifier}
-                SimpleTextInputStyles={SimpleTextInputStyles}
-                orgMembership={orgMembership}
-                token={token}
-                getContactPersonObject={getContactPersonObject}
-                irbNameSameAsInstitution={irbNameSameAsInstitution}
-                onUpdate={(leadPrincipalInvestigator: Contact, funder: Contact, ethicsBoardContact: Contact) => {
-                  const updatedContacts = updateContacts(
-                    leadPrincipalInvestigator,
-                    funder,
-                    ethicsBoardContact,
-                    getContactPersonObject('study_support')
-                  )
-                  const updatedStudy = {...study}
-                  updatedStudy.contacts = updatedContacts
-                  handleUpdate(updatedStudy)
-                }}
-                leadPrincipalInvestigator={getContactPersonObject('principal_investigator')}
-                ethicsBoardContact={getContactPersonObject('irb')}
-                funder={getContactPersonObject('sponsor')}
-                getContactName={getContactName}
-                principleInvestigatorNameHasError={hasError('leadPINameHasError')}
-                principleInvestigatorAffiliationHasError={hasError('leadPIAffiliationHasError')}
-              />
-              <a id="contactLead" />
+                        </FormGroupWrapper>
+                      </>
+                    )}{' '}
+                  </Subsection>
+                </ol>
+                <Box textAlign="left">
+                  {saveLoader ? (
+                    <div className="text-center">
+                      <CircularProgress color="primary" size={25}></CircularProgress>
+                    </div>
+                  ) : (
+                    <Button variant="contained" onClick={() => saveInfo()} id="save-button-study-builder-1">
+                      Save Changes to App
+                    </Button>
+                  )}
+                </Box>
+              </div>
+            </Box>
+            <Box className={classes.phoneArea}>
+              <MTBHeadingH1>What participants will see: </MTBHeadingH1>
+              <WelcomeScreenDisplay study={study} studyLogoUrl={getStudyLogoUrl()} />
+            </Box>
+          </Paper>
+        </Container>
+        <Container maxWidth="md">
+          <Paper className={classes.section} elevation={2}>
+            <Box className={classes.fields}>
+              <MTBHeadingH2>Study Page</MTBHeadingH2>
+              <p className={classes.smallScreenText}>
+                Within the app, there will be a dedicated page where you can describe your study further and list who to
+                contact for participant support.
+              </p>
+              <a id="summary" />
+              <ol className={classes.steps}>
+                <StudySummarySection
+                  SimpleTextInputStyles={SimpleTextInputStyles}
+                  onUpdate={(studyTitle: string, studySummaryBody: string) => {
+                    const updatedStudy = {...study}
+                    updatedStudy.name = studyTitle
+                    updatedStudy.details = studySummaryBody
+                    handleUpdate(updatedStudy)
+                  }}
+                  studyTitle={study.name || ''}
+                  studySummaryBody={study.details || ''}
+                  studyTitleHasError={hasError('studyTitleHasError')}
+                  studySummaryCopyHasError={hasError('studySummaryCopyHasError')}
+                />
+                <a id="leadPI" />
+                <StudyLeadInformationSection
+                  studyIdentifier={study.identifier}
+                  SimpleTextInputStyles={SimpleTextInputStyles}
+                  orgMembership={orgMembership}
+                  token={token}
+                  getContactPersonObject={getContactPersonObject}
+                  irbNameSameAsInstitution={irbNameSameAsInstitution}
+                  onUpdate={(leadPrincipalInvestigator: Contact, funder: Contact, ethicsBoardContact: Contact) => {
+                    const updatedContacts = updateContacts(
+                      leadPrincipalInvestigator,
+                      funder,
+                      ethicsBoardContact,
+                      getContactPersonObject('study_support')
+                    )
+                    const updatedStudy = {...study}
+                    updatedStudy.contacts = updatedContacts
+                    handleUpdate(updatedStudy)
+                  }}
+                  leadPrincipalInvestigator={getContactPersonObject('principal_investigator')}
+                  ethicsBoardContact={getContactPersonObject('irb')}
+                  funder={getContactPersonObject('sponsor')}
+                  getContactName={getContactName}
+                  principleInvestigatorNameHasError={hasError('leadPINameHasError')}
+                  principleInvestigatorAffiliationHasError={hasError('leadPIAffiliationHasError')}
+                />
+                <a id="contactLead" />
 
-              <GeneralContactAndSupportSection
-                SimpleTextInputStyles={SimpleTextInputStyles}
-                phoneNumberErrorState={phoneNumberErrorState}
-                setPhoneNumberErrorState={setPhoneNumberErrorState}
-                emailErrorState={emailErrorState}
-                setEmailErrorState={setEmailErrorState}
+                <GeneralContactAndSupportSection
+                  SimpleTextInputStyles={SimpleTextInputStyles}
+                  phoneNumberErrorState={phoneNumberErrorState}
+                  setPhoneNumberErrorState={setPhoneNumberErrorState}
+                  emailErrorState={emailErrorState}
+                  setEmailErrorState={setEmailErrorState}
+                  getContactPersonObject={getContactPersonObject}
+                  generalContactPhoneNumber={generalContactPhoneNumber}
+                  setGeneralContactPhoneNumber={setGeneralContactPhoneNumber}
+                  contactLead={getContactPersonObject('study_support')}
+                  onUpdate={(contactLead: Contact) => {
+                    const updatedContacts = updateContacts(
+                      getContactPersonObject('principal_investigator'),
+                      getContactPersonObject('sponsor'),
+                      getContactPersonObject('irb'),
+                      contactLead
+                    )
+                    const updatedStudy = {...study}
+                    updatedStudy.contacts = updatedContacts
+                    handleUpdate(updatedStudy)
+                  }}
+                  getContactName={getContactName}
+                  contactLeadNameHasError={hasError('contactLeadNameHasError')}
+                  contactLeadPositionHasError={hasError('contactLeadPositonHasError')}
+                />
+                <a id="contactIrb" />
+                <IrbBoardContactSection
+                  SimpleTextInputStyles={SimpleTextInputStyles}
+                  phoneNumberErrorState={phoneNumberErrorState}
+                  setPhoneNumberErrorState={setPhoneNumberErrorState}
+                  emailErrorState={emailErrorState}
+                  setEmailErrorState={setEmailErrorState}
+                  getContactPersonObject={getContactPersonObject}
+                  irbPhoneNumber={irbPhoneNumber}
+                  setIrbPhoneNumber={setIrbPhoneNumber}
+                  saveInfo={saveInfo}
+                  saveLoader={saveLoader}
+                  irbNameSameAsInstitution={irbNameSameAsInstitution}
+                  ///ALING TO DO
+                  setIrbNameSameAsInstitution={setIrbNameSameAsInstitution}
+                  onUpdate={(irbInfo: Contact, protocolId: string) => {
+                    const updatedContacts = updateContacts(
+                      getContactPersonObject('principal_investigator'),
+                      getContactPersonObject('sponsor'),
+                      irbInfo,
+                      getContactPersonObject('study_support')
+                    )
+                    const updatedStudy = {...study}
+                    updatedStudy.contacts = updatedContacts
+                    updatedStudy.irbProtocolId = protocolId
+                    handleUpdate(updatedStudy)
+                  }}
+                  irbInfo={getContactPersonObject('irb')}
+                  protocolId={study.irbProtocolId || ''}
+                  getContactName={getContactName}
+                  irbNameHasError={hasError('irbRecordNameHasError')}
+                  irbProtocolIdHasError={hasError('irbProtocolIdHasError')}
+                />
+              </ol>
+            </Box>
+            <Box className={classes.phoneArea}>
+              <MTBHeadingH1>What participants will see: </MTBHeadingH1>
+              <StudyPageTopPhone
+                study={study}
+                studyLogoUrl={getStudyLogoUrl()}
                 getContactPersonObject={getContactPersonObject}
-                generalContactPhoneNumber={generalContactPhoneNumber}
-                setGeneralContactPhoneNumber={setGeneralContactPhoneNumber}
-                contactLead={getContactPersonObject('study_support')}
-                onUpdate={(contactLead: Contact) => {
-                  const updatedContacts = updateContacts(
-                    getContactPersonObject('principal_investigator'),
-                    getContactPersonObject('sponsor'),
-                    getContactPersonObject('irb'),
-                    contactLead
-                  )
-                  const updatedStudy = {...study}
-                  updatedStudy.contacts = updatedContacts
-                  handleUpdate(updatedStudy)
-                }}
-                getContactName={getContactName}
-                contactLeadNameHasError={hasError('contactLeadNameHasError')}
-                contactLeadPositionHasError={hasError('contactLeadPositonHasError')}
               />
-              <a id="contactIrb" />
-              <IrbBoardContactSection
-                SimpleTextInputStyles={SimpleTextInputStyles}
-                phoneNumberErrorState={phoneNumberErrorState}
-                setPhoneNumberErrorState={setPhoneNumberErrorState}
-                emailErrorState={emailErrorState}
-                setEmailErrorState={setEmailErrorState}
+              <StudyPageBottomPhone
+                study={study}
                 getContactPersonObject={getContactPersonObject}
                 irbPhoneNumber={irbPhoneNumber}
-                setIrbPhoneNumber={setIrbPhoneNumber}
-                saveInfo={saveInfo}
-                saveLoader={saveLoader}
-                irbNameSameAsInstitution={irbNameSameAsInstitution}
-                ///ALING TO DO
-                setIrbNameSameAsInstitution={setIrbNameSameAsInstitution}
-                onUpdate={(irbInfo: Contact, protocolId: string) => {
-                  const updatedContacts = updateContacts(
-                    getContactPersonObject('principal_investigator'),
-                    getContactPersonObject('sponsor'),
-                    irbInfo,
-                    getContactPersonObject('study_support')
-                  )
-                  const updatedStudy = {...study}
-                  updatedStudy.contacts = updatedContacts
-                  updatedStudy.irbProtocolId = protocolId
-                  handleUpdate(updatedStudy)
-                }}
-                irbInfo={getContactPersonObject('irb')}
-                protocolId={study.irbProtocolId || ''}
-                getContactName={getContactName}
-                irbNameHasError={hasError('irbRecordNameHasError')}
-                irbProtocolIdHasError={hasError('irbProtocolIdHasError')}
+                generalContactPhoneNumber={generalContactPhoneNumber}
               />
-            </ol>
-          </Box>
-          <Box className={classes.phoneArea}>
-            <MTBHeadingH1>What participants will see: </MTBHeadingH1>
-            <StudyPageTopPhone
-              study={study}
-              studyLogoUrl={getStudyLogoUrl()}
-              getContactPersonObject={getContactPersonObject}
-            />
-            <StudyPageBottomPhone
-              study={study}
-              getContactPersonObject={getContactPersonObject}
-              irbPhoneNumber={irbPhoneNumber}
-              generalContactPhoneNumber={generalContactPhoneNumber}
-            />
-          </Box>
-        </Paper>
-      </Box>
+            </Box>
+          </Paper>
+        </Container>
+      </BuilderWrapper>
       {children}
     </>
   )

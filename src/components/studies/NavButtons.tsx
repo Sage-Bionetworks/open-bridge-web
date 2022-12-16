@@ -1,5 +1,6 @@
 import {Box, Button} from '@mui/material'
 import StudyService from '@services/study.service'
+import {theme} from '@style/theme'
 import {Study} from '@typedefs/types'
 import React from 'react'
 import {NavLink} from 'react-router-dom'
@@ -59,7 +60,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   }
 
   return (
-    <Box py={2} textAlign="right" mr={2}>
+    <Box sx={{display: 'flex', justifyContent: 'center', padding: theme.spacing(2)}}>
       {prev && <> {prevButton} &nbsp;&nbsp; </>}
       {nextButton}
     </Box>

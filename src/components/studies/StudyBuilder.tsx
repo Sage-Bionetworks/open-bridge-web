@@ -1,11 +1,10 @@
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
-import {Alert, Box, Container} from '@mui/material'
+import {Alert, Box, Container, SxProps} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useSchedule} from '@services/scheduleHooks'
 import StudyService from '@services/study.service'
 import {useStudy} from '@services/studyHooks'
-import {ThemeType} from '@style/theme'
-import clsx from 'clsx'
+import {theme, ThemeType} from '@style/theme'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
@@ -113,6 +112,29 @@ export type SchedulerErrorType = {
   entity: any
 }
 
+export const BuilderWrapper: FunctionComponent<{sectionName: string; sx?: SxProps}> = ({
+  sectionName,
+  children,
+  ...sx
+}) => {
+  return (
+    <Box
+      id="workArea"
+      sx={{
+        backgroundColor: 'pink', //#FBFBFC',
+        paddingLeft: theme.spacing(8),
+        paddingTop: theme.spacing(4),
+        paddingBottom: theme.spacing(4),
+      }}>
+      <MTBHeadingH1 sx={{textAlign: 'left'}}>{sectionName}</MTBHeadingH1>
+
+      <Box pt={3} pr={4} id="builderContainer" {...sx}>
+        {children}
+      </Box>
+    </Box>
+  )
+}
+
 const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> = () => {
   const classes = useStyles()
   let {id, section = 'session-creator'} = useParams<{
@@ -188,20 +210,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       disabled={!allSessionsHaveAssessments()}></NavButtons>
   )
 
-  const navButtonsArray = [
-    <NavButtons study={study} key={`${id}_p_button`} currentSection={section} isPrevOnly={true} />,
-    <NavButtons study={study} key={`${id}_n_button`} currentSection={section} isNextOnly={true}></NavButtons>,
-  ]
-
-  const getClasses = () => {
-    return clsx(classes.mainArea, {
-      [classes.mainAreaNormalWithLeftNav]: open,
-      [classes.mainAreaWideWithLeftNav]: open && ['customize', 'scheduler'].includes(section),
-      [classes.mainAreaNoLeftNav]: !open,
-      [classes.mainAreaWideNoLeftNav]: !open && ['customize', 'scheduler'].includes(section),
-    })
-  }
-
   const showFeedback = (e?: ExtendedError) => {
     if (e) {
       if (e.statusCode === 401) {
@@ -220,7 +228,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   }
 
   return (
-    <Box id="studyBuilder" sx={{backgroundColor: '#fbfbfc'}}>
+    <Box id="studyBuilder">
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
         <Container
           maxWidth="xl"
@@ -243,84 +251,78 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
               currentSection={section}
               study={study!}
               disabled={!allSessionsHaveAssessments()}></StudyLeftNav>
-            <Box className={classes.mainAreaWrapper}>
-              <Box>
+            <Box className={classes.mainAreaWrapper} id="mainAreaWrapper">
+              <AlertBanner
+                backgroundColor={feedbackBannerType?.bgColor!}
+                textColor={feedbackBannerType?.textColor!}
+                onClose={() => {
+                  //setCancelBanner(true)
+                  setDisplayFeedbackBanner(false)
+                }}
+                isVisible={displayFeedbackBanner}
+                icon={feedbackBannerType?.icon[0]!}
+                isSelfClosing={feedbackBannerType?.type === 'success'}
+                displayBottomOfPage={false}
+                displayText={feedbackBannerType?.displayText[0]!}></AlertBanner>
+              {study && (
                 <AlertBanner
-                  backgroundColor={feedbackBannerType?.bgColor!}
-                  textColor={feedbackBannerType?.textColor!}
+                  backgroundColor={editabilityBannerType?.bgColor!}
+                  textColor={editabilityBannerType?.textColor!}
                   onClose={() => {
-                    //setCancelBanner(true)
-                    setDisplayFeedbackBanner(false)
+                    // setCancelBanner(true)
+                    setDisplayEditabilityBanner(false)
                   }}
-                  isVisible={displayFeedbackBanner}
-                  icon={feedbackBannerType?.icon[0]!}
-                  isSelfClosing={feedbackBannerType?.type === 'success'}
-                  displayBottomOfPage={false}
-                  displayText={feedbackBannerType?.displayText[0]!}></AlertBanner>
-                {study && (
-                  <AlertBanner
-                    backgroundColor={editabilityBannerType?.bgColor!}
-                    textColor={editabilityBannerType?.textColor!}
-                    onClose={() => {
-                      // setCancelBanner(true)
-                      setDisplayEditabilityBanner(false)
-                    }}
-                    isVisible={displayEditabilityBanner}
-                    icon={
-                      isSectionEditableWhenLive(section) &&
-                      StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
-                        ? editabilityBannerType?.icon[1]!
-                        : editabilityBannerType?.icon[0]!
-                    }
-                    isSelfClosing={false}
-                    displayBottomOfPage={true}
-                    displayText={
-                      isSectionEditableWhenLive(section) &&
-                      StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
-                        ? editabilityBannerType?.displayText[1]!
-                        : editabilityBannerType?.displayText[0]!
-                    }></AlertBanner>
-                )}
-
-                {study && <StudyBuilderHeader study={study} />}
-                <Box pt={2} pl={8}>
-                  <MTBHeadingH1 sx={{textAlign: 'left'}}>{subtitles[section as string]}</MTBHeadingH1>
-                </Box>
-              </Box>
-              <Box pl={8} pt={3}>
-                <LoadingComponent
-                  reqStatusLoading={isStudyLoading || isScheduleLoading}
-                  variant="small"
-                  loaderSize="2rem"
-                  style={{
-                    width: '2rem',
-                    position: 'absolute',
-                    top: '30px',
-                    left: '50%',
-                  }}></LoadingComponent>
-                {!_.isEmpty(error) && (Array.isArray(error) || (!!error && error.length > 1)) && (
-                  <Alert variant="outlined" color="error" style={{marginBottom: '16px'}}>
-                    {Array.isArray(error) ? (
-                      error.map(e => (
-                        <div
-                          style={{
-                            textAlign: 'left',
-                          }}>
-                          {e}
-                        </div>
-                      ))
-                    ) : (
+                  isVisible={displayEditabilityBanner}
+                  icon={
+                    isSectionEditableWhenLive(section) &&
+                    StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
+                      ? editabilityBannerType?.icon[1]!
+                      : editabilityBannerType?.icon[0]!
+                  }
+                  isSelfClosing={false}
+                  displayBottomOfPage={true}
+                  displayText={
+                    isSectionEditableWhenLive(section) &&
+                    StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
+                      ? editabilityBannerType?.displayText[1]!
+                      : editabilityBannerType?.displayText[0]!
+                  }></AlertBanner>
+              )}
+              <LoadingComponent
+                reqStatusLoading={isStudyLoading || isScheduleLoading}
+                variant="small"
+                loaderSize="2rem"
+                style={{
+                  width: '2rem',
+                  position: 'absolute',
+                  top: '30px',
+                  left: '50%',
+                }}></LoadingComponent>
+              {study && <StudyBuilderHeader study={study} />}
+              {!_.isEmpty(error) && (Array.isArray(error) || (!!error && error.length > 1)) && (
+                <Alert variant="outlined" color="error" style={{marginBottom: '16px'}}>
+                  {Array.isArray(error) ? (
+                    error.map(e => (
                       <div
                         style={{
                           textAlign: 'left',
                         }}>
-                        {error}
+                        {e}
                       </div>
-                    )}
-                  </Alert>
-                )}
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        textAlign: 'left',
+                      }}>
+                      {error}
+                    </div>
+                  )}
+                </Alert>
+              )}
 
-                <LoadingComponent reqStatusLoading={!study}>
+              <LoadingComponent reqStatusLoading={!study}>
+                <Box id="builderWorkArea">
                   {study && !schedule && !isScheduleLoading ? (
                     <Box className={classes.introInfoContainer}>
                       <IntroInfo studyName={study.name} id={id}></IntroInfo>
@@ -359,14 +361,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                         </Route>
                         <Route>
                           <SessionCreator id={id} onShowFeedback={showFeedback}>
+                            {' '}
                             {navButtons}
                           </SessionCreator>
                         </Route>
                       </Switch>
                     )
                   )}
-                </LoadingComponent>
-              </Box>
+                </Box>
+              </LoadingComponent>
             </Box>
           </Box>
         </Container>
