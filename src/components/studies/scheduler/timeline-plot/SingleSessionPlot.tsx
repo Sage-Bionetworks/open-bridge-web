@@ -24,7 +24,7 @@ const StyledDayContainer = styled(Box, {label: 'StyledDayContainer', shouldForwa
   borderLeft: `1px solid ${$isBurst ? '#ddd' : '#EAECEE'} `,
   display: 'flex',
   justifyContent: 'space-around',
-  borderTop: $hasTopBorder || true ? `1px solid ${$isBurst ? '#ddd' : '#EAECEE'}` : 'none',
+  borderTop: $hasTopBorder ? `1px solid ${$isBurst ? '#ddd' : '#EAECEE'}` : 'none',
   height: '32px',
   padding: 0,
   position: 'relative',
@@ -32,7 +32,7 @@ const StyledDayContainer = styled(Box, {label: 'StyledDayContainer', shouldForwa
 
 const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   sessionIndex,
-  topOffset = 14,
+  topOffset = 10,
   unitPixelWidth,
   sessionSymbol,
   lineNumber,

@@ -28,13 +28,13 @@ import Logout from '../account/Logout'
 
 const drawerWidth = '320px'
 
-const StyledAppNav = styled(Box, {label: 'StyledAppTopNav', shouldForwardProp: prop => prop !== 'hasSubNav'})<{
+const StyledAppNav = styled(Box, {label: 'StyledAppTopNav1', shouldForwardProp: prop => prop !== 'hasSubNav'})<{
   hasSubNav?: boolean
 }>(({theme, hasSubNav}) => ({
   height: hasSubNav ? 'auto' : '122px',
 
   borderBottom: '1px solid #EAECEE',
-  padding: hasSubNav ? theme.spacing(0, 4) : theme.spacing(0, 5),
+  padding: hasSubNav ? theme.spacing(0, 8) : theme.spacing(0, 5),
   [theme.breakpoints.down('lg')]: {
     borderBottom: 'none',
     height: 'auto',
@@ -135,7 +135,6 @@ const UserAvatar: FunctionComponent<{sessionData?: UserSessionData; onClick: (e:
     return (
       <Avatar
         sx={{
-          marginRight: theme.spacing(4),
           bgcolor: '#EDEEF2',
           color: theme.palette.accent.purple,
           cursor: 'pointer',

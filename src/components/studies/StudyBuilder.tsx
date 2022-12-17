@@ -12,7 +12,6 @@ import {Route, RouteComponentProps, Switch, useParams} from 'react-router-dom'
 import {Schedule} from '../../types/scheduling'
 import {ExtendedError, StringDictionary, Study} from '../../types/types'
 import AlertBanner from '../widgets/AlertBanner'
-import {MTBHeadingH1} from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
 import BannerInfo, {BannerInfoType} from './BannerInfo'
@@ -121,14 +120,15 @@ export const BuilderWrapper: FunctionComponent<{sectionName: string; sx?: SxProp
     <Box
       id="workArea"
       sx={{
-        backgroundColor: 'pink', //#FBFBFC',
+        backgroundColor: '#FBFBFC',
         paddingLeft: theme.spacing(8),
         paddingTop: theme.spacing(4),
-        paddingBottom: theme.spacing(4),
+        paddingBottom: theme.spacing(8),
+        paddingRight: theme.spacing(8),
       }}>
-      <MTBHeadingH1 sx={{textAlign: 'left'}}>{sectionName}</MTBHeadingH1>
+      {/*<MTBHeadingH1 sx={{textAlign: 'left'}}>{sectionName}</MTBHeadingH1>*/}
 
-      <Box pt={3} pr={4} id="builderContainer" {...sx}>
+      <Box pt={3} id="builderContainer" {...sx}>
         {children}
       </Box>
     </Box>
