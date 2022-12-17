@@ -1,5 +1,5 @@
 import CheckIcon from '@mui/icons-material/Check'
-import {Box, FormControlLabel, Paper, Radio, RadioGroup} from '@mui/material'
+import {Box, Container, FormControlLabel, Paper, Radio, RadioGroup} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import clsx from 'clsx'
@@ -214,7 +214,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
         )}
       </NavigationPrompt>
       <BuilderWrapper sectionName="Participant Study Enrollment">
-        <Box pt={9} pr={12} pb={11} pl={6} bgcolor="#FAFAFA">
+        <Container maxWidth="md">
           <MTBHeadingH1> How will you enroll your participants into this study? </MTBHeadingH1>
 
           <Box display="flex" mt={9} className={classes.container}>
@@ -335,7 +335,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
               </div>
             </Paper>
           </Box>
-        </Box>
+        </Container>
       </BuilderWrapper>
       {children}
     </>

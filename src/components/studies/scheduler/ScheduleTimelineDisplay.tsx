@@ -4,6 +4,7 @@ import AccessTimeTwoToneIcon from '@mui/icons-material/AccessTimeTwoTone'
 import NotificationsTwoToneIcon from '@mui/icons-material/NotificationsTwoTone'
 import {Box, Button, styled} from '@mui/material'
 import Tooltip, {tooltipClasses, TooltipProps} from '@mui/material/Tooltip'
+import {theme} from '@style/theme'
 import {Schedule, ScheduleTimeline, StudySession, StudySessionTimeline} from '@typedefs/scheduling'
 import * as dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
@@ -59,6 +60,7 @@ export interface TimelineProps {
   timeline: ScheduleTimeline
   studyId: string
   isDefault?: boolean
+  children: React.ReactNode
   onSelectSession: (session: StudySession) => void
 }
 
@@ -103,6 +105,7 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
   schedule: schedFromDisplay,
   timeline,
   isDefault,
+  children,
   onSelectSession,
 }: TimelineProps) => {
   const tooltipProps: Partial<TooltipProps> = {
@@ -114,8 +117,15 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
   }
 
   return (
-    <Box pt={0} pb={3} px={0}>
-      <Box id="topArea" px={2}>
+    <Box>
+      <Box
+        id="topArea"
+        px={2}
+        sx={{
+          paddingTop: theme.spacing(2),
+          backgroundColor: '#fff',
+          marginRight: (timeline.studyBursts || []).length > 0 ? theme.spacing(8) : 0,
+        }}>
         {!timeline && (
           <>
             This timeline viewer will update to provide a visual summary of the schedules you’ve defined below for each
@@ -123,24 +133,27 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
           </>
         )}
         {timeline && (
-          <Box
-            sx={{
-              fontWeight: 'bold',
-              fontSize: '12px',
-              display: 'flex',
-              alignItems: 'center',
-            }}>
-            <NotificationsTwoToneIcon /> {timeline.totalNotifications}{' '}
-            {timeline.totalNotifications > 1 ? 'notifications' : 'notification'}
-            &nbsp; &nbsp;
-            <AccessTimeTwoToneIcon /> &nbsp;
-            {dayjs
-              .duration(timeline.totalMinutes, 'minutes')
-              .format(
-                `H [Hour${timeline.totalMinutes > 120 || timeline.totalMinutes < 60 ? 's' : ''}] m [Minute${
-                  timeline.totalMinutes % 60 === 1 ? '' : 's'
-                }]`
-              )}
+          <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+            <Box
+              sx={{
+                fontWeight: 'bold',
+                fontSize: '12px',
+                display: 'flex',
+                alignItems: 'center',
+              }}>
+              <NotificationsTwoToneIcon /> {timeline.totalNotifications}{' '}
+              {timeline.totalNotifications > 1 ? 'notifications' : 'notification'}
+              &nbsp; &nbsp;
+              <AccessTimeTwoToneIcon /> &nbsp;
+              {dayjs
+                .duration(timeline.totalMinutes, 'minutes')
+                .format(
+                  `H [Hour${timeline.totalMinutes > 120 || timeline.totalMinutes < 60 ? 's' : ''}] m [Minute${
+                    timeline.totalMinutes % 60 === 1 ? '' : 's'
+                  }]`
+                )}
+            </Box>
+            {children}
           </Box>
         )}
         <Box display="flex" justifyContent="space-between">

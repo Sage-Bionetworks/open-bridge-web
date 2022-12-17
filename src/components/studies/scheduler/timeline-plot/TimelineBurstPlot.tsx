@@ -1,11 +1,11 @@
 import {ReactComponent as SessionStartIcon} from '@assets/scheduler/calendar_icon.svg'
 import SessionIcon from '@components/widgets/SessionIcon'
-import {Tooltip} from '@mui/material'
+import {Box, Paper, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {useStudy} from '@services/studyHooks'
-import {latoFont} from '@style/theme'
+import {latoFont, theme} from '@style/theme'
 import {ScheduleTimeline, SchedulingEvent, StudySessionTimeline, TimelineScheduleItem} from '@typedefs/scheduling'
 import _ from 'lodash'
 import React from 'react'
@@ -51,9 +51,6 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: '0em',
     textAlign: 'left',
   },
-  plotContainer: {
-    paddingRight: theme.spacing(8),
-  },
 
   graph: {
     display: 'flex',
@@ -81,7 +78,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F3F5',
+    //backgroundColor: '#F1F3F5',
   },
   weekTitle: {
     width: '82px',
@@ -164,7 +161,7 @@ export const PlotDaysDisplay: React.FunctionComponent<{
     width: `${99 + unitWidth / 2}px`,
     paddingLeft: '12px',
     fontSize: '14px',
-    backgroundColor: '#F1F3F5',
+    // backgroundColor: '#F1F3F5',
 
     height: '50px',
     display: 'flex',
@@ -237,12 +234,14 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
 
   const [isLoading, setIsLoading] = React.useState(true)
   const [eventIds, setEventIds] = React.useState<string[]>([])
+  const [hasBurst, setHasBurst] = React.useState(false)
 
   const {data: study} = useStudy(studyId)
 
   const [plotData, setPlotData] = React.useState<Record<string, PlotData[]> | undefined>()
   const ref = React.useRef<HTMLDivElement>(null)
-  const {unitWidth} = useGetPlotAndUnitWidth(ref, 7, 180)
+
+  const {unitWidth} = useGetPlotAndUnitWidth(ref, 7, hasBurst ? 180 : 198 - 64)
 
   //check if we are dealing with the sesison converted into a burst
   const isSessionBurst = (sessionGuid: string): boolean => {
@@ -268,6 +267,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
         const numOfWeeks = Math.ceil(lastDay / 7)
         const maxWindows = Math.max(...timeline.sessions.map(s => s.timeWindowGuids.length))
         const burst = ScheduleService.getStudyBurst(timeline)
+        setHasBurst(!!burst)
         var result: Record<string, PlotData[]> = {}
         for (var event of events) {
           //if current event initiates burst pass the eventId
@@ -440,108 +440,139 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({stu
   }
 
   return (
-    <div ref={ref} className={classes.plotContainer} id="plotContainer">
-      <PlotDaysDisplay
-        unitWidth={unitWidth}
-        titleStyle={{
-          width: `${110 + unitWidth / 2}px`,
-        }}
-        title={
-          <strong>
-            Schedule by <br />
-            weekday
-          </strong>
-        }
-      />
-      <div style={{position: 'relative' /*, overflow: 'hidden'*/}}>
-        {!isLoading && plotData && (
-          <>
-            {children && (
-              <div
-                className={classes.defaultMessage}
-                style={{
-                  height: LayoutConstants.singleSessionGraphHeight * timeline.sessions.length + 'px',
-                }}>
-                {children}
-              </div>
-            )}
-            {eventIds.map((evt, evtIndex) => (
-              <div
-                key={`${evt}_${evtIndex}`}
-                id={evt.toString()}
-                style={{border: LayoutConstants.border, borderBottom: 'none'}}>
+    <Box
+      ref={ref}
+      id="plotContainer"
+      sx={{paddingBottom: theme.spacing(4), paddingRight: hasBurst ? theme.spacing(8) : 0}}>
+      <Paper elevation={2} sx={{paddingBottom: theme.spacing(4)}}>
+        <Box
+          sx={{
+            display: 'flex',
+            width: '100%',
+            backgroundColor: '#F1F3F5',
+            borderTop: '1px solid #EAECEE',
+            borderRight: '1px solid #EAECEE',
+            height: '50px',
+          }}>
+          <Box sx={{padding: theme.spacing(0, 2), width: '112px', display: 'flex', alignItems: 'center'}}>
+            <strong>
+              Schedule by <br />
+              weekday
+            </strong>
+          </Box>
+
+          {[...new Array(7)].map((_i, index) => (
+            <Box
+              key={`day_number_${index}`}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+
+                width: `${unitWidth}px`,
+
+                borderLeft: '1px solid #EAECEE',
+              }}>
+              {index + 1}
+            </Box>
+          ))}
+        </Box>
+
+        <div style={{position: 'relative' /*, overflow: 'hidden'*/}}>
+          {!isLoading && plotData && (
+            <>
+              {children && (
                 <div
-                  className={classes.weekTitle}
+                  className={classes.defaultMessage}
                   style={{
-                    width: 'auto',
-                    fontWeight: 'bold',
-                    padding: `${LayoutConstants.weekVPad}px 16px 2px 16px`,
-                    borderBottom: LayoutConstants.border,
-                    backgroundColor: plotData[evt]?.[0]?.burst ? 'rgba(148, 153, 199, 0.2)' : '#fbfbfc',
+                    height: LayoutConstants.singleSessionGraphHeight * timeline.sessions.length + 'px',
                   }}>
-                  {' '}
-                  {EventService.formatEventIdForDisplay(evt)}
+                  {children}
                 </div>
-
-                {plotData[evt]?.map((wk, index) => (
+              )}
+              {eventIds.map((evt, evtIndex) => (
+                <div
+                  key={`${evt}_${evtIndex}`}
+                  id={evt.toString()}
+                  style={{border: LayoutConstants.border, borderBottom: 'none'}}>
                   <div
-                    className={classes.week}
-                    key={`week_${wk.name}_ ${wk.burstNum}`}
+                    className={classes.weekTitle}
                     style={{
-                      marginBottom:
-                        plotData[evt][index + 1] && plotData[evt][index + 1].burstNum === wk.burstNum
-                          ? '0px'
-                          : `${LayoutConstants.marginGap}px`,
-                      //marginBottom: 0,
-                      // padding: `${LayoutConstants.weekVPad}px 0 ${LayoutConstants.weekVPad}px 16px`,
-                      padding: '0 0 0 16px',
-                      // height: `${LayoutConstants.height}px`,
-                      backgroundColor: wk.burst ? '#eaebf4' : index % 2 === 0 ? '#fff' : '#FBFBFC',
-                      position: 'relative',
+                      width: 'auto',
+                      fontWeight: 'bold',
+                      padding: `${LayoutConstants.weekVPad}px 16px 2px 16px`,
                       borderBottom: LayoutConstants.border,
+                      backgroundColor: plotData[evt]?.[0]?.burst ? '#eaebf4' : '#fff',
                     }}>
-                    <FrequencyBracket
-                      intervalInWeeks={getBurstIntervalInWeeks()}
-                      heightInterval={calculateDistanceToNextBurst(plotData[evt], wk.name, wk.burstNum, plotData[evt])}
-                    />
-
-                    <div className={classes.weekTitle} key="week_index">
-                      Week {wk.name}
-                      {wk.burst !== false ? '/ Burst' + wk.burstNum * 1 : ''}
-                    </div>
-                    <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
-                      {wk.sessions.map((sessionInfo, sIndex: number) => (
-                        <div className={classes.graph} key={`sessionA_${sIndex}`}>
-                          <Tooltip
-                            key="tooltip"
-                            placement="top"
-                            title={`Starts on: ${EventService.formatEventIdForDisplay(sessionInfo.startEventId!)}`}>
-                            <div className={classes.sessionName}>
-                              <SessionIcon symbolKey={sessionInfo.session.symbol} index={sessionInfo.sessionIndex} />
-                            </div>
-                          </Tooltip>
-
-                          <SessionPlot
-                            sessionIndex={sessionInfo.sessionIndex}
-                            lineNumber={index}
-                            weekSessionNumber={sIndex}
-                            xCoords={sessionInfo.coords}
-                            sessionSymbol={sessionInfo.session.symbol}
-                            unitPixelWidth={unitWidth}
-                            isBurst={plotData[evt]?.[0]?.burst ? true : false}
-                            sessionGuid={sessionInfo.session.guid!}
-                          />
-                        </div>
-                      ))}
-                    </div>
+                    {' '}
+                    {EventService.formatEventIdForDisplay(evt)}
                   </div>
-                ))}
-              </div>
-            ))}
-          </>
-        )}
-      </div>
-    </div>
+
+                  {plotData[evt]?.map((wk, index) => (
+                    <div
+                      className={classes.week}
+                      key={`week_${wk.name}_ ${wk.burstNum}`}
+                      style={{
+                        marginBottom:
+                          plotData[evt][index + 1] && plotData[evt][index + 1].burstNum === wk.burstNum
+                            ? '0px'
+                            : `${LayoutConstants.marginGap}px`,
+                        //marginBottom: 0,
+                        // padding: `${LayoutConstants.weekVPad}px 0 ${LayoutConstants.weekVPad}px 16px`,
+                        padding: '0 0 0 16px',
+                        // height: `${LayoutConstants.height}px`,
+                        backgroundColor: wk.burst ? '#eaebf4' : index % 2 === 0 ? '#fff' : '#FBFBFC',
+                        position: 'relative',
+                        borderBottom: LayoutConstants.border,
+                      }}>
+                      <FrequencyBracket
+                        intervalInWeeks={getBurstIntervalInWeeks()}
+                        heightInterval={calculateDistanceToNextBurst(
+                          plotData[evt],
+                          wk.name,
+                          wk.burstNum,
+                          plotData[evt]
+                        )}
+                      />
+
+                      <div className={classes.weekTitle} key="week_index">
+                        Week {wk.name}
+                        {wk.burst !== false ? '/ Burst' + wk.burstNum * 1 : ''}
+                      </div>
+                      <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
+                        {wk.sessions.map((sessionInfo, sIndex: number) => (
+                          <div className={classes.graph} key={`sessionA_${sIndex}`}>
+                            <Tooltip
+                              key="tooltip"
+                              placement="top"
+                              title={`Starts on: ${EventService.formatEventIdForDisplay(sessionInfo.startEventId!)}`}>
+                              <div className={classes.sessionName}>
+                                <SessionIcon symbolKey={sessionInfo.session.symbol} index={sessionInfo.sessionIndex} />
+                              </div>
+                            </Tooltip>
+
+                            <SessionPlot
+                              sessionIndex={sessionInfo.sessionIndex}
+                              lineNumber={index}
+                              weekSessionNumber={sIndex}
+                              xCoords={sessionInfo.coords}
+                              sessionSymbol={sessionInfo.session.symbol}
+                              unitPixelWidth={unitWidth}
+                              isBurst={plotData[evt]?.[0]?.burst ? true : false}
+                              sessionGuid={sessionInfo.session.guid!}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      </Paper>
+    </Box>
   )
 }
 

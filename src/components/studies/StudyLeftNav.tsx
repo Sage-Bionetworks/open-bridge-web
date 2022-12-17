@@ -16,7 +16,7 @@ const drawerWidth = 212
 const DrawerStyled = styled(Drawer, {label: 'DrawerStyled', shouldForwardProp: prop => prop !== 'isOpen'})<{
   isOpen?: boolean
 }>(({theme, isOpen}) => ({
-  width: isOpen ? drawerWidth : theme.spacing(6),
+  width: isOpen ? drawerWidth : '58px',
 
   flexShrink: 0,
   whiteSpace: 'nowrap',
@@ -58,7 +58,7 @@ const StyledNavIconContainer = styled(Box, {label: 'StyledNavIconContainer'})<{i
       display: 'flex',
       alignItems: 'center',
       marginRight: theme.spacing(1),
-      width: '48px',
+      width: '58px',
       height: '48px',
       alignSelf: 'center',
       justifyContent: 'center',
@@ -115,7 +115,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
           onClick={toggleDrawer}
           sx={{
             borderRadius: 0,
-            width: '48px',
+            width: '58px',
             height: '100%',
             backgroundColor: '#F2F2F2',
             '&:hover': {

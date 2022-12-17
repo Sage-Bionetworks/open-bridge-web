@@ -24,7 +24,7 @@ import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
-import {latoFont, poppinsFont, theme} from '@style/theme'
+import {latoFont, theme} from '@style/theme'
 import {DWsEnum, PerformanceOrder, Schedule, StudySession} from '@typedefs/scheduling'
 import {ExtendedError, Study} from '@typedefs/types'
 import clsx from 'clsx'
@@ -50,7 +50,6 @@ import {getFormattedTimeDateFromPeriodString} from './utility'
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     burstButton: {
-      fontFamily: poppinsFont,
       display: 'flex',
       float: 'right',
 
@@ -530,17 +529,13 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
               </div>
             )}
           </div>
-          <Box bgcolor="#fff" pt={2} pb={0} mt={3} key="scheduler" id="scheduler">
-            {!isReadOnly && (
-              <Button
-                sx={{marginRight: theme.spacing(8)}}
-                disabled={isScheduleDefault(schedule) && !hasBeenSaved}
-                className={classes.burstButton}
-                onClick={() => setOpenModal('BURSTS')}>
-                <AddToPhotosTwoToneIcon style={isScheduleDefault(schedule) && !hasBeenSaved ? {opacity: '0.3'} : {}} />{' '}
-                Configure Study Bursts
-              </Button>
-            )}
+          <Box
+            sx={{
+              padding: 0,
+              marginTop: theme.spacing(3),
+            }}
+            key="scheduler"
+            id="scheduler">
             {!timeline ? (
               <LoadingComponent reqStatusLoading={true} variant="small" />
             ) : (
@@ -551,7 +546,19 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                 onSelectSession={(session: StudySession) => {
                   setOpenStudySession(session)
                 }}
-                schedule={schedule}></ScheduleTimelineDisplay>
+                schedule={schedule}>
+                {!isReadOnly && (
+                  <Button
+                    disabled={isScheduleDefault(schedule) && !hasBeenSaved}
+                    className={classes.burstButton}
+                    onClick={() => setOpenModal('BURSTS')}>
+                    <AddToPhotosTwoToneIcon
+                      style={isScheduleDefault(schedule) && !hasBeenSaved ? {opacity: '0.3'} : {}}
+                    />{' '}
+                    Configure Study Bursts
+                  </Button>
+                )}
+              </ScheduleTimelineDisplay>
             )}
           </Box>
         </Box>

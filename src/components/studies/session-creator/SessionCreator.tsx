@@ -57,17 +57,17 @@ export const useStyles = makeStyles(theme => ({
     color: theme.palette.grey[500],
   },
 
-  sessionContainer2: {
+  /*sessionContainer2: {
     height: '1px',
     backgroundColor: '#EAECEE',
 
     marginTop: theme.spacing(1),
 
     gridColumnStart: 1,
-    gridColumnEnd: -1,
-  },
+    gridColumnEnd: -1, ALINA CHENGED BORDER
+  },*/
   actionButtons: {
-    // borderTop: '1px solid black',
+    borderTop: '1px solid #EAECEE',
     //  backgroundColor: '#FFF',
     // padding: theme.spacing(2, 1),
     display: 'flex',
@@ -242,7 +242,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                   numberOfSessions={schedule.sessions.length}></SingleSessionContainer>
               </StyledSessionContainer>
             ))}
-            <Box className={classes.sessionContainer2} />
+            {/*Alina changed border <Box className={classes.sessionContainer2} />*/}
           </Box>
           <Box className={classes.actionButtons} key="actionButtons">
             <SessionActionButtons

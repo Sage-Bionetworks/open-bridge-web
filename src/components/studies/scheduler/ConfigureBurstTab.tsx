@@ -19,7 +19,7 @@ import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
-import {poppinsFont} from '@style/theme'
+
 import {Schedule, StudyBurst, StudySession} from '@typedefs/scheduling'
 import {ExtendedError} from '@typedefs/types'
 import clsx from 'clsx'
@@ -79,13 +79,13 @@ const useStyles = makeStyles((theme: Theme) =>
       '& .MuiFormControl-root': {
         flexDirection: 'row',
         marginBottom: theme.spacing(1),
-        fontFamily: poppinsFont,
+
         fontSize: '14px',
         display: 'flex',
         justifyContent: 'flex-end',
         '& label': {
           lineHeight: '21px',
-          fontFamily: poppinsFont,
+
           fontSize: '14px',
           position: 'static',
           transform: 'none',
@@ -110,7 +110,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     burstDesignHeading: {
-      fontFamily: poppinsFont,
       fontSize: '18px',
       lineHeight: '27px',
     },
@@ -125,7 +124,6 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     assignBurstText: {
-      fontFamily: poppinsFont,
       fontSize: '14px',
       lineHeight: '21px',
       whiteSpace: 'normal',
