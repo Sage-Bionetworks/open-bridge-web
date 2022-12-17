@@ -15,7 +15,7 @@ import {MTBHeadingH1} from '@components/widgets/Headings'
 import {PrevButton, SimpleTextInput} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Button, Container, Divider, FormControl, FormLabel} from '@mui/material'
+import {Box, Button, Container, Dialog, Divider, FormControl, FormLabel} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService from '@services/participants.service'
 import {latoFont, playfairDisplayFont, poppinsFont, ThemeType} from '@style/theme'
@@ -29,7 +29,6 @@ import {BuilderWrapper} from '../StudyBuilder'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    backgroundColor: '#f7f7f7',
     padding: theme.spacing(0, 6, 7, 6),
     textAlign: 'left',
     position: 'relative',
@@ -361,17 +360,17 @@ const PreviewIntroScreen: React.FunctionComponent<{
 
   return (
     <>
-      <Box className={clsx(isAssessmentDemo ? classes.tosContainerAssessment : classes.tosContainerStudyDemo)}>
-        <PrevButton className={classes.tosButton} variant="outlined" color="primary" onClick={() => {}}>
-          <img className={classes.linkIcon} src={LinkIcon} alt="link icon"></img>
-          <Box className={classes.tosText}>
-            <a style={{textDecoration: 'none'}} href="/MTB-ToS-v2-210923.pdf" target="_blank">
-              Full terms of service
-            </a>
-          </Box>
-        </PrevButton>
-      </Box>
       <BuilderWrapper sectionName="Preview Your Study">
+        <Box className={clsx(isAssessmentDemo ? classes.tosContainerAssessment : classes.tosContainerStudyDemo)}>
+          <PrevButton className={classes.tosButton} variant="outlined" color="primary" onClick={() => {}}>
+            <img className={classes.linkIcon} src={LinkIcon} alt="link icon"></img>
+            <Box className={classes.tosText}>
+              <a style={{textDecoration: 'none'}} href="/MTB-ToS-v2-210923.pdf" target="_blank">
+                Full terms of service
+              </a>
+            </Box>
+          </PrevButton>
+        </Box>
         <Container maxWidth="md" className={clsx(classes.root, isAssessmentDemo && classes.assessmentDemo)}>
           <Box textAlign="center" display="flex" flexDirection="column" alignItems="center">
             <MTBHeadingH1 className={classes.reminderOfUseHeader}>Reminder of use:</MTBHeadingH1>
@@ -436,9 +435,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({id, isAssessmentDemo, c
 
   return (
     <>
-      {!testParticipantId && (
-        <PreviewIntroScreen isAssessmentDemo={isAssessmentDemo} onGetParticipantId={() => getTestParticipantId()} />
-      )}
+      <Dialog open={!testParticipantId} maxWidth="md" fullWidth={true}>
+        {!testParticipantId && (
+          <PreviewIntroScreen isAssessmentDemo={isAssessmentDemo} onGetParticipantId={() => getTestParticipantId()} />
+        )}
+      </Dialog>
       {testParticipantId && (
         <BuilderWrapper sectionName="Preview Your  Study">
           <PreviewIdGenerated isAssessmentDemo={isAssessmentDemo} testParticipantId={testParticipantId} studyId={id}>

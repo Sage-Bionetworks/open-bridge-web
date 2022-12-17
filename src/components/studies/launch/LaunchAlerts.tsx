@@ -1,5 +1,5 @@
 import {ReactComponent as Preview_Icon} from '@assets/launch/preview_icon.svg'
-import {Box, Button, Container, List, ListItem, Paper, styled, Typography} from '@mui/material'
+import {Box, Button, List, ListItem, Paper, styled, Typography} from '@mui/material'
 import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
 import StudyService from '@services/study.service'
 import {theme} from '@style/theme'
@@ -342,33 +342,30 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
 
   return (
     <>
-      <Box textAlign="left">
-        {alerts?.length > 0 && (
-          <Typography sx={{fontWeight: 400, fontSize: '24px', marginBottom: theme.spacing(2)}}>
-            Please Review The Following Alerts{' '}
-          </Typography>
-        )}
-      </Box>
-      <Container maxWidth="md">
-        {study &&
-          alerts.map((alert, index) => (
-            <StudyAlertComponent
-              study={study}
-              key={index}
-              {...alert}
-              onIgnore={(sectionPath: string, index: number) => {
-                ignore(sectionPath, index)
-              }}></StudyAlertComponent>
-          ))}
+      {alerts?.length > 0 && (
+        <Typography sx={{fontWeight: 400, fontSize: '24px', marginBottom: theme.spacing(4)}}>
+          Please Review The Following Alerts{' '}
+        </Typography>
+      )}
 
-        <PreviewBox>
-          <Preview_Icon />
-          <span>
-            Please remember to&nbsp;
-            <NavLink to={`/studies/builder/${study.identifier}/preview`}>Preview Your Study</NavLink> before launching.
-          </span>
-        </PreviewBox>
-      </Container>
+      {study &&
+        alerts.map((alert, index) => (
+          <StudyAlertComponent
+            study={study}
+            key={index}
+            {...alert}
+            onIgnore={(sectionPath: string, index: number) => {
+              ignore(sectionPath, index)
+            }}></StudyAlertComponent>
+        ))}
+
+      <PreviewBox>
+        <Preview_Icon />
+        <span>
+          Please remember to&nbsp;
+          <NavLink to={`/studies/builder/${study.identifier}/preview`}>Preview Your Study</NavLink> before launching.
+        </span>
+      </PreviewBox>
     </>
   )
 }

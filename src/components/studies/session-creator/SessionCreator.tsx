@@ -31,8 +31,10 @@ import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, {SessionAction, Types} from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
 
+const sessionCardWidth = 280
+
 const StyledSessionContainer = styled(Paper, {label: 'StyledSessionContainer'})(({theme}) => ({
-  width: '280px',
+  width: `${sessionCardWidth}px`,
   padding: theme.spacing(2),
   background: ' #FFFFFF',
   boxShadow: '0px 5px 14px #EAECEE',
@@ -43,11 +45,11 @@ export const useStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
     padding: theme.spacing(0, 0, 2, 0),
-    gridTemplateColumns: 'repeat(auto-fill,280px)',
+    gridTemplateColumns: `repeat(auto-fill,${sessionCardWidth}px)`,
     gridColumnGap: theme.spacing(8),
     gridRowGap: theme.spacing(6),
     minHeight: theme.spacing(50),
-    //  backgroundColor: '#fefefe',
+    justifyContent: 'center',
   },
 
   closeButton: {
