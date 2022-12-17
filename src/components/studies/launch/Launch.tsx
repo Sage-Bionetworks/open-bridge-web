@@ -173,7 +173,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
           {!isReadOnly && (
             <LaunchStepper steps={steps} activeStep={activeStep} setActiveStepFn={handleStepClick}></LaunchStepper>
           )}
-          <Box sx={{maxWidth: 'md'}}>
+          <Container maxWidth="md">
             <StepContent
               study={study}
               schedule={schedule}
@@ -185,7 +185,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
                 onUpdate(study)
               }}
             />
-          </Box>
+          </Container>
         </BuilderWrapper>
         <Container
           maxWidth="md"
