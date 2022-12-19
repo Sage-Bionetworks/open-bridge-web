@@ -1,8 +1,9 @@
 import AssessmentSmall from '@components/assessments/AssessmentSmall'
+import {BuilderWrapper} from '@components/studies/StudyBuilder'
 import SessionIcon from '@components/widgets/SessionIcon'
+import ClockIcon from '@mui/icons-material/AccessTime'
 import {Box, Paper} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import ClockIcon from '@mui/icons-material/AccessTime'
 import {StudySession} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
@@ -29,12 +30,10 @@ const ReadOnlySessionCreator: FunctionComponent<ReadOnlySessionCreatorProps> = (
   const sessionContainerClasses = SessionContainerStyles()
   if (sessions) {
     return (
-      <>
+      <BuilderWrapper sectionName="Create Sessions">
         <Box className={sessionCreatorClasses.root} key="sessions">
           {sessions.map((session, index) => (
-            <Paper
-              className={clsx(sessionCreatorClasses.sessionContainer, classes.assessmentContainer)}
-              key={session.guid! + index}>
+            <Paper className={clsx(classes.assessmentContainer)} key={session.guid! + index}>
               {/* session header */}
               <Box className={sessionContainerClasses.inner}>
                 <Box marginRight={2}>
@@ -66,7 +65,7 @@ const ReadOnlySessionCreator: FunctionComponent<ReadOnlySessionCreatorProps> = (
           ))}
         </Box>
         {children}
-      </>
+      </BuilderWrapper>
     )
   } else return <>should not happen</>
 }
