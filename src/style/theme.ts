@@ -367,13 +367,6 @@ const theme: Theme = createTheme({
         },
       },
     },
-    MuiDialogActions: {
-      styleOverrides: {
-        root: {
-          padding: SPACE_UNIT * 3,
-        },
-      },
-    },
 
     MuiButtonBase: {
       styleOverrides: {},
@@ -381,6 +374,35 @@ const theme: Theme = createTheme({
 
       defaultProps: {
         disableRipple: true, // No more ripple, on the whole application 💣!
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          padding: '24px 44px',
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          padding: '20px 0',
+          borderTop: '1px solid #EAECEE',
+        },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {},
+    },
+
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          position: 'relative',
+          padding: '20px 0',
+          borderBottom: '1px solid #EAECEE',
+          fontSize: '20px',
+        },
       },
     },
   },
