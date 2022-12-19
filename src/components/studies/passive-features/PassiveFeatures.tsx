@@ -2,59 +2,63 @@ import motion from '@assets/passive-features/recorders_motion.svg'
 import noise from '@assets/passive-features/recorders_noise.svg'
 import weather from '@assets/passive-features/recorders_weather.svg'
 import {MTBHeadingH3} from '@components/widgets/Headings'
-import {Box, Switch} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import {
+  Box,
+  Container,
+  styled,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  tableCellClasses,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material'
 import StudyService from '@services/study.service'
 import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
-import {latoFont, ThemeType} from '@style/theme'
+import {theme} from '@style/theme'
 import {BackgroundRecorders} from '@typedefs/types'
 import React from 'react'
 import {BuilderWrapper} from '../StudyBuilder'
 
-const useStyles = makeStyles((theme: ThemeType) => ({
-  root: {
-    backgroundColor: '#fefefe',
+const StyledSection = styled('section', {label: 'StyledSection'})(({theme}) => ({
+  background: '#FFFFFF',
+  boxShadow: '0px 4px 4px #EAECEE',
+  maxWidth: '1008px',
 
-    padding: theme.spacing(6, 6, 7, 6),
-    textAlign: 'left',
-  },
+  margin: theme.spacing(2, 'auto'),
+  padding: theme.spacing(5),
+  display: 'flex',
+  alignItems: 'center',
+}))
 
-  intro: {
-    marginBottom: theme.spacing(2),
-    lineHeight: '18px',
-    width: '85%',
+const StyledTable = styled(Table, {label: 'StyledTable'})(({theme}) => ({
+  fontSize: '14px',
+  [`& .${tableCellClasses.body}`]: {
+    fontSize: '16px',
+    lineHeight: '20px',
+    padding: theme.spacing(1, 3),
+    width: '33%',
+    verticalAlign: 'top',
+    '&:first-of-type': {
+      paddingLeft: '0',
+    },
+    '&:last-of-type': {
+      paddingRight: '0',
+    },
   },
-  featureHeading: {
-    fontFamily: latoFont,
-    fontSize: '21px',
+  [`& .${tableCellClasses.head}`]: {
+    fontSize: '14px',
+    lineHeight: '20px',
     fontWeight: 700,
-  },
-
-  section: {
-    backgroundColor: '#F6F6F6',
-    borderRadius: '10px',
-    marginTop: theme.spacing(2),
-    padding: theme.spacing(3, 6, 5, 6),
-  },
-  featureTable: {
-    borderSpacing: theme.spacing(8, 0),
-    margin: theme.spacing(0, -8, 0, -8),
-    borderCollapse: 'separate',
-
-    '& th': {
-      fontFamily: latoFont,
-      fontSize: '15px',
-      height: theme.spacing(5),
-      verticalAlign: 'top',
-      fontWeight: 'bold',
+    padding: theme.spacing(1, 3),
+    '&:first-of-type': {
+      paddingLeft: '0',
     },
-    '& td': {
-      verticalAlign: 'top',
+    '&:last-of-type': {
+      paddingRight: '0',
     },
-  },
-
-  toggle: {
-    marginLeft: theme.spacing(1.5),
   },
 }))
 
@@ -111,7 +115,6 @@ export interface PassiveFeaturesProps {
 }
 
 const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, children}) => {
-  const classes = useStyles()
   const {data: study} = useStudy(id)
 
   const {mutateAsync: mutateStudy, data} = useUpdateStudyDetail()
@@ -158,35 +161,47 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
     }
 
     return (
-      <div className={classes.section}>
-        <Box display="flex" mb={5}>
+      <StyledSection>
+        <Box display="flex">
           <img src={sensors[recorderType]!.img} alt={sensors[recorderType]!.title} style={{marginRight: 'auto'}} />
-          <Box display="flex" alignItems="center" flexDirection="row" height="30px">
-            <span className={classes.featureHeading}>{sensors[recorderType]!.title}</span>
-            {!isReadOnly && (
-              <div className={classes.toggle}>
-                <Switch color="primary" checked={value} onChange={e => callbackFn(e.target.checked)}></Switch>
-              </div>
-            )}
+          <Box sx={{marginLeft: theme.spacing(7)}}>
+            <Box
+              sx={{
+                display: 'flex',
+                width: '100%',
+                flextGrow: 1,
+                flexDirection: 'row',
+                height: theme.spacing(3),
+                marginBottom: theme.spacing(4),
+                justifyContent: 'space-between',
+              }}>
+              <Typography variant="h3">{sensors[recorderType]!.title}</Typography>
+              {!isReadOnly && (
+                <div>
+                  <Switch color="primary" checked={value} onChange={e => callbackFn(e.target.checked)}></Switch>
+                </div>
+              )}
+            </Box>
+
+            <StyledTable>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Description</TableCell>
+                  <TableCell>Frequency</TableCell>
+                  <TableCell>User Burden</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>{sensors[recorderType]!.description}</TableCell>
+                  <TableCell>{sensors[recorderType]!.frequency}</TableCell>
+                  <TableCell>{sensors[recorderType]!.burden}</TableCell>
+                </TableRow>
+              </TableBody>
+            </StyledTable>
           </Box>
         </Box>
-        <table className={classes.featureTable}>
-          <thead>
-            <tr>
-              <th>Description</th>
-              <th>Frequency</th>
-              <th>User Burden</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style={{width: '40%'}}>{sensors[recorderType]!.description}</td>
-              <td style={{width: '20%'}}>{sensors[recorderType]!.frequency}</td>
-              <td>{sensors[recorderType]!.burden}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      </StyledSection>
     )
   }
   const isReadOnly = !StudyService.isStudyInDesign(study)
@@ -197,55 +212,57 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
     <>
       {' '}
       <BuilderWrapper sectionName="Optional Background Monitoring">
-        <div className={classes.root}>
-          {isReadOnly ? (
-            <MTBHeadingH3 style={{marginBottom: '24px'}}>
-              {Object.values(features).filter(o => o === true).length > 0
-                ? 'You’ve added the following Optional Monitoring to your study:'
-                : 'No Optional Monitoring was added to your study.'}
-            </MTBHeadingH3>
-          ) : (
-            <Box>
-              <MTBHeadingH3 className={classes.intro}>
-                Mobile Toolbox lets you add optional contextual/sensor monitoring to your study. This can be used to
-                assess the impact of environmental factors on test performance.
+        <Container maxWidth="lg">
+          <Box sx={{fontSize: '16px'}}>
+            {isReadOnly ? (
+              <MTBHeadingH3 style={{marginBottom: '24px'}}>
+                {Object.values(features).filter(o => o === true).length > 0
+                  ? 'You’ve added the following Optional Monitoring to your study:'
+                  : 'No Optional Monitoring was added to your study.'}
               </MTBHeadingH3>
-              <MTBHeadingH3 className={classes.intro}>
-                When adding monitoring, please consider the impact on the participant's experience and potential added
-                burden. Participants' devices may perform differently based on their device type.
-              </MTBHeadingH3>
-              <MTBHeadingH3 className={classes.intro}>
-                Participants can turn optional monitoring on/off at any time. You may not receive any data if a
-                participant opts-out or you may receive incomplete data if a participant changes their opt-in status
-                during your study.
-              </MTBHeadingH3>
-            </Box>
-          )}
-          {displayMotionSection && (
-            <PFSection
-              recorderType={'motion'}
-              value={features?.motion}
-              callbackFn={(e: boolean) => {
-                onUpdate({...features, motion: e})
-              }}></PFSection>
-          )}
-          {displayMicrophoneSection && (
-            <PFSection
-              recorderType={'microphone'}
-              value={features?.microphone}
-              callbackFn={(e: boolean) => {
-                onUpdate({...features, microphone: e})
-              }}></PFSection>
-          )}
-          {displayWeatherSection && (
-            <PFSection
-              recorderType={'weather'}
-              value={features?.weather}
-              callbackFn={(e: boolean) => {
-                onUpdate({...features, weather: e})
-              }}></PFSection>
-          )}
-        </div>
+            ) : (
+              <Container maxWidth="md" sx={{textAlign: 'left', marginBottom: theme.spacing(4)}}>
+                <Typography paragraph sx={{fontSize: '16px'}}>
+                  Mobile Toolbox lets you add optional contextual/sensor monitoring to your study. This can be used to
+                  assess the impact of environmental factors on test performance.
+                </Typography>
+                <Typography sx={{fontSize: '16px'}} paragraph>
+                  When adding monitoring, please consider the impact on the participant's experience and potential added
+                  burden. Participants' devices may perform differently based on their device type.
+                </Typography>
+                <Typography sx={{fontSize: '16px'}} paragraph>
+                  Participants can turn optional monitoring on/off at any time. You may not receive any data if a
+                  participant opts-out or you may receive incomplete data if a participant changes their opt-in status
+                  during your study.
+                </Typography>
+              </Container>
+            )}
+            {displayMotionSection && (
+              <PFSection
+                recorderType={'motion'}
+                value={features?.motion}
+                callbackFn={(e: boolean) => {
+                  onUpdate({...features, motion: e})
+                }}></PFSection>
+            )}
+            {displayMicrophoneSection && (
+              <PFSection
+                recorderType={'microphone'}
+                value={features?.microphone}
+                callbackFn={(e: boolean) => {
+                  onUpdate({...features, microphone: e})
+                }}></PFSection>
+            )}
+            {displayWeatherSection && (
+              <PFSection
+                recorderType={'weather'}
+                value={features?.weather}
+                callbackFn={(e: boolean) => {
+                  onUpdate({...features, weather: e})
+                }}></PFSection>
+            )}
+          </Box>
+        </Container>
       </BuilderWrapper>
       {children}
     </>
