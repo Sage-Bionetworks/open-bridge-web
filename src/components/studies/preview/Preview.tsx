@@ -1,4 +1,3 @@
-import LinkIcon from '@assets/link_icon.svg'
 import appStoreBtn from '@assets/preview/appStoreBtn.png'
 import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
 import {ReactComponent as PhoneImg} from '@assets/preview/preview_phone.svg'
@@ -10,12 +9,13 @@ import SampleAssessmentDataImg from '@assets/preview/sample_assessment_data.svg'
 import ScheduleSessionsIcon from '@assets/preview/schedule_session_icon_no_padding.svg'
 import QrCode from '@assets/qr_code.png'
 import AssessmentSmall from '@components/assessments/AssessmentSmall'
+import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
 import {MTBHeadingH1} from '@components/widgets/Headings'
-import {PrevButton, SimpleTextInput} from '@components/widgets/StyledComponents'
+import {SimpleTextInput, StyledLink} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Button, Container, Dialog, Divider, FormControl, FormLabel} from '@mui/material'
+import {Box, Button, Dialog, DialogActions, DialogContent, Divider, FormControl, FormLabel} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService from '@services/participants.service'
 import {latoFont, playfairDisplayFont, poppinsFont, ThemeType} from '@style/theme'
@@ -150,11 +150,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '16px',
     marginBottom: theme.spacing(-0.25),
   },
-  tosContainerStudyDemo: {
-    position: 'absolute',
-    top: '10px',
-    right: '100px',
-  },
+
   tosContainerAssessment: {
     position: 'absolute',
     top: '8px',
@@ -171,12 +167,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     color: 'black',
     height: '22px',
   },
-  tosText: {
-    fontFamily: latoFont,
-    fontSize: '16px',
-    marginTop: theme.spacing(-0.25),
-    fontWeight: 'bold',
-  },
+
   idLabel: {
     fontWeight: 'bold',
   },
@@ -359,48 +350,46 @@ const PreviewIntroScreen: React.FunctionComponent<{
   const icons = [AuthorizedIcon, ProtectionIcon, MedicalIcon]
 
   return (
-    <>
-      <BuilderWrapper sectionName="Preview Your Study">
-        <Box className={clsx(isAssessmentDemo ? classes.tosContainerAssessment : classes.tosContainerStudyDemo)}>
-          <PrevButton className={classes.tosButton} variant="outlined" color="primary" onClick={() => {}}>
-            <img className={classes.linkIcon} src={LinkIcon} alt="link icon"></img>
-            <Box className={classes.tosText}>
-              <a style={{textDecoration: 'none'}} href="/MTB-ToS-v2-210923.pdf" target="_blank">
-                Full terms of service
-              </a>
-            </Box>
-          </PrevButton>
-        </Box>
-        <Container maxWidth="md" className={clsx(classes.root, isAssessmentDemo && classes.assessmentDemo)}>
-          <Box textAlign="center" display="flex" flexDirection="column" alignItems="center">
-            <MTBHeadingH1 className={classes.reminderOfUseHeader}>Reminder of use:</MTBHeadingH1>
-            <Box className={classes.remindersOfUseContainer}>
-              {text.map((text, index) => (
-                <Reminder key={index} text={text} img={icons[index]}></Reminder>
-              ))}
-            </Box>
-            {!isAssessmentDemo && (
-              <Box className={clsx(classes.scheduleSessionReminderContainer, classes.reminderOfUseText)}>
-                <Box>
-                  Please remember to customize your study schedule on&nbsp;
-                  <img className={classes.scheduleSessionsIcon} src={ScheduleSessionsIcon} alt="schedule session"></img>
-                  &nbsp;
-                  <NavLink to={'scheduler'} className={classes.scheduleSessionsButton}>
-                    Schedule Sessions
-                  </NavLink>
-                  &nbsp; page before previewing your app.
-                </Box>
-              </Box>
-            )}
+    <Dialog open={true} maxWidth="md" fullWidth={true}>
+      <DialogTitleWithClose onCancel={() => onGetParticipantId()} title={'Reminder of Use'}></DialogTitleWithClose>
+      <DialogContent>
+        <Box textAlign="center" display="flex" flexDirection="column" alignItems="center">
+          <Box className={classes.remindersOfUseContainer}>
+            {text.map((text, index) => (
+              <Reminder key={index} text={text} img={icons[index]}></Reminder>
+            ))}
           </Box>
-        </Container>
-      </BuilderWrapper>
-      <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-        <Button color="primary" variant="contained" onClick={() => onGetParticipantId()}>
-          Continue
-        </Button>
-      </ErrorBoundary>
-    </>
+          {!isAssessmentDemo && (
+            <Box className={clsx(classes.scheduleSessionReminderContainer, classes.reminderOfUseText)}>
+              <Box>
+                Please remember to customize your study schedule on&nbsp;
+                <img className={classes.scheduleSessionsIcon} src={ScheduleSessionsIcon} alt="schedule session"></img>
+                &nbsp;
+                <NavLink to={'scheduler'} className={classes.scheduleSessionsButton}>
+                  Schedule Sessions
+                </NavLink>
+                &nbsp; page before previewing your app.
+              </Box>
+            </Box>
+          )}
+        </Box>
+        <Box className={clsx(isAssessmentDemo ? classes.tosContainerAssessment : '')}>
+          <StyledLink
+            to="/MTB-ToS-v2-210923.pdf"
+            target="_blank"
+            sx={{fontSize: '16px', display: 'block', textAlign: 'center', fontWeight: 700}}>
+            View Full Terms of Service
+          </StyledLink>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+          <Button color="primary" variant="contained" onClick={() => onGetParticipantId()}>
+            Got It!
+          </Button>
+        </ErrorBoundary>
+      </DialogActions>
+    </Dialog>
   )
 }
 
@@ -435,11 +424,10 @@ const Preview: React.FunctionComponent<PreviewProps> = ({id, isAssessmentDemo, c
 
   return (
     <>
-      <Dialog open={!testParticipantId} maxWidth="md" fullWidth={true}>
-        {!testParticipantId && (
-          <PreviewIntroScreen isAssessmentDemo={isAssessmentDemo} onGetParticipantId={() => getTestParticipantId()} />
-        )}
-      </Dialog>
+      {!testParticipantId && (
+        <PreviewIntroScreen isAssessmentDemo={isAssessmentDemo} onGetParticipantId={() => getTestParticipantId()} />
+      )}
+
       {testParticipantId && (
         <BuilderWrapper sectionName="Preview Your  Study">
           <PreviewIdGenerated isAssessmentDemo={isAssessmentDemo} testParticipantId={testParticipantId} studyId={id}>

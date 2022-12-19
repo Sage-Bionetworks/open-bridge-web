@@ -1,59 +1,53 @@
-import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
 import CloseIcon from '@mui/icons-material/Close'
 import {IconButton} from '@mui/material'
 import DialogTitle from '@mui/material/DialogTitle'
-import makeStyles from '@mui/styles/makeStyles'
-import clsx from 'clsx'
+import {theme} from '@style/theme'
 import React, {FunctionComponent} from 'react'
-import {poppinsFont} from '../../style/theme'
-
-const useStyles = makeStyles(theme => ({
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-  title: {
-    padding: theme.spacing(3),
-    position: 'relative',
-    fontFamily: poppinsFont,
-    fontSize: '18px',
-    fontStyle: 'normal',
-    fontWeight: 500,
-    lineHeight: '27px',
-    textAlign: 'left',
-    alignItems: 'center',
-    display: 'flex',
-
-    flexDirection: 'row',
-    '& div': {
-      paddingLeft: theme.spacing(2),
-    },
-    '&.small': {
-      fontSize: '16px',
-    },
-  },
-}))
 
 type DialogTitleWithCloseProps = {
   icon?: React.ReactNode
-  onCancel: Function
+  onCancel: () => void
   title: string
   isSmallTitle?: boolean
 }
 
-const DialogTitleWithClose: FunctionComponent<DialogTitleWithCloseProps> = ({onCancel, icon, title, isSmallTitle}) => {
-  const classes = useStyles()
-
+const DialogTitleWithClose: FunctionComponent<DialogTitleWithCloseProps> = ({
+  onCancel,
+  icon,
+  title,
+  isSmallTitle,
+  ...other
+}) => {
   return (
-    <DialogTitle className={clsx(classes.title, isSmallTitle && 'small')}>
-      {icon ? icon : <EditIcon />}
-      <div>{title}</div>
+    <DialogTitle
+      sx={{
+        display: 'flex',
 
-      <IconButton aria-label="close" className={classes.closeButton} onClick={() => onCancel()} size="large">
-        <CloseIcon />
-      </IconButton>
+        flexDirection: 'row',
+        '& div': {
+          paddingLeft: theme.spacing(2),
+        },
+        '&.small': {
+          fontSize: '16px',
+        },
+      }}
+      {...other}>
+      {icon ? icon : <></>}
+
+      {title}
+      {onCancel ? (
+        <IconButton
+          aria-label="close"
+          onClick={onCancel}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme => ' #878E95',
+          }}>
+          <CloseIcon fontSize="medium" />
+        </IconButton>
+      ) : null}
     </DialogTitle>
   )
 }
