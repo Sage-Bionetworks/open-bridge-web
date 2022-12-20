@@ -9,12 +9,12 @@ import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import LoadingComponent from '@components/widgets/Loader'
 import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
 
-import {Box, Button, FormControl, FormGroup, IconButton, styled, Theme} from '@mui/material'
+import {Box, Button, FormControl, FormGroup, IconButton, styled, Theme, Typography} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
 import {useUpdateStudyDetail} from '@services/studyHooks'
-import {latoFont, theme} from '@style/theme'
+import {theme} from '@style/theme'
 import {SchedulingEvent} from '@typedefs/scheduling'
 import {ExtendedError, Study} from '@typedefs/types'
 import clsx from 'clsx'
@@ -39,20 +39,29 @@ const StyledFakeSelect = styled(Box, {label: 'StyledFakeSelect'})(({theme}) => (
   },
 }))
 
+const StyledDraggableEvent = styled(FormGroup, {label: 'StyledDraggableEvent'})(({theme}) => ({
+  alignItems: 'center',
+
+  position: 'relative',
+  width: '317px',
+  background: '#FFFFFF',
+  boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+  padding: theme.spacing(1.5, 1, 1.5, 4.5),
+
+  '&.dragging': {
+    border: '1px dashed #000',
+    padding: '5px',
+  },
+
+  '&:hover': {
+    border: '1px solid #000',
+  },
+
+  marginBottom: theme.spacing(2),
+}))
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    eventText: {
-      width: theme.spacing(16),
-      marginRight: theme.spacing(0.5),
-      padding: theme.spacing(0, 1.25),
-    },
-
-    errorText: {
-      color: 'red',
-      fontFamily: latoFont,
-      fontSize: '14px',
-      marginTop: theme.spacing(0.75),
-    },
     eventBox: {
       marginBottom: theme.spacing(2),
       justifyContent: 'flex-end',
@@ -60,29 +69,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
     },
-
-    draggableEvent: {
-      alignItems: 'center',
-      position: 'relative',
-      width: '317px',
-      background: '#FFFFFF',
-      boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
-      padding: theme.spacing(1.5, 1, 1.5, 4),
-
-      '&.dragging': {
-        border: '1px dashed #000',
-        padding: '5px',
-      },
-
-      '&:hover': {
-        border: '2px solid #000',
-      },
-    },
-
-    errorTextbox: {
-      border: '1px solid red',
-    },
-    droppable: {},
   })
 )
 
@@ -305,9 +291,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
           marginTop: theme.spacing(5),
         }}>
         <Box>
-          {error && <Box className={classes.errorText}>{error}</Box>}
-
-          <FormControl fullWidth>
+          <FormControl fullWidth error={!!error}>
             <SimpleTextLabel htmlFor="new_event">Event Name*</SimpleTextLabel>
             <SimpleTextInput
               key="new_event"
@@ -317,8 +301,8 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
                 setNewEvent(e.target.value)
                 setError(undefined)
               }}
-              className={clsx(error && classes.errorTextbox)}
             />
+            {error && <Typography color="error">{error}</Typography>}
           </FormControl>
           <Button variant="outlined" onClick={addEvent} sx={{marginTop: theme.spacing(3)}}>
             Add New Event
@@ -332,7 +316,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
               onDragEnd={(dropResult: DropResult) => {
                 reorderEvents(customEvents, dropResult)
               }}>
-              <div className={classes.droppable}>
+              <Box sx={{marginTop: theme.spacing(2)}}>
                 <Droppable droppableId={'eventList'} type="custom_events">
                   {(provided, snapshot) => (
                     <div
@@ -346,42 +330,35 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
                           <Draggable draggableId={evt.eventId + index} index={index} key={evt.eventId + index}>
                             {(provided, snapshot) => (
                               <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                <Box display="block" key={evt.eventId} className={classes.eventBox}>
-                                  <FormGroup
-                                    row={true}
-                                    className={classes.draggableEvent}
-                                    style={{
-                                      alignItems: 'center',
-                                    }}>
-                                    <DragIndicatorTwoToneIcon
-                                      sx={{position: 'absolute', color: '#DFE2E6', left: '12px'}}
+                                <StyledDraggableEvent row={true}>
+                                  <DragIndicatorTwoToneIcon
+                                    sx={{position: 'absolute', color: '#DFE2E6', left: '12px'}}
+                                  />
+
+                                  <div>{evt.eventId}</div>
+
+                                  {canEdit(evt.eventId) ? (
+                                    <IconButton
+                                      edge="end"
+                                      size="small"
+                                      sx={{padding: 0, position: 'absolute', right: '16px'}}
+                                      onClick={() => deleteEvent(index)}>
+                                      <ClearTwoToneIcon />
+                                    </IconButton>
+                                  ) : (
+                                    <InfoCircleWithToolTip
+                                      sx={{position: 'absolute', right: '16px'}}
+                                      tooltipDescription={
+                                        <span>
+                                          This event is being used in one/more session(s) as a Session Start event. To{' '}
+                                          <strong>rename or delete</strong> this Event, please unselect it from all
+                                          Session Start events.
+                                        </span>
+                                      }
+                                      variant="info"
                                     />
-
-                                    <div>{evt.eventId}</div>
-
-                                    {canEdit(evt.eventId) ? (
-                                      <IconButton
-                                        edge="end"
-                                        size="small"
-                                        sx={{padding: 0, position: 'absolute', right: '16px'}}
-                                        onClick={() => deleteEvent(index)}>
-                                        <ClearTwoToneIcon />
-                                      </IconButton>
-                                    ) : (
-                                      <InfoCircleWithToolTip
-                                        sx={{position: 'absolute', right: '16px'}}
-                                        tooltipDescription={
-                                          <span>
-                                            This event is being used in one/more session(s) as a Session Start event. To{' '}
-                                            <strong>rename or delete</strong> this Event, please unselect it from all
-                                            Session Start events.
-                                          </span>
-                                        }
-                                        variant="info"
-                                      />
-                                    )}
-                                  </FormGroup>
-                                </Box>
+                                  )}
+                                </StyledDraggableEvent>
                               </div>
                             )}
                           </Draggable>
@@ -389,7 +366,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
                     </div>
                   )}
                 </Droppable>
-              </div>
+              </Box>
             </DragDropContext>
           </Box>
         )}
