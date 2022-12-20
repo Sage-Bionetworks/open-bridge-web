@@ -1,10 +1,10 @@
 //import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'/
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
+import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
 import LoadingComponent from '@components/widgets/Loader'
 import AddToPhotosTwoToneIcon from '@mui/icons-material/AddToPhotosTwoTone'
 import CloseIcon from '@mui/icons-material/Close'
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
 import {
   Box,
   Button,
@@ -565,23 +565,14 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
       </BuilderWrapper>
       {children}
 
-      <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body">
-        <DialogTitle
-          className={classes.dialogTitle}
-          style={{
-            backgroundColor: '#f8f8f8',
+      <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body" fullWidth>
+        <DialogTitleWithClose onCancel={() => setOpenModal(undefined)} title="Edit Event Drop Down" />
+
+        <DialogContent
+          sx={{
+            overflowY: 'visible',
+            margin: theme.spacing(0, -5),
           }}>
-          <EditTwoToneIcon sx={{color: '#4F527D'}} />
-          &nbsp;&nbsp; Edit Event Drop Down
-          <IconButton
-            aria-label="close"
-            className={classes.closeModalButton}
-            onClick={() => setOpenModal(undefined)}
-            size="large">
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent style={{padding: 0, overflowY: 'visible'}}>
           <SessionStartTab
             ref={ref1}
             study={study!}
@@ -589,7 +580,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
             onNavigate={() => setOpenModal(undefined)}
           />
         </DialogContent>
-        <DialogActions className={classes.dialogAction}>
+        <DialogActions>
           <Button variant="outlined" onClick={() => setOpenModal(undefined)}>
             Cancel
           </Button>
