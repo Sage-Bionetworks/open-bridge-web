@@ -1,19 +1,12 @@
-import ParticipantsIcon from '@assets/group_participants_icon.svg'
-import Logo from '@assets/logo_mtb_large.svg'
-import BreadCrumb from '@components/widgets/BreadCrumb'
-import MobileDrawerMenuHeader from '@components/widgets/MobileDrawerMenuHeader'
-import Utility from '@helpers/utility'
-import MenuIcon from '@mui/icons-material/Menu'
-import PeopleIcon from '@mui/icons-material/People'
-import {Alert, Box, Drawer, Hidden, IconButton} from '@mui/material'
-import Toolbar from '@mui/material/Toolbar'
+import BuildTwoToneIcon from '@mui/icons-material/BuildTwoTone'
+import {Alert, Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
 import {Assessment, ExtendedError} from '@typedefs/types'
-import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {NavLink} from 'react-router-dom'
+import {useHistory} from 'react-router-dom'
+import CollapsableMenu from './widgets/MenuDropdown'
 
 const useStyles = makeStyles(theme => ({
   rootSurveyTopNav: {
@@ -141,114 +134,50 @@ type SurveyTopNavProps = {
   error: ExtendedError | null
 }
 
+const ALL_LINKS: {path: string; name: string; icon: React.ReactElement}[] = [
+  {
+    path: `${constants.restrictedPaths.SURVEY_BUILDER}`,
+    name: 'SURVEY DESIGN',
+
+    icon: <BuildTwoToneIcon />,
+  },
+  {name: 'BRANCHING LOGIC', path: `${constants.restrictedPaths.SURVEY_BRANCHING}`, icon: <BuildTwoToneIcon />},
+]
+
 const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({survey, error}: SurveyTopNavProps) => {
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
 
-  const links = [
-    {name: 'SURVEY DESIGN', path: '/surveys/:id/design'},
-    {name: 'BRANCHING LOGIC', path: '/surveys/:id/branching'},
-  ]
+  const links = ALL_LINKS.map(link => ({
+    ...link,
+    enabled: true,
+    path: link.path.replace(':id', survey?.guid ?? ''),
+    display: /*link.icon + */ link.name,
+    id: link.path,
+  }))
+
+  const history = useHistory()
 
   return (
-    <Box className={classes.rootSurveyTopNav}>
-      <Hidden lgUp>
-        <IconButton
-          color="inherit"
-          aria-label="Open drawer"
-          edge="end"
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className={classes.menuButton}
-          size="large">
-          <MenuIcon></MenuIcon>
-        </IconButton>
-      </Hidden>
-      <Hidden lgDown>
-        <Box className={classes.toolbarStudyHeader}>
-          <Toolbar
-            component="nav"
-            variant="dense"
-            disableGutters={true}
-            className={classes.toolbar}
-            style={{
-              paddingTop: '0',
-              alignItems: 'center',
-            }}>
-            <NavLink to="/studies" key="/studies" className={classes.toolbarLink} style={{padding: '0 24px 0 0'}}>
-              <img src={Logo} className={classes.logo} key="img_home" alt="home" />
-            </NavLink>
+    <Box>
+      <CollapsableMenu
+        items={links}
+        selectedFn={section => history.location.pathname.includes(section.path)}
+        displayMobileItem={(section, isSelected) => (
+          <>
+            {section.icon} &nbsp;{section.name}
+          </>
+        )}
+        displayDesktopItem={(section, isSelected) => (
+          <>
+            {' '}
+            {section.icon}
+            {section.name}
+          </>
+        )}
+        onClick={section => history.push(section.path)}
+      />
 
-            {survey?.title && (
-              <BreadCrumb
-                links={[{url: '/surveys', text: ''}]}
-                currentItem={
-                  survey?.title && survey?.title !== constants.constants.NEW_STUDY_NAME ? survey?.title : ''
-                }></BreadCrumb>
-            )}
-          </Toolbar>
-          <Toolbar className={classes.toolbar}>
-            {links
-              .filter(section => section.name)
-              .map(section => (
-                <NavLink
-                  to={section.path.replace(':id', survey?.guid ?? '')}
-                  key={section.path}
-                  className={classes.toolbarLink}
-                  activeClassName={classes.selectedLink}>
-                  {section.name}
-                </NavLink>
-              ))}
-          </Toolbar>
-          <Toolbar className={classes.toolbar} style={{width: '200px', overflow: 'hidden'}}>
-            {(Utility.isInAdminRole() || true) /* enable all aggess*/ && (
-              <NavLink
-                to={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', survey?.guid ?? '')}
-                key={'path-to-access-settings'}
-                className={classes.toolbarLink}
-                activeClassName={classes.selectedLink}
-                style={{display: 'flex'}}>
-                <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Access settings
-              </NavLink>
-            )}
-          </Toolbar>
-        </Box>
-      </Hidden>
-      <nav className={classes.drawer}>
-        <Drawer
-          variant="temporary"
-          anchor="right"
-          open={isMobileOpen}
-          onClose={() => setIsMobileOpen(false)}
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}>
-          <MobileDrawerMenuHeader setIsMobileOpen={setIsMobileOpen} type="IN_STUDY"></MobileDrawerMenuHeader>
-          {links
-            .filter(section => section.name)
-            .map(section => (
-              <NavLink
-                to={section.path.replace(':id', survey?.guid ?? '')}
-                key={section.path}
-                className={classes.mobileToolBarLink}
-                activeClassName={classes.mobileSelectedLink}
-                onClick={() => setIsMobileOpen(false)}>
-                {section.name}
-              </NavLink>
-            ))}
-          <NavLink
-            to={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', survey?.guid ?? '')}
-            key={'path-to-access-settings'}
-            className={clsx(classes.mobileToolBarLink, classes.accessSettingsDrawerOption)}
-            activeClassName={classes.mobileSelectedLink}
-            onClick={() => setIsMobileOpen(false)}>
-            <img src={ParticipantsIcon} style={{marginRight: '20px'}} alt="participants"></img>
-            Access settings
-          </NavLink>
-        </Drawer>
-      </nav>
       {error && (
         <Box mx="auto" textAlign="center">
           <Alert variant="outlined" color="error" style={{marginBottom: '10px'}}>

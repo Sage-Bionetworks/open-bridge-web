@@ -384,7 +384,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           <ConfirmationDialog isOpen={true} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
         )}
       </NavigationPrompt>
-      <Button onClick={() => setDebugOpen(true)}>Open survey 2JSON</Button>
+      {/* for debugging only <Button onClick={() => setDebugOpen(true)}>Open survey 2JSON</Button>*/}
 
       <ErrorBanner errors={[errorAssessmentUpdate, errorSurveyUpdate, errorResourceUpdate]} />
 
