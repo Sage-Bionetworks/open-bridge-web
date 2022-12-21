@@ -1,6 +1,5 @@
 import {SessionSymbols} from '@components/widgets/SessionIcon'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
-import {useUserSessionDataState} from '@helpers/AuthContext'
 import {Alert, Box, Button, Container, Divider, FormControlLabel, Theme} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
@@ -12,6 +11,7 @@ import constants from '@typedefs/constants'
 import {DWsEnum, Schedule} from '@typedefs/scheduling'
 import {Study} from '@typedefs/types'
 import React from 'react'
+import {useHistory} from 'react-router-dom'
 import {BuilderWrapper} from '../StudyBuilder'
 import Duration from './Duration'
 
@@ -97,12 +97,13 @@ export interface IntroInfoProps {
 
 const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback}) => {
   const classes = useStyles()
-  const {token} = useUserSessionDataState()
+
   const [studyName, setStudyName] = React.useState('')
   const [duration, setDuration] = React.useState<any>('')
   const {data: study, error: studyError} = useStudy(id)
   const {data: schedule, error: scheduleError} = useSchedule(id)
   const {mutate: mutateSchedule} = useUpdateSchedule()
+  const history = useHistory()
 
   const {mutate: mutateStudy} = useUpdateStudyDetail()
 
@@ -182,7 +183,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback}
       )
     }
     if (!hasError) {
-      history.pushState(null, '', `/studies/builder/${id}/session-creator`)
+      history.push(`/studies/builder/${id}/session-creator`)
     }
   }
 
