@@ -94,15 +94,17 @@ const globals: cssGlobalClasses = {
   },
 }
 
+const BREAKPOINTS = {
+  xs: 0,
+  sm: 600,
+  md: 960,
+  lg: 1280,
+  xl: 1920,
+}
+
 const theme: Theme = createTheme({
   breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 960,
-      lg: 1280,
-      xl: 1920,
-    },
+    values: BREAKPOINTS,
   },
   components: {
     MuiCssBaseline: {
@@ -388,6 +390,7 @@ const theme: Theme = createTheme({
         root: {
           padding: '20px 0',
           borderTop: '1px solid #EAECEE',
+          justifyContent: 'flex-end',
         },
       },
     },
