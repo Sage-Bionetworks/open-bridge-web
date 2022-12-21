@@ -1,6 +1,6 @@
 import {Box, Divider} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import {latoFont, poppinsFont} from '@style/theme'
+import {latoFont} from '@style/theme'
 import {Contact} from '@typedefs/types'
 import React from 'react'
 import StudySummaryRoles from '../StudySummaryRoles'
@@ -21,7 +21,6 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(3.75),
   },
   contactAndSupportText: {
-    fontFamily: poppinsFont,
     fontWeight: 'normal',
     fontSize: '18px',
     lineHeight: '24px',

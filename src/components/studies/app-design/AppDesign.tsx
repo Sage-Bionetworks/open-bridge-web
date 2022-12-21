@@ -1,6 +1,8 @@
 import {ReactComponent as PhoneTopImgLeftHighlighted} from '@assets/appdesign/CustomizeAppTopbarLeft.svg'
 import {ReactComponent as PhoneTopImgRightHighlighted} from '@assets/appdesign/CustomizeAppTopbarRight.svg'
+
 import PhoneBg from '@assets/appdesign/phone_bg.svg'
+
 import {ReactComponent as PhoneBottomImg} from '@assets/appdesign/phone_buttons.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
@@ -40,7 +42,7 @@ const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 export const useStyles = makeStyles((theme: ThemeType) => ({
   section: {
     backgroundColor: '#fefefe',
-    padding: theme.spacing(9, 9, 10, 17),
+    padding: theme.spacing(9, 3, 10, 3),
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: theme.spacing(2),
@@ -57,22 +59,27 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
       display: 'flex',
       marginBottom: theme.spacing(6),
       textAlign: 'left',
+      borderTop: '1px solid #EAECEE',
+      paddingTop: theme.spacing(3),
+      paddingLeft: theme.spacing(3),
+      alignItems: 'center',
     },
     '& li::before': {
       counterIncrement: 'orderedlist',
       content: 'counter(orderedlist)',
       flexShrink: 0,
+      fontSize: '24px',
 
       textAlign: 'center',
-      color: '#fff',
-      backgroundColor: '#000',
-      borderRadius: '50%',
+      color: theme.palette.grey[600],
+      /* backgroundColor: '#000',
+      borderRadius: '50%',*/
       width: theme.spacing(5),
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: theme.spacing(3),
-      marginLeft: theme.spacing(-8),
+      marginRight: theme.spacing(2.5),
+      marginLeft: theme.spacing(-5),
       height: theme.spacing(5),
     },
   },
@@ -97,7 +104,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     marginBottom: theme.spacing(-3),
     width: '320px',
     marginLeft: '5px',
-    border: '4px solid black',
+    border: '4px solid #D0D4D9',
     borderTop: '0px none transparent',
     borderRadius: '0 0px 24px 24px',
   },
@@ -108,7 +115,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     borderRadius: '25px 25px 0 0',
     borderStyle: 'solid',
     borderWidth: '4px 4px 0px 4px',
-    borderColor: 'black',
+    borderColor: '#D0D4D9',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
