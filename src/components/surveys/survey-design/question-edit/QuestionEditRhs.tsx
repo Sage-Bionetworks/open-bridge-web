@@ -16,8 +16,11 @@ import Time from './rhs-subcontrols/Time'
 import Year from './rhs-subcontrols/Year'
 
 const StyledContainer = styled('div')(({theme}) => ({
-  width: '425px',
+  width: '516px',
   height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
 }))
 
 const StyledButton = styled(Button)(({theme}) => ({
