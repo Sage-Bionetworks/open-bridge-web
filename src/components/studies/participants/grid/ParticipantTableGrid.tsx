@@ -10,12 +10,13 @@ import WithdrawParticipantForm from '@components/studies/participants/modify/Wit
 import HideWhen from '@components/widgets/HideWhen'
 import SelectAll from '@components/widgets/SelectAll'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {Box, Button, Checkbox, CircularProgress, Dialog, IconButton, Paper} from '@mui/material'
+import {Box, Button, Checkbox, CircularProgress, Dialog, IconButton, Paper, styled} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {
   DataGrid,
   GridCellParams,
   GridCellValue,
+  gridClasses,
   GridColDef,
   GridColumnMenuContainer,
   GridColumnMenuProps,
@@ -46,6 +47,52 @@ import Pluralize from 'react-pluralize'
 import {Link} from 'react-router-dom'
 import GridCellExpand from './GridCellExpand'
 
+const StyledDataGrid = styled(DataGrid)(({theme}) => ({
+  border: 0,
+  color: '#353A3F',
+  [`& .${gridClasses.row}:nth-child(odd)`]: {
+    backgroundColor: '#fff',
+    borderBottom: `1px solid #EAECEE`,
+  },
+  [`& .${gridClasses.row}:nth-child(even)`]: {
+    backgroundColor: '#FBFBFC',
+    borderBottom: `1px solid #EAECEE`,
+  },
+
+  [`& .${gridClasses.columnHeaders}`]: {
+    backgroundColor: '#F1F3F5',
+    fontWeight: 700,
+  },
+
+  '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
+    minHeight: '60px',
+    borderColor: '#EAECEE',
+    '&:last-of-type': {
+      borderRight: 'none',
+    },
+  },
+  '& .MuiDataGrid-columnsContainer, .MuiDataGrid-cell': {
+    borderBottom: `1px solid #EAECEE`,
+    fontSize: '12px',
+  },
+
+  '& .MuiPaginationItem-root': {
+    borderRadius: 0,
+  },
+  // ...customCheckbox(theme),
+}))
+
+const StyledSelectionDisplay = styled(Box, {label: 'selectionDisplay'})(({theme}) => ({
+  fontFamily: latoFont,
+  height: theme.spacing(3),
+  textAlign: 'left',
+  padding: theme.spacing(0, 0, 0, 2),
+  fontWeight: 'bold',
+  fontSize: '12px',
+  fontStyle: 'italic',
+  position: 'relative',
+}))
+
 const useStyles = makeStyles(theme => ({
   root: {},
   gridHeaderTitle: {
@@ -61,15 +108,6 @@ const useStyles = makeStyles(theme => ({
     fontFamily: latoFont,
     fontSize: '15px',
     marginRight: theme.spacing(1),
-  },
-  selectionDisplay: {
-    fontFamily: latoFont,
-    height: theme.spacing(3),
-    textAlign: 'left',
-    padding: theme.spacing(1.5, 0, 0, 2),
-    fontWeight: 'bold',
-    fontSize: '12px',
-    fontStyle: 'italic',
   },
 }))
 
@@ -182,17 +220,11 @@ const SelectionControl: FunctionComponent<{
 
   return (
     <GridToolbarContainer>
-      <div style={{position: 'relative'}}>
-        <Box
-          className={classes.selectionDisplay}
-          style={{
-            visibility: !selectionModel?.length ? 'hidden' : 'visible',
-          }}>
-          {`${isAllSelected ? 'All ' : ''}`}
-          <Pluralize singular={'participant'} count={isAllSelected ? totalParticipants : selectionModel.length} />{' '}
-          selected
-        </Box>
-      </div>
+      <StyledSelectionDisplay sx={{display: !selectionModel?.length ? 'none' : 'block'}}>
+        {`${isAllSelected ? 'All ' : ''}`}
+        <Pluralize singular={'participant'} count={isAllSelected ? totalParticipants : selectionModel.length} />{' '}
+        selected
+      </StyledSelectionDisplay>
     </GridToolbarContainer>
   )
 }
@@ -345,7 +377,7 @@ function getColumns(
 
   const editColumn: GridColDef = {
     field: 'edit',
-    headerName: 'Edit',
+    headerName: ' ',
     //AGv5  disableClickEventBubbling: true,
     disableColumnMenu: true,
     width: 80,
@@ -574,7 +606,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     align: 'left',
     renderHeader: () => {
       return (
-        <div style={{marginLeft: '-6px'}}>
+        <div>
           <SelectAll
             selectionType={getSelectionType()}
             allText={`Select all ${totalParticipants}`}
@@ -623,9 +655,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       <Paper elevation={0} sx={{fontSize: '14px'}}>
         <div style={{display: 'flex', height: '90vh'}}>
           <div style={{flexGrow: 1}}>
-            <DataGrid
+            <StyledDataGrid
               rows={rows}
-              sx={{fontSize: '14px'}}
+              showColumnRightBorder={true}
+              showCellRightBorder={true}
+              sx={{fontSize: '14px', borderBottom: '1px solid #EAECEE'}}
               loading={isParticipantUpdating}
               classes={{columnHeader: classes.gridHeader, columnHeaderTitle: classes.gridHeaderTitle}}
               density="standard"
