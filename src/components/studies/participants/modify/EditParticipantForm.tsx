@@ -109,7 +109,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
         </FormGroup>
       </DialogContent>
       {onError && <Alert color="error">{onError.message}</Alert>}
-      <DialogActions style={{justifyContent: 'space-between'}}>
+      <DialogActions style={{justifyContent: isBatchEdit ? 'flex-end' : 'space-between'}}>
         {children && children}
         {!isLoading ? (
           <div>
