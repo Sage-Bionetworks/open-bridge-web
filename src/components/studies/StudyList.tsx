@@ -176,13 +176,6 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   )
 }
 
-function getAllFilters() {
-  return sections.reduce(
-    (acc, curr) => (curr.sectionStatus ? [...acc, curr.sectionStatus] : acc),
-    [] as DisplayStudyPhase[]
-  )
-}
-
 const StudyList: FunctionComponent<StudyListProps> = () => {
   const handleError = useErrorHandler()
 
