@@ -5,6 +5,7 @@ import CategoryTwoToneIcon from '@mui/icons-material/CategoryTwoTone'
 import DateRangeTwoToneIcon from '@mui/icons-material/DateRangeTwoTone'
 import MicTwoToneIcon from '@mui/icons-material/MicTwoTone'
 import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone'
+import PermDeviceInformationTwoToneIcon from '@mui/icons-material/PermDeviceInformationTwoTone'
 import SettingsInputCompositeTwoToneIcon from '@mui/icons-material/SettingsInputCompositeTwoTone'
 import SmartphoneTwoToneIcon from '@mui/icons-material/SmartphoneTwoTone'
 import TouchAppTwoToneIcon from '@mui/icons-material/TouchAppTwoTone'
@@ -12,6 +13,7 @@ import TouchAppTwoToneIcon from '@mui/icons-material/TouchAppTwoTone'
 import React from 'react'
 
 export type StudySection =
+  | 'study-details'
   | 'scheduler'
   | 'session-creator'
   | 'enrollment-type-selector'
@@ -36,6 +38,11 @@ const SECTIONS: {
   isHiddenDraft?: boolean
   buttonName?: string
 }[] = [
+  {
+    name: 'Study Details',
+    path: 'study-details',
+    navIcon: <PermDeviceInformationTwoToneIcon />,
+  },
   {
     name: 'Create Sessions',
     path: 'session-creator',

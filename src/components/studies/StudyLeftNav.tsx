@@ -2,12 +2,11 @@ import CloseIcon from '@assets/study-builder-icons/left_nav_close_icon.svg'
 import OpenIcon from '@assets/study-builder-icons/left_nav_open_icon.svg'
 import SideBarListItem from '@components/widgets/SideBarListItem'
 import {Box, Drawer, IconButton, List, styled} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
-import {latoFont, ThemeType} from '@style/theme'
+import {latoFont, shouldForwardProp} from '@style/theme'
 import {Study} from '@typedefs/types'
 import _ from 'lodash'
-import React, {FunctionComponent} from 'react'
+import {FunctionComponent} from 'react'
 import {NavLink} from 'react-router-dom'
 import {getStudyBuilderSections, StudySection} from './sections'
 
@@ -39,47 +38,42 @@ const DrawerStyled = styled(Drawer, {label: 'DrawerStyled', shouldForwardProp: p
   },
 }))
 
-const StyledNavIconContainer = styled(Box, {label: 'StyledNavIconContainer'})<{isDisabled: boolean}>(
-  ({theme, isDisabled}) => ({
+const StyledNavIconContainer = styled(Box, {label: 'StyledNavIconContainer', shouldForwardProp: shouldForwardProp})<{
+  $isDisabled: boolean
+}>(({theme, $isDisabled}) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  textDecoration: 'none',
+  alignItems: 'center',
+  flexDirection: 'row',
+  pointerEvents: $isDisabled ? 'none' : 'all',
+  '&:hover': {
+    '& svg': {
+      // fill: '#fff',
+    },
+    '> span': {
+      // color: '#fff',
+    },
+  },
+  '> div': {
     display: 'flex',
-    justifyContent: 'center',
-    textDecoration: 'none',
     alignItems: 'center',
-    flexDirection: 'row',
-    '&:hover': {
-      '& svg': {
-        // fill: '#fff',
-      },
-      '> span': {
-        // color: '#fff',
-      },
-    },
-    '> div': {
-      display: 'flex',
-      alignItems: 'center',
-      marginRight: theme.spacing(1),
-      width: '58px',
-      height: '48px',
-      alignSelf: 'center',
-      justifyContent: 'center',
-      opacity: isDisabled ? 0.3 : 1,
-    },
+    marginRight: theme.spacing(1),
+    width: '58px',
+    height: '48px',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    opacity: $isDisabled ? 0.3 : 1,
+  },
 
-    '& span': {
-      textDecoration: 'none',
-      opacity: isDisabled ? 0.3 : 1,
-      fontWeight: 900,
-      fontSize: '14px',
-      lineHeight: '16px',
+  '& span': {
+    textDecoration: 'none',
+    opacity: $isDisabled ? 0.3 : 1,
+    fontWeight: 900,
+    fontSize: '14px',
+    lineHeight: '16px',
 
-      fontFamily: latoFont,
-    },
-  })
-)
-
-const useStyles = makeStyles((theme: ThemeType) => ({
-  listItems: {
-    padding: theme.spacing(0),
+    fontFamily: latoFont,
   },
 }))
 
@@ -89,6 +83,7 @@ type StudyLeftNavOwnProps = {
   open: boolean
   onToggle: Function
   disabled: boolean
+  hasSchedule: boolean
 }
 
 type StudyLeftNavProps = StudyLeftNavOwnProps
@@ -97,15 +92,19 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
   study,
   open,
   onToggle,
-  currentSection = 'sessions-creator',
+  currentSection = 'study-details',
   disabled,
+  hasSchedule,
 }) => {
-  const classes = useStyles()
-
-  const [currentHoveredElement, setCurrentHoveredElement] = React.useState(-1)
-
   const toggleDrawer = () => {
     onToggle()
+  }
+
+  const isLinkDisabled = (section: StudySection) => {
+    return (
+      (!['session-creator', 'study-details'].includes(section) && disabled) ||
+      (section !== 'study-details' && !hasSchedule)
+    )
   }
 
   return (
@@ -132,22 +131,21 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
           padding: '0',
           position: 'relative',
           listStyle: 'none',
-          pointerEvents: disabled ? 'none' : 'all',
+          //  pointerEvents: disabled ? 'none' : 'all',
         }}>
         {study &&
           getStudyBuilderSections(StudyService.isStudyInDesign(study)).map((sectionLink, index) => (
-            <div
-              onMouseOver={() => setCurrentHoveredElement(index)}
-              onMouseOut={() => setCurrentHoveredElement(-1)}
-              key={sectionLink.path}>
-              <NavLink to={`/studies/builder/${study.identifier}/${sectionLink.path}`} style={{textDecoration: 'none'}}>
+            <div key={sectionLink.path}>
+              <NavLink
+                to={`/studies/builder/${study.identifier}/${sectionLink.path}`}
+                style={{textDecoration: 'none', pointerEvents: isLinkDisabled(sectionLink.path) ? 'none' : 'all'}}>
                 <SideBarListItem
                   key={sectionLink.path}
                   isOpen={open}
                   onClick={_.noop}
                   isActive={sectionLink.path === currentSection}
                   inStudyBuilder={true}>
-                  <StyledNavIconContainer isDisabled={sectionLink.path !== 'session-creator' && disabled}>
+                  <StyledNavIconContainer $isDisabled={isLinkDisabled(sectionLink.path)}>
                     <Box>{sectionLink.navIcon}</Box>
 
                     <span>{sectionLink.name}</span>

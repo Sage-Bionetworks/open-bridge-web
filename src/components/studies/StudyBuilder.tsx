@@ -137,7 +137,7 @@ export const BuilderWrapper: FunctionComponent<{sectionName: string; sx?: SxProp
 
 const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> = () => {
   const classes = useStyles()
-  let {id, section = 'session-creator'} = useParams<{
+  let {id, section = 'study-details'} = useParams<{
     id: string
     section: StudySection
   }>()
@@ -250,6 +250,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
               onToggle={() => setOpen(prev => !prev)}
               currentSection={section}
               study={study!}
+              hasSchedule={!!schedule}
               disabled={!allSessionsHaveAssessments()}></StudyLeftNav>
             <Box className={classes.mainAreaWrapper} id="mainAreaWrapper">
               <AlertBanner
@@ -323,50 +324,47 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
 
               <LoadingComponent reqStatusLoading={!study}>
                 <Box id="builderWorkArea">
-                  {study && !schedule && !isScheduleLoading ? (
-                    <Box className={classes.introInfoContainer}>
-                      <IntroInfo studyName={study.name} id={id}></IntroInfo>
-                    </Box>
-                  ) : (
-                    study &&
-                    schedule && (
-                      <Switch>
-                        <Route path={`/studies/builder/:id/scheduler`}>
-                          <Scheduler
-                            id={id}
-                            onShowFeedback={showFeedback}
-                            isReadOnly={!StudyService.isStudyInDesign(study)}>
-                            {navButtons}
-                          </Scheduler>
-                        </Route>
-                        <Route path={`/studies/builder/:id/enrollment-type-selector`}>
-                          <EnrollmentTypeSelector id={id}>{navButtons}</EnrollmentTypeSelector>
-                        </Route>
-                        <Route path={`/studies/builder/:id/customize`}>
-                          <AppDesign id={id} onShowFeedback={showFeedback}>
-                            {navButtons}
-                          </AppDesign>
-                        </Route>
+                  {study && (
+                    <Switch>
+                      <Route path={`/studies/builder/:id/scheduler`}>
+                        <Scheduler
+                          id={id}
+                          onShowFeedback={showFeedback}
+                          isReadOnly={!StudyService.isStudyInDesign(study)}>
+                          {navButtons}
+                        </Scheduler>
+                      </Route>
+                      <Route path={`/studies/builder/:id/enrollment-type-selector`}>
+                        <EnrollmentTypeSelector id={id}>{navButtons}</EnrollmentTypeSelector>
+                      </Route>
+                      <Route path={`/studies/builder/:id/customize`}>
+                        <AppDesign id={id} onShowFeedback={showFeedback}>
+                          {navButtons}
+                        </AppDesign>
+                      </Route>
 
-                        <Route path={`/studies/builder/:id/preview`}>
-                          <Preview id={id}> {navButtons}</Preview>
-                        </Route>
-                        <Route path={`/studies/builder/:id/launch`}>
-                          <Launch id={id} onShowFeedback={showFeedback}>
-                            {navButtons}
-                          </Launch>
-                        </Route>
-                        <Route path={`/studies/builder/:id/passive-features`}>
-                          <PassiveFeatures id={id}>{navButtons}</PassiveFeatures>
-                        </Route>
-                        <Route>
-                          <SessionCreator id={id} onShowFeedback={showFeedback}>
-                            {' '}
-                            {navButtons}
-                          </SessionCreator>
-                        </Route>
-                      </Switch>
-                    )
+                      <Route path={`/studies/builder/:id/preview`}>
+                        <Preview id={id}> {navButtons}</Preview>
+                      </Route>
+                      <Route path={`/studies/builder/:id/launch`}>
+                        <Launch id={id} onShowFeedback={showFeedback}>
+                          {navButtons}
+                        </Launch>
+                      </Route>
+                      <Route path={`/studies/builder/:id/passive-features`}>
+                        <PassiveFeatures id={id}>{navButtons}</PassiveFeatures>
+                      </Route>
+                      <Route path={`/studies/builder/:id/session-creator`}>
+                        <SessionCreator id={id} onShowFeedback={showFeedback}>
+                          {navButtons}
+                        </SessionCreator>
+                      </Route>
+                      <Route>
+                        <IntroInfo id={id} studyName={study.name} onShowFeedback={showFeedback}>
+                          {navButtons}
+                        </IntroInfo>
+                      </Route>
+                    </Switch>
                   )}
                 </Box>
               </LoadingComponent>

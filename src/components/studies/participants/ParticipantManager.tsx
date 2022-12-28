@@ -1,25 +1,20 @@
 import {ReactComponent as CollapseIcon} from '@assets/collapse.svg'
-import DownloadIcon from '@assets/download_icon.svg'
-import BatchEditIcon from '@assets/edit_pencil_red.svg'
-import {ReactComponent as AddParticipantsIcon} from '@assets/participants/add_participants.svg'
 import {ReactComponent as AddTestParticipantsIcon} from '@assets/participants/add_test_participants.svg'
 import DownloadAppIcon from '@assets/participants/download_app_icon.svg'
-import SMSPhoneImg from '@assets/participants/joined_phone_icon.svg'
-import ParticipantListFocusIcon from '@assets/participants/participant_list_focus_icon.svg'
-import ParticipantListUnfocusIcon from '@assets/participants/participant_list_unfocus_icon.svg'
-import TestAccountFocusIcon from '@assets/participants/test_account_focus_icon.svg'
-import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_icon.svg'
 import {ReactComponent as UnderConstructionCone} from '@assets/participants/under_construction_cone.svg'
 import {ReactComponent as UnderConstructionGirl} from '@assets/participants/under_construction_girl.svg'
-import WithdrawnParticipantsFocusIcon from '@assets/participants/withdrawn_participants_focus_icon.svg'
-import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_participants_unfocus_icon.svg'
-import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import TablePagination from '@components/widgets/pagination/TablePagination'
-import NonDraftHeaderFunctionComponent from '@components/widgets/StudyWithPhaseImage'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import {default as Utility} from '@helpers/utility'
-import {Box, Button, CircularProgress, Container, Tab, Tabs} from '@mui/material'
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone'
+import DownloadTwoToneIcon from '@mui/icons-material/DownloadTwoTone'
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
+import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone'
+import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone'
+import PersonAddAlt1TwoToneIcon from '@mui/icons-material/PersonAddAlt1TwoTone'
+import PersonRemoveAlt1TwoToneIcon from '@mui/icons-material/PersonRemoveAlt1TwoTone'
+import {Box, Button, CircularProgress, Container, styled, Tab, Tabs, Typography} from '@mui/material'
 import Alert from '@mui/material/Alert'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import StudyService from '@services/study.service'
@@ -38,6 +33,7 @@ import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import {useEvents, useEventsForUsers} from '../../../services/eventHooks'
 import {useInvalidateParticipants, useParticipants} from '../../../services/participantHooks'
+import StudyBuilderHeader from '../StudyBuilderHeader'
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
@@ -48,6 +44,32 @@ import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import useStyles from './ParticipantManager_style'
 import ParticipantSearch from './ParticipantSearch'
 import WithdrawnTabNoParticipantsPage from './WithdrawnTabNoParticipantsPage'
+
+const StyledGridToolBar = styled(Box, {label: 'StyledGridToolBar'})(({theme}) => ({
+  height: theme.spacing(9),
+  paddingLeft: theme.spacing(7),
+  paddingRight: theme.spacing(7),
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+
+  '&  button': {
+    display: 'flex',
+
+    fontSize: '14px',
+    marginRight: theme.spacing(2),
+    '& svg': {
+      marginRight: theme.spacing(0.5),
+    },
+  },
+}))
+
+const StyledTabPanel = styled(Box, {label: 'StyledTabPanel'})(({theme}) => ({
+  backgroundColor: theme.palette.common.white,
+  boxShadow: 'none',
+  padding: theme.spacing(0, 0, 2, 0),
+}))
 
 /** types and constants  */
 type ParticipantData = {
@@ -62,13 +84,10 @@ type SelectedParticipantIdsType = {
 }
 
 const TAB_DEFs = [
-  {type: 'ACTIVE', label: 'Participant List'},
-  {type: 'WITHDRAWN', label: 'Withdrawn Participants'},
-  {type: 'TEST', label: 'Test Accounts'},
+  {type: 'ACTIVE', label: 'Participant List', icon: <GroupsTwoToneIcon />},
+  {type: 'WITHDRAWN', label: 'Withdrawn Participants', icon: <PersonRemoveAlt1TwoToneIcon />},
+  {type: 'TEST', label: 'Test Accounts', icon: <HandymanTwoToneIcon />},
 ]
-
-const TAB_ICONS_FOCUS = [ParticipantListFocusIcon, WithdrawnParticipantsFocusIcon, TestAccountFocusIcon]
-const TAB_ICONS_UNFOCUS = [ParticipantListUnfocusIcon, WithdrawnParticipantsUnfocusIcon, TestAccountUnfocusIcon]
 
 /***  subcomponents  */
 const UnderConstructionSC: FunctionComponent = () => (
@@ -87,7 +106,7 @@ const UnderConstructionSC: FunctionComponent = () => (
 const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({title}) => {
   const classes = useStyles()
   return (
-    <div className={classes.addParticipantIcon}>
+    <div>
       <AddTestParticipantsIcon title={title} />
     </div>
   )
@@ -280,12 +299,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const displayNoParticipantsPage = status !== 'loading' && data?.items.length === 0 && tab === 'WITHDRAWN'
 
   return (
-    <Box bgcolor="#F8F8F8">
-      <Box px={3} py={2} display="flex" alignItems="center">
-        <div className={classes.studyId}>
-          <NonDraftHeaderFunctionComponent study={study} />
-        </div>
-      </Box>
+    <Box id="participantManager">
+      <StudyBuilderHeader study={study} />
 
       {displayPlaceholderScreen && <ParticipantManagerPlaceholder />}
       {['COMPLETED', 'WITHDRAWN'].includes(StudyService.getDisplayStatusForStudyPhase(study.phase)) && (
@@ -293,7 +308,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       )}
       {!displayPlaceholderScreen && (
         <>
-          <Box py={0} pr={3} pl={2}>
+          <Box
+            sx={{
+              background: 'linear-gradient(360deg, #EDEEF2 0%, #FAFAFB 85.05%)',
+              padding: theme.spacing(2, 7, 0, 7),
+            }}>
+            <Typography variant="h2" sx={{marginBottom: theme.spacing(4)}}>
+              Participant Manager
+            </Typography>
+
             <Tabs
               color="secondary"
               value={tab}
@@ -305,177 +328,148 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 <Tab
                   key={`tab_${tabDef.label}`}
                   value={tabDef.type}
-                  classes={{
-                    labelIcon: 'ALINA',
-                    root: clsx(
-                      classes.tab,
-                      tab === tabDef.type && classes.selectedTab,
-                      tabDef.type === 'WITHDRAWN' && classes.withdrawnParticipants
-                    ),
-                  }}
+                  sx={tab === tabDef.type ? {zIndex: 100, backgroundColor: theme.palette.common.white} : {}}
                   icon={
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      className={clsx(classes.tab_icon, tab !== tabDef.type && classes.unactiveTabIcon)}>
-                      <img
-                        src={tab === tabDef.type ? TAB_ICONS_FOCUS[index] : TAB_ICONS_UNFOCUS[index]}
-                        style={{marginRight: '6px'}}></img>
-                      <div>{`${tabDef.label} ${tab === tabDef.type ? (data ? `(${data.total})` : '(...)') : ''}`}</div>
+                    <Box sx={{display: 'flex', flexDirection: 'row'}}>
+                      {tabDef.icon}
+
+                      <div>
+                        &nbsp;&nbsp;
+                        {`${tabDef.label} ${tab === tabDef.type ? (data ? `(${data.total})` : '(...)') : ''}`}
+                      </div>
                     </Box>
                   }
                 />
               ))}
             </Tabs>
-            <Box bgcolor="white">
-              <CollapsibleLayout
-                expandedWidth={300}
-                isFullWidth={true}
-                isHideContentOnClose={true}
-                isDrawerHidden={tab === 'WITHDRAWN'}
-                collapseButton={<CollapseIcon className={clsx(tab === 'TEST' && classes.collapsedAddTestUser)} />}
-                onToggleClick={(open: boolean) => setIsAddOpen(open)}
-                expandButton={
-                  Utility.isArcApp() ? (
-                    <></>
-                  ) : tab === 'ACTIVE' ? (
-                    <AddParticipantsIcon title="Add Participant" />
-                  ) : (
-                    <AddTestParticipantsIconSC title="Add Test Participant" />
-                  )
-                }
-                toggleButtonStyle={{
-                  display: 'block',
-                  padding: '0',
-                  borderRadius: 0,
-                  backgroundColor: tab === 'ACTIVE' ? theme.palette.primary.dark : '#AEDCC9',
-                }}>
-                <>
-                  <AddParticipants
-                    scheduleEvents={scheduleEvents}
-                    study={study}
-                    token={token!}
-                    onAdded={() => {
-                      invalidateParticipants()
-                    }}
-                    isTestAccount={tab === 'TEST'}
-                  />
-                </>
-                {displayNoParticipantsPage ? (
-                  <WithdrawnTabNoParticipantsPage />
+          </Box>
+          <Box sx={{backgroundColor: '#fff', padding: theme.spacing(0)}}>
+            <CollapsibleLayout
+              isOpen={isAddOpen}
+              expandedWidth={300}
+              isFullWidth={true}
+              isHideContentOnClose={true}
+              isDrawerHidden={tab === 'WITHDRAWN'}
+              collapseButton={<CollapseIcon className={clsx(tab === 'TEST' && classes.collapsedAddTestUser)} />}
+              onToggleClick={(open: boolean) => setIsAddOpen(open)}
+              expandButton={
+                Utility.isArcApp() ? (
+                  <></>
+                ) : tab === 'ACTIVE' ? (
+                  <Button>Add participant</Button>
                 ) : (
-                  <div>
-                    <Box className={classes.gridToolBar}>
-                      <Box display="flex" flexDirection="row" alignItems="center">
-                        {/* This is here for now because the "Send SMS link" feature is not being included in the october release. */}
-                        {false && !Utility.isSignInById(study!.signInTypes) && (
-                          <Button
-                            aria-label="send-sms-text"
-                            onClick={() => {
-                              setParticipantsWithError([])
-                              setDialogState({
-                                dialogOpenRemove: false,
-                                dialogOpenSMS: true,
-                              })
-                            }}
-                            style={{marginRight: theme.spacing(1)}}
-                            disabled={selectedParticipantIds[tab].length === 0}>
-                            <img
-                              src={SMSPhoneImg}
-                              className={clsx(
-                                selectedParticipantIds[tab].length === 0 && classes.disabledImage,
-                                classes.topRowImage
-                              )}></img>
-                            Send SMS link
-                          </Button>
-                        )}
-                        {tab === 'ACTIVE' && (
-                          <Button
-                            aria-label="batch-edit"
-                            onClick={() => {
-                              setIsBatchEditOpen(true)
-                            }}
-                            style={{marginRight: theme.spacing(2)}}
-                            disabled={selectedParticipantIds[tab].length <= 1}>
-                            <img
-                              className={clsx(
-                                selectedParticipantIds[tab].length <= 1 && classes.disabledImage,
-                                classes.topRowImage
-                              )}
-                              src={BatchEditIcon}></img>
-                            Batch Edit
-                          </Button>
-                        )}
-
-                        <ParticipantDownloadTrigger
-                          onDownload={() => downloadParticipants(isAllSelected ? 'ALL' : 'SOME')}
-                          fileDownloadUrl={fileDownloadUrl}
-                          hasItems={!!data?.items?.length && selectedParticipantIds[tab].length > 0}
-                          onDone={() => {
-                            URL.revokeObjectURL(fileDownloadUrl!)
-                            setFileDownloadUrl(undefined)
-                          }}>
-                          <>
-                            <img
-                              src={DownloadIcon}
-                              style={{
-                                marginRight: '6px',
-                                opacity: selectedParticipantIds[tab].length === 0 ? 0.5 : 1,
-                              }}></img>
-                            {!loadingIndicators.isDownloading ? (
-                              'StudyParticipants.csv'
-                            ) : (
-                              <CircularProgress size={24} />
-                            )}
-                          </>
-                        </ParticipantDownloadTrigger>
+                  <AddTestParticipantsIconSC title="Add Test Participant" />
+                )
+              }
+              toggleButtonStyle={{
+                display: 'block',
+                padding: '0',
+                borderRadius: 0,
+              }}>
+              <>
+                <AddParticipants
+                  scheduleEvents={scheduleEvents}
+                  study={study}
+                  token={token!}
+                  onAdded={() => {
+                    invalidateParticipants()
+                  }}
+                  isTestAccount={tab === 'TEST'}
+                />
+              </>
+              {displayNoParticipantsPage ? (
+                <WithdrawnTabNoParticipantsPage />
+              ) : (
+                <div>
+                  <StyledGridToolBar>
+                    <Box display="flex" flexDirection="row" alignItems="center">
+                      {/* This is here for now because the "Send SMS link" feature is not being included in the october release. */}
+                      {false && !Utility.isSignInById(study!.signInTypes) && (
                         <Button
-                          aria-label="delete"
+                          aria-label="send-sms-text"
                           onClick={() => {
                             setParticipantsWithError([])
                             setDialogState({
-                              dialogOpenRemove: true,
-                              dialogOpenSMS: false,
+                              dialogOpenRemove: false,
+                              dialogOpenSMS: true,
                             })
                           }}
-                          style={{marginLeft: theme.spacing(3)}}
+                          style={{marginRight: theme.spacing(1)}}
                           disabled={selectedParticipantIds[tab].length === 0}>
-                          <DeleteIcon
-                            className={clsx(
-                              selectedParticipantIds[tab].length === 0 && classes.disabledImage,
-                              classes.topRowImage,
-                              classes.deleteIcon
-                            )}></DeleteIcon>
-                          Remove from Study
+                          Send SMS link
                         </Button>
-                      </Box>
-                      <ParticipantSearch
-                        isSearchById={Utility.isSignInById(study.signInTypes)}
-                        onReset={() => {
-                          setSearchValue(undefined)
-                          resetSelectAll()
-                        }}
-                        onSearch={(searchedValue: string) => {
-                          resetSelectAll()
-
-                          setSearchValue(searchedValue)
-                        }}
-                        tab={tab}
-                      />
-                    </Box>
-                    <div
-                      role="tabpanel"
-                      hidden={false}
-                      id={`active-participants`}
-                      className={classes.tabPanel}
-                      style={{
-                        marginLeft: !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
-                      }}>
-                      {error && (
-                        <Alert color="error" onClose={() => setError(undefined)}>
-                          {error.message}
-                        </Alert>
                       )}
+                      {!isAddOpen && (
+                        <Button
+                          aria-label="add-participant"
+                          variant="text"
+                          onClick={() => {
+                            setIsAddOpen(true)
+                          }}>
+                          <PersonAddAlt1TwoToneIcon />
+                          Add Participant
+                        </Button>
+                      )}
+                      {tab === 'ACTIVE' && (
+                        <Button
+                          aria-label="batch-edit"
+                          onClick={() => {
+                            setIsBatchEditOpen(true)
+                          }}
+                          disabled={selectedParticipantIds[tab].length <= 1}>
+                          <EditTwoToneIcon />
+                          Batch Edit
+                        </Button>
+                      )}
+
+                      <ParticipantDownloadTrigger
+                        onDownload={() => downloadParticipants(isAllSelected ? 'ALL' : 'SOME')}
+                        fileDownloadUrl={fileDownloadUrl}
+                        hasItems={!!data?.items?.length && selectedParticipantIds[tab].length > 0}
+                        onDone={() => {
+                          URL.revokeObjectURL(fileDownloadUrl!)
+                          setFileDownloadUrl(undefined)
+                        }}>
+                        <>
+                          <DownloadTwoToneIcon />
+                          {!loadingIndicators.isDownloading ? 'StudyParticipants.csv' : <CircularProgress size={24} />}
+                        </>
+                      </ParticipantDownloadTrigger>
+                      <Button
+                        aria-label="delete"
+                        onClick={() => {
+                          setParticipantsWithError([])
+                          setDialogState({
+                            dialogOpenRemove: true,
+                            dialogOpenSMS: false,
+                          })
+                        }}
+                        disabled={selectedParticipantIds[tab].length === 0}>
+                        <DeleteTwoToneIcon />
+                        Remove from Study
+                      </Button>
+                    </Box>
+                    <ParticipantSearch
+                      isSearchById={Utility.isSignInById(study.signInTypes)}
+                      onReset={() => {
+                        setSearchValue(undefined)
+                        resetSelectAll()
+                      }}
+                      onSearch={(searchedValue: string) => {
+                        resetSelectAll()
+
+                        setSearchValue(searchedValue)
+                      }}
+                      tab={tab}
+                    />
+                  </StyledGridToolBar>
+                  <StyledTabPanel role="tabpanel" hidden={false} id={`active-participants`}>
+                    {error && (
+                      <Alert color="error" onClose={() => setError(undefined)}>
+                        {error.message}
+                      </Alert>
+                    )}
+                    <Box sx={{margin: theme.spacing(0, 7, 0, 7)}}>
                       <ParticipantTableGrid
                         rows={data?.items || []}
                         status={status}
@@ -506,15 +500,25 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           counterTextSingular="participant"
                         />
                       </ParticipantTableGrid>
-                    </div>
-                  </div>
-                )}
-                <Box textAlign="center" pl={2}>
-                  {tab !== 'TEST' ? 'ADD A PARTICIPANT' : 'ADD TEST USER'}
-                </Box>
-              </CollapsibleLayout>
-            </Box>
+                    </Box>
+                  </StyledTabPanel>
+                </div>
+              )}
+              <Box
+                sx={{
+                  paddingLeft: theme.spacing(2),
+                  fontSize: '18px',
+                  fontWeight: 800,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}>
+                <PersonAddAlt1TwoToneIcon sx={{color: '#878E95'}} />
+                &nbsp;&nbsp;
+                {tab !== 'TEST' ? 'Add Participant' : 'Add Test Participant'}
+              </Box>
+            </CollapsibleLayout>
           </Box>
+
           <BatchEditForm
             isEnrolledById={Utility.isSignInById(study.signInTypes)}
             isBatchEditOpen={isBatchEditOpen}

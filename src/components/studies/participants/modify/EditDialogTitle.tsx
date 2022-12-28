@@ -1,5 +1,3 @@
-import {ReactComponent as PencilIcon} from '@assets/edit_pencil.svg'
-import {ReactComponent as WithdrawIcon} from '@assets/withdraw.svg'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {FunctionComponent} from 'react'
 
@@ -14,9 +12,8 @@ const EditDialogTitle: FunctionComponent<EditDialogTitleProps> = ({onCancel, sho
     : !batchEdit
     ? 'Edit Participant Detail'
     : 'Batch Edit Multiple Participant Details '
-  const Icon = shouldWithdraw ? WithdrawIcon : PencilIcon
 
-  return <DialogTitleWithClose onCancel={onCancel} icon={<Icon />} title={title} />
+  return <DialogTitleWithClose onCancel={() => onCancel()} title={title} />
 }
 
 export default EditDialogTitle

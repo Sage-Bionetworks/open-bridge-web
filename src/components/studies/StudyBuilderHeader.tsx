@@ -1,6 +1,6 @@
 import StudyWithPhaseImage from '@components/widgets/StudyWithPhaseImage'
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone'
-import {Box} from '@mui/material'
+import {Box, SxProps} from '@mui/material'
 import constants from '@typedefs/constants'
 import {DisplayStudyPhase, Study} from '@typedefs/types'
 
@@ -34,10 +34,11 @@ const StyledAccessLink = styled(NavLink, {label: 'StyledAccessLink'})(({theme}) 
   textTransform: 'capitalize',
 }))
 
-const StudyBuilderHeader: React.FunctionComponent<{study: Study}> = ({study}) => {
+const StudyBuilderHeader: React.FunctionComponent<{study: Study; sx?: SxProps}> = ({study, sx = {}}) => {
   return (
     <StyledStudyHeader
       sx={{
+        ...sx,
         backgroundColor: BG_COLOR[StudyService.getDisplayStatusForStudyPhase(study.phase)],
       }}>
       <StudyWithPhaseImage study={study} />

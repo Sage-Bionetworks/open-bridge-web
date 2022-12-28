@@ -9,6 +9,7 @@ const useStyles = makeStyles(theme => ({
     height: '50px',
     display: 'flex',
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingRight: theme.spacing(2.25),
@@ -30,6 +31,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   rootStyles: {
     textAlign: 'center',

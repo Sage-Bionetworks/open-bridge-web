@@ -26,7 +26,7 @@ const Container = styled('div')(() => ({
   flexShrink: 0,
   width: leftSideWidth,
 
-  backgroundColor: '#FCFCFC',
+  backgroundColor: '#FFF',
   flexDirection: 'column',
   // justifyContent: 'space-between',
   boxShadow: '2px 5px 5px rgba(42, 42, 42, 0.1)',

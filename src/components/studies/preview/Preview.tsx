@@ -312,7 +312,7 @@ const PreviewIdGenerated: React.FunctionComponent<{
                   multiline={false}
                   fullWidth={true}
                   value={Utility.formatStudyId(studyId)}
-                  readOnly></SimpleTextInput>
+                  $readOnly></SimpleTextInput>
               </FormControl>
 
               <FormControl component="div">
@@ -322,7 +322,7 @@ const PreviewIdGenerated: React.FunctionComponent<{
                 <SimpleTextInput
                   multiline={false}
                   fullWidth={true}
-                  readOnly={true}
+                  $readOnly={true}
                   value={testParticipantId}></SimpleTextInput>
               </FormControl>
             </div>

@@ -1,5 +1,5 @@
 import makeStyles from '@mui/styles/makeStyles'
-import {latoFont, poppinsFont} from '@style/theme'
+import {latoFont} from '@style/theme'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   tab: {
-    marginRight: theme.spacing(2),
+    /*marginRight: theme.spacing(2),
     width: '250px',
 
     clipPath: 'polygon(10% 0%, 90% 0, 98% 100%,0 100%)',
@@ -26,31 +26,9 @@ const useStyles = makeStyles(theme => ({
     '& >div': {
       display: 'flex',
       alignItems: 'center',
-    },
-  },
-  gridToolBar: {
-    backgroundColor: theme.palette.common.white,
-    // padding: theme.spacing(1, 5, 0, 5),
-    height: theme.spacing(9),
-    paddingLeft: theme.spacing(3),
-    paddingRight: theme.spacing(3),
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-
-    '&  button': {
-      display: 'flex',
-      fontFamily: latoFont,
-      fontSize: '14px',
-    },
+    },*/
   },
 
-  tabPanel: {
-    backgroundColor: theme.palette.common.white,
-    boxShadow: 'none',
-    padding: theme.spacing(0, 0, 2, 0),
-  },
   studyId: {
     color: '#393434',
     marginRight: '24px',
@@ -70,7 +48,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
 
-  disabledImage: {
+  /*  disabledImage: {
     opacity: 0.5,
   },
   topRowImage: {
@@ -85,22 +63,22 @@ const useStyles = makeStyles(theme => ({
     height: theme.spacing(6),
     backgroundColor: '#AEDCC9',
     paddingTop: theme.spacing(1.5),
-  },
+  },*/
   selectedTab: {
     zIndex: 100,
     backgroundColor: theme.palette.common.white,
   },
-  withdrawnParticipants: {
+  /*withdrawnParticipants: {
     width: '270px',
-  },
-  tab_icon: {
+  },*/
+  /* tab_icon: {
     borderBottom: '1px solid transparent',
   },
   unactiveTabIcon: {
     '&:hover div': {
       borderBottom: '1px solid black',
     },
-  },
+  },*/
   collapsedAddTestUser: {
     '& > rect': {
       fill: '#AEDCC9',

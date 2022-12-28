@@ -9,7 +9,7 @@ import StudyService from '@services/study.service'
 import {useStudies, useUpdateStudyInList} from '@services/studyHooks'
 import {latoFont, theme} from '@style/theme'
 import constants from '@typedefs/constants'
-import {AdminRole, DisplayStudyPhase, Study, StudyPhase} from '@typedefs/types'
+import {AdminRole, DisplayStudyPhase, SignInType, Study, StudyPhase} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {Redirect, RouteComponentProps} from 'react-router-dom'
@@ -102,7 +102,7 @@ type StudyListProps = StudyListOwnProps & RouteComponentProps
 
 function getStudyLink(sectionStatus: DisplayStudyPhase, studyId: string) {
   const links = {
-    builder: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
+    builder: `${constants.restrictedPaths.STUDY_BUILDER}/study-details`,
     participants: constants.restrictedPaths.PARTICIPANT_MANAGER,
   }
 
@@ -245,7 +245,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         clientData: StudyService.getDefaultClientData(),
         phase: 'design' as StudyPhase,
         name: constants.constants.NEW_STUDY_NAME,
-        signInTypes: [],
+        //agendel 10/6 adding  default to signin with study Id signInTypes: SignInType[]
+        signInTypes: ['external_id_password' as SignInType],
         createdOn: new Date(),
         modifiedOn: new Date(),
       }

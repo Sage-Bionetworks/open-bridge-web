@@ -34,6 +34,7 @@ const SurveyDesignContainerBox = styled(Box, {
   position: 'relative',
   display: 'flex',
   minHeight: 'calc(100vh - 70px)',
+  backgroundColor: '#fbfbfc', //'#f8f8f8',
 }))
 
 const CentralContainer = styled('div', {label: 'PhoneContainer'})(({theme}) => ({
@@ -41,13 +42,13 @@ const CentralContainer = styled('div', {label: 'PhoneContainer'})(({theme}) => (
   position: 'relative',
   height: '100%',
   flexGrow: 1,
-  backgroundColor: '#fff',
+  //backgroundColor: '#fff',
   padding: theme.spacing(0, 3, 0, 2),
 }))
 
 const RightContainer = styled('div', {label: 'RightContainer'})(({theme}) => ({
   height: '100%',
-  backgroundColor: '#f8f8f8',
+  backgroundColor: '#F1F3F5', //'#f8f8f8',
 }))
 
 const AddQuestion = styled('div')(({theme}) => ({
@@ -384,7 +385,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           <ConfirmationDialog isOpen={true} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
         )}
       </NavigationPrompt>
-      <Button onClick={() => setDebugOpen(true)}>Open survey 2JSON</Button>
+      {/* for debugging only <Button onClick={() => setDebugOpen(true)}>Open survey 2JSON</Button>*/}
 
       <ErrorBanner errors={[errorAssessmentUpdate, errorSurveyUpdate, errorResourceUpdate]} />
 

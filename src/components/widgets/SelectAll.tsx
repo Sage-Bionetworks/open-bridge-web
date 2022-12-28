@@ -116,7 +116,7 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
     <Box className={classes.root}>
       <Checkbox
         name="selectAllCheckbox"
-        className={classes.check}
+        sx={{paddingRight: '6px'}}
         checked={selectionType === 'ALL' || selectionType === 'PAGE'}
         indeterminate={selectionType === 'SOME'}
         onClick={() => {

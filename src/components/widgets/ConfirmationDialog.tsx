@@ -1,8 +1,7 @@
 import {ReactComponent as CloseStudy} from '@assets/dialogs/close_study.svg'
 import {ReactComponent as WithdrawStudy} from '@assets/dialogs/withdraw_study.svg'
 import {ReactComponent as Delete} from '@assets/trash.svg'
-import CloseIcon from '@mui/icons-material/Close'
-import {darken, IconButton, styled} from '@mui/material'
+import {darken, styled} from '@mui/material'
 import Button from '@mui/material/Button'
 import Dialog, {dialogClasses} from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -11,6 +10,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import {latoFont, shouldForwardProp, theme} from '@style/theme'
 import {FunctionComponent} from 'react'
+import DialogTitleWithClose from './DialogTitleWithClose'
 
 const StyledConfirmationDialog = styled(Dialog, {
   label: 'StyledConfirmationDialog',
@@ -20,13 +20,13 @@ const StyledConfirmationDialog = styled(Dialog, {
     fontFamily: latoFont,
     fontSize: '16px',
     width: $width,
-    padding: theme.spacing(4, 5),
+    // padding: theme.spacing(4, 5),
   },
 }))
 
 const StyledDialogTitle = styled(DialogTitle, {label: 'StyledDialogTitle', shouldForwardProp: shouldForwardProp})(
   ({theme}) => ({
-    padding: theme.spacing(1, 0, 3, 0),
+    /*  padding: theme.spacing(1, 0, 3, 0),
     fontWeight: 700,
     fontSize: '20px',
     lineHeight: '24px',
@@ -35,7 +35,7 @@ const StyledDialogTitle = styled(DialogTitle, {label: 'StyledDialogTitle', shoul
     color: '#22252A',
     fontFamily: latoFont,
     textAlign: 'left',
-    borderBottom: '1px solid #EAECEE',
+    borderBottom: '1px solid #EAECEE',*/
     '> svg': {
       marginRight: theme.spacing(1),
     },
@@ -44,7 +44,7 @@ const StyledDialogTitle = styled(DialogTitle, {label: 'StyledDialogTitle', shoul
 
 const StyledDialogActions = styled(DialogActions, {label: 'StyledDialogActions', shouldForwardProp: shouldForwardProp})(
   ({theme}) => ({
-    padding: theme.spacing(2.5, 0, 0, 0),
+    /*  padding: theme.spacing(2.5, 0, 0, 0),
     borderTop: '1px solid #EAECEE',
     width: '100%',
     display: 'flex',
@@ -52,7 +52,7 @@ const StyledDialogActions = styled(DialogActions, {label: 'StyledDialogActions',
     marginBottom: theme.spacing(0),
     '& button:not(:first-of-type)': {
       marginLeft: theme.spacing(2),
-    },
+    },*/
   })
 )
 const StyledConfirmButton = styled(Button, {label: 'StyledCancelButton', shouldForwardProp: shouldForwardProp})(
@@ -77,7 +77,7 @@ type ConfirmationDialogProps = {
   isOpen: boolean
   type: ConfirmationDialogType
   title?: string
-  width?: string
+  width?: number
   cancelText?: string
   actionText?: string
   onCancel: Function
@@ -94,7 +94,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   type,
   onConfirm,
   children,
-  width = '352',
+  width = type === 'CLOSE_STUDY' ? 750 : 600,
   cancelText = 'Cancel',
   actionText = 'Delete',
 }) => {
@@ -119,24 +119,16 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   }
 
   return (
-    <StyledConfirmationDialog
+    <Dialog
       open={isOpen}
       onClose={() => onCancel()}
       aria-labelledby={type}
       maxWidth="md"
       scroll="paper"
-      $width={type === 'CLOSE_STUDY' ? '750px' : width}>
-      <StyledDialogTitle id="alert-dialog-title">
-        {getImage()}
-        <div>{title}</div>
-        <IconButton
-          aria-label="close"
-          sx={{position: 'absolute', right: theme.spacing(3), top: theme.spacing(4), color: theme.palette.grey[700]}}
-          onClick={() => onCancel()}
-          size="large">
-          <CloseIcon />
-        </IconButton>
-      </StyledDialogTitle>
+      /*sx={{width: `${width}px`}}*/
+    >
+      <DialogTitleWithClose onCancel={() => onCancel()} title={title} />
+
       <DialogContent sx={{padding: 0}}>
         <DialogContentText
           id="alert-dialog-description"
@@ -145,15 +137,15 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
           {body}
         </DialogContentText>
       </DialogContent>
-      <StyledDialogActions>
+      <DialogActions sx={{justifyContent: width > 600 ? 'flex-end' : 'space-between'}}>
         <StyledCancelButton onClick={() => onCancel()} variant="outlined">
           {cancelText}
         </StyledCancelButton>
         <StyledConfirmButton onClick={() => onConfirm()} variant="contained" color="inherit" autoFocus>
           {type === 'NAVIGATE' ? 'Continue' : actionText}
         </StyledConfirmButton>
-      </StyledDialogActions>
-    </StyledConfirmationDialog>
+      </DialogActions>
+    </Dialog>
   )
 }
 

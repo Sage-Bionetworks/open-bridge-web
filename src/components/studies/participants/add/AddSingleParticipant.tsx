@@ -107,7 +107,6 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
           }
         }}
       />
-
       <Box textAlign="center" my={2}>
         <BlueButton
           color="primary"

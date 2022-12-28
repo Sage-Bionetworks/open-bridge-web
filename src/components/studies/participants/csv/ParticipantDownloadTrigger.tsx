@@ -1,6 +1,5 @@
-import {Box, Button} from '@mui/material'
+import {Button} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import {latoFont} from '@style/theme'
 import React from 'react'
 
 const useStyles = makeStyles(theme => ({
@@ -51,11 +50,9 @@ const ParticipantDownloadTrigger: React.FunctionComponent<ParticipantDownloadTri
   }, [fileDownloadUrl])
 
   return (
-    <Box display="flex" alignItems="center">
-      <Button disabled={!hasItems} onClick={() => onDownload()} style={{fontFamily: latoFont, fontSize: '14px'}}>
-        {children}
-      </Button>
-    </Box>
+    <Button disabled={!hasItems} onClick={() => onDownload()}>
+      {children}
+    </Button>
   )
 }
 
