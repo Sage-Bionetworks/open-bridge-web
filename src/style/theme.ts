@@ -125,16 +125,7 @@ const theme: Theme = createTheme({
         },
       },
     },
-    MuiTab: {
-      styleOverrides: {
-        root: {
-          color: '#000',
-          '&.Mui-selected': {
-            color: '#000',
-          },
-        },
-      },
-    },
+
     MuiButton: {
       styleOverrides: {
         root: ({ownerState}) => ({
@@ -334,6 +325,15 @@ const theme: Theme = createTheme({
         },
       },
     },
+
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          color: '#AEB5BC',
+          borderRadius: '0',
+        },
+      },
+    },
     MuiInputBase: {
       styleOverrides: {
         input: {
@@ -378,6 +378,7 @@ const theme: Theme = createTheme({
         disableRipple: true, // No more ripple, on the whole application 💣!
       },
     },
+
     MuiDialog: {
       styleOverrides: {
         paper: {
@@ -405,6 +406,53 @@ const theme: Theme = createTheme({
           padding: '20px 0',
           borderBottom: '1px solid #EAECEE',
           fontSize: '20px',
+        },
+      },
+    },
+
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          minHeight: 'auto',
+          // borderBottom: '1px solid #EAECEE',
+        },
+        /* indicator: {
+          height: '3px',
+          backgroundColor: 'red',
+
+          '&.MuiTabs-indicatorColorSecondary': {
+            backgroundColor: '#E7BDBD',
+          },
+        },*/
+      },
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          color: '#878E95',
+          '&.Mui-selected': {
+            color: '#22252A',
+            fontWeight: 800,
+          },
+          marginRight: '16px',
+          //width: '200px',
+
+          //  clipPath: 'polygon(10% 0%, 90% 0, 98% 100%,0 100%)',
+          borderRadius: '20px 20px 0 0',
+          margin: '0 8px',
+          height: '66px',
+          paddingTop: '24px',
+          zIndex: 0,
+          backgroundColor: '#FAFAFB',
+          fontSize: '18px',
+          '&:first-of-type': {
+            marginLeft: '0',
+          },
+
+          '& >div': {
+            display: 'flex',
+            alignItems: 'center',
+          },
         },
       },
     },

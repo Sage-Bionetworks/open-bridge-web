@@ -146,7 +146,6 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
       await mutateStudy({study: updatedStudy})
     } catch (e) {
       console.log(e)
-      alert(e)
     }
   }
 
@@ -285,7 +284,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
       <Box
         sx={{
           backgroundColor: '#fff',
-          height: `${customEvents ? customEvents.length * 64 + 24 : 200}px`,
+          minHeight: `${customEvents ? customEvents.length * 64 + 24 : 200}px`,
           display: 'flex',
           justifyContent: 'space-between',
           marginTop: theme.spacing(5),
@@ -309,67 +308,71 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
           </Button>
         </Box>
 
-        {customEvents && customEvents.length > 1 && (
-          <Box style={{width: '325px'}}>
-            <strong>Drag to reorder which event will occur first.</strong>
-            <DragDropContext
-              onDragEnd={(dropResult: DropResult) => {
-                reorderEvents(customEvents, dropResult)
-              }}>
-              <Box sx={{marginTop: theme.spacing(2)}}>
-                <Droppable droppableId={'eventList'} type="custom_events">
-                  {(provided, snapshot) => (
-                    <div
-                      className={clsx({
-                        dragging: snapshot.isDraggingOver,
-                      })}
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}>
-                      {customEvents &&
-                        customEvents.map((evt, index) => (
-                          <Draggable draggableId={evt.eventId + index} index={index} key={evt.eventId + index}>
-                            {(provided, snapshot) => (
-                              <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                <StyledDraggableEvent row={true}>
+        <Box style={{width: '325px'}}>
+          {customEvents && customEvents.length > 1 && <strong>Drag to reorder which event will occur first.</strong>}
+          <DragDropContext
+            onDragEnd={(dropResult: DropResult) => {
+              reorderEvents(customEvents, dropResult)
+            }}>
+            <Box sx={{marginTop: theme.spacing(2)}}>
+              <Droppable droppableId={'eventList'} type="custom_events">
+                {(provided, snapshot) => (
+                  <div
+                    className={clsx({
+                      dragging: snapshot.isDraggingOver,
+                    })}
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}>
+                    {customEvents &&
+                      customEvents.map((evt, index) => (
+                        <Draggable
+                          draggableId={evt.eventId + index}
+                          index={index}
+                          key={evt.eventId + index}
+                          isDragDisabled={customEvents?.length < 2}>
+                          {(provided, snapshot) => (
+                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                              <StyledDraggableEvent row={true}>
+                                {customEvents?.length > 1 && (
                                   <DragIndicatorTwoToneIcon
                                     sx={{position: 'absolute', color: '#DFE2E6', left: '12px'}}
                                   />
+                                )}
 
-                                  <div>{evt.eventId}</div>
+                                <div>{evt.eventId}</div>
 
-                                  {canEdit(evt.eventId) ? (
-                                    <IconButton
-                                      edge="end"
-                                      size="small"
-                                      sx={{padding: 0, position: 'absolute', right: '16px'}}
-                                      onClick={() => deleteEvent(index)}>
-                                      <ClearTwoToneIcon />
-                                    </IconButton>
-                                  ) : (
-                                    <InfoCircleWithToolTip
-                                      sx={{position: 'absolute', right: '16px'}}
-                                      tooltipDescription={
-                                        <span>
-                                          This event is being used in one/more session(s) as a Session Start event. To{' '}
-                                          <strong>rename or delete</strong> this Event, please unselect it from all
-                                          Session Start events.
-                                        </span>
-                                      }
-                                      variant="info"
-                                    />
-                                  )}
-                                </StyledDraggableEvent>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                    </div>
-                  )}
-                </Droppable>
-              </Box>
-            </DragDropContext>
-          </Box>
-        )}
+                                {canEdit(evt.eventId) ? (
+                                  <IconButton
+                                    edge="end"
+                                    size="small"
+                                    sx={{padding: 0, position: 'absolute', right: '16px'}}
+                                    onClick={() => deleteEvent(index)}>
+                                    <ClearTwoToneIcon />
+                                  </IconButton>
+                                ) : (
+                                  <InfoCircleWithToolTip
+                                    sx={{position: 'absolute', right: '16px'}}
+                                    tooltipDescription={
+                                      <span>
+                                        This event is being used in one/more session(s) as a Session Start event. To{' '}
+                                        <strong>rename or delete</strong> this Event, please unselect it from all
+                                        Session Start events.
+                                      </span>
+                                    }
+                                    variant="info"
+                                  />
+                                )}
+                              </StyledDraggableEvent>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                  </div>
+                )}
+              </Droppable>
+            </Box>
+          </DragDropContext>
+        </Box>
       </Box>
     </Box>
   )

@@ -13,6 +13,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
+    flexWrap: 'wrap',
   },
   image: {
     width: '10px',
@@ -78,7 +79,9 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
             transform: rotateAndDisableBackIcons ? '' : 'rotate(180deg)',
           }}></img>
       </Button>
-
+      {/* show first 3 then ... */}
+      {/* show current with padding of  3 then ...*/}
+      {/* show last 3.*/}
       {pageNumbers.map((element, index) => (
         <PageBox
           key={`page-box-${index}`}

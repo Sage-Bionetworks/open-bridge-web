@@ -125,7 +125,8 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
       aria-labelledby={type}
       maxWidth="md"
       scroll="paper"
-      sx={{width: `${width}px`}}>
+      /*sx={{width: `${width}px`}}*/
+    >
       <DialogTitleWithClose onCancel={() => onCancel()} title={title} />
 
       <DialogContent sx={{padding: 0}}>

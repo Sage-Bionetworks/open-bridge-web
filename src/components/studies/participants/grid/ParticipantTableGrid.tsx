@@ -1,4 +1,3 @@
-import {ReactComponent as PencilIcon} from '@assets/edit_pencil_red.svg'
 import JoinedCheckSymbol from '@assets/participants/joined_check_mark.svg'
 import JoinedPhoneSymbol from '@assets/participants/joined_phone_icon.svg'
 import {ReactComponent as HidePhoneIcon} from '@assets/participants/phone_hide_icon.svg'
@@ -10,6 +9,7 @@ import WithdrawParticipantForm from '@components/studies/participants/modify/Wit
 import HideWhen from '@components/widgets/HideWhen'
 import SelectAll from '@components/widgets/SelectAll'
 import {useUserSessionDataState} from '@helpers/AuthContext'
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
 import {Box, Button, Checkbox, CircularProgress, Dialog, IconButton, Paper, styled} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {
@@ -64,22 +64,16 @@ const StyledDataGrid = styled(DataGrid)(({theme}) => ({
     fontWeight: 700,
   },
 
-  '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
+  [`& .${gridClasses.columnHeader},  .${gridClasses.cell}`]: {
     minHeight: '60px',
     borderColor: '#EAECEE',
+    borderBottom: `1px solid #EAECEE`,
+    fontSize: '12px',
+    outline: 'none !important',
     '&:last-of-type': {
       borderRight: 'none',
     },
   },
-  '& .MuiDataGrid-columnsContainer, .MuiDataGrid-cell': {
-    borderBottom: `1px solid #EAECEE`,
-    fontSize: '12px',
-  },
-
-  '& .MuiPaginationItem-root': {
-    borderRadius: 0,
-  },
-  // ...customCheckbox(theme),
 }))
 
 const StyledSelectionDisplay = styled(Box, {label: 'selectionDisplay'})(({theme}) => ({
@@ -202,7 +196,7 @@ const EditCell: FunctionComponent<{
   const isWithdrawn = params.row['externalId'] === EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
   return !isWithdrawn ? (
     <IconButton onClick={onClick} aria-label="edit participant" component="span" size="large">
-      <PencilIcon />
+      <EditTwoToneIcon />
     </IconButton>
   ) : (
     <></>
