@@ -705,7 +705,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       </Paper>
       <Dialog
         open={participantToEdit !== undefined}
-        maxWidth="sm"
+        maxWidth="md"
         scroll="body"
         fullWidth
         aria-labelledby="edit participant">

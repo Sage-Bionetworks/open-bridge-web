@@ -1,5 +1,6 @@
 import {
   Button,
+  ButtonProps,
   FormControlLabel,
   InputLabel,
   styled,
@@ -9,9 +10,10 @@ import {
   ToggleButtonGroup,
 } from '@mui/material'
 import Alert from '@mui/material/Alert'
+
 import withStyles from '@mui/styles/withStyles'
 import {Link} from 'react-router-dom'
-import {latoFont, shouldForwardProp} from '../../style/theme'
+import {latoFont, shouldForwardProp, theme} from '../../style/theme'
 
 export const BlueButton = withStyles(theme => ({
   root: {
@@ -70,43 +72,19 @@ export const WhiteButton = withStyles(theme => ({
   },
 }))(Button)
 
-export const DialogButtonSecondary = withStyles(theme => ({
-  root: {
-    border: '1px solid black',
-    background: '#FCFCFC',
-    color: 'black',
-    borderRadius: '0',
-    fontFamily: latoFont,
-    fontSize: '14px',
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-    '&:hover': {
-      fontWeight: 'bolder',
-      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
-    },
-  },
-}))(Button)
-
-export const DialogButtonPrimary = withStyles(theme => ({
-  root: {
-    border: '1px solid black',
-    background: theme.palette.error.light,
-    color: 'black',
-    borderRadius: '0',
-    fontFamily: latoFont,
-    fontSize: '14px',
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-
-    '&:not(:first-child)': {
-      marginLeft: theme.spacing(1),
-    },
-
-    '&:hover': {
-      fontWeight: 'bolder',
-      background: theme.palette.error.light,
-      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
-    },
-  },
-}))(Button)
+export const DialogButtonSecondary = (props: ButtonProps) => <Button variant="outlined" {...props} />
+export const DialogButtonPrimary = (props: ButtonProps) => (
+  <Button
+    variant="contained"
+    color="primary"
+    sx={{
+      '&:not(:first-child)': {
+        marginLeft: theme.spacing(1),
+      },
+    }}
+    {...props}
+  />
+)
 
 export const StyledLink = styled(Link, {label: 'StyledLink', shouldForwardProp})(({theme}) => ({
   color: ' #4F527D',

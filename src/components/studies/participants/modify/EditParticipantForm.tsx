@@ -62,7 +62,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
   return (
     <>
       <DialogContent>
-        <Box mt={0} mb={3}>
+        <Box mt={2} mb={3}>
           <MTBHeadingH3>
             {!isBatchEdit ? (
               isEnrolledById ? (
@@ -116,15 +116,13 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
             <DialogButtonSecondary
               onClick={() => {
                 onCancel()
-              }}
-              color="primary">
+              }}>
               Cancel
             </DialogButtonSecondary>
             <DialogButtonPrimary
               onClick={() => {
                 isBatchEdit ? onOK(currentTimeZone) : onOK(note, currentTimeZone, customParticipantEvents)
               }}
-              color="primary"
               disabled={currentTimeZone?.length < 3 && isTimeZoneRequired()}
               autoFocus>
               Save Changes
