@@ -1,105 +1,33 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
 import Utility from '@helpers/utility'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import {Alert, Box, Button, Card, Container, IconButton, Menu, MenuItem, styled} from '@mui/material'
+import {Alert, Box, Button, Container, Menu, MenuItem, styled} from '@mui/material'
+import Link from '@mui/material/Link'
 import {useAssessments, useUpdateSurveyAssessment} from '@services/assessmentHooks'
-import {latoFont, poppinsFont, theme} from '@style/theme'
+import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {Assessment} from '@typedefs/types'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {Link, Redirect, useHistory} from 'react-router-dom'
+import {Redirect, useHistory} from 'react-router-dom'
+import SurveyCard from './SurveyCard'
+import CollapsableMenu from './widgets/MenuDropdown'
 
-const StyledSurveysContainer = styled('div', {label: 'StyledSurveyContainer'})(({theme}) => ({
+const studyCardWidth = '357'
+
+const StyledSurveysContainer = styled(Box, {label: 'StyledStudyListGrid'})(({theme}) => ({
   display: 'grid',
-  padding: theme.spacing(4, 0),
+  padding: theme.spacing(0),
+  gridTemplateColumns: `repeat(auto-fill,${studyCardWidth}px)`,
+  gridColumnGap: theme.spacing(2),
+  gridRowGap: theme.spacing(2),
   justifyContent: 'center',
-  margin: theme.spacing(3, 0),
-  borderTop: '1px solid rgba(116, 116, 116, 0.5)',
-  gridTemplateColumns: `repeat(auto-fill,220px)`,
-  gridColumnGap: theme.spacing(3),
-  gridRowGap: theme.spacing(3),
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(3),
     justifyContent: 'center',
     gridRowGap: theme.spacing(4),
   },
 }))
-
-const StyledSurveysCard = styled(Card, {
-  label: 'StyledSurveysCard',
-  shouldForwardProp: prop => prop !== 'isMenuOpen',
-})<{
-  isMenuOpen: boolean
-}>(({theme, isMenuOpen}) => ({
-  background: '#FCFCFC',
-  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-  height: '374px',
-  width: '220px',
-  '&>div': {
-    padding: theme.spacing(2),
-  },
-
-  '& > div.top': {
-    height: '172px',
-    backgroundColor: '#F6F6F6',
-  },
-  '& h3': {
-    fontFamily: poppinsFont,
-    fontStyle: 'normal',
-    fontWeight: '600',
-    fontSize: '16px',
-    marginBottom: theme.spacing(1),
-  },
-  '& h5': {
-    marginTop: theme.spacing(1),
-    fontFamily: latoFont,
-    fontStyle: 'normal',
-    fontWeight: '400',
-    fontSize: '12px',
-  },
-  ' .MuiIconButton-root': {
-    padding: 0,
-    margin: theme.spacing(-1, 0, 0, -1),
-    '&:hover': {
-      backgroundColor: 'transparent',
-    },
-    '>div': {
-      boxShadow: isMenuOpen ? '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)' : '',
-    },
-  },
-}))
-
-const AssessmentCard: React.FunctionComponent<{
-  assessment: Assessment
-  onClick: (e: HTMLElement) => void
-  isMenuOpen: boolean
-}> = ({isMenuOpen, onClick, assessment}) => {
-  const _onClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    e.stopPropagation()
-    e.preventDefault()
-    onClick(e.currentTarget)
-  }
-
-  return (
-    <Link style={{textDecoration: 'none'}} key={assessment.identifier} to={`/surveys/${assessment.guid!}/design`}>
-      <StyledSurveysCard isMenuOpen={isMenuOpen}>
-        <div className="top">
-          <IconButton onClick={_onClick} size="large">
-            <div>
-              <MoreVertIcon />
-            </div>
-          </IconButton>
-        </div>
-        <div>
-          <h3> {assessment.title}</h3>
-          <h5>Survey ID: {assessment.identifier}</h5>
-        </div>
-      </StyledSurveysCard>
-    </Link>
-  )
-}
 
 const AssessmentMenu: React.FunctionComponent<{
   anchorEl: Element
@@ -135,6 +63,29 @@ const AssessmentMenu: React.FunctionComponent<{
     </Menu>
   )
 }
+
+const sections = [
+  {
+    title: 'All',
+    filterTitle: 'All',
+  },
+  {
+    title: 'Draft',
+    filterTitle: 'Draft',
+  },
+  {
+    title: 'Published',
+    filterTitle: 'Published',
+  },
+  {
+    title: 'Created By Me',
+    filterTitle: 'Created By Me',
+  },
+  {
+    title: 'Shared With Me',
+    filterTitle: 'Shared With Me',
+  },
+]
 
 const SurveyList: React.FunctionComponent<{}> = () => {
   const handleError = useErrorHandler()
@@ -216,37 +167,61 @@ const SurveyList: React.FunctionComponent<{}> = () => {
       {asmntUpdateError && <Alert severity="error">{asmntUpdateError.message}</Alert>}
 
       <Box
+        area-lable="f1"
+        id="menucontainer"
         sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          marginTop: theme.spacing(5),
+          position: 'relative',
+          height: '120px',
+          borderBottom: '1px solid #DFE2E6',
+          padding: theme.spacing(0, 4),
+          paddingTop: [theme.spacing(4), theme.spacing(4), theme.spacing(4), theme.spacing(6.75)],
         }}>
+        <CollapsableMenu
+          items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
+          selectedFn={section => /*isSelectedFilter(section)*/ false}
+          displayMobileItem={(section, isSelected) => <>{section.filterTitle}</>}
+          displayDesktopItem={(section, isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
+          onClick={
+            section => {} /*(section.sectionStatus ? setStatusFilter(section.sectionStatus) : resetStatusFilters())*/
+          }
+        />
+
         <Button
           disabled={!Utility.isPathAllowed('any', constants.restrictedPaths.SURVEY_BUILDER)}
           variant="contained"
+          sx={{position: 'absolute', top: '34px', right: theme.spacing(4)}}
           onClick={e => setIsNew(true)}>
           + Create New Survey
         </Button>
       </Box>
+
       <Loader reqStatusLoading={getSurveysStatus === 'loading'}>
-        <StyledSurveysContainer key="container">
-          {surveys?.map((survey, index) => (
-            <Box
-              sx={{
-                outline: highlightedStudyId === survey.guid ? '4px solid #BCD5E4' : '',
-                '&:hover': {
-                  outline: '4px solid #BCD5E4',
-                },
-              }}>
-              <AssessmentCard
-                key={survey.identifier}
-                assessment={survey}
-                isMenuOpen={menuAnchor?.survey?.identifier === survey.identifier}
-                onClick={e => setMenuAnchor({survey, anchorEl: e})}
-              />
-            </Box>
-          ))}
-        </StyledSurveysContainer>
+        <Box sx={{backgroundColor: 'rgba(135, 142, 149, 0.1)', paddingTop: theme.spacing(7)}}>
+          <Container maxWidth="lg">
+            <StyledSurveysContainer key="container">
+              {surveys?.map((survey, index) => (
+                <Link
+                  style={{textDecoration: 'none'}}
+                  key={survey.identifier || index}
+                  variant="body2"
+                  onClick={() => history.push(`/surveys/${survey.guid}/design/intro`)}
+                  underline="hover">
+                  <SurveyCard
+                    key={survey.identifier}
+                    shouldHighlight={highlightedStudyId === survey.guid}
+                    survey={survey}
+                    isMenuOpen={menuAnchor?.survey?.identifier === survey.identifier}
+                    onSetAnchor={(e: any) => setMenuAnchor({survey, anchorEl: e})}
+                    isRename={false}
+                    onRename={() => {
+                      console.log('should rename')
+                    }}
+                  />
+                </Link>
+              ))}
+            </StyledSurveysContainer>
+          </Container>
+        </Box>
       </Loader>
       {menuAnchor && (
         <AssessmentMenu

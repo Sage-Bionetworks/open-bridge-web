@@ -1,11 +1,8 @@
-import {ReactComponent as ParticipantsIcon} from '@assets/participants_icon.svg'
 import CardWithMenu, {StatusColor} from '@components/widgets/CardWithMenu'
 import {Box, styled} from '@mui/material'
-import StudyService from '@services/study.service'
-import {DisplayStudyPhase, Study} from '@typedefs/types'
+import {Assessment, DisplayStudyPhase} from '@typedefs/types'
 import dayjs from 'dayjs'
 import {FunctionComponent} from 'react'
-import {useAdherenceForWeek} from './adherenceHooks'
 
 const ParticipantsIconContainer = styled(Box, {label: 'ParticipantsIconContainer'})(({theme}) => ({
   display: 'flex',
@@ -23,12 +20,12 @@ const ParticipantsIconContainer = styled(Box, {label: 'ParticipantsIconContainer
   },
 }))
 
-type StudyCardProps = {
-  study: Study
+type SurveyCardProps = {
+  survey: Assessment
   onSetAnchor: Function
   isRename?: boolean
   onRename?: Function
-  isNewlyAddedStudy?: boolean
+  shouldHighlight?: boolean
 
   isMenuOpen: boolean
 }
@@ -45,50 +42,44 @@ export const getColorForStudyPhase = (status: DisplayStudyPhase): StatusColor =>
   }
 }
 
-const StudyCard: FunctionComponent<StudyCardProps> = ({
-  study,
+const SurveyCard: FunctionComponent<SurveyCardProps> = ({
+  survey,
   onSetAnchor,
   isRename,
   onRename,
-  isNewlyAddedStudy,
+  shouldHighlight,
 
   isMenuOpen,
 }) => {
-  const date = new Date(study.phase === 'design' ? study.modifiedOn! : study.createdOn!)
-  const {data: adherenceWeeklyInProcessCount} = useAdherenceForWeek(study.identifier, 0, 5, {
-    progressionFilters: ['in_progress'],
-  })
+  const date = new Date(survey.modifiedOn ? survey.modifiedOn! : survey.createdOn!)
 
   const leftBottomChild = (
     <Box>
-      <strong>{study.phase === 'design' ? `Last Edited` : `Launched:`}</strong>
+      <strong>{survey.modifiedOn ? `Last Edited` : `Created:`}</strong>
       <br />
       {`${dayjs(date).format('MMM D, YYYY @ h:mma')}`}
     </Box>
   )
 
-  const rightBottomChild =
-    study.phase !== 'design' ? (
-      <ParticipantsIconContainer>
-        <ParticipantsIcon title="Number of Participants" />
-        {adherenceWeeklyInProcessCount?.total.toString() || '--'}
-      </ParticipantsIconContainer>
-    ) : (
-      <></>
-    )
+  const rightBottomChild = (
+    <ParticipantsIconContainer>
+      <strong>Created by</strong>
+      {survey.ownerId}
+    </ParticipantsIconContainer>
+  )
 
-  const displayStatus = StudyService.getDisplayStatusForStudyPhase(study.phase)
-  const shouldHaveSpaceAfterName = study.phase === 'design' ? true : false
-  const statusColor = getColorForStudyPhase(displayStatus)
+  const displayStatus = 'Unknown'
+  const shouldHaveSpaceAfterName = false
+  const statusColor = getColorForStudyPhase('WITHDRAWN')
   return (
     <CardWithMenu
-      name={study.name}
-      identifier={study.identifier}
+      name={survey.title}
+      identifier={survey.identifier}
       onSetAnchor={onSetAnchor}
       isMenuOpen={isMenuOpen}
       onRename={onRename}
       isRename={isRename}
-      shouldHighlight={isNewlyAddedStudy}
+      shouldHighlight={shouldHighlight}
       topStatus={displayStatus}
       statusColor={statusColor}
       shouldHaveSpaceAfterName={shouldHaveSpaceAfterName}
@@ -98,4 +89,4 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   )
 }
 
-export default StudyCard
+export default SurveyCard
