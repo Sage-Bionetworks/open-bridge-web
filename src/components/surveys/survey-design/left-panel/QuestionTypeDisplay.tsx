@@ -1,26 +1,33 @@
 import {styled} from '@mui/material'
-import {poppinsFont} from '@style/theme'
 import React from 'react'
 import QUESTIONS, {QuestionTypeKey} from './QuestionConfigs'
 
-export const DivContainer = styled('div')<{hover?: boolean}>(({theme, hover = true}) => ({
+export const DivContainer = styled('div', {label: 'DivContainer'})<{hover?: boolean}>(({theme, hover = true}) => ({
   height: theme.spacing(6),
   display: 'flex',
   alignItems: 'center',
   width: '100%',
 
-  '> svg, img': {
+  '> svg': {
     flexShrink: 0,
     flexGrow: 0,
     maxWidth: theme.spacing(6),
     maxHeight: theme.spacing(6),
-    // margin: theme.spacing(2),
+    color: '#DFE2E6',
+
+    margin: theme.spacing(2),
+    '&.question-type-icon': {
+      color: '#878E95',
+    },
   },
   '> div': {
-    color: '#3A3A3A',
-    fontFamily: poppinsFont,
-    fontWeight: 500,
+    color: '#4A5056',
+
+    fontWeight: 900,
     fontSize: '14px',
+    '& svg': {
+      color: '#878E95',
+    },
   },
 }))
 
@@ -42,7 +49,7 @@ const QuestionTypeDisplay: React.FunctionComponent<QuestionTypeDisplayProps | Qu
   props => {
     return isPropsQuestionTypeDisplayProps(props) ? (
       <DivContainer>
-        {QUESTIONS.get(props.name)?.img}
+        {React.cloneElement(QUESTIONS.get(props.name)?.img || <></>, {className: 'question-type-icon'})}
         <div>{QUESTIONS.get(props.name)?.title}</div>
       </DivContainer>
     ) : (

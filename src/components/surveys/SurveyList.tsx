@@ -35,7 +35,8 @@ const AssessmentMenu: React.FunctionComponent<{
   onView: () => void
   onClose: () => void
   onDuplicate: () => void
-}> = ({onDelete, onView, onDuplicate, onClose, anchorEl}) => {
+  onRename: () => void
+}> = ({onDelete, onView, onDuplicate, onClose, onRename, anchorEl}) => {
   return (
     <Menu
       id="assessment-menu"
@@ -53,6 +54,9 @@ const AssessmentMenu: React.FunctionComponent<{
       onClose={onClose}>
       <MenuItem onClick={onView} key="view">
         View
+      </MenuItem>
+      <MenuItem onClick={onRename} key="rename">
+        Rename
       </MenuItem>
       <MenuItem onClick={onDuplicate} key="duplicate">
         Duplicate
@@ -92,6 +96,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
   const history = useHistory()
 
   const [isNew, setIsNew] = React.useState(false)
+  const [renameSurveyId, setRenameSurveyId] = React.useState('')
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     survey: Assessment
     anchorEl: HTMLElement
@@ -120,7 +125,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
     setMenuAnchor(null)
   }
 
-  const onAction = async (survey: Assessment, type: 'DELETE' | 'DUPLICATE') => {
+  const onAction = async (survey: Assessment, type: 'DELETE' | 'DUPLICATE' | 'RENAME') => {
     handleMenuClose()
     switch (type) {
       case 'DELETE':
@@ -135,7 +140,19 @@ const SurveyList: React.FunctionComponent<{}> = () => {
           }
         )
         break
+      case 'RENAME':
+        await mutateAssessment(
+          {action: 'UPDATE', survey: {...survey, title: survey.title}},
+          {
+            onSuccess: data => {
+              // alert('done')
+            },
+            onError: e => alert(e),
+          }
+        )
+        setRenameSurveyId('')
 
+        return
       case 'DUPLICATE':
         mutateAssessment(
           {
@@ -202,20 +219,18 @@ const SurveyList: React.FunctionComponent<{}> = () => {
               {surveys?.map((survey, index) => (
                 <Link
                   style={{textDecoration: 'none'}}
-                  key={survey.identifier || index}
+                  key={survey.guid}
                   variant="body2"
                   onClick={() => history.push(`/surveys/${survey.guid}/design/intro`)}
                   underline="hover">
                   <SurveyCard
-                    key={survey.identifier}
+                    key={survey.guid}
                     shouldHighlight={highlightedStudyId === survey.guid}
                     survey={survey}
-                    isMenuOpen={menuAnchor?.survey?.identifier === survey.identifier}
+                    isMenuOpen={menuAnchor?.survey?.guid === survey.guid}
                     onSetAnchor={(e: any) => setMenuAnchor({survey, anchorEl: e})}
-                    isRename={false}
-                    onRename={() => {
-                      console.log('should rename')
-                    }}
+                    isRename={renameSurveyId === survey.guid}
+                    onRename={(name: string) => onAction({...survey, title: name}, 'RENAME')}
                   />
                 </Link>
               ))}
@@ -227,6 +242,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
         <AssessmentMenu
           anchorEl={menuAnchor.anchorEl}
           onClose={handleMenuClose}
+          onRename={() => setRenameSurveyId(menuAnchor!.survey.guid!)}
           onDelete={() => setIsConfirmDialogOpen('DELETE')}
           onDuplicate={() => onAction(menuAnchor!.survey, 'DUPLICATE')}
           onView={() => history.push(`/surveys/${menuAnchor?.survey.guid}/design/intro`)}
@@ -235,7 +251,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
 
       <ConfirmationDialog
         isOpen={isConfirmDialogOpen === 'DELETE'}
-        title={'Delete Study'}
+        title={'Delete Survey'}
         type={'DELETE'}
         onCancel={closeConfirmationDialog}
         onConfirm={() => {

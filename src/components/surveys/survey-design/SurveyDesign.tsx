@@ -52,8 +52,11 @@ const RightContainer = styled('div', {label: 'RightContainer'})(({theme}) => ({
 }))
 
 const AddQuestion = styled('div')(({theme}) => ({
-  borderTop: '1px solid #f2f2f2',
+  borderBottom: '1px solid #f2f2f2',
+  padding: theme.spacing(2),
   display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
 }))
 
 function getQuestionIndexFromSearchString(search?: string): number | undefined {

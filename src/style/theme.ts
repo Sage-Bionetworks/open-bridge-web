@@ -135,8 +135,8 @@ const theme: Theme = createTheme({
           fontSize: '16px',
           ...(ownerState.size === 'small' &&
             ownerState.variant === 'contained' && {
-              height: '40px',
-              padding: '0 20px',
+              height: '30px',
+              padding: '0 24px',
             }),
           ...(ownerState.size === 'small' &&
             ownerState.variant === 'outlined' && {

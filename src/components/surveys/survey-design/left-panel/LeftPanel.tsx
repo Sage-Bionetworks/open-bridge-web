@@ -1,8 +1,7 @@
-import {ReactComponent as DraggableIcon} from '@assets/surveys/draggable.svg'
-import {ReactComponent as SettingsIcon} from '@assets/surveys/settings.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
-import {Box, styled} from '@mui/material'
-import {theme} from '@style/theme'
+import DraggableIcon from '@mui/icons-material/DragIndicatorTwoTone'
+import SettingsIcon from '@mui/icons-material/SettingsTwoTone'
+import {Box, styled, Theme} from '@mui/material'
 import {Step, SurveyConfig} from '@typedefs/surveys'
 import React from 'react'
 import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from 'react-beautiful-dnd'
@@ -18,78 +17,62 @@ const linkStyle = {
   },
 }
 
-const leftSideWidth = theme.spacing(37)
+const leftSideWidth = '296'
 
-const Container = styled('div')(() => ({
+const Container = styled('div', {label: 'Container'})(() => ({
   display: 'flex',
   flexGrow: 0,
   flexShrink: 0,
-  width: leftSideWidth,
+  width: `${leftSideWidth}px`,
 
   backgroundColor: '#FFF',
   flexDirection: 'column',
   // justifyContent: 'space-between',
-  boxShadow: '2px 5px 5px rgba(42, 42, 42, 0.1)',
+  //boxShadow: '2px 5px 5px rgba(42, 42, 42, 0.1)',
   borderRight: '1px solid #DFDFDF',
 }))
 
-const AddStepMenuContainer = styled('div', {label: 'addStepMenuContainer'})(() => ({
-  width: leftSideWidth,
-  position: 'fixed',
-  bottom: '0px',
-
-  height: '50px',
-}))
-
-const Row = styled('div', {label: 'Row'})(({theme}) => ({
+const RowStyle = (theme: Theme) => ({
   height: theme.spacing(6),
-
   width: '100%',
-  borderTop: '1px solid #DFDFDF',
-
   textDecoration: 'none',
-
   '&:hover, &.current': {
-    backgroundColor: '#565656',
+    backgroundColor: theme.palette.accent.purple,
     color: '#fff',
 
-    '& div': {
+    '& div, a': {
       color: '#fff',
     },
     '& svg, img ': {
-      WebkitFilter: 'invert(1)',
-      filter: 'invert(1)',
+      color: '#fff',
     },
   },
-}))
+})
 
-const TitleStyledRow = styled('div')(({theme}) => ({
+const Row = styled('div', {label: 'Row'})(({theme}) => ({
+  ...RowStyle(theme),
   height: theme.spacing(6),
 
-  width: '100%',
+  borderTop: '1px solid #DFDFDF',
+}))
 
-  color: '#3A3A3A',
-  textDecoration: 'none',
+const TitleStyledRow = styled('div', {label: 'TitleStyledRow'})(({theme}) => ({
+  ...RowStyle(theme),
+
   borderTop: 'none',
   display: 'flex',
   justifyContent: 'space-between',
   paddingRight: 0,
+  paddingLeft: '10px',
+  '& svg': {
+    color: ' #878E95',
+  },
   '&>div, a': {
     display: 'flex',
     alignItems: 'center',
     paddingRight: 0,
     flexGrow: 1,
-    '&:hover, &.current': {
-      backgroundColor: '#565656',
-      color: '#fff',
-      '& a': {
-        color: '#fff',
-      },
-      '& >svg, img ': {
-        WebkitFilter: 'invert(1)',
-        filter: 'invert(1)',
-      },
-    },
+    fontWeight: 900,
   },
 }))
 
@@ -162,7 +145,7 @@ const StepLink: React.FunctionComponent<{
             {QUESTIONS.get(getQuestionId(step))?.img}
             <StyledQuestionText>{title}</StyledQuestionText>
           </DivContainer>
-          {size > 3 && index > 0 && index < size - 1 && <DraggableIcon />}
+          {size > 3 && index > 0 && index < size - 1 && <DraggableIcon sx={{color: '#DFE2E6'}} />}
         </DivContainer>
       </StyledNavAnchor>
     </Row>
@@ -193,9 +176,11 @@ const LeftPanel: React.FunctionComponent<{
   }
   return (
     <Container id="left">
+      {surveyConfig && <>{children}</>}
       <DragDropContext onDragEnd={onDragEnd}>
         <Box id="questions">
           <TitleRow surveyId={surveyId} guid={guid} isCurrent={currentStepIndex === undefined} />
+
           <Box
             sx={{
               height: 'calc(100vh - 150px)',
@@ -235,7 +220,6 @@ const LeftPanel: React.FunctionComponent<{
             )}
           </Box>
         </Box>
-        {surveyConfig && <AddStepMenuContainer>{children}</AddStepMenuContainer>}
       </DragDropContext>
     </Container>
   )

@@ -87,7 +87,7 @@ export const DialogButtonPrimary = (props: ButtonProps) => (
 )
 
 export const StyledLink = styled(Link, {label: 'StyledLink', shouldForwardProp})(({theme}) => ({
-  color: ' #4F527D',
+  color: theme.palette.primary.main,
   fontWeight: 900,
   textDecoration: 'none',
   '&:hover': {
@@ -206,7 +206,7 @@ export const StyledToggleButtonGroup = styled(ToggleButtonGroup, {
   label: 'StyledToggleButtonGroup',
   shouldForwardProp: prop => prop !== 'width',
 })<{width?: number}>(({theme, width}) => ({
-  background: '#EDEDED',
+  background: '#F1F3F5',
   justifyContent: 'space-between',
   boxShadow: 'inset 0px 1px 4px rgba(0, 0, 0, 0.25)',
   width: `${width || 255}px`,
@@ -218,14 +218,16 @@ export const StyledToggleButton = styled(ToggleButton)(({theme}) => ({
   padding: theme.spacing(0.25, 1),
   borderRadius: '25px',
   fontFamily: latoFont,
-  fontSize: '14px',
+  fontWeight: 900,
+  fontSize: '16px',
   border: 'none',
   '&.MuiToggleButtonGroup-grouped:not(:last-of-type), &.MuiToggleButtonGroup-grouped:not(:first-of-type), &.MuiToggleButtonGroup-grouped:not(:first-of-type)':
     {
       borderRadius: '25px',
       '&.Mui-selected': {
         backgroundColor: '#fff',
-        color: '##565656',
+        color: theme.palette.primary.main,
+        fontWeight: 900,
         borderRadius: '25px',
       },
       '&:hover': {

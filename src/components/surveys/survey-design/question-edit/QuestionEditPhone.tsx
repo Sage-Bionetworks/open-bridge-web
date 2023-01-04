@@ -36,15 +36,15 @@ const OuterContainer = styled('div', {label: 'PhoneOuterContainer'})(({theme}) =
 const SkipQuestion = styled((props: TypographyProps) => <Typography {...props}>Skip question</Typography>, {
   label: 'skipQuestion',
 })(() => ({
-  fontWeight: 400,
+  fontWeight: 900,
   fontSize: '12px',
   lineHeight: '18px',
-  textDecoration: 'underline',
+  color: theme.palette.primary.main,
 }))
 
-const PhoneTop = styled('div')(() => ({
+const PhoneTop = styled('div', {label: 'PhoneTop'})(() => ({
   display: 'flex',
-  margin: '0 -15px 20px -15px',
+  margin: '0 0px 20px -6px',
   justifyContent: 'space-between',
 }))
 
@@ -167,18 +167,19 @@ const PhoneProgressLine: FunctionComponent<{
 }> = ({completionProgress}) => {
   return (
     <Box
+      id="progress-line"
       sx={{
         //  width: '100%',
         position: 'relative',
         height: '3px',
-        margin: '-3px -25px 8px -25px',
-        backgroundColor: ' #A7A19C',
+        margin: '-3px -20px 8px -15px',
+        backgroundColor: '  #DFE2E6;',
       }}>
       <Box
         sx={{
           width: `${completionProgress * 100}%`,
           height: '100%',
-          backgroundColor: '#8FD6FF',
+          backgroundColor: '#63A650;',
         }}></Box>
     </Box>
   )
@@ -240,7 +241,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
 
       {step && (
         <>
-          <PhoneDisplay sx={{marginBottom: '20px', textAlign: 'left'}} phoneBottom={getPhoneBottom()}>
+          <PhoneDisplay sx={{marginBottom: theme.spacing(4), textAlign: 'left'}} phoneBottom={getPhoneBottom()}>
             <Box>
               {isDynamic && (
                 <>
