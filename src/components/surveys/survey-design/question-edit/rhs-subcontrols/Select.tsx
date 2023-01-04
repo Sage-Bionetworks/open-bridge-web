@@ -1,5 +1,4 @@
 import {ReactComponent as AlertIcon} from '@assets/alert_icon.svg'
-import {ReactComponent as GenerateId} from '@assets/surveys/actions/generate_id.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import {StyledFormControl, StyledLabel14} from '@components/surveys/widgets/SharedStyled'
 import {StyledDropDown, StyledDropDownItem} from '@components/surveys/widgets/StyledDropDown'
@@ -7,6 +6,8 @@ import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import UtilityObject from '@helpers/utility'
+import ArrowRightAltTwoToneIcon from '@mui/icons-material/ArrowRightAltTwoTone'
+import GenerateId from '@mui/icons-material/JoinInnerTwoTone'
 import {Box, Button, MenuItem, OutlinedInput, styled, Typography} from '@mui/material'
 import {SelectChangeEvent} from '@mui/material/Select'
 import {theme} from '@style/theme'
@@ -15,17 +16,35 @@ import React from 'react'
 import QUESTIONS, {QuestionTypeKey} from '../../left-panel/QuestionConfigs'
 
 const ValueTable = styled('table')(({theme}) => ({
-  width: '100%',
+  width: 'calc(100% + 64px)',
+  marginLeft: theme.spacing(-4),
+  marginRight: theme.spacing(-4),
   borderSpacing: 0,
 
   '& th': {
-    fontSize: '12px',
+    fontSize: '14px',
     textAlign: 'left',
-    fontWeight: 'normal',
+
+    fontWeight: 700,
+    color: '#22252A',
+    '&:first-of-type': {
+      paddingLeft: theme.spacing(4),
+    },
+    '&:last-of-type': {
+      paddingRight: theme.spacing(7),
+    },
   },
   '& td': {
     height: theme.spacing(7),
-    borderTop: '1px solid  #BBC3CD',
+    borderTop: '1px solid #F1F3F5',
+    color: '#353A3F',
+    fontSize: '16px',
+    '&:first-of-type': {
+      paddingLeft: theme.spacing(4),
+    },
+    '&:last-of-type': {
+      paddingRight: theme.spacing(7),
+    },
   },
 }))
 
@@ -63,6 +82,7 @@ const PairingTableHeading: React.FunctionComponent<{
         fontSize: '16px',
         fontStyle: 'italic',
         marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(2),
       }}>
       Participant's answer{isSingleChoice ? '' : 's'} will be recorded as{' '}
       {mapping[answerDataType][isSingleChoice ? 0 : 1]}
@@ -101,8 +121,11 @@ const ChoiceValueInputRow: React.FunctionComponent<{
 
   return (
     <tr>
-      <td>{firstCell}</td> <td> &rarr;</td>
-      <td style={{width: '60px'}}>{inputCell}</td>
+      <td>{firstCell}</td>{' '}
+      <td style={{width: '60px'}}>
+        <ArrowRightAltTwoToneIcon />{' '}
+      </td>
+      <td style={{minWidth: '80px'}}>{inputCell}</td>
     </tr>
   )
 }
@@ -163,7 +186,7 @@ const Select: React.FunctionComponent<{
 
   return (
     <>
-      <StyledFormControl mb={2}>
+      <StyledFormControl mb={2} sx={{padding: theme.spacing(0, 2)}}>
         <StyledLabel14 mb={0.5}>Question Type:</StyledLabel14>
 
         <StyledDropDown
@@ -184,7 +207,7 @@ const Select: React.FunctionComponent<{
         </StyledDropDown>
       </StyledFormControl>
 
-      <StyledFormControl mb={2}>
+      <StyledFormControl mb={2} sx={{padding: theme.spacing(0, 2)}}>
         <StyledLabel14 mb={0.5}>Set Response Value Pairing:</StyledLabel14>
 
         <StyledDropDown
@@ -210,7 +233,9 @@ const Select: React.FunctionComponent<{
       <Box sx={{backgroundColor: '#fff', padding: theme.spacing(2, 1.5)}}>
         {step.baseType === 'string' && (
           <Button
-            sx={{marginRight: 0, float: 'right'}}
+            variant="text"
+            startIcon={<GenerateId />}
+            sx={{fontSize: '14px', fontWeight: 900}}
             disabled={step.surveyRules?.find(r => r.matchingAnswer !== undefined) !== undefined}
             onClick={() =>
               onChange({
@@ -221,7 +246,7 @@ const Select: React.FunctionComponent<{
                 })),
               })
             }>
-            <GenerateId />
+            {' '}
             Match All Response Labels
           </Button>
         )}
@@ -230,7 +255,7 @@ const Select: React.FunctionComponent<{
             <tr>
               <th>Response</th>
               <th></th>
-              <th style={{width: '60px'}}>Value={UtilityObject.capitalize(step.baseType)}</th>
+              <th style={{minWidth: '80px'}}>Value={UtilityObject.capitalize(step.baseType)}</th>
             </tr>
 
             {step.choices?.map((choice, index) => (
@@ -246,8 +271,12 @@ const Select: React.FunctionComponent<{
             ))}
             {step.other && (
               <tr>
-                <td>{step.other.fieldLabel || 'Other'}</td> <td> &rarr;</td>
-                <td style={{width: '60px', padding: '0 8px'}}>custom text</td>
+                <td>{step.other.fieldLabel || 'Other'}</td>{' '}
+                <td style={{width: '60px'}}>
+                  {' '}
+                  <ArrowRightAltTwoToneIcon />
+                </td>
+                <td style={{minWidth: '80px', padding: '0 8px'}}>custom text</td>
               </tr>
             )}
           </tbody>
@@ -258,7 +287,7 @@ const Select: React.FunctionComponent<{
         title={'Changing to Integer removes "Other"'}
         type={'CUSTOM'}
         actionText={'Proceed and remove "Other" '}
-        width="580px"
+        width={580}
         icon={<AlertIcon />}
         onCancel={() => setIsTypeConversionWarning(false)}
         onConfirm={() => {

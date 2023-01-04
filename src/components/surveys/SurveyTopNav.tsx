@@ -1,4 +1,5 @@
 import BuildTwoToneIcon from '@mui/icons-material/BuildTwoTone'
+import MediationTwoToneIcon from '@mui/icons-material/MediationTwoTone'
 import {Alert, Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
@@ -141,7 +142,7 @@ const ALL_LINKS: {path: string; name: string; icon: React.ReactElement}[] = [
 
     icon: <BuildTwoToneIcon />,
   },
-  {name: 'BRANCHING LOGIC', path: `${constants.restrictedPaths.SURVEY_BRANCHING}`, icon: <BuildTwoToneIcon />},
+  {name: 'BRANCHING LOGIC', path: `${constants.restrictedPaths.SURVEY_BRANCHING}`, icon: <MediationTwoToneIcon />},
 ]
 
 const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({survey, error}: SurveyTopNavProps) => {

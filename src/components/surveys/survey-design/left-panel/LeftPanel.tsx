@@ -182,10 +182,12 @@ const LeftPanel: React.FunctionComponent<{
           <TitleRow surveyId={surveyId} guid={guid} isCurrent={currentStepIndex === undefined} />
 
           <Box
-            sx={{
-              height: 'calc(100vh - 150px)',
-              overflow: 'scroll',
-            }}>
+            sx={
+              {
+                // height: 'calc(100vh - 150px)',
+                //  overflow: 'scroll',
+              }
+            }>
             {surveyConfig?.steps && (
               <>
                 <Droppable droppableId="questions">

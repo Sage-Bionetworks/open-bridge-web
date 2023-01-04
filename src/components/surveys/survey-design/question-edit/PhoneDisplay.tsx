@@ -1,6 +1,7 @@
 import PhoneBg from '@assets/surveys/phone_bg.svg'
 import Box from '@mui/material/Box'
 import {styled, SxProps} from '@mui/material/styles'
+import {theme} from '@style/theme'
 import {FunctionComponent, ReactNode} from 'react'
 
 const PhoneDiv = styled('div', {label: 'phoneDiv'})(({theme}) => ({
@@ -29,9 +30,7 @@ type PhoneDisplayProps = {
 const PhoneDisplay: FunctionComponent<PhoneDisplayProps> = ({children, phoneBottom, sx}) => {
   return (
     <PhoneDiv sx={sx}>
-      <Box height="100%" pb={5}>
-        {children}
-      </Box>
+      <Box sx={{height: '100%', paddingBottom: theme.spacing(5)}}>{children}</Box>
       {phoneBottom}
     </PhoneDiv>
   )

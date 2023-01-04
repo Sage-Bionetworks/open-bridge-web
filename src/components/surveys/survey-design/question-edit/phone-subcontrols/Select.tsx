@@ -84,7 +84,7 @@ const SelectOption: FunctionComponent<{
         <Typography sx={{padding: theme.spacing(0.5, 0.5)}}>{title}</Typography>
       ) : (
         <DisappearingInput
-          sx={{'& input': {padding: theme.spacing(0.25, 0.5)}}}
+          sx={{'& input': {padding: theme.spacing(0.25, 0.5), backgroundColor: '#fff'}}}
           value={title}
           onChange={e => setTitle(e.target.value)}
           onBlur={e => onRename(e.target.value)}

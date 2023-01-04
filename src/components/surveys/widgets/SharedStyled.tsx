@@ -1,6 +1,6 @@
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined'
 import {Button, Checkbox, CheckboxProps, FormControl, OutlinedInput, styled} from '@mui/material'
-import {latoFont, poppinsFont} from '@style/theme'
+import {latoFont} from '@style/theme'
 
 export const ActionButton = styled(Button)(({theme}) => ({
   '&:hover': {
@@ -11,8 +11,8 @@ export const ActionButton = styled(Button)(({theme}) => ({
 
 export const StyledLabel14 = styled('label')<{mb?: number}>(({theme, mb = 1}) => ({
   display: 'block',
-  fontFamily: poppinsFont,
-  fontWeight: 400,
+
+  fontWeight: 700,
   fontSize: '14px',
   marginBottom: theme.spacing(mb),
 }))
@@ -75,7 +75,7 @@ export const FakeInput = styled('div', {label: 'FakeInput'})<{
   height: `${height}px`,
   lineHeight: `${height}px`,
   margin: '0 auto 24px auto',
-  background: '#FCFCFC',
+  background: '#FFF',
   border: '1px solid #2A2A2A',
 }))
 /*

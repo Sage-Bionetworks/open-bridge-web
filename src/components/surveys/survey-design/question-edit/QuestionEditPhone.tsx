@@ -33,7 +33,7 @@ const OuterContainer = styled('div', {label: 'PhoneOuterContainer'})(({theme}) =
   position: 'relative',
 }))
 
-const SkipQuestion = styled((props: TypographyProps) => <Typography {...props}>Skip question</Typography>, {
+const SkipQuestion = styled((props: TypographyProps) => <Typography {...props}>Skip Question</Typography>, {
   label: 'skipQuestion',
 })(() => ({
   fontWeight: 900,
@@ -44,17 +44,18 @@ const SkipQuestion = styled((props: TypographyProps) => <Typography {...props}>S
 
 const PhoneTop = styled('div', {label: 'PhoneTop'})(() => ({
   display: 'flex',
-  margin: '0 0px 20px -6px',
+  margin: '0 0px 54px -6px',
   justifyContent: 'space-between',
 }))
 
 const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
   fontFamily: latoFont,
-  fontWeight: 400,
-  fontSize: '12px',
+  fontWeight: 700,
+  fontSize: '14px',
   color: '#2A2A2A',
   width: '100%',
   '& > input, textarea': {
+    backgroundColor: '#fff',
     padding: theme.spacing(0.125, 1),
   },
 }))
@@ -62,12 +63,13 @@ const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
 const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
   fontFamily: latoFont,
 
-  fontWeight: 700,
-  fontSize: '16px',
+  fontWeight: 400,
+  fontSize: '24px',
 
   color: '#2A2A2A',
   '& > input': {
     padding: theme.spacing(0.125, 1),
+    backgroundColor: '#fff',
   },
 }))
 
@@ -277,7 +279,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                     multiline={true}
                     value={step.detail || ''}
                     placeholder="Description"
-                    sx={{marginBottom: theme.spacing(2.5)}}
+                    sx={{marginBottom: theme.spacing(2.5), fontSize: '16px', fontWeight: 400}}
                     onChange={e => onChange({...step, detail: e.target.value})}
                   />
                 )}

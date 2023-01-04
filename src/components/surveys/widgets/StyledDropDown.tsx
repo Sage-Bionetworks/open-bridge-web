@@ -3,10 +3,10 @@ import SvgIcon, {SvgIconProps} from '@mui/material/SvgIcon'
 import {poppinsFont} from '@style/theme'
 
 const getBgColor = (mode: 'light' | 'dark' = 'dark') => {
-  return mode === 'light' ? '#F2F2F2' : '#565656'
+  return mode === 'light' ? '#F2F2F2' : '#F1F3F5;'
 }
 const getColor = (mode: 'light' | 'dark' = 'dark') => {
-  return mode === 'light' ? '#4D4D4D' : '#fff'
+  return mode === 'light' ? '#4D4D4D' : '#878E95'
 }
 
 const getSvgFilter = (mode: 'light' | 'dark' = 'dark') => {

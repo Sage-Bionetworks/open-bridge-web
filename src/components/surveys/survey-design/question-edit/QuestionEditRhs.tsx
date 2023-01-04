@@ -1,6 +1,6 @@
-import {ReactComponent as GenerateId} from '@assets/surveys/actions/generate_id.svg'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
+import GenerateId from '@mui/icons-material/JoinInnerTwoTone'
 import {Box, Button, styled} from '@mui/material'
 import {latoFont, theme} from '@style/theme'
 import {BaseStep, ChoiceQuestion, ScaleQuestion, Step, TimeQuestion, YearQuestion} from '@typedefs/surveys'
@@ -24,11 +24,11 @@ const StyledContainer = styled('div')(({theme}) => ({
 }))
 
 const StyledButton = styled(Button)(({theme}) => ({
-  width: '150px',
-  fontSize: '12px',
-  textAlign: 'left',
+  width: '300px',
+  fontSize: '14px',
+  fontWeight: 900,
+  justifyContent: 'left',
   lineHeight: '14px',
-  textDecoration: 'underline',
 }))
 
 const StyledSimpleTextInput = styled(SimpleTextInput)(({theme}) => ({
@@ -105,31 +105,34 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, 
   }
   return (
     <StyledContainer>
-      {isDynamic && (
-        <Box
-          id="identifier"
-          sx={{
-            backgroundColor: '#ECECEC;',
-            padding: theme.spacing(3, 0, 3, 4),
-          }}>
-          <StyledLabel14 htmlFor="q_id">Question Identifier</StyledLabel14>
-          <StyledSimpleTextInput
-            onChange={e => onChange({...step, identifier: e.target.value})}
-            id="q_id"
-            value={step?.identifier}></StyledSimpleTextInput>
-          <StyledButton variant="text" onClick={matchIdentifier}>
-            <GenerateId /> Match Identifier to Question
-          </StyledButton>
+      <div>
+        {isDynamic && (
+          <Box
+            id="identifier"
+            sx={{
+              borderBottom: '1px solid #F1F3F5',
+              padding: theme.spacing(3, 0, 1, 5),
+            }}>
+            <StyledLabel14 htmlFor="q_id">Question Identifier</StyledLabel14>
+            <StyledSimpleTextInput
+              sx={{display: 'block', width: '200px'}}
+              onChange={e => onChange({...step, identifier: e.target.value})}
+              id="q_id"
+              value={step?.identifier}></StyledSimpleTextInput>
+            <StyledButton variant="text" onClick={matchIdentifier} startIcon={<GenerateId />}>
+              Match Identifier to Question
+            </StyledButton>
+          </Box>
+        )}
+        <Box sx={{padding: isDynamic ? theme.spacing(3) : 0}}>
+          <Factory
+            {...{
+              step: {...step},
+              onChange: onChange,
+              q_type: getQuestionId(step),
+            }}></Factory>
         </Box>
-      )}
-      <Box sx={{padding: isDynamic ? theme.spacing(3) : 0}}>
-        <Factory
-          {...{
-            step: {...step},
-            onChange: onChange,
-            q_type: getQuestionId(step),
-          }}></Factory>
-      </Box>
+      </div>
       {children}
     </StyledContainer>
   )
