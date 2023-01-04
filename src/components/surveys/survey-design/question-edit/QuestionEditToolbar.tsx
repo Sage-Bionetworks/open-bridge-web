@@ -88,6 +88,7 @@ const QuestionEditToolbar: FunctionComponent<{
         onCancel={() => setIsConfirmDelete(false)}
         onConfirm={() => {
           setIsConfirmDelete(false)
+          onAction('delete')
         }}>
         <div>
           <strong>Are you sure you would like to permanently delete this question?</strong>
