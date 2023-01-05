@@ -33,28 +33,29 @@ const OuterContainer = styled('div', {label: 'PhoneOuterContainer'})(({theme}) =
   position: 'relative',
 }))
 
-const SkipQuestion = styled((props: TypographyProps) => <Typography {...props}>Skip question</Typography>, {
+const SkipQuestion = styled((props: TypographyProps) => <Typography {...props}>Skip Question</Typography>, {
   label: 'skipQuestion',
 })(() => ({
-  fontWeight: 400,
+  fontWeight: 900,
   fontSize: '12px',
   lineHeight: '18px',
-  textDecoration: 'underline',
+  color: theme.palette.primary.main,
 }))
 
-const PhoneTop = styled('div')(() => ({
+const PhoneTop = styled('div', {label: 'PhoneTop'})(() => ({
   display: 'flex',
-  margin: '0 -15px 20px -15px',
+  margin: '0 0px 54px -6px',
   justifyContent: 'space-between',
 }))
 
 const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
   fontFamily: latoFont,
-  fontWeight: 400,
-  fontSize: '12px',
+  fontWeight: 700,
+  fontSize: '14px',
   color: '#2A2A2A',
   width: '100%',
   '& > input, textarea': {
+    backgroundColor: '#fff',
     padding: theme.spacing(0.125, 1),
   },
 }))
@@ -62,12 +63,13 @@ const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
 const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
   fontFamily: latoFont,
 
-  fontWeight: 700,
-  fontSize: '16px',
+  fontWeight: 400,
+  fontSize: '24px',
 
   color: '#2A2A2A',
   '& > input': {
     padding: theme.spacing(0.125, 1),
+    backgroundColor: '#fff',
   },
 }))
 
@@ -167,18 +169,19 @@ const PhoneProgressLine: FunctionComponent<{
 }> = ({completionProgress}) => {
   return (
     <Box
+      id="progress-line"
       sx={{
         //  width: '100%',
         position: 'relative',
         height: '3px',
-        margin: '-3px -25px 8px -25px',
-        backgroundColor: ' #A7A19C',
+        margin: '-3px -20px 8px -15px',
+        backgroundColor: '  #DFE2E6;',
       }}>
       <Box
         sx={{
           width: `${completionProgress * 100}%`,
           height: '100%',
-          backgroundColor: '#8FD6FF',
+          backgroundColor: '#63A650;',
         }}></Box>
     </Box>
   )
@@ -240,7 +243,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
 
       {step && (
         <>
-          <PhoneDisplay sx={{marginBottom: '20px', textAlign: 'left'}} phoneBottom={getPhoneBottom()}>
+          <PhoneDisplay sx={{marginBottom: theme.spacing(4), textAlign: 'left'}} phoneBottom={getPhoneBottom()}>
             <Box>
               {isDynamic && (
                 <>
@@ -276,7 +279,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                     multiline={true}
                     value={step.detail || ''}
                     placeholder="Description"
-                    sx={{marginBottom: theme.spacing(2.5)}}
+                    sx={{marginBottom: theme.spacing(2.5), fontSize: '16px', fontWeight: 400}}
                     onChange={e => onChange({...step, detail: e.target.value})}
                   />
                 )}

@@ -1,6 +1,6 @@
-import {ReactComponent as RequiredIcon} from '@assets/surveys/actions/require.svg'
-import {ReactComponent as SkipIcon} from '@assets/surveys/actions/skip.svg'
 import {StyledToggleButton, StyledToggleButtonGroup} from '@components/widgets/StyledComponents'
+import SkipIcon from '@mui/icons-material/SkipNextTwoTone'
+import RequiredIcon from '@mui/icons-material/StarTwoTone'
 
 import {ActionButtonName} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
@@ -24,6 +24,7 @@ const RequiredToggle: FunctionComponent<RequiredToggleProps> = ({shouldHideActio
   }
   return (
     <StyledToggleButtonGroup
+      width={300}
       value={shouldHideActionsArray.includes('skip')}
       exclusive
       onChange={(e, _val) => {

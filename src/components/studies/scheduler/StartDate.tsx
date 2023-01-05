@@ -2,6 +2,7 @@ import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
 import {FormControl, FormGroup, IconButton, MenuItem, Radio, RadioGroup, Select, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {JOINED_EVENT_ID} from '@services/event.service'
+import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {HDWMEnum, SchedulingEvent} from '@typedefs/scheduling'
 import React, {FunctionComponent} from 'react'
@@ -49,7 +50,7 @@ const ToolIcon: FunctionComponent<ToolIconProps> = ({onOpenEventsEditor}) => {
     <Tooltip title="Edit Custom Event">
       <IconButton className={classes.editIcon} onClick={() => onOpenEventsEditor()} size="large">
         {' '}
-        <EditTwoToneIcon sx={{color: '#4F527D', '&:hover': {stroke: '#4F527D'}}} />
+        <EditTwoToneIcon sx={{color: theme.palette.primary.main, '&:hover': {stroke: theme.palette.primary.main}}} />
       </IconButton>
     </Tooltip>
   )

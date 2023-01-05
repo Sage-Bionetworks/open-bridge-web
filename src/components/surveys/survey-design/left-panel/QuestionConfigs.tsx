@@ -1,15 +1,16 @@
-import {ReactComponent as Completion} from '@assets/surveys/iconcomplete.svg'
-import {ReactComponent as Duration} from '@assets/surveys/q_type_icons/duration.svg'
-import {ReactComponent as FreeText} from '@assets/surveys/q_type_icons/free_text.svg'
-import {ReactComponent as Instruction} from '@assets/surveys/q_type_icons/instruction.svg'
-import {ReactComponent as Likert} from '@assets/surveys/q_type_icons/likert.svg'
-import {ReactComponent as MultiSelect} from '@assets/surveys/q_type_icons/multi_select.svg'
-import {ReactComponent as Numeric} from '@assets/surveys/q_type_icons/numeric.svg'
-import {ReactComponent as SingleSelect} from '@assets/surveys/q_type_icons/single_select.svg'
-import {ReactComponent as Slider} from '@assets/surveys/q_type_icons/slider.svg'
-import {ReactComponent as Time} from '@assets/surveys/q_type_icons/time.svg'
-import {ReactComponent as Overview} from '@assets/surveys/q_type_icons/title.svg'
-import {ReactComponent as Year} from '@assets/surveys/q_type_icons/year.svg'
+import Time from '@mui/icons-material/AccessTimeTwoTone'
+import Year from '@mui/icons-material/CalendarTodayTwoTone'
+import Completion from '@mui/icons-material/CheckCircleOutlineTwoTone'
+import Overview from '@mui/icons-material/DescriptionTwoTone'
+import Numeric from '@mui/icons-material/KeyboardTwoTone'
+import Likert from '@mui/icons-material/LinearScaleTwoTone'
+import FreeText from '@mui/icons-material/NotesTwoTone'
+import Instruction from '@mui/icons-material/TextSnippetTwoTone'
+import Duration from '@mui/icons-material/TimelapseTwoTone'
+import Slider from '@mui/icons-material/TuneTwoTone'
+
+import MultiSelect from '@mui/icons-material/DnsTwoTone'
+import SingleSelect from '@mui/icons-material/ToggleOffTwoTone'
 import {ChoiceQuestion, Question, Step} from '@typedefs/surveys'
 import React from 'react'
 
@@ -27,10 +28,7 @@ export type QuestionTypeKey =
   | 'COMPLETION'
   | 'OVERVIEW'
 
-const QUESTIONS = new Map<
-  QuestionTypeKey,
-  {img: React.ReactNode; active?: React.ReactNode; title: string; default?: {}}
->([
+const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: string; default?: {}}>([
   [
     'DURATION',
     {

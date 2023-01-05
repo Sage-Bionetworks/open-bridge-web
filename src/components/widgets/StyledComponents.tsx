@@ -87,7 +87,7 @@ export const DialogButtonPrimary = (props: ButtonProps) => (
 )
 
 export const StyledLink = styled(Link, {label: 'StyledLink', shouldForwardProp})(({theme}) => ({
-  color: ' #4F527D',
+  color: theme.palette.primary.main,
   fontWeight: 900,
   textDecoration: 'none',
   '&:hover': {
@@ -136,6 +136,9 @@ export const SimpleTextInput = styled(TextField, {label: 'SimpleTextInput', shou
   multiline: {
     padding: 0,
   },
+  '& fieldset': {
+    border: 'none',
+  },
 
   '& input, textarea': {
     borderRadius: '1px',
@@ -144,14 +147,14 @@ export const SimpleTextInput = styled(TextField, {label: 'SimpleTextInput', shou
     // backgroundColor: theme.palette.common.white,
     fontSize: '14px',
     width: '100%',
-    padding: '10px 12px',
-    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    padding: '4px 12px',
+    //  transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [latoFont, 'Roboto'].join(','),
-    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
+    /*   '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
       ' -webkit-box-shadow': '0 0 0 30px white inset !important',
-    },
+    },*/
     '&.Mui-disabled': {
-      backgroundColor: 'rgba(239, 239, 239, 0.3)',
+      backgroundColor: '#2A2A2A1A',
     },
   },
   fullWidth: {
@@ -206,7 +209,7 @@ export const StyledToggleButtonGroup = styled(ToggleButtonGroup, {
   label: 'StyledToggleButtonGroup',
   shouldForwardProp: prop => prop !== 'width',
 })<{width?: number}>(({theme, width}) => ({
-  background: '#EDEDED',
+  background: '#F1F3F5',
   justifyContent: 'space-between',
   boxShadow: 'inset 0px 1px 4px rgba(0, 0, 0, 0.25)',
   width: `${width || 255}px`,
@@ -218,14 +221,16 @@ export const StyledToggleButton = styled(ToggleButton)(({theme}) => ({
   padding: theme.spacing(0.25, 1),
   borderRadius: '25px',
   fontFamily: latoFont,
-  fontSize: '14px',
+  fontWeight: 900,
+  fontSize: '16px',
   border: 'none',
   '&.MuiToggleButtonGroup-grouped:not(:last-of-type), &.MuiToggleButtonGroup-grouped:not(:first-of-type), &.MuiToggleButtonGroup-grouped:not(:first-of-type)':
     {
       borderRadius: '25px',
       '&.Mui-selected': {
         backgroundColor: '#fff',
-        color: '##565656',
+        color: theme.palette.primary.main,
+        fontWeight: 900,
         borderRadius: '25px',
       },
       '&:hover': {

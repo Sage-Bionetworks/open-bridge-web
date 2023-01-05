@@ -33,7 +33,7 @@ const SurveyDesignContainerBox = styled(Box, {
 })(({theme}) => ({
   position: 'relative',
   display: 'flex',
-  minHeight: 'calc(100vh - 70px)',
+  // minHeight: 'calc(100vh - 70px)',
   backgroundColor: '#fbfbfc', //'#f8f8f8',
 }))
 
@@ -48,12 +48,15 @@ const CentralContainer = styled('div', {label: 'PhoneContainer'})(({theme}) => (
 
 const RightContainer = styled('div', {label: 'RightContainer'})(({theme}) => ({
   height: '100%',
-  backgroundColor: '#F1F3F5', //'#f8f8f8',
+  backgroundColor: '#FFF', //'#f8f8f8',
 }))
 
 const AddQuestion = styled('div')(({theme}) => ({
-  borderTop: '1px solid #f2f2f2',
+  borderBottom: '1px solid #f2f2f2',
+  padding: theme.spacing(2),
   display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
 }))
 
 function getQuestionIndexFromSearchString(search?: string): number | undefined {

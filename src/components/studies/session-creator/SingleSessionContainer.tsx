@@ -35,7 +35,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
       lineHeight: '20px',
       textDecorationLine: 'underline',
 
-      color: '#4F527D',
+      color: theme.palette.primary.main,
     },
   },
   btnDeleteSession: {
@@ -255,7 +255,12 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                 onClick={() => setIsEditable(!isEditable)}
                 size="small"
                 style={{padding: '0px', minWidth: 'auto', marginLeft: '0'}}>
-                <EditTwoToneIcon sx={{color: '#4F527D', '&:hover': {stroke: isEditable ? '#4F527D' : 'auto'}}} />
+                <EditTwoToneIcon
+                  sx={{
+                    color: theme.palette.primary.main,
+                    '&:hover': {stroke: isEditable ? theme.palette.primary.main : 'auto'},
+                  }}
+                />
               </IconButton>
             }
             label=""

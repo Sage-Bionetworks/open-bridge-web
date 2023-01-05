@@ -203,7 +203,7 @@ export const useUpdateSurveyAssessment = () => {
           newState = newState.filter(a => a.guid !== props.assessment.guid)
           break
         case 'COPY':
-          newState.unshift(props.assessment)
+          newState.unshift({...props.assessment, identifier: '...'})
           break
         case 'UPDATE':
           queryClient.setQueryData(

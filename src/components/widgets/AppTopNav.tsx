@@ -110,7 +110,7 @@ const MenuLinks: FunctionComponent<
       key={route.name}
       activeStyle={{
         fontWeight: 800,
-        color: '#4F527D',
+        color: theme.palette.primary.main,
       }}
       onClick={() => setIsMobileOpen(false)}>
       {route.name}
@@ -160,7 +160,7 @@ const MenuLinksRhs: FunctionComponent<
         key={`rhs_${route.name}`}
         activeStyle={{
           fontWeight: 800,
-          color: '#4F527D',
+          color: theme.palette.primary.main,
         }}
         onClick={() => setIsMobileOpen(false)}>
         {route.name}

@@ -2,39 +2,44 @@ import SurveyUtils from '@components/surveys/SurveyUtils'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import {Box, Typography} from '@mui/material'
 
+import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import {styled} from '@mui/material/styles'
-import {latoFont} from '@style/theme'
+import {latoFont, theme} from '@style/theme'
 import {ChoiceQuestion, ChoiceQuestionChoice, ChoiceSelectorType} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
 
 const PhoneBottom = styled('div', {label: 'phoneBottom'})({
   position: 'absolute',
-  left: '0px',
-  bottom: '-3px',
+
+  bottom: '0px',
+  left: '5px',
   height: '48px',
-  width: '264px',
+  width: '283px',
   display: 'flex',
   borderRadius: '0px 0px 0px 25px',
 
   // borderBottom: 'none',
   '& .MuiButton-text': {
-    background: '#BCD5E4',
+    background: theme.palette.primary.main,
     width: '100%',
     height: '100%',
-    borderBottom: '3px solid #2A2A2A',
-    bordeLeft: '3px solid #2A2A2A',
+    borderBottom: '3px solid #D0D4D9',
+    borderLeft: '3px solid #D0D4D9',
     borderRadius: '0px 0px 0px 25px',
+    '& label': {
+      cursor: 'pointer',
+      alignItems: 'center',
+      color: '#fff',
+      display: 'flex',
+    },
 
     '&:hover': {
-      background: '#BCD5E4',
+      background: theme.palette.primary.main,
       fontWeight: 900,
-      '& label': {
-        cursor: 'pointer',
-      },
     },
   },
 })
@@ -44,10 +49,10 @@ const SideMenu = styled('div', {label: 'sideMenu'})({
   height: '48px',
   width: '40px',
   display: 'flex',
-  backgroundColor: '#565656',
+  backgroundColor: '#9499C7',
   borderRadius: '0px 0 25px 0',
-  borderBottom: '3px solid #2A2A2A',
-  borderRight: '3px solid #2A2A2A',
+  borderBottom: '3px solid #D0D4D9',
+  borderRight: '3px solid #D0D4D9',
   '&  svg': {
     color: '#fff',
   },
@@ -67,10 +72,10 @@ const StyledMenuItem = styled(MenuItem, {label: 'StyledMenuItem'})<{
   nohover?: boolean
 }>(({theme, height = '48px', nohover = false}) => ({
   height: height,
-  backgroundColor: '#565656',
+  backgroundColor: '#9499C7',
   color: '#fff',
   '&:hover': {
-    backgroundColor: nohover ? '#565656' : '#848484',
+    backgroundColor: nohover ? '#9499C7' : '#848484',
     cursor: nohover ? 'default' : 'pointer',
   },
   '&.Mui-disabled': {
@@ -240,7 +245,10 @@ const SelectPhoneBottomMenu: FunctionComponent<{
         onClick={() => {
           addResponse()
         }}>
-        <Label sx={{color: '#2A2A2A'}}> + Add Response </Label>
+        <Label>
+          <AddCircleTwoToneIcon />
+          &nbsp; Add Response{' '}
+        </Label>
       </Button>
 
       <SideMenu sx={{borderRadius: anchorEl ? '0' : '0px 0 25px 0'}}>

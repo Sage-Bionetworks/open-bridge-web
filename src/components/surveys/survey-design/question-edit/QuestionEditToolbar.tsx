@@ -16,7 +16,7 @@ const QuestionEditToolbarContainer = styled('div')(({theme}) => ({
   alignItems: 'center',
   width: '100%',
 
-  padding: theme.spacing(0, 3),
+  padding: theme.spacing(0, 5),
   margin: theme.spacing(3, 0),
 }))
 
@@ -88,6 +88,7 @@ const QuestionEditToolbar: FunctionComponent<{
         onCancel={() => setIsConfirmDelete(false)}
         onConfirm={() => {
           setIsConfirmDelete(false)
+          onAction('delete')
         }}>
         <div>
           <strong>Are you sure you would like to permanently delete this question?</strong>

@@ -16,7 +16,9 @@ const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({links, currentIte
     <Breadcrumbs aria-label="breadcrumb" separator={currentItem ? '/' : ''} sx={{...sx}}>
       {links.map((link, index) => (
         <StyledLink to={link.url} key={link.url} sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-          {index === 0 && <ArrowRightAltTwoToneIcon sx={{transform: 'rotate(180deg)', color: '#4F527D'}} />}
+          {index === 0 && (
+            <ArrowRightAltTwoToneIcon sx={{transform: 'rotate(180deg)', color: theme.palette.primary.main}} />
+          )}
           <Box sx={{marginLeft: index > 0 ? theme.spacing(1.5) : 0}}>{link.text}</Box>
         </StyledLink>
       ))}
