@@ -1,8 +1,8 @@
-import {StyledCheckbox, StyledFormControl} from '@components/surveys/widgets/SharedStyled'
+import {StyledFormControl} from '@components/surveys/widgets/SharedStyled'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
 import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
-import {Box, FormControlLabel, Typography} from '@mui/material'
-import {poppinsFont, theme} from '@style/theme'
+import {Box, Checkbox, FormControlLabel, Typography} from '@mui/material'
+import {theme} from '@style/theme'
 import {FormatOptionsYear, YearQuestion} from '@typedefs/surveys'
 import React, {ChangeEvent} from 'react'
 
@@ -26,8 +26,8 @@ const GeneralAllowCheckbox: React.FunctionComponent<{
     <FormControlLabel
       htmlFor={CONFIG[type].labelId}
       sx={{mt: theme.spacing(1.5)}}
-      control={<StyledCheckbox checked={value !== false} onChange={e => onChange(e.target.checked)} />}
-      label={<Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>{CONFIG[type].label}</Typography>}
+      control={<Checkbox checked={value !== false} onChange={e => onChange(e.target.checked)} />}
+      label={<Typography sx={{fontWeight: '14px'}}>{CONFIG[type].label}</Typography>}
     />
   )
 }

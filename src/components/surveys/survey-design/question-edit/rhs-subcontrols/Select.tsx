@@ -192,6 +192,7 @@ const Select: React.FunctionComponent<{
         <StyledDropDown
           value={step.singleChoice ? 'SINGLE_SELECT' : 'MULTI_SELECT'}
           width="200px"
+          height="40px"
           //@ts-ignore
           onChange={handleSelectTypeChange}
           input={<OutlinedInput />}

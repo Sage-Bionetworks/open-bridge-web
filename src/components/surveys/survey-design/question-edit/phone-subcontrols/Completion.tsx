@@ -1,18 +1,19 @@
-import {ReactComponent as DoneCheck} from '@assets/surveys/done_check.svg'
 import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
-import {Box, FormControl, Paper, styled} from '@mui/material'
+import DoneCheck from '@mui/icons-material/CheckCircleTwoTone'
+import {Box, FormControl, styled} from '@mui/material'
 import {latoFont} from '@style/theme'
 import {BaseStep} from '@typedefs/surveys'
 
-const StyledContainer = styled(Paper, {label: 'StyledContainer'})(({theme}) => ({
+const StyledContainer = styled(Box, {label: 'StyledContainer'})(({theme}) => ({
   position: 'relative',
-  marginTop: '150px',
+  marginTop: '120px',
   marginLeft: '-10px',
   marginRight: '-10px',
+  backgroundColor: 'red', //'#F7FBF6',
   padding: theme.spacing(theme.spacing(7), theme.spacing(2), theme.spacing(2), theme.spacing(2)),
 
-  background: '#FFFFFF',
-  boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
+  //background: '#FFFFFF',
+
   display: 'flex',
   textAlign: 'center',
   flexDirection: 'column',
@@ -20,6 +21,7 @@ const StyledContainer = styled(Paper, {label: 'StyledContainer'})(({theme}) => (
   justifyContent: 'center',
   '& > input': {
     textAlign: 'center',
+    backgroundColor: '#fff',
   },
 }))
 
@@ -38,10 +40,10 @@ const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
 const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
   fontFamily: latoFont,
 
-  fontWeight: 'bold',
+  fontWeight: 400,
   fontSize: '24px',
   textAlign: 'center',
-  marginBottom: theme.spacing(1.5),
+  marginBottom: theme.spacing(0),
 
   color: '#2A2A2A',
   '& > input': {
@@ -57,18 +59,8 @@ const Completion: React.FunctionComponent<{
   return (
     <>
       <StyledContainer>
-        <Box
-          sx={{
-            width: '80px',
-            height: '80px',
-            backgroundColor: '#2a2a2a',
-            position: 'absolute',
-            borderRadius: '50%',
-            paddingTop: '23px',
-            top: '-46px',
-          }}>
-          <DoneCheck />
-        </Box>
+        <DoneCheck sx={{color: '#63A650', top: '-16px', fontSize: '64px', position: 'absolute'}} />
+
         <FormControl variant="standard" fullWidth sx={{mb: 1}}>
           <StyledH1
             area-label="title"

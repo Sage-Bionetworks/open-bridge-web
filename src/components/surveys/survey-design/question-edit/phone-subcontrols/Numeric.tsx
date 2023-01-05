@@ -29,6 +29,7 @@ const StyledLabel = styled(DisappearingInput, {
   '& > input': {
     padding: theme.spacing(0.125, 1),
     textAlign: 'center',
+    backgroundColor: '#fff',
   },
 }))
 

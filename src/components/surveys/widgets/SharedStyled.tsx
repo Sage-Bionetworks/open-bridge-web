@@ -75,8 +75,8 @@ export const FakeInput = styled('div', {label: 'FakeInput'})<{
   height: `${height}px`,
   lineHeight: `${height}px`,
   margin: '0 auto 24px auto',
-  background: '#FFF',
-  border: '1px solid #2A2A2A',
+  background: '#F1F3F5',
+  //border: '1px solid #2A2A2A',
 }))
 /*
 export const QuestionEditToolbarContainer = styled('div', {label: 'QuestionEditToolbarContainer'})(({theme}) => ({

@@ -18,7 +18,8 @@ const PhoneDiv = styled('div', {label: 'phoneDiv'})(({theme}) => ({
   flexDirection: 'column',
   justifyContent: 'space-between',
 
-  margin: '64px auto 60px auto',
+  margin: '64px auto 40px auto',
+  textAlign: 'left',
 }))
 
 type PhoneDisplayProps = {

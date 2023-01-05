@@ -1,4 +1,3 @@
-import {ReactComponent as SliderThumb} from '@assets/surveys/slider_thumb.svg'
 import {DisappearingInput, FakeInput} from '@components/surveys/widgets/SharedStyled'
 import {styled} from '@mui/material'
 import {latoFont} from '@style/theme'
@@ -11,6 +10,13 @@ const StyledContainer = styled('div', {label: 'StyledContainer'})(() => ({
   justifyContent: 'center',
 }))
 
+const SliderThumb = styled('div', {label: 'SliderThumb'})(({theme}) => ({
+  width: theme.spacing(3),
+  height: theme.spacing(3),
+  background: theme.palette.primary.main,
+  borderRadius: '50%',
+  boxShadow: `0px 1px 4px '#AEB5BC'`,
+}))
 const ScaleDisplay = styled('div', {label: 'Scale'})<{
   width: number
 }>(({width}) => ({
@@ -25,9 +31,10 @@ const Labels = styled('div', {label: 'labels'})(({theme}) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  margin: theme.spacing(5, -4, 0, -4),
+  margin: theme.spacing(9, -2.5, 0, -2.5),
   '& > *': {
     width: '80px',
+    backgroundColor: '#fff',
   },
   '& div:first-of-type, span:first-of-type': {
     textAlign: 'left',
@@ -45,26 +52,29 @@ const CircleContainer = styled('div', {label: 'Circle'})<{
   cradius: number
 }>(({left, cradius}) => ({
   left: `${left}px`,
+  top: '-3px',
   textAlign: 'center',
   width: `${cradius * 2}px`,
   position: 'absolute',
+
+  fontWeight: 300,
+  fontSize: '24px',
   '&> div.circle': {
     width: `${cradius * 2}px`,
     height: `${cradius * 2}px`,
     borderRadius: '50%',
-    backgroundColor: ' #B0B0B6',
-    background: '#B0B0B6',
-    boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.25)',
+    marginBottom: '12px',
+    background: '#F1F3F5',
+    boxShadow: 'inset 0px 1px 4px #AEB5BC',
   },
 }))
 const LikertLine = styled('div', {label: 'LikertLine'})<{width?: number}>(() => ({
-  backgroundColor: ' #B0B0B6',
+  backgroundColor: ' #EAECEE',
   height: '2px',
   top: '7px',
-  width: `100%`,
+  width: `95%`,
   position: 'absolute',
-  background: ' #D3D3DB',
-  boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.25)',
+  background: ' #EAECEE',
 }))
 
 const SliderLine = styled('div', {label: 'LikertLine'})<{width?: number}>(() => ({
@@ -140,11 +150,11 @@ const Scale: React.FunctionComponent<{
   step: ScaleQuestion
   onChange: (step: ScaleQuestion) => void
 }> = ({step, onChange}) => {
-  const circleRadius = 8
+  const circleRadius = 11
   const {minimumValue = 0, maximumValue = step.uiHint === 'likert' ? 7 : 100} = step.inputItem.formatOptions
   const range = maximumValue - minimumValue + 1
   //const width = range > 3 ? 125 : 100
-  const width = step.uiHint === 'likert' ? 125 : 166
+  const width = step.uiHint === 'likert' ? 200 : 190
   return (
     <StyledContainer>
       {step.uiHint === 'likert' && (
@@ -166,7 +176,7 @@ const Scale: React.FunctionComponent<{
         <div style={{textAlign: 'center'}}>
           <FakeInput />
           <ScaleDisplay width={width} key="scale">
-            <Labels sx={{marginTop: '5px', marginLeft: '-16px'}}>
+            <Labels sx={{marginTop: '15px', marginLeft: '-18px'}}>
               <span className="sliderVal" key="min">
                 {' '}
                 {minimumValue}
@@ -175,7 +185,7 @@ const Scale: React.FunctionComponent<{
                 {maximumValue}
               </span>
             </Labels>
-            <SliderLine /> <SliderThumb style={{position: 'absolute', top: 0, left: '-2px'}} />
+            <SliderLine sx={{top: '9px'}} /> <SliderThumb style={{position: 'absolute', top: 0, left: '-2px'}} />
             <Labels sx={{marginTop: '12px'}}>
               <MinMaxLabel type="MIN" step={step} onChange={onChange} />
               <MinMaxLabel type="MAX" step={step} onChange={onChange} />

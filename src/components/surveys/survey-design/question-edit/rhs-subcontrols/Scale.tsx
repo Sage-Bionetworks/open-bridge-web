@@ -41,7 +41,7 @@ const ValueSelector: React.FunctionComponent<{
   }
 
   return (
-    <StyledFormControl sx={{marginRight: theme.spacing(2)}}>
+    <StyledFormControl sx={{marginRight: theme.spacing(2), marginLeft: theme.spacing(2)}}>
       <StyledLabel14 mb={0.5} id={CONFIG[type].labelId}>
         {CONFIG[type].label}
       </StyledLabel14>

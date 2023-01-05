@@ -1,8 +1,8 @@
-import {StyledCheckbox, StyledFormControl} from '@components/surveys/widgets/SharedStyled'
+import {StyledFormControl} from '@components/surveys/widgets/SharedStyled'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
 import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
-import {Box, FormControlLabel, Typography} from '@mui/material'
-import {poppinsFont, theme} from '@style/theme'
+import {Box, Checkbox, FormControlLabel, Typography} from '@mui/material'
+import {theme} from '@style/theme'
 import {FormatOptionsInteger, NumericQuestion} from '@typedefs/surveys'
 import React, {ChangeEvent} from 'react'
 
@@ -89,8 +89,10 @@ const Numeric: React.FunctionComponent<{
     <>
       <FormControlLabel
         sx={{mt: theme.spacing(1.5)}}
-        control={<StyledCheckbox checked={rangeDisabled} onChange={e => changeRangeDisabled(e.target.checked)} />}
-        label={<Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>No min and max validation</Typography>}
+        control={
+          <Checkbox color="primary" checked={rangeDisabled} onChange={e => changeRangeDisabled(e.target.checked)} />
+        }
+        label={<Typography sx={{fontWeight: '14px'}}>No min and max validation</Typography>}
       />
       <Box
         sx={{

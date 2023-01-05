@@ -136,6 +136,9 @@ export const SimpleTextInput = styled(TextField, {label: 'SimpleTextInput', shou
   multiline: {
     padding: 0,
   },
+  '& fieldset': {
+    border: 'none',
+  },
 
   '& input, textarea': {
     borderRadius: '1px',
@@ -144,14 +147,14 @@ export const SimpleTextInput = styled(TextField, {label: 'SimpleTextInput', shou
     // backgroundColor: theme.palette.common.white,
     fontSize: '14px',
     width: '100%',
-    padding: '10px 12px',
-    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    padding: '4px 12px',
+    //  transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [latoFont, 'Roboto'].join(','),
-    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
+    /*   '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
       ' -webkit-box-shadow': '0 0 0 30px white inset !important',
-    },
+    },*/
     '&.Mui-disabled': {
-      backgroundColor: 'rgba(239, 239, 239, 0.3)',
+      backgroundColor: '#2A2A2A1A',
     },
   },
   fullWidth: {

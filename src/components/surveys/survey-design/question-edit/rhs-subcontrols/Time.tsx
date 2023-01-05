@@ -1,9 +1,19 @@
 import {getDropdownTimeItems} from '@components/studies/scheduler/utility'
-import {StyledCheckbox, StyledFormControl, StyledLabel14} from '@components/surveys/widgets/SharedStyled'
+import {StyledFormControl, StyledLabel14} from '@components/surveys/widgets/SharedStyled'
 import {StyledDropDown, StyledDropDownItem} from '@components/surveys/widgets/StyledDropDown'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
-import {Box, FormControlLabel, MenuItem, OutlinedInput, Radio, RadioGroup, styled, Typography} from '@mui/material'
-import {poppinsFont, theme} from '@style/theme'
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  MenuItem,
+  OutlinedInput,
+  Radio,
+  RadioGroup,
+  styled,
+  Typography,
+} from '@mui/material'
+import {theme} from '@style/theme'
 import {FormatOptionsTime, TimeQuestion} from '@typedefs/surveys'
 import React, {ChangeEvent} from 'react'
 
@@ -123,8 +133,8 @@ const Time: React.FunctionComponent<{
     <>
       <FormControlLabel
         sx={{mt: theme.spacing(1.5)}}
-        control={<StyledCheckbox checked={rangeDisabled} onChange={e => changeRangeDisabled(e.target.checked)} />}
-        label={<Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>No min and max validation</Typography>}
+        control={<Checkbox checked={rangeDisabled} onChange={e => changeRangeDisabled(e.target.checked)} />}
+        label={<Typography sx={{fontWeight: '14px'}}>No min and max validation</Typography>}
       />
       <Box
         sx={{
