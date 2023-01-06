@@ -213,7 +213,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
       </Box>
 
       <Loader reqStatusLoading={getSurveysStatus === 'loading'}>
-        <Box sx={{backgroundColor: 'rgba(135, 142, 149, 0.1)', paddingTop: theme.spacing(7)}}>
+        <Box sx={{backgroundColor: '#FBFBFC', paddingTop: theme.spacing(7)}}>
           <Container maxWidth="lg">
             <StyledSurveysContainer key="container">
               {surveys?.map((survey, index) => (

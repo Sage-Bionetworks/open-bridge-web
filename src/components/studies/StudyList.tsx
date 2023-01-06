@@ -336,7 +336,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           </Button>
         </Box>
 
-        <Box sx={{backgroundColor: 'rgba(135, 142, 149, 0.1)', paddingTop: theme.spacing(7)}}>
+        <Box sx={{backgroundColor: '#FBFBFC', paddingTop: theme.spacing(7)}}>
           <Container maxWidth="lg">
             {studies && studies.length > 0 && (
               <Box sx={{paddingBottom: '24px'}} key={statusFilter || 'all'}>
