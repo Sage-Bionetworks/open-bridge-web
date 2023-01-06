@@ -1,10 +1,9 @@
-import {ReactComponent as DemoPhone} from '@assets/preview/demo_phone.svg'
-import {StyledToggleButton, StyledToggleButtonGroup, WhiteButton} from '@components/widgets/StyledComponents'
+import {StyledToggleButton, StyledToggleButtonGroup} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import ViewListIcon from '@mui/icons-material/ViewListTwoTone'
 import ViewModuleIcon from '@mui/icons-material/ViewModuleTwoTone'
-import {Box, Container, styled, Typography} from '@mui/material'
+import {Box, Button, Container, styled, Typography} from '@mui/material'
 import {theme} from '@style/theme'
 import {Assessment, AssessmentsType, StringDictionary, ViewType} from '@typedefs/types'
 import {FunctionComponent, ReactNode} from 'react'
@@ -43,11 +42,15 @@ paddingTop: theme.spacing(1),}*/
 }))
 
 const StyledAssessmentContainer = styled(Container, {label: 'StyledAssessmentContainer'})(({theme}) => ({
-  padding: theme.spacing(1),
+  padding: theme.spacing(2, 5),
   textAlign: 'center',
   color: theme.palette.text.secondary,
+  [theme.breakpoints.up('md')]: {
+    padding: theme.spacing(2, 5),
+  },
   [theme.breakpoints.down('md')]: {
     maxWidth: '600px',
+    padding: theme.spacing(2, 1),
   },
 }))
 
@@ -137,34 +140,32 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
       <Box
         sx={{
           background: 'linear-gradient(360deg, #EDEEF2 22.68%, #FAFAFB 85.05%)',
-          padding: theme.spacing(5.5, 0, 4.5, 0),
+          padding: theme.spacing(5.5, 5, 4.5, 5),
+          display: 'flex',
+          justifyContent: 'space-between',
         }}>
-        <Container maxWidth="lg">
+        <Box>
           <Typography variant="h2" sx={{marginBottom: theme.spacing(3)}}>
             Assessments
           </Typography>
           <Typography component={'p'} sx={{fontSize: '16px'}}>
             Need some text here
           </Typography>
-        </Container>
+        </Box>
+        {isAssessmentLibrary && token && (
+          <NavLink to={'assessments/preview'} style={{textDecoration: 'none'}}>
+            <Button variant="outlined">Demo All Assessments</Button>
+          </NavLink>
+        )}
       </Box>
       <StyledAssessmentContainer maxWidth="xl">
-        {isAssessmentLibrary && token && (
-          <Box textAlign="right" mx={1} mb={6}>
-            <NavLink to={'assessments/preview'} style={{textDecoration: 'none'}}>
-              <WhiteButton variant="contained" style={{fontSize: '15px'}}>
-                <DemoPhone />
-                Demo all assessments
-              </WhiteButton>
-            </NavLink>
-          </Box>
-        )}
         {surveyToggle['SURVEY BUILDER'] && false && (
           <AssessmentTypeToggle assessmentType={assessmentsType} onChange={t => onChangeAssessmentsType(t)} />
         )}
-        <Box textAlign="right" mx={1} mb={6}>
+
+        <Box textAlign="right" mt={4} mb={6}>
           <StyledToggleButtonGroup
-            width={72}
+            width={78}
             value={viewMode}
             exclusive
             onChange={(e, _val) => {
