@@ -1,6 +1,6 @@
 import {Color} from '@mui/material'
 
-import {createTheme, Theme} from '@mui/material/styles'
+import {createTheme, darken, Theme} from '@mui/material/styles'
 import {CSSProperties} from 'react'
 
 type cssGlobalClasses = {
@@ -243,6 +243,16 @@ const theme: Theme = createTheme({
           '&.Mui-disabled': {
             backgroundColor: 'transparent',
             color: '#AEB5BC;',
+          },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            backgroundColor: 'transparent',
+            color: darken('#4F527D', 0.8),
           },
         },
       },
