@@ -5,7 +5,6 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import {shouldForwardProp, theme} from '@style/theme'
-import {DisplayStudyPhase} from '@typedefs/types'
 import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
 
@@ -124,7 +123,7 @@ type CardWithMenuProps = {
   leftBottomChild?: React.ReactNode
   rightBottomChild?: React.ReactNode
   shouldHaveSpaceAfterName?: boolean
-  topStatus?: DisplayStudyPhase | 'Unknown'
+  topStatus?: string
   statusColor: StatusColor
 
   isMenuOpen: boolean

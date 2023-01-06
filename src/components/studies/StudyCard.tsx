@@ -4,6 +4,7 @@ import {Box, styled} from '@mui/material'
 import StudyService from '@services/study.service'
 import {DisplayStudyPhase, Study} from '@typedefs/types'
 import dayjs from 'dayjs'
+import {capitalize} from 'lodash'
 import {FunctionComponent} from 'react'
 import {useAdherenceForWeek} from './adherenceHooks'
 
@@ -78,6 +79,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
     )
 
   const displayStatus = StudyService.getDisplayStatusForStudyPhase(study.phase)
+
   const shouldHaveSpaceAfterName = study.phase === 'design' ? true : false
   const statusColor = getColorForStudyPhase(displayStatus)
   return (
@@ -89,7 +91,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
       onRename={onRename}
       isRename={isRename}
       shouldHighlight={isNewlyAddedStudy}
-      topStatus={displayStatus}
+      topStatus={capitalize(displayStatus)}
       statusColor={statusColor}
       shouldHaveSpaceAfterName={shouldHaveSpaceAfterName}
       leftBottomChild={leftBottomChild}

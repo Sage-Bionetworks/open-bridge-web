@@ -383,7 +383,7 @@ async function getAllPages<T>(fn: Function, args: any[]): Promise<{items: T[]; t
   })
 }
 function capitalize(s: string) {
-  return s && s[0].toUpperCase() + s.slice(1)
+  return s && s[0].toUpperCase() + s.slice(1).toLowerCase()
 }
 
 //shallow equal
