@@ -88,18 +88,19 @@ const ScrollableArea = styled('div', {
 }))
 
 const StyledStartButton = styled('div')(({theme}) => ({
-  height: theme.spacing(5),
-  lineHeight: theme.spacing(5),
+  height: '50px',
+  lineHeight: '50px',
   cursor: 'default',
-  backgroundColor: '#2A2A2A',
-  borderRadius: '100px',
+  backgroundColor: '#EAECEE',
+  borderRadius: '5px',
   textAlign: 'center',
-
   fontFamily: latoFont,
-  fontWeight: 600,
+  fontWeight: 900,
   fontSize: '16px',
-  color: '#fff',
-  marginTop: '-20px',
+
+  position: 'absolute',
+  bottom: '30px',
+  width: '230px',
 }))
 
 type QuestionEditProps = {

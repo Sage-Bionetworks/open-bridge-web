@@ -431,21 +431,23 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                     dependentQuestions={findDependentQuestions()}
                     step={getCurrentStep()!}
                     onChange={(step: Step) => updateCurrentStep(step)}>
-                    <QuestionEditToolbar
-                      isDynamic={isDynamicStep()}
-                      dependentQuestions={findDependentQuestions()}
-                      onAction={action => {
-                        if (action === 'save') {
-                          save()
-                        }
-                        if (action === 'delete') {
-                          deleteCurrentStepAndSave()
-                        }
-                        if (action === 'duplicate') {
-                          duplicateCurrentStep()
-                        }
-                      }}
-                    />
+                    {getCurrentStep()?.type !== 'completion' && (
+                      <QuestionEditToolbar
+                        isDynamic={isDynamicStep()}
+                        dependentQuestions={findDependentQuestions()}
+                        onAction={action => {
+                          if (action === 'save') {
+                            save()
+                          }
+                          if (action === 'delete') {
+                            deleteCurrentStepAndSave()
+                          }
+                          if (action === 'duplicate') {
+                            duplicateCurrentStep()
+                          }
+                        }}
+                      />
+                    )}
                   </QuestionEditRhs>
                 )}
               </RightContainer>
