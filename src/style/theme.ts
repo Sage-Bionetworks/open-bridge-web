@@ -250,6 +250,7 @@ const theme: Theme = createTheme({
     MuiIconButton: {
       styleOverrides: {
         root: {
+          color: '#878E95',
           '&:hover': {
             backgroundColor: 'transparent',
             color: darken('#4F527D', 0.8),

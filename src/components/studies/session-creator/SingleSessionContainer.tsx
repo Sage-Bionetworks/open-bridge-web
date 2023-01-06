@@ -43,7 +43,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     minWidth: 'auto',
     position: 'absolute',
     right: '-3px',
-    top: '-6px',
+    top: '10px',
   },
   btnDeleteAssessment: {
     padding: theme.spacing(1.25, 1.25),
@@ -173,22 +173,27 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
             </SessionIcon>
           </Box>
           {numberOfSessions > 1 && (
-            <Button
-              variant="text"
+            <IconButton
               className={classes.btnDeleteSession}
               onClick={e => {
                 e.stopPropagation()
                 //onRemoveSession(studySession.guid!)
                 setIsConfirmDeleteOpen(true)
               }}>
-              <ClearIcon fontSize="small"></ClearIcon>
-            </Button>
+              {' '}
+              <ClearIcon fontSize="medium" />
+            </IconButton>
           )}
 
           <Box sx={{fontSize: '12px', textAlign: 'right', color: '#4A5056'}}>
             {getTotalSessionTime(studySession.assessments) || 0} min
             <AccessTimeTwoToneIcon
-              sx={{fontSize: '12px', verticalAlign: 'middle', marginLeft: theme.spacing(0.5)}}></AccessTimeTwoToneIcon>
+              sx={{
+                fontSize: '12px',
+                color: '#878E95',
+                verticalAlign: 'middle',
+                marginLeft: theme.spacing(0.5),
+              }}></AccessTimeTwoToneIcon>
           </Box>
         </Box>
 
@@ -254,7 +259,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
               <IconButton
                 onClick={() => setIsEditable(!isEditable)}
                 size="small"
-                style={{padding: '0px', minWidth: 'auto', marginLeft: '0'}}>
+                style={{padding: '0px', minWidth: 'auto', marginLeft: theme.spacing(1.5)}}>
                 <EditTwoToneIcon
                   sx={{
                     color: theme.palette.primary.main,
