@@ -6,10 +6,10 @@ import {BaseStep} from '@typedefs/surveys'
 
 const StyledContainer = styled(Box, {label: 'StyledContainer'})(({theme}) => ({
   position: 'relative',
-  marginTop: '120px',
+  marginTop: '130px',
   marginLeft: '-10px',
   marginRight: '-10px',
-  backgroundColor: 'red', //'#F7FBF6',
+
   padding: theme.spacing(theme.spacing(7), theme.spacing(2), theme.spacing(2), theme.spacing(2)),
 
   //background: '#FFFFFF',
