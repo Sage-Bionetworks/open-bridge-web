@@ -73,12 +73,6 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             <br></br>
             If your PI is not listed in the dropdown, please add them to the study and/or make them a{' '}
             <strong>Co-Study Administrator</strong> via the{' '}
-            <a href={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', studyIdentifier)}>
-              <strong>
-                <u>Access Settings</u>
-              </strong>
-            </a>{' '}
-            ALINA
             <Link href={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', studyIdentifier)}>
               Access Settings
             </Link>{' '}
