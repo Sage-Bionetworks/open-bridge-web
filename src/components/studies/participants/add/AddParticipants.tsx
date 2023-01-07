@@ -19,7 +19,10 @@ import AddSingleParticipant from './AddSingleParticipant'
 import ImportParticipantsInstructions from './ImportParticipantsInstuctions'
 
 const StyledTabs = styled(Tabs, {label: 'StyledTabs '})(({theme}) => ({
-  margin: theme.spacing(0, 5),
+  margin: theme.spacing(0),
+  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.05)',
+  padding: theme.spacing(0, 5),
+
   [`& .MuiTabs-indicator`]: {
     backgroundColor: '#9499C7',
     height: theme.spacing(0.5),
