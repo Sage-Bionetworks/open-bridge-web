@@ -1,4 +1,4 @@
-import {PlotDaysDisplay, useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
+import {useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
 import {getSessionSymbolName} from '@components/widgets/SessionIcon'
 import UtilityObject from '@helpers/utility'
 import {Box} from '@mui/material'
@@ -12,6 +12,7 @@ import AdherenceUtility from '../adherenceUtility'
 import DayDisplay from '../DayDisplay'
 import RowLabel from '../RowLabel'
 import {useCommonStyles} from '../styles'
+import TableHeader from '../TableHeader'
 
 const useStyles = makeStyles(theme => ({
   daysList: {
@@ -19,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(0.5),
   },
   startEventId: {
-    width: theme.spacing(20),
+    width: theme.spacing(17),
     fontSize: '12px',
     fontFamily: latoFont,
     padding: theme.spacing(0, 1, 0, 2),
@@ -121,17 +122,7 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
   return (
     <div ref={ref} className={classes.adherenceGrid}>
       <div className={classes.daysList} key={'day_list'}>
-        <PlotDaysDisplay
-          title="Day in Study"
-          titleStyle={dayListingTitleStyle}
-          unitWidth={dayWidthInPx}
-          endLabel={
-            <div className={classes.adherenceLabel} style={adHerenceLabelStyle}>
-              Adherence
-              <br />%
-            </div>
-          }
-        />
+        <TableHeader prefixColumns={[['Schedule by weekday', 138]]} unitWidth={dayWidthInPx} />
       </div>
       {adherenceReport.weeks.map((week, weekIndex) => (
         <div className={classes.eventRowForWeek} key={`${'inner' + week.weekInStudy}_${weekIndex}`}>

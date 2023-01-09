@@ -5,6 +5,7 @@ import {ReactComponent as UnderConstructionCone} from '@assets/participants/unde
 import {ReactComponent as UnderConstructionGirl} from '@assets/participants/under_construction_girl.svg'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import TablePagination from '@components/widgets/pagination/TablePagination'
+import ParticipantAdherenceContentShell from '@components/widgets/ParticipantAdherenceContentShell'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import {default as Utility} from '@helpers/utility'
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone'
@@ -14,7 +15,7 @@ import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone'
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone'
 import PersonAddAlt1TwoToneIcon from '@mui/icons-material/PersonAddAlt1TwoTone'
 import PersonRemoveAlt1TwoToneIcon from '@mui/icons-material/PersonRemoveAlt1TwoTone'
-import {Box, Button, CircularProgress, Container, styled, Tab, Tabs, Typography} from '@mui/material'
+import {Box, Button, CircularProgress, Container, styled, Tab, Tabs} from '@mui/material'
 import Alert from '@mui/material/Alert'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import StudyService from '@services/study.service'
@@ -308,15 +309,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       )}
       {!displayPlaceholderScreen && (
         <>
-          <Box
-            sx={{
-              background: 'linear-gradient(360deg, #EDEEF2 0%, #FAFAFB 85.05%)',
-              padding: theme.spacing(2, 7, 0, 7),
-            }}>
-            <Typography variant="h2" sx={{marginBottom: theme.spacing(4)}}>
-              Participant Manager
-            </Typography>
-
+          <ParticipantAdherenceContentShell title="Participant Manager">
             <Tabs
               color="secondary"
               value={tab}
@@ -342,7 +335,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 />
               ))}
             </Tabs>
-          </Box>
+          </ParticipantAdherenceContentShell>
           <Box sx={{backgroundColor: '#fff', padding: theme.spacing(0)}}>
             <CollapsibleLayout
               isOpen={isAddOpen}

@@ -19,9 +19,6 @@ import Filter from './Filter'
 import ProgressionFilter from './ProgressionFilter'
 
 const useStyles = makeStyles(theme => ({
-  mainContainer: {
-    padding: theme.spacing(4, 3),
-  },
   clearFiltersButton: {
     fontFamily: latoFont,
     margin: theme.spacing(0, 0, 2, 'auto'),
@@ -99,7 +96,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> = () 
     return result
   }
   return (
-    <div className={classes.mainContainer}>
+    <div>
       <Box display="flex" mt={0} mb={1}>
         {isDataLoaded() && (
           <ProgressionFilter

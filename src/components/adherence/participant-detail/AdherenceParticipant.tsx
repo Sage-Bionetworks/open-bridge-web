@@ -1,12 +1,13 @@
 import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import EditIcon from '@assets/edit_pencil_red.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
+import StudyBuilderHeader from '@components/studies/StudyBuilderHeader'
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
-import NonDraftHeaderFunctionComponent from '@components/widgets/StudyWithPhaseImage'
+import ParticipantAdherenceContentShell from '@components/widgets/ParticipantAdherenceContentShell'
 import CheckIcon from '@mui/icons-material/CheckCircleTwoTone'
-import {Box, Button, Paper, styled, Tooltip} from '@mui/material'
+import {Box, Button, Paper, styled, Tooltip, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useEnrollmentForParticipant} from '@services/enrollmentHooks'
 import {useEventsForUser} from '@services/eventHooks'
@@ -38,9 +39,8 @@ const BottomBox = styled('div', {label: 'BottomBox'})(({theme}) => ({
 
 const useStyles = makeStyles(theme => ({
   mainContainer: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(0, 6),
     margin: theme.spacing(4, 0),
-    backgroundColor: '#f8f8f8',
   },
 
   editEventDate: {
@@ -126,23 +126,21 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
   }
 
   return (
-    <Box bgcolor="#F8F8F8" px={5}>
+    <Box>
       <LoadingComponent
         reqStatusLoading={isStudyLoading || isAdherenceLoading || isEnrollmentLoading || !enrollment}
         variant="full">
-        <Box px={3} py={2} display="flex" alignItems="center">
-          <NonDraftHeaderFunctionComponent study={study} />
-        </Box>
+        <StudyBuilderHeader study={study!} />
+        <ParticipantAdherenceContentShell>
+          <BreadCrumb links={getBreadcrumbLinks()}></BreadCrumb>
 
-        <BreadCrumb links={getBreadcrumbLinks()}></BreadCrumb>
-        <Paper className={classes.mainContainer} elevation={2}>
           {/*adherenceReport?.progression === 'done' && <CelebrationBg className={classes.celebration} />*/}
-          <Box display="flex" alignItems="center" mb={2}>
+          <Box display="flex" alignItems="center" my={2}>
             {' '}
             <PersonIcon />
-            <MTBHeadingH4>
+            <Typography variant="h2">
               {ParticipantService.formatExternalId(studyId, adherenceReport?.participant?.externalId || '', true)}
-            </MTBHeadingH4>
+            </Typography>
             {adherenceReport?.progression === 'done' && (
               <Tooltip title="Completed Study">
                 <CheckIcon sx={{color: '#63A650'}} />
@@ -162,20 +160,21 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
             <MTBHeadingH4> Client TimeZone</MTBHeadingH4>
             {adherenceReport?.clientTimeZone || 'Unknown'}
           </Box>
-          <Box mb={2}>
+          <Box pb={6}>
             <MTBHeadingH4>Health Code </MTBHeadingH4>
             {enrollment ? enrollment.healthCode : ''}
-
-            <Box display="flex" mt={4} mb={2}>
-              {participantSessions?.map((s, index) => (
-                <SessionLegend
-                  key={s.sessionGuid}
-                  symbolKey={s.sessionSymbol}
-                  sessionIndex={index}
-                  sessionName={s.sessionName}
-                />
-              ))}
-            </Box>
+          </Box>
+        </ParticipantAdherenceContentShell>
+        <Paper className={classes.mainContainer} elevation={2}>
+          <Box display="flex" mt={4} mb={2}>
+            {participantSessions?.map((s, index) => (
+              <SessionLegend
+                key={s.sessionGuid}
+                symbolKey={s.sessionSymbol}
+                sessionIndex={index}
+                sessionName={s.sessionName}
+              />
+            ))}
           </Box>
           {
             <AdherenceParticipantGrid
