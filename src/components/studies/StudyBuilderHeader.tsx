@@ -1,14 +1,13 @@
 import StudyWithPhaseImage from '@components/widgets/StudyWithPhaseImage'
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone'
-import {Box, SxProps} from '@mui/material'
+import {Box, Button, SxProps} from '@mui/material'
 import constants from '@typedefs/constants'
 import {DisplayStudyPhase, Study} from '@typedefs/types'
 
-import {getStyledToolbarLinkStyle} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import {styled} from '@mui/material'
 import StudyService from '@services/study.service'
-import {NavLink} from 'react-router-dom'
+import {useHistory} from 'react-router-dom'
 
 const BG_COLOR: Record<DisplayStudyPhase, string> = {
   DRAFT: 'rgba(194, 46, 73, .1)',
@@ -20,21 +19,14 @@ const BG_COLOR: Record<DisplayStudyPhase, string> = {
 const StyledStudyHeader = styled(Box, {label: 'StyledStudyHeader'})(({theme}) => ({
   display: 'flex',
   marginLeft: '-3px',
-  padding: theme.spacing(3, 7, 2, 7),
+  padding: theme.spacing(3, 8, 2, 8),
   justifyContent: 'space-between',
   alignItems: 'center',
   //marginBottom: theme.spacing(4),
 }))
-const StyledAccessLink = styled(NavLink, {label: 'StyledAccessLink'})(({theme}) => ({
-  ...getStyledToolbarLinkStyle(theme),
-  fontSize: '14px',
-  color: theme.palette.primary.main,
-  margin: 0,
-  justifyContent: 'flex-end',
-  textTransform: 'capitalize',
-}))
 
 const StudyBuilderHeader: React.FunctionComponent<{study: Study; sx?: SxProps}> = ({study, sx = {}}) => {
+  const history = useHistory()
   return (
     <StyledStudyHeader
       sx={{
@@ -44,12 +36,12 @@ const StudyBuilderHeader: React.FunctionComponent<{study: Study; sx?: SxProps}> 
       <StudyWithPhaseImage study={study} />
 
       {(Utility.isInAdminRole() || true) /* enable all aggess*/ && (
-        <StyledAccessLink
-          to={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', study.identifier)}
-          key={'path-to-access-settings'}>
-          <SettingsTwoToneIcon />
-          &nbsp; Access settings
-        </StyledAccessLink>
+        <Button
+          variant="text"
+          onClick={() => history.push(constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', study.identifier))}
+          startIcon={<SettingsTwoToneIcon />}>
+          Access settings
+        </Button>
       )}
     </StyledStudyHeader>
   )

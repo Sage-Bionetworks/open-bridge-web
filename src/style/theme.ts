@@ -129,6 +129,7 @@ const theme: Theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: ({ownerState}) => ({
+          textTransform: 'capitalize',
           height: '50px',
           padding: '0 40px',
           fontWeight: 900,
@@ -140,8 +141,8 @@ const theme: Theme = createTheme({
             }),
           ...(ownerState.size === 'small' &&
             ownerState.variant === 'outlined' && {
-              height: '40px',
-              padding: '0 20px',
+              height: '30px',
+              padding: '0 24px',
             }),
           ...(ownerState.variant === 'text' && {
             padding: '0 20px',
@@ -179,7 +180,7 @@ const theme: Theme = createTheme({
         containedPrimary: {
           fontWeight: 900,
           fontSize: '16px',
-
+          fontFamily: latoFont,
           color: '#fff',
           boxShadow: 'none',
           background: '#4F527D',
@@ -231,6 +232,8 @@ const theme: Theme = createTheme({
           color: '#4F527D',
           borderRadius: 0,
           background: 'transparent',
+          fontWeight: 900,
+
           '&:hover': {
             backgroundColor: 'transparent',
             textDecoration: 'underline',

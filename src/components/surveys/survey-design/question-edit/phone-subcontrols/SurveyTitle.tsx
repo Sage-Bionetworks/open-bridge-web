@@ -5,8 +5,8 @@ import {styled} from '@mui/material/styles'
 import {BaseStep} from '@typedefs/surveys'
 import React from 'react'
 
-const TitleIcon = styled('div')(({theme}) => ({
-  height: theme.spacing(6),
+const TitleIcon = styled('div', {label: 'TitleIcon'})(({theme}) => ({
+  height: theme.spacing(8),
   textAlign: 'left',
   marginBottom: theme.spacing(1),
   paddingLeft: theme.spacing(1),

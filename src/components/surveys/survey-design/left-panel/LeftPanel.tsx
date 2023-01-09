@@ -92,8 +92,8 @@ const TitleRow: React.FunctionComponent<{
   isCurrent?: boolean
 }> = ({surveyId, guid, isCurrent}) => {
   return (
-    <TitleStyledRow id="top">
-      <div className={isCurrent ? 'current' : ''}>
+    <TitleStyledRow id="top" className={isCurrent ? 'current' : ''}>
+      <div>
         <StyledNavLink to={`/surveys/${guid}/design/intro`}>
           <SettingsIcon style={{margin: '10px', maxWidth: '20px'}} />
           <div>Survey ID: {surveyId}</div>
