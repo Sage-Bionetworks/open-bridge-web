@@ -150,53 +150,6 @@ const FrequencyBracket: React.FunctionComponent<{
   )
 }
 
-export const PlotDaysDisplay: React.FunctionComponent<{
-  unitWidth: number
-  title: React.ReactNode
-  endLabel?: React.ReactNode
-  titleStyle?: React.CSSProperties
-}> = ({unitWidth, title, endLabel, titleStyle}) => {
-  const classes = useStyles()
-  const defaultTitleStyle = {
-    width: `${99 + unitWidth / 2}px`,
-    paddingLeft: '12px',
-    fontSize: '14px',
-    // backgroundColor: '#F1F3F5',
-
-    height: '50px',
-    display: 'flex',
-
-    alignItems: 'center',
-  }
-  return (
-    <div className={classes.week} id="week">
-      <div style={{...defaultTitleStyle, ...titleStyle}}>{title}</div>
-      <div className={classes.graph}>
-        <div className={classes.sessionName}></div>
-        <div
-          style={{
-            position: 'relative',
-            top: '-10px',
-            left: `-${unitWidth / 2}px`,
-          }}>
-          {[...new Array(7)].map((_i, index) => (
-            <div
-              key={`day_number_${index}`}
-              className={classes.dayNumbers}
-              style={{
-                width: `${unitWidth}px`,
-                left: `${unitWidth * index - 10}px`,
-              }}>
-              {index + 1}
-            </div>
-          ))}
-          {endLabel}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export function useGetPlotAndUnitWidth(ref: React.RefObject<HTMLDivElement>, nOfUnits: number, padding = 0) {
   // save current window width in the state object
   let [width, setWidth] = React.useState(ref?.current?.getBoundingClientRect()?.width)

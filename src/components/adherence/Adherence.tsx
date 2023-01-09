@@ -3,12 +3,13 @@ import AdherenceFocusIcon from '@assets/adherence/adh_tab_on.svg'
 import SummaryUnfocusIcon from '@assets/adherence/sum_tab_off.svg'
 import SummaryFocusIcon from '@assets/adherence/sum_tab_on.svg'
 import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
+import StudyBuilderHeader from '@components/studies/StudyBuilderHeader'
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
-import NonDraftHeaderFunctionComponent from '@components/widgets/StudyWithPhaseImage'
-import {Box, Tab, Tabs} from '@mui/material'
+import ParticipantAdherenceContentShell from '@components/widgets/ParticipantAdherenceContentShell'
+import {Box, CircularProgress, Tab, Tabs} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useStudy} from '@services/studyHooks'
-import {latoFont, poppinsFont} from '@style/theme'
+import {latoFont, poppinsFont, theme} from '@style/theme'
 import {ExtendedParticipantAccountSummary} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
@@ -90,22 +91,31 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
   const classes = useStyles()
 
   const {data: study, error: studyError, isLoading: isStudyLoading} = useStudy(studyId)
+  if (!study) {
+    return isStudyLoading ? (
+      <Box mx="auto" my={5} textAlign="center">
+        <CircularProgress />
+      </Box>
+    ) : (
+      <></>
+    )
+  }
 
   return (
-    <Box bgcolor="#F8F8F8" px={5} minHeight="100vh">
-      <Box px={3} py={2} display="flex" alignItems="center">
-        <NonDraftHeaderFunctionComponent study={study} />
-      </Box>
-
-      <Box py={0} pr={3} pl={2}>
-        <Tabs value={tab} variant="standard" onChange={handleTabChange} TabIndicatorProps={{hidden: true}}>
+    <Box minHeight="100vh">
+      <StudyBuilderHeader study={study} />
+      <ParticipantAdherenceContentShell title="Adherence Data">
+        <Tabs
+          value={tab}
+          onChange={handleTabChange}
+          color="secondary"
+          variant="standard"
+          TabIndicatorProps={{hidden: true}}>
           {TAB_DEFs.map((tabDef, index) => (
             <Tab
               key={`tab_${tabDef.label}`}
               value={tabDef.type}
-              classes={{
-                root: clsx(classes.tab, tab === tabDef.type && classes.selectedTab),
-              }}
+              sx={tab === tabDef.type ? {zIndex: 100, backgroundColor: theme.palette.common.white} : {}}
               icon={
                 <Box
                   display="flex"
@@ -129,11 +139,11 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
             />
           ))}
         </Tabs>
-        <Box bgcolor="white">
-          <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-            {tab === 'SUMMARY' ? <AdherenceSummary /> : <AdherenceParticipants />}
-          </ErrorBoundary>
-        </Box>
+      </ParticipantAdherenceContentShell>
+      <Box sx={{backgroundColor: '#fff', padding: theme.spacing(4, 7)}}>
+        <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+          {tab === 'SUMMARY' ? <AdherenceSummary /> : <AdherenceParticipants />}
+        </ErrorBoundary>
       </Box>
     </Box>
   )

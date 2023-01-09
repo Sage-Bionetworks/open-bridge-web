@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 2),
     fontStyle: latoFont,
     fontSize: '12px',
-    border: '1px solid black',
+    backgroundColor: ' #FBFBFC',
     marginRight: theme.spacing(1),
     '& strong': {
       marginLeft: '15px',

@@ -1,4 +1,4 @@
-import {PlotDaysDisplay, useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
+import {useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
 import {Box, styled, Tooltip} from '@mui/material'
 import {Link} from 'react-router-dom'
 
@@ -7,13 +7,13 @@ import makeStyles from '@mui/styles/makeStyles'
 import {getSessionSymbolName} from '@components/widgets/SessionIcon'
 import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
-import {theme} from '@style/theme'
 import {AdherenceWeeklyReport, ProgressionStatus, SessionDisplayInfo} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import AdherenceUtility from '../adherenceUtility'
 import DayDisplay from '../DayDisplay'
 import {useCommonStyles} from '../styles'
+import TableHeader from '../TableHeader'
 import NextActivity from './NextActivity'
 
 const StyledParticipantRow = styled(Box, {label: 'StyledParticipantRow'})<{progression?: ProgressionStatus}>(
@@ -37,7 +37,7 @@ export const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(1),
   },
   labelDisplay: {
-    width: theme.spacing(17),
+    width: theme.spacing(15),
     display: 'flex',
     fontSize: '12px',
     lineHeight: 1,
@@ -82,39 +82,26 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
   const classes = {...useCommonStyles(), ...useStyles()}
 
   const ref = React.useRef<HTMLDivElement>(null)
-  const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 260)
+  const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 330)
   //  const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
 
   return (
     <div ref={ref} style={{marginBottom: '32px'}}>
       <div style={{display: 'flex', marginBottom: '16px'}}>
-        <Box width={theme.spacing(11)}>Participant</Box>
-        <Box width={theme.spacing(12)}>Day in Study</Box>
-        <div style={{marginLeft: '-60px'}}>
-          <PlotDaysDisplay
-            title=""
-            unitWidth={dayWidthInPx}
-            endLabel={
-              <div
-                className={classes.adherenceLabel}
-                style={{
-                  width: `${dayWidthInPx}px`,
-                  left: `${dayWidthInPx * 7 + 12}px`,
-                  top: '0px',
-                }}>
-                Adh
-                <br />%
-              </div>
-            }
-          />
-        </div>
+        <TableHeader
+          prefixColumns={[
+            ['Participant', 108],
+            ['Day in Study', 124],
+          ]}
+          unitWidth={dayWidthInPx}
+        />
       </div>
       {adherenceWeeklyReport.items.map((item, index) =>
         !item.participant ? (
           <StyledParticipantRow key={`no_participant_${index}`}>the participant withdrew</StyledParticipantRow>
         ) : (
           <StyledParticipantRow key={`${item.participant}_${index}`} progression={item.progression}>
-            <Box sx={{width: theme.spacing(11), flexShrink: 0}} key={'pIdentifier'}>
+            <Box sx={{width: '108px', flexShrink: 0}} key={'pIdentifier'}>
               <Link to={`adherence/${item.participant?.identifier || 'nothing'}`}>
                 {ParticipantService.formatExternalId(studyId, item.participant.externalId)}
               </Link>
