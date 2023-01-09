@@ -1,14 +1,14 @@
-import {ReactComponent as SaveIcon} from '@assets/surveys/actions/save.svg'
-import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import UtilityObject from '@helpers/utility'
 import CheckIcon from '@mui/icons-material/Check'
+import PauseIcon from '@mui/icons-material/PauseCircleTwoTone'
 
 import {
   Autocomplete,
   Box,
   Button,
+  Checkbox,
   Chip,
   FormControl,
   FormControlLabel,
@@ -18,7 +18,7 @@ import {
   Typography,
 } from '@mui/material'
 import {styled} from '@mui/material/styles'
-import {latoFont, poppinsFont, theme} from '@style/theme'
+import {latoFont, theme} from '@style/theme'
 import {ActionButtonName, BaseStep, InterruptionHandlingType, Survey, WebUISkipOptions} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React from 'react'
@@ -26,7 +26,6 @@ import {RouteComponentProps, withRouter} from 'react-router-dom'
 
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
-import {ActionButton, StyledCheckbox} from '../widgets/SharedStyled'
 import QUESTIONS from './left-panel/QuestionConfigs'
 
 const IntroContainer = styled('div', {label: 'IntroContainer'})(({theme}) => ({
@@ -36,7 +35,6 @@ const IntroContainer = styled('div', {label: 'IntroContainer'})(({theme}) => ({
 }))
 
 const StyledInputLabel = styled('label')(({theme}) => ({
-  fontFamily: poppinsFont,
   fontWeight: 600,
   fontSize: '18px',
   marginBottom: theme.spacing(1),
@@ -88,7 +86,7 @@ const QuestionSettings = styled('div', {label: 'QuestionSettings'})(({theme}) =>
   padding: theme.spacing(3),
 
   textAlign: 'left',
-  '& span': {fontSize: '14px', fontFamily: poppinsFont},
+  '& span': {fontSize: '14px'},
   '& .MuiRadio-root': {
     padding: theme.spacing(0.5, 1.5),
   },
@@ -137,10 +135,10 @@ const SaveButton: React.FunctionComponent<{
       Title Page
     </Button>
   ) : (
-    <Box sx={{width: '400px', position: 'fixed', right: 0, bottom: '10px'}}>
-      <ActionButton startIcon={<SaveIcon />} variant="text" disabled={isDisabled} onClick={onClick}>
+    <Box sx={{marginLeft: '185px' /*position: 'fixed', right: 0, bottom: '10px'*/}}>
+      <Button variant="contained" color="primary" disabled={isDisabled} onClick={onClick}>
         Save Changes
-      </ActionButton>
+      </Button>
     </Box>
   )
 }
@@ -337,11 +335,9 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
         <FormControlLabel
           value="SKIP"
           sx={{mt: theme.spacing(1.5)}}
-          control={
-            <StyledCheckbox checked={!hideBack} onChange={e => updateState(() => setHideBack(!e.target.checked))} />
-          }
+          control={<Checkbox checked={!hideBack} onChange={e => updateState(() => setHideBack(!e.target.checked))} />}
           label={
-            <Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>
+            <Typography sx={{fontWeight: '14px'}}>
               Allow participants to <strong>navigate back</strong>
               <br /> to previous question
             </Typography>
@@ -364,7 +360,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
             sx={{mt: theme.spacing(1.5)}}
             control={<CheckIcon sx={{marginRight: '16px', marginLeft: '8px'}} />}
             label={
-              <Typography sx={{fontFamily: poppinsFont, fontSize: '14px'}}>
+              <Typography sx={{fontSize: '14px'}}>
                 <strong> Resume (always present)</strong>
                 <br />
                 Returns participant to the screen before selecting Pause.
@@ -376,13 +372,13 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
             value={interruptionHandling.reviewIdentifier}
             sx={{mt: theme.spacing(1.5)}}
             control={
-              <StyledCheckbox
+              <Checkbox
                 checked={interruptionHandling.reviewIdentifier !== undefined}
                 onChange={e => updateInterruptonHandling('reviewIdentifier', e.target.checked)}
               />
             }
             label={
-              <Typography sx={{fontFamily: poppinsFont, fontSize: '14px'}}>
+              <Typography sx={{fontSize: '14px'}}>
                 <strong>Review Instructions</strong> <br /> Displays the Title Page message to participant for review.
               </Typography>
             }
@@ -391,13 +387,13 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
           <FormControlLabel
             sx={{mt: theme.spacing(1.5), fontSize: '14px'}}
             control={
-              <StyledCheckbox
+              <Checkbox
                 checked={interruptionHandling.canSkip}
                 onChange={e => updateInterruptonHandling('canSkip', e.target.checked)}
               />
             }
             label={
-              <Typography sx={{fontFamily: poppinsFont, fontSize: '14px'}}>
+              <Typography sx={{fontSize: '14px'}}>
                 <strong>Skip this activity</strong>
                 <br />
                 Allows participant to skip the activity this one time. Survey will be marked as "declined" and displayed
@@ -445,6 +441,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
         {}
         <Autocomplete
           multiple
+          sx={{width: '550px'}}
           area-aria-label="survey tags"
           id="survey tags"
           options={[]}
