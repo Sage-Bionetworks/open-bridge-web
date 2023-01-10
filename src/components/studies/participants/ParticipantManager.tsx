@@ -1,6 +1,5 @@
 import {ReactComponent as CollapseIcon} from '@assets/collapse.svg'
 import {ReactComponent as AddTestParticipantsIcon} from '@assets/participants/add_test_participants.svg'
-import DownloadAppIcon from '@assets/participants/download_app_icon.svg'
 import {ReactComponent as UnderConstructionCone} from '@assets/participants/under_construction_cone.svg'
 import {ReactComponent as UnderConstructionGirl} from '@assets/participants/under_construction_girl.svg'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
@@ -9,10 +8,10 @@ import ParticipantAdherenceContentShell from '@components/widgets/ParticipantAdh
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import {default as Utility} from '@helpers/utility'
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone'
-import DownloadTwoToneIcon from '@mui/icons-material/DownloadTwoTone'
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
 import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone'
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone'
+import LinkTwoToneIcon from '@mui/icons-material/LinkTwoTone'
 import PersonAddAlt1TwoToneIcon from '@mui/icons-material/PersonAddAlt1TwoTone'
 import PersonRemoveAlt1TwoToneIcon from '@mui/icons-material/PersonRemoveAlt1TwoTone'
 import {Box, Button, CircularProgress, Container, styled, Tab, Tabs} from '@mui/material'
@@ -60,8 +59,8 @@ const StyledGridToolBar = styled(Box, {label: 'StyledGridToolBar'})(({theme}) =>
 
     fontSize: '14px',
     marginRight: theme.spacing(2),
-    '& svg': {
-      marginRight: theme.spacing(0.5),
+    '&:last-of-type': {
+      marginRight: 0,
     },
   },
 }))
@@ -118,9 +117,12 @@ const GoToDownloadPageLinkSC: FunctionComponent = () => {
     <Button
       href="/app-store-download"
       target="_blank"
+      variant="text"
+      color="primary"
       aria-label="downloadApp"
-      className={classes.downloadPageLinkButton}>
-      <img src={DownloadAppIcon} style={{marginRight: '10px'}}></img> App Download Link
+      sx={{position: 'absolute', right: 0, top: 0}}
+      startIcon={<LinkTwoToneIcon />}>
+      App Download Link
     </Button>
   )
 }
@@ -396,10 +398,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         <Button
                           aria-label="add-participant"
                           variant="text"
+                          color="primary"
                           onClick={() => {
                             setIsAddOpen(true)
-                          }}>
-                          <PersonAddAlt1TwoToneIcon />
+                          }}
+                          startIcon={<PersonAddAlt1TwoToneIcon />}>
                           Add Participant
                         </Button>
                       )}
@@ -409,13 +412,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           onClick={() => {
                             setIsBatchEditOpen(true)
                           }}
-                          disabled={selectedParticipantIds[tab].length <= 1}>
-                          <EditTwoToneIcon />
+                          disabled={selectedParticipantIds[tab].length <= 1}
+                          startIcon={<EditTwoToneIcon />}>
                           Batch Edit
                         </Button>
                       )}
 
                       <ParticipantDownloadTrigger
+                        hasImage={true}
                         onDownload={() => downloadParticipants(isAllSelected ? 'ALL' : 'SOME')}
                         fileDownloadUrl={fileDownloadUrl}
                         hasItems={!!data?.items?.length && selectedParticipantIds[tab].length > 0}
@@ -424,7 +428,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           setFileDownloadUrl(undefined)
                         }}>
                         <>
-                          <DownloadTwoToneIcon />
                           {!loadingIndicators.isDownloading ? 'StudyParticipants.csv' : <CircularProgress size={24} />}
                         </>
                       </ParticipantDownloadTrigger>
@@ -437,8 +440,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             dialogOpenSMS: false,
                           })
                         }}
-                        disabled={selectedParticipantIds[tab].length === 0}>
-                        <DeleteTwoToneIcon />
+                        disabled={selectedParticipantIds[tab].length === 0}
+                        startIcon={<DeleteTwoToneIcon />}>
                         Remove from Study
                       </Button>
                     </Box>
