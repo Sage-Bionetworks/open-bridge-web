@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
   container: {
     padding: theme.spacing(2, 2, 2, 2.25),
     width: '311px',
-    backgroundColor: '#F6F6F6',
+
     marginLeft: theme.spacing(1.25),
   },
   innerContainer: {
@@ -59,7 +59,7 @@ const useStyles = makeStyles(theme => ({
     height: '140px',
     width: '225px',
     borderRadius: '10px',
-    backgroundColor: '#93CCF0',
+    backgroundColor: '#F1F3F5',
     alignSelf: 'center',
     marginTop: theme.spacing(3),
     padding: theme.spacing(0.5, 2.5, 0.5, 2.5),

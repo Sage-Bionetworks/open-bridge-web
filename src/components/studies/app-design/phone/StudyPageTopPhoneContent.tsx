@@ -1,54 +1,28 @@
-import {Box, Divider} from '@mui/material'
+import {Box, Divider, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import {latoFont, playfairDisplayFont} from '@style/theme'
 import {Contact} from '@typedefs/types'
 import React from 'react'
 import StudySummaryRoles from '../StudySummaryRoles'
 import SectionIndicator from '../widgets/SectionIndicator'
 
 const useStyles = makeStyles(theme => ({
-  sectionFourIndicatorPosition: {
-    position: 'absolute',
-    marginLeft: theme.spacing(-7),
-    top: theme.spacing(2.5),
-  },
-  headlineStyle: {
-    fontFamily: playfairDisplayFont,
-    fontStyle: 'italic',
-    fontWeight: 'normal',
-    fontSize: '21px',
-    lineHeight: '28px',
-    whiteSpace: 'pre-line',
-    textAlign: 'left',
-  },
-  bodyText: {
-    fontFamily: latoFont,
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
-    marginTop: theme.spacing(3),
-    whiteSpace: 'pre-line',
-    textAlign: 'left',
-    height: '350px',
-  },
   divider: {
     width: '256px',
     marginTop: theme.spacing(3.75),
     marginBottom: theme.spacing(3.75),
   },
-  sectionFiveIndicatorPosition: {
+  sectionIndicatorPosition: {
     position: 'absolute',
     marginLeft: theme.spacing(-7),
-    top: theme.spacing(63),
+    top: theme.spacing(2.5),
   },
   container: {
     padding: theme.spacing(2, 2, 2, 2.25),
     width: '311px',
-    backgroundColor: '#F6F6F6',
+
     marginLeft: theme.spacing(1.25),
   },
   innerContainer: {
-    backgroundColor: 'white',
     height: '100%',
     width: '100%',
     padding: theme.spacing(3, 2, 3, 2),
@@ -103,19 +77,20 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         {studyLogoUrl ? <img src={studyLogoUrl} style={{height: `${imgHeight - 16}px`}} alt="study-logo" /> : <></>}
       </Box>
       <Box className={classes.innerContainer}>
-        {!isReadOnly && <SectionIndicator index={4} className={classes.sectionFourIndicatorPosition} />}
-        <Box height="420px">
-          <Box className={classes.headlineStyle}>{studyTitle || 'Title of study...'}</Box>
-          <p className={classes.bodyText}>{studySummaryBody || 'Body...'}</p>
+        {!isReadOnly && <SectionIndicator index={4} className={classes.sectionIndicatorPosition} />}
+        <Box>
+          <Typography variant="h3">{studyTitle || 'Title of study...'}</Typography>
+          <p>{studySummaryBody || 'Body...'}</p>
         </Box>
-
-        <Divider className={classes.divider} />
+      </Box>
+      <Divider className={classes.divider} />
+      <Box className={classes.innerContainer}>
         <StudySummaryRoles
           type="Lead Principal Investigator"
           name={getContactName(leadInvestigator.name) || 'placeholder'}
           className={classes.studySummaryRoles}
         />
-        {!isReadOnly && <SectionIndicator index={5} className={classes.sectionFiveIndicatorPosition} />}
+        {!isReadOnly && <SectionIndicator index={5} className={classes.sectionIndicatorPosition} />}
 
         <StudySummaryRoles
           type="Institution"

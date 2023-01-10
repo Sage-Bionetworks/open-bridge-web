@@ -1,8 +1,6 @@
-import {Box} from '@mui/material'
+import {Box, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import {latoFont, playfairDisplayFont} from '@style/theme'
 import {WelcomeScreenData} from '@typedefs/types'
-import clsx from 'clsx'
 import React from 'react'
 import SectionIndicator from './widgets/SectionIndicator'
 
@@ -20,25 +18,11 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(-6),
     marginTop: theme.spacing(-0.25),
   },
-  headlineStyle: {
-    fontFamily: playfairDisplayFont,
-    fontStyle: 'italic',
-    fontWeight: 'normal',
-    fontSize: '21px',
-    lineHeight: '28px',
-    whiteSpace: 'pre-line',
-  },
+
   fromText: {
     marginTop: theme.spacing(1),
   },
-  bodyText: {
-    fontFamily: latoFont,
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
-    marginTop: theme.spacing(3),
-    whiteSpace: 'pre-line',
-  },
+
   salutationText: {
     marginTop: theme.spacing(5),
   },
@@ -69,30 +53,30 @@ const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneConte
       {!welcomeScreenContent.isUsingDefaultMessage && !isReadOnly && (
         <SectionIndicator index={3} className={classes.sectionThreeIndicatorPosition} />
       )}
-      <Box className={classes.headlineStyle}>
+      <Typography variant="h3">
         {welcomeScreenContent.isUsingDefaultMessage
           ? 'Welcome to \n' + studyTitle + '!'
           : welcomeScreenContent.welcomeScreenHeader || 'Main Header'}
-      </Box>
-      <p className={clsx(classes.bodyText)}>
+      </Typography>
+      <p>
         {welcomeScreenContent.isUsingDefaultMessage
           ? defaultStudyBody
           : welcomeScreenContent.welcomeScreenBody || 'Body Copy'}
       </p>
-      <Box className={clsx(classes.bodyText, classes.salutationText)}>
+      <p className={classes.salutationText}>
         {welcomeScreenContent.isUsingDefaultMessage
           ? defaultSalutations
           : welcomeScreenContent.welcomeScreenSalutation || 'Salutation,'}
-      </Box>
-      <Box className={clsx(classes.bodyText, classes.fromText)}>
+      </p>
+      <p className={classes.fromText}>
         {welcomeScreenContent.isUsingDefaultMessage
           ? defaultFrom
           : welcomeScreenContent.welcomeScreenFromText || 'Study Team Name'}
-      </Box>
+      </p>
       {welcomeScreenContent.isUsingDefaultMessage && (
-        <Box className={clsx(classes.bodyText, classes.disclaimerText)}>
+        <p className={classes.disclaimerText}>
           This is a research Study. It does not provide medical advice, diagnosis, or treatment.
-        </Box>
+        </p>
       )}
     </Box>
   )

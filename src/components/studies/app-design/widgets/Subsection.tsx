@@ -1,5 +1,5 @@
+import {MTBHeadingH2} from '@components/widgets/Headings'
 import React from 'react'
-import {MTBHeadingH2} from '../../../widgets/Headings'
 
 const Subsection: React.FunctionComponent<{heading: string}> = ({heading, children}) => {
   return (
