@@ -5,14 +5,14 @@ import PhoneBg from '@assets/appdesign/phone_bg.svg'
 
 import {ReactComponent as PhoneBottomImg} from '@assets/appdesign/phone_buttons.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
+import {MTBHeadingH2} from '@components/widgets/Headings'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Button, Checkbox, CircularProgress, Container, FormControl, Paper, Switch} from '@mui/material'
+import {Box, Button, Checkbox, CircularProgress, Container, FormControl, Paper, Switch, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
-import {latoFont, playfairDisplayFont, ThemeType} from '@style/theme'
+import {latoFont, ThemeType} from '@style/theme'
 import constants from '@typedefs/constants'
 import {Contact, Study, SubType, WelcomeScreenData} from '@typedefs/types'
 import clsx from 'clsx'
@@ -97,6 +97,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     backgroundRepeat: 'no-repeat',
     justifyContent: 'space-between',
     wordWrap: 'break-word',
+    fontSize: '16px',
   },
   phoneBottom: {
     height: '70px',
@@ -184,9 +185,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     paddingLeft: theme.spacing(4),
     textAlign: 'left',
   },
-  studyPageTopBar: {
-    backgroundColor: '#F6F6F6',
-  },
+
   hexcodeInput: {
     marginLeft: theme.spacing(2),
     width: '85px',
@@ -209,14 +208,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
   firstFormElement: {
     marginTop: theme.spacing(2.5),
   },
-  headlineStyle: {
-    fontFamily: playfairDisplayFont,
-    fontStyle: 'italic',
-    fontWeight: 'normal',
-    fontSize: '21px',
-    lineHeight: '28px',
-    whiteSpace: 'pre-line',
-  },
+
   optionalDisclaimerRow: {
     display: 'flex',
     flexDirection: 'row',
@@ -334,7 +326,7 @@ export const StudyPageTopPhone: React.FunctionComponent<{
   return (
     <>
       <Box className={classes.phone}>
-        <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
+        <Box className={classes.phoneTopBar}>
           <PhoneTopImgLeftHighlighted title="phone top image" width="312px" />
         </Box>
         <StudyPageTopPhoneContent
@@ -367,7 +359,7 @@ export const StudyPageBottomPhone: React.FunctionComponent<{
   return (
     <>
       <Box className={classes.phone} style={{marginTop: isReadOnly ? '30px' : '134px'}}>
-        <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
+        <Box className={classes.phoneTopBar}>
           <PhoneTopImgRightHighlighted title="phone top image" width="312px" />
         </Box>
         <StudyPageBottomPhoneContent
@@ -931,7 +923,12 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
               </div>
             </Box>
             <Box className={classes.phoneArea}>
-              <MTBHeadingH1>What participants will see: </MTBHeadingH1>
+              <Typography
+                sx={{
+                  fontStyle: 'italic',
+                }}>
+                What participants will see:{' '}
+              </Typography>
               <WelcomeScreenDisplay study={study} studyLogoUrl={getStudyLogoUrl()} />
             </Box>
           </Paper>
@@ -1048,7 +1045,12 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
               </ol>
             </Box>
             <Box className={classes.phoneArea}>
-              <MTBHeadingH1>What participants will see: </MTBHeadingH1>
+              <Typography
+                sx={{
+                  fontStyle: 'italic',
+                }}>
+                What participants will see:{' '}
+              </Typography>
               <StudyPageTopPhone
                 study={study}
                 studyLogoUrl={getStudyLogoUrl()}
