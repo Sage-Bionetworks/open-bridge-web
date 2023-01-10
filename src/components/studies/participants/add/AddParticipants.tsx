@@ -30,7 +30,6 @@ const StyledTabs = styled(Tabs, {label: 'StyledTabs '})(({theme}) => ({
 }))
 
 const StyledTabPanel = styled(Box, {label: 'StyledTabPanel '})(({theme}) => ({
-  backgroundColor: '#F1F3F5',
   padding: theme.spacing(5, 4, 5, 4),
   fontSize: '14px',
 }))

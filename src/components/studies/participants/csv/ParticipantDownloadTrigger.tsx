@@ -1,3 +1,4 @@
+import DownloadTwoToneIcon from '@mui/icons-material/DownloadTwoTone'
 import {Button} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
@@ -15,6 +16,7 @@ type ParticipantDownloadTriggerProps = {
   fileDownloadUrl?: string
   fileLabel?: string
   children?: React.ReactNode
+  hasImage?: boolean
 }
 
 const ParticipantDownloadTrigger: React.FunctionComponent<ParticipantDownloadTriggerProps> = ({
@@ -23,10 +25,9 @@ const ParticipantDownloadTrigger: React.FunctionComponent<ParticipantDownloadTri
   hasItems,
   fileLabel = 'StudyParticipants.csv',
   onDone,
+  hasImage,
   children,
 }) => {
-  const classes = useStyles()
-
   function magicDownload() {
     // create hidden link
     const element = document.createElement('a')
@@ -50,7 +51,11 @@ const ParticipantDownloadTrigger: React.FunctionComponent<ParticipantDownloadTri
   }, [fileDownloadUrl])
 
   return (
-    <Button disabled={!hasItems} onClick={() => onDownload()}>
+    <Button
+      disabled={!hasItems}
+      onClick={() => onDownload()}
+      startIcon={hasImage ? <DownloadTwoToneIcon /> : <></>}
+      sx={{textTransform: 'none !important'}}>
       {children}
     </Button>
   )
