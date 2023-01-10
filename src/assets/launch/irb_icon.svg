@@ -1,8 +1,0 @@
-<svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="3.5" y="1" width="12" height="15" rx="1" stroke="black"/>
-<path d="M6.5 4H9.5" stroke="black" stroke-linecap="round" stroke-linejoin="bevel"/>
-<path d="M6.5 7H12.5" stroke="black" stroke-linecap="round" stroke-linejoin="bevel"/>
-<path d="M6.5 10H12.5" stroke="black" stroke-linecap="round" stroke-linejoin="bevel"/>
-<path d="M6.5 13H12.5" stroke="black" stroke-linecap="round" stroke-linejoin="bevel"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 3.5H1.5C0.671573 3.5 0 4.17157 0 5V18C0 18.8284 0.671572 19.5 1.5 19.5H11.5C12.3284 19.5 13 18.8284 13 18V17H12V18C12 18.2761 11.7761 18.5 11.5 18.5H1.5C1.22386 18.5 1 18.2761 1 18V5C1 4.72386 1.22386 4.5 1.5 4.5H2.5V3.5Z" fill="black"/>
-</svg>
