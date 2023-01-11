@@ -24,7 +24,7 @@ import React from 'react'
 
 export const SURVEY_ICONS = new Map<string, {img: string; title: string}>([
   ['cognition', {img: cognition, title: 'Cognition'}],
-  ['day_to_day', {img: dayToDay, title: 'Day to day'}],
+  ['day_to_day', {img: dayToDay, title: 'Day to Day'}],
   ['default', {img: general, title: 'Default'}],
   ['demographics', {img: demographics, title: 'Demographics'}],
   ['energy', {img: energy, title: 'Energy'}],
