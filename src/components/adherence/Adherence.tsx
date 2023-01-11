@@ -1,11 +1,8 @@
-import AdherenceUnfocusIcon from '@assets/adherence/adh_tab_off.svg'
-import AdherenceFocusIcon from '@assets/adherence/adh_tab_on.svg'
-import SummaryUnfocusIcon from '@assets/adherence/sum_tab_off.svg'
-import SummaryFocusIcon from '@assets/adherence/sum_tab_on.svg'
 import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
 import StudyBuilderHeader from '@components/studies/StudyBuilderHeader'
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
 import ParticipantAdherenceContentShell from '@components/widgets/ParticipantAdherenceContentShell'
+import InsightsIcon from '@mui/icons-material/Insights'
 import {Box, CircularProgress, Tab, Tabs} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useStudy} from '@services/studyHooks'
@@ -64,8 +61,6 @@ const TAB_DEFs = [
   {type: 'ENROLLED', label: 'Active Participants'},
 ]
 
-const TAB_ICONS_FOCUS = [SummaryFocusIcon, AdherenceFocusIcon]
-const TAB_ICONS_UNFOCUS = [SummaryUnfocusIcon, AdherenceUnfocusIcon]
 export type AdherenceTabType = 'SUMMARY' | 'ENROLLED'
 
 type AdherenceOwnProps = {
@@ -121,9 +116,7 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
                   display="flex"
                   flexDirection="row"
                   className={clsx(classes.tab_icon, tab !== tabDef.type && classes.unactiveTabIcon)}>
-                  <img
-                    src={tab === tabDef.type ? TAB_ICONS_FOCUS[index] : TAB_ICONS_UNFOCUS[index]}
-                    style={{marginRight: '6px'}}></img>
+                  <InsightsIcon sx={{marginRight: '6px'}} />
                   <div>
                     {`${tabDef.label} ${
                       tab === tabDef.type ? '(' + (adherenceWeeklyReport?.total || '...') + ')' : ''
