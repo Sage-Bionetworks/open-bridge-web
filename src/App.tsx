@@ -34,11 +34,8 @@ const attemptLogin = async (code: string): Promise<LoggedInUserData> => {
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
 
   try {
-    console.log('trying to log in')
     const env = Utility.getOauthEnvironment()
-    const loggedIn = await UserService.loginOauth(code, env.redirect, env.vendor)
-
-    return loggedIn.data
+    return await UserService.loginOauth(code, env.redirect, env.vendor)
   } catch (e) {
     alert((e as Error).message)
     throw e
@@ -86,16 +83,18 @@ function App() {
           sessionUpdateFn({
             type: 'LOGIN',
             payload: {
+              synapseUserId: result.synapseUserId,
               token: result.sessionToken,
               firstName: result.firstName,
               lastName: result.lastName,
-              userName: result.username,
+              username: result.username,
               orgMembership: result.orgMembership,
               dataGroups: result.dataGroups,
               roles: result.roles,
               id: result.id,
               appId: Utility.getAppId(),
               demoExternalId: result.clientData?.demoExternalId,
+              isVerified: result.isVerified,
             },
           })
           setToken(result.sessionToken)

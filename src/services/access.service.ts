@@ -1,6 +1,6 @@
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
-import {LoggedInUserClientData, OrgUser} from '../types/types'
+import {LoggedInUserClientData, LoggedInUserData} from '../types/types'
 
 const AccessService = {
   createIndividualAccount,
@@ -46,20 +46,20 @@ async function getAliasFromSynapseByEmail(synapseEmailAddress: string): Promise<
   }
 }
 
-async function getAccountsForOrg(token: string, orgId: string): Promise<OrgUser[]> {
+async function getAccountsForOrg(token: string, orgId: string): Promise<LoggedInUserData[]> {
   const endpoint = constants.endpoints.getAccountsForOrg.replace(':orgId', orgId)
-  const result = await Utility.callEndpoint<{items: OrgUser[]}>(endpoint, 'POST', {}, token)
+  const result = await Utility.callEndpoint<{items: LoggedInUserData[]}>(endpoint, 'POST', {}, token)
 
   return result.data.items
 }
 
-async function getIndividualAccount(token: string, userId: string): Promise<OrgUser> {
+async function getIndividualAccount(token: string, userId: string): Promise<LoggedInUserData> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
-  const result = await Utility.callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
+  const result = await Utility.callEndpoint<LoggedInUserData>(endpoint, 'GET', {}, token)
   return result.data
 }
 
-async function getDetailedAccountsForOrg(token: string, orgId: string): Promise<OrgUser[]> {
+async function getDetailedAccountsForOrg(token: string, orgId: string): Promise<LoggedInUserData[]> {
   const accounts = await AccessService.getAccountsForOrg(token!, orgId)
   const promises = accounts.map(async account => {
     return await AccessService.getIndividualAccount(token!, account.id)
@@ -68,9 +68,9 @@ async function getDetailedAccountsForOrg(token: string, orgId: string): Promise<
   return result
 }
 
-async function deleteIndividualAccount(token: string, userId: string): Promise<OrgUser> {
+async function deleteIndividualAccount(token: string, userId: string): Promise<LoggedInUserData> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
-  const result = await Utility.callEndpoint<OrgUser>(endpoint, 'DELETE', {}, token)
+  const result = await Utility.callEndpoint<LoggedInUserData>(endpoint, 'DELETE', {}, token)
   return result.data
 }
 
@@ -107,7 +107,7 @@ async function updateIndividualAccountRoles(
   updatedClientData?: LoggedInUserClientData
 ): Promise<any> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
-  const userResponse = await Utility.callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
+  const userResponse = await Utility.callEndpoint<LoggedInUserData>(endpoint, 'GET', {}, token)
 
   const data = userResponse.data
   const updatedUser = {

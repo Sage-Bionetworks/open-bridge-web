@@ -5,7 +5,7 @@ import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AccessService from '@services/access.service'
 import {ThemeType} from '@style/theme'
-import {OrgUser} from '@typedefs/types'
+import {LoggedInUserData} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {useEffect, useState} from 'react'
 
@@ -37,7 +37,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
   const classes = useStyles()
   const [leadInvestigatorOptions, setLeadInvestigatorOptions] = useState<leadInvestigatorOption[]>([])
 
-  const formatName = (currentAccount: OrgUser) => {
+  const formatName = (currentAccount: LoggedInUserData) => {
     const {firstName, lastName, email} = currentAccount
     const name = firstName || lastName ? [firstName, lastName].join(' ') : email
     return name
