@@ -10,12 +10,14 @@ type UserSessionDataProviderProps = {children: React.ReactNode}
 
 const initialState = {
   token: undefined,
+  synapseUserId: undefined,
   orgMembership: undefined,
   dataGroups: [],
   roles: [],
   id: '',
   appId: UtilityObject.getAppId(),
   demoExternalId: '',
+  isVerified: false,
 }
 
 const UserSessionDataStateContext = React.createContext<UserSessionData | undefined>(undefined)
@@ -49,10 +51,12 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
         appId: action.payload!.appId,
         firstName: action.payload!.firstName,
         lastName: action.payload!.lastName,
-        userName: action.payload!.userName,
+        userName: action.payload!.username,
         dataGroups: action.payload!.dataGroups,
         roles: action.payload!.roles,
         id: action.payload!.id,
+        synapseUserId: action.payload!.synapseUserId,
+        isVerified: action.payload!.isVerified,
         demoExternalId: action.payload?.demoExternalId,
       }
 

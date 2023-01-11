@@ -8,8 +8,8 @@ import {Alert, Box, Button, Theme} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AccessService from '@services/access.service'
 import ParticipantService from '@services/participants.service'
-import {globals, poppinsFont} from '@style/theme'
-import {LoggedInUserClientData, OrgUser, Study, UserSessionData} from '@typedefs/types'
+import {poppinsFont} from '@style/theme'
+import {LoggedInUserClientData, LoggedInUserData, Study, UserSessionData} from '@typedefs/types'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import AccessGrid, {Access, getAccessFromRoles, getRolesFromAccess} from './AccessGrid'
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: theme.spacing(4, 0, 3, 3.5),
   },
   list: {
-    ...globals.listReset,
+    // ...globals.listReset,
     marginLeft: theme.spacing(-3.5),
     marginTop: theme.spacing(3),
     '&::-webkit-scrollbar': {
@@ -65,9 +65,9 @@ function getNameDisplay({
   lastName,
 
   synapseUserId,
-}: OrgUser): string {
+}: LoggedInUserData): string {
   const name = firstName || lastName ? [firstName, lastName].join(' ') : synapseUserId
-  return name
+  return name || ''
 }
 
 const NameDisplay: FunctionComponent<any> = ({member, index}): JSX.Element => {
@@ -96,7 +96,7 @@ const NameDisplay: FunctionComponent<any> = ({member, index}): JSX.Element => {
   )
 }
 
-const NameDisplayDetail: React.FunctionComponent<{member: OrgUser}> = ({member}) => {
+const NameDisplayDetail: React.FunctionComponent<{member: LoggedInUserData}> = ({member}) => {
   const classes = useStyles()
   return (
     <Box style={{marginBottom: '40px', marginTop: '80px'}}>
@@ -128,11 +128,13 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
   const handleError = useErrorHandler()
 
-  const [currentMemberAccess, setCurrentMemberAccess] = React.useState<{access: Access; member: OrgUser} | undefined>()
+  const [currentMemberAccess, setCurrentMemberAccess] = React.useState<
+    {access: Access; member: LoggedInUserData} | undefined
+  >()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
   const [updateError, setUpdateError] = React.useState('')
-  const [members, setMembers] = React.useState<OrgUser[]>([])
+  const [members, setMembers] = React.useState<LoggedInUserData[]>([])
 
   const getMembers = React.useCallback(
     async (orgMembership: string, token: string) => {
@@ -162,7 +164,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     }
   }, [orgMembership, token, updateToggle, getMembers, handleError])
 
-  const deleteExistingAccount = async (member: OrgUser) => {
+  const deleteExistingAccount = async (member: LoggedInUserData) => {
     setUpdateError('')
     try {
       await AccessService.deleteIndividualAccount(token!, member.id)
@@ -174,7 +176,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     }
   }
 
-  const updateRolesForExistingAccount = async ({member, access}: {member: OrgUser; access: Access}) => {
+  const updateRolesForExistingAccount = async ({member, access}: {member: LoggedInUserData; access: Access}) => {
     try {
       setUpdateError('')
       const roles = getRolesFromAccess(access)
@@ -195,7 +197,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     }
   }
 
-  const updateAccess = React.useCallback(async (member: OrgUser) => {
+  const updateAccess = React.useCallback(async (member: LoggedInUserData) => {
     setIsAccessLoading(true)
     const access = getAccessFromRoles(member.roles)
     setCurrentMemberAccess({access, member})

@@ -63,27 +63,19 @@ export type NavRouteType = {
 
 /* ***  User Types ********************************/
 
-export type UserSessionData = {
-  token: string | undefined
-  orgMembership: string | undefined
-  dataGroups?: string[]
-  roles: AdminRole[]
-  firstName?: string
-  lastName?: string
-  userName?: string
-  alert?: string
-  id: string
-  appId: string
-  demoExternalId?: string
-}
-
 export type AdminRole = typeof constants.org_roles[number]
 
 export interface UserData {
   username?: string
-  firstName: string
-  lastName: string
+  firstName?: string
+  lastName?: string
   id: string
+  orgMembership: string | undefined
+  dataGroups?: string[]
+  roles: AdminRole[]
+  synapseUserId: string | undefined
+  isVerified?: boolean
+
   // email?: string
 }
 
@@ -91,16 +83,17 @@ export type LoggedInUserClientData = {demoExternalId?: string}
 
 export interface LoggedInUserData extends UserData {
   sessionToken: string
-  orgMembership: string
-  dataGroups?: string[]
-  roles: AdminRole[]
+  validated?: boolean
+  email?: string
   clientData?: LoggedInUserClientData
 }
 
-export interface OrgUser extends LoggedInUserData {
-  status: string
-  email?: string
-  synapseUserId: string
+export interface UserSessionData extends UserData {
+  token: string | undefined
+  alert?: string
+  appId: string
+
+  demoExternalId?: string
 }
 
 /* *** Assessment ********************************/
@@ -338,7 +331,7 @@ export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
 }
 
 export type EnrolledAccountRecord = {
-  enrolledBy: OrgUser
+  enrolledBy: LoggedInUserData
   enrolledOn: Date
   externalId: string
   participant: {
@@ -347,7 +340,7 @@ export type EnrolledAccountRecord = {
   }
   studyId: string
   withdrawalNote?: string
-  withdrawnBy: OrgUser
+  withdrawnBy: LoggedInUserData
   withdrawnOn: Date
   note?: string
 }

@@ -1,5 +1,5 @@
 import {UserSessionDataProvider} from '@helpers/AuthContext'
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import 'react-app-polyfill/ie11'
 import 'react-app-polyfill/stable'
 import {createRoot} from 'react-dom/client'
@@ -29,14 +29,6 @@ if (process.env.NODE_ENV === 'development' || /*AGENDEL REDO!*/ isDevelopment())
 const rootElement = document.getElementById('root')
 if (!rootElement) throw new Error('Failed to find the root element')
 const container = createRoot(rootElement)
-/*
-container.render(
-  <UserSessionDataProvider>
-    <Suspense fallback={null}>
-      <App />
-    </Suspense>
-  </UserSessionDataProvider>
-)*/
 
 container.render(
   <UserSessionDataProvider>
@@ -45,8 +37,3 @@ container.render(
     </Suspense>
   </UserSessionDataProvider>
 )
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-//serviceWorker.unregister()
