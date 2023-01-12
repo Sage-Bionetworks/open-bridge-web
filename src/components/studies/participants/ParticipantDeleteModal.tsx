@@ -1,18 +1,11 @@
-import {ReactComponent as PinkSendSMSIcon} from '@assets/participants/send_sms_link_pink_icon.svg'
-import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
-import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
-import {DialogButtonPrimary, DialogButtonSecondary} from '@components/widgets/StyledComponents'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {Dialog, DialogActions, DialogContent} from '@mui/material'
+import {Box} from '@mui/material'
 import Alert from '@mui/material/Alert'
 import {useStudy} from '@services/studyHooks'
 import {ParticipantAccountSummary, ParticipantActivityType} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
-import {
-  useInvalidateParticipants,
-  useParticipants,
-  useUpdateParticipantInList,
-} from '../../../services/participantHooks'
+import {useParticipants, useUpdateParticipantInList} from '../../../services/participantHooks'
 import DialogContents from './DialogContents'
 import useStyles from './ParticipantManager_style'
 
@@ -70,8 +63,24 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> = (
 
   const {data} = useParticipants(study?.identifier, currentPage, pageSize, tab)
   const {mutate, error: deleteParticipantError, isSuccess} = useUpdateParticipantInList()
-  const invalidateParticipants = useInvalidateParticipants()
+
   const [error, setError] = React.useState<Error>()
+
+  const getActionButtonText = (errorCount: number, isDelete: boolean) => {
+    if (errorCount > 0) {
+      return 'Done'
+    }
+    return isDelete ? 'Permanently Remove' : 'Yes, send SMS'
+  }
+
+  const cancelAction = () => {
+    onClose({
+      dialogOpenRemove: false,
+      dialogOpenSMS: false,
+    })
+    setError(undefined)
+  }
+
   React.useEffect(() => {
     if (deleteParticipantError) setError(deleteParticipantError as Error)
   }, [deleteParticipantError])
@@ -98,89 +107,45 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> = (
     )
   }
   return (
-    <Dialog
-      open={dialogState.dialogOpenSMS || dialogState.dialogOpenRemove}
-      maxWidth="xs"
-      scroll="body"
-      aria-labelledby="Remove Participant">
-      <DialogTitleWithClose
-        onCancel={() => {
-          onClose({
-            dialogOpenRemove: false,
-            dialogOpenSMS: false,
-          })
-          setError(undefined)
-        }}
-        icon={dialogState.dialogOpenRemove ? <DeleteIcon /> : <PinkSendSMSIcon />}
-        title={
-          dialogState.dialogOpenRemove
-            ? 'Remove From Study'
-            : dialogState.dialogOpenSMS
-            ? 'Sending SMS Download Link'
-            : ''
-        }
-      />
-      {error && (
-        <Alert color="error" onClose={() => setError(undefined)}>
-          {error.message}
-        </Alert>
-      )}
-      <DialogContent style={{display: 'flex', justifyContent: 'center'}}>
-        {(dialogState.dialogOpenSMS || dialogState.dialogOpenRemove) && (
-          <DialogContents
-            participantsWithError={participantsWithError}
-            study={study!}
-            selectedParticipants={
-              data?.items?.filter(participant => selectedParticipantIds[tab].includes(participant.id)) || []
-            }
-            isProcessing={!!loadingIndicators.isDeleting}
-            mode={dialogState.dialogOpenSMS ? 'SMS' : 'DELETE'}
-            selectingAll={isAllSelected}
-            tab={tab}
-            token={token!}
-          />
+    <ConfirmationDialog
+      isOpen={dialogState.dialogOpenSMS || dialogState.dialogOpenRemove}
+      width={750}
+      title={
+        dialogState.dialogOpenRemove
+          ? 'Remove From Study'
+          : dialogState.dialogOpenSMS
+          ? 'Sending SMS Download Link'
+          : ''
+      }
+      actionText={getActionButtonText(participantsWithError.length, dialogState.dialogOpenRemove)}
+      type={'CUSTOM'}
+      onCancel={cancelAction}
+      hideCancel={participantsWithError.length > 0}
+      onConfirm={() => (participantsWithError.length ? cancelAction() : onAction(study!.identifier))}>
+      <>
+        {error && (
+          <Alert color="error" onClose={() => setError(undefined)}>
+            {error.message}
+          </Alert>
         )}
-      </DialogContent>
-
-      {participantsWithError.length === 0 && (
-        <DialogActions>
-          <DialogButtonSecondary
-            onClick={() => {
-              onClose({
-                dialogOpenRemove: false,
-                dialogOpenSMS: false,
-              })
-              setError(undefined)
-            }}
-            style={{height: '48px'}}>
-            Cancel
-          </DialogButtonSecondary>
-
-          <DialogButtonPrimary
-            onClick={() => onAction(study!.identifier)}
-            autoFocus
-            className={classes.primaryDialogButton}>
-            {dialogState.dialogOpenRemove ? 'Permanently Remove' : 'Yes, send SMS'}
-          </DialogButtonPrimary>
-        </DialogActions>
-      )}
-
-      {participantsWithError.length > 0 && (
-        <DialogActions>
-          <DialogButtonPrimary
-            onClick={() => {
-              invalidateParticipants()
-              onClose({
-                dialogOpenRemove: false,
-                dialogOpenSMS: false,
-              })
-            }}
-            color="primary">
-            Done
-          </DialogButtonPrimary>
-        </DialogActions>
-      )}
-    </Dialog>
+        <Box sx={{fontSize: '16px'}}>
+          {(dialogState.dialogOpenSMS || dialogState.dialogOpenRemove) && (
+            <DialogContents
+              participantsWithError={participantsWithError}
+              study={study!}
+              selectedParticipants={
+                data?.items?.filter(participant => selectedParticipantIds[tab].includes(participant.id)) || []
+              }
+              isProcessing={!!loadingIndicators.isDeleting}
+              mode={dialogState.dialogOpenSMS ? 'SMS' : 'DELETE'}
+              selectingAll={isAllSelected}
+              tab={tab}
+              token={token!}
+            />
+          )}
+        </Box>
+      </>
+    </ConfirmationDialog>
   )
 }
 

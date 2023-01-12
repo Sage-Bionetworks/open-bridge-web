@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
       },
     },
     '&$burstOrigin>.MuiFormControl-root': {
-      backgroundColor: theme.palette.error.light,
+      backgroundColor: '#9499C7',
     },
     '&$burstEventField': {
       backgroundColor: '#f8f8f8',

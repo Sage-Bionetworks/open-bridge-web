@@ -2,7 +2,7 @@ import {Autocomplete} from '@mui/lab'
 import {Box, Chip, FormControlLabel, Radio, RadioGroup, TextField} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
-import {latoFont, ThemeType} from '../../../style/theme'
+import {ThemeType} from '../../../style/theme'
 import {Study} from '../../../types/types'
 import {MTBHeadingH2} from '../../widgets/Headings'
 import InfoCircleWithToolTip from '../../widgets/InfoCircleWithToolTip'
@@ -43,9 +43,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
   },
   descriptionText: {
-    fontFamily: latoFont,
     fontSize: '16px',
-    lineHeight: '19px',
+    lineHeight: '24px',
     marginBottom: theme.spacing(0.5),
   },
 }))
