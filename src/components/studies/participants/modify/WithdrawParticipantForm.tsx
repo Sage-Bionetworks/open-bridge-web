@@ -5,8 +5,8 @@ import {
   SimpleTextLabel,
 } from '@components/widgets/StyledComponents'
 import {Box, DialogActions, DialogContent, FormControl, FormGroup} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import Alert from '@mui/material/Alert'
+import makeStyles from '@mui/styles/makeStyles'
 import {EditableParticipantData} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {latoFont} from '../../../../style/theme'
@@ -52,6 +52,7 @@ const WithdrawParticipantForm: FunctionComponent<WithdrawParticipantFormProps> =
             </Alert>
           )}
           <p>
+            <br />
             Withdrawing means you will no longer collect data on this participant and will not be able to contact them
             through the app.
           </p>
