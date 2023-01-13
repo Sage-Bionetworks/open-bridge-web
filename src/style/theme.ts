@@ -410,7 +410,13 @@ const theme: Theme = createTheme({
       },
     },
     MuiDialogContent: {
-      styleOverrides: {},
+      styleOverrides: {
+        root: {
+          '.MuiDialogTitle-root + &': {
+            paddingTop: '20px',
+          },
+        },
+      },
     },
 
     MuiDialogTitle: {
@@ -467,6 +473,13 @@ const theme: Theme = createTheme({
             display: 'flex',
             alignItems: 'center',
           },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          fontSize: '14px',
         },
       },
     },

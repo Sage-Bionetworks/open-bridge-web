@@ -4,6 +4,7 @@ import {
   FormControlLabel,
   InputLabel,
   styled,
+  TableCell,
   TextField,
   Theme,
   ToggleButton,
@@ -270,3 +271,7 @@ export const getStyledToolbarLinkStyle = (theme: Theme) => ({
     fontWeight: 900,
   },*/
 })
+
+export const BorderedTableCell = styled(TableCell, {label: 'BorderedTableCell'})(({theme}) => ({
+  borderLeft: '1px solid #EAECEE',
+}))

@@ -1,4 +1,3 @@
-import {ReactComponent as AlertIcon} from '@assets/alert_icon.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import {StyledFormControl, StyledLabel14} from '@components/surveys/widgets/SharedStyled'
 import {StyledDropDown, StyledDropDownItem} from '@components/surveys/widgets/StyledDropDown'
@@ -289,7 +288,6 @@ const Select: React.FunctionComponent<{
         type={'CUSTOM'}
         actionText={'Proceed and remove "Other" '}
         width={580}
-        icon={<AlertIcon />}
         onCancel={() => setIsTypeConversionWarning(false)}
         onConfirm={() => {
           handleDataTypeChange('integer', true)

@@ -8,14 +8,13 @@ type DialogTitleWithCloseProps = {
   icon?: React.ReactNode
   onCancel: () => void
   title: string
-  isSmallTitle?: boolean
 }
 
 const DialogTitleWithClose: FunctionComponent<DialogTitleWithCloseProps> = ({
   onCancel,
   icon,
   title,
-  isSmallTitle,
+
   ...other
 }) => {
   return (

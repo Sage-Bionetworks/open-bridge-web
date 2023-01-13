@@ -1,10 +1,11 @@
 import {useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import {Box, styled, Tooltip} from '@mui/material'
+import {Box, styled, Table, TableBody, TableRow, Tooltip} from '@mui/material'
 import {Link} from 'react-router-dom'
 
 import makeStyles from '@mui/styles/makeStyles'
 
 import {getSessionSymbolName} from '@components/widgets/SessionIcon'
+import {BorderedTableCell} from '@components/widgets/StyledComponents'
 import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
 import {AdherenceWeeklyReport, ProgressionStatus, SessionDisplayInfo} from '@typedefs/types'
@@ -29,11 +30,8 @@ const StyledParticipantRow = styled(Box, {label: 'StyledParticipantRow'})<{progr
 
 export const useStyles = makeStyles(theme => ({
   adherenceCell: {
-    borderRight: 'none',
-    borderLeft: '1px solid black',
     verticalAlign: 'middle',
-    display: 'flex',
-    alignItems: 'center',
+    textAlign: 'center',
     paddingLeft: theme.spacing(1),
   },
   labelDisplay: {
@@ -82,58 +80,65 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
   const classes = {...useCommonStyles(), ...useStyles()}
 
   const ref = React.useRef<HTMLDivElement>(null)
-  const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 330)
+  const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 380)
   //  const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
 
   return (
     <div ref={ref} style={{marginBottom: '32px'}}>
-      <div style={{display: 'flex', marginBottom: '16px'}}>
+      <Table sx={{border: '1px solid #EAECEE', borderCollapse: 'separate'}}>
         <TableHeader
           prefixColumns={[
             ['Participant', 108],
-            ['Day in Study', 124],
+            ['Day in Study', 166],
           ]}
           unitWidth={dayWidthInPx}
         />
-      </div>
-      {adherenceWeeklyReport.items.map((item, index) =>
-        !item.participant ? (
-          <StyledParticipantRow key={`no_participant_${index}`}>the participant withdrew</StyledParticipantRow>
-        ) : (
-          <StyledParticipantRow key={`${item.participant}_${index}`} progression={item.progression}>
-            <Box sx={{width: '108px', flexShrink: 0}} key={'pIdentifier'}>
-              <Link to={`adherence/${item.participant?.identifier || 'nothing'}`}>
-                {ParticipantService.formatExternalId(studyId, item.participant.externalId)}
-              </Link>
-            </Box>
-            <div key={'data'} id="data" style={{width: '100%', display: 'flex'}}>
-              {!item.rows?.length ? (
-                <NextActivity
-                  dayPxWidth={dayWidthInPx}
-                  nextActivity={item.nextActivity}
-                  completionStatus={item.progression}
-                />
-              ) : (
-                <div style={{}} className={classes.eventRowForWeekSessions}>
-                  <div>
-                    {item.rows.map((info, rowIndex) => (
-                      <div
-                        key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
-                        className={classes.eventRowForWeekSingleSession}>
-                        <Tooltip title={info.label}>
-                          <Box key="label" className={classes.labelDisplay}>
-                            {AdherenceUtility.getDisplayFromLabel(info.label, info.studyBurstNum)}
-                          </Box>
-                        </Tooltip>
-                        {/*    <div className={classes.sessionLegendIcon}>
-                            <AdherenceSessionIcon
-                              sessionSymbol={info.sessionSymbol}
-                              windowState="completed">
-                              &nbsp;
-                            </AdherenceSessionIcon>
-                              </div>*/}
 
-                        <div key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`} className={classes.sessionWindows}>
+        <TableBody>
+          {adherenceWeeklyReport.items.map((item, index) =>
+            !item.participant ? (
+              <TableRow key={`no_participant_${index}`}>
+                <BorderedTableCell colSpan={10} style={{border: 'none'}}>
+                  the participant withdrew
+                </BorderedTableCell>
+              </TableRow>
+            ) : (
+              <TableRow key={`${item.participant}_${index}`}>
+                <BorderedTableCell
+                  sx={{width: '108px', textAlign: 'center', backgroundColor: index % 2 == 0 ? '#fff' : '#FBFBFC'}}
+                  key={'pIdentifier'}>
+                  <Link to={`adherence/${item.participant?.identifier || 'nothing'}`}>
+                    {ParticipantService.formatExternalId(studyId, item.participant.externalId)}
+                  </Link>
+                </BorderedTableCell>
+                <BorderedTableCell
+                  colSpan={8}
+                  key={'data'}
+                  id="data"
+                  sx={{
+                    padding: 0,
+                    textAlign: 'center',
+                    backgroundColor: index % 2 == 0 ? '#fff' : '#FBFBFC',
+                    borderLeft: 'none',
+                  }}>
+                  {!item.rows?.length ? (
+                    <NextActivity
+                      dayPxWidth={dayWidthInPx}
+                      nextActivity={item.nextActivity}
+                      completionStatus={item.progression}
+                    />
+                  ) : (
+                    <Table>
+                      {item.rows.map((info, rowIndex) => (
+                        <TableRow key={`${info}_ind${rowIndex}`}>
+                          <BorderedTableCell sx={{width: '166px', textAlign: 'center'}}>
+                            <Tooltip title={info.label}>
+                              <Box key="label" className={classes.labelDisplay}>
+                                {AdherenceUtility.getDisplayFromLabel(info.label, info.studyBurstNum)}
+                              </Box>
+                            </Tooltip>
+                          </BorderedTableCell>
+
                           {[...new Array(7)].map((i, dayIndex) => (
                             <DayDisplay
                               relevantReportStartDate={
@@ -154,21 +159,23 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                               border={dayIndex !== 6}
                             />
                           ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              <AdherenceCell
-                progression={item.progression}
-                adherencePercent={item.weeklyAdherencePercent}
-                activityRows={item.rows?.length || 0}
-              />
-            </div>
-          </StyledParticipantRow>
-        )
-      )}
+                        </TableRow>
+                      ))}
+                    </Table>
+                  )}
+                </BorderedTableCell>
+                <BorderedTableCell sx={{backgroundColor: index % 2 == 0 ? '#fff' : '#FBFBFC'}}>
+                  <AdherenceCell
+                    progression={item.progression}
+                    adherencePercent={item.weeklyAdherencePercent}
+                    activityRows={item.rows?.length || 0}
+                  />
+                </BorderedTableCell>
+              </TableRow>
+            )
+          )}
+        </TableBody>
+      </Table>
     </div>
   )
 }

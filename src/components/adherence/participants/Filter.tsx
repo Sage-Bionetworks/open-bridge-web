@@ -1,9 +1,19 @@
 import {ReactComponent as FilterIcon} from '@assets/filter.svg'
-import {MTBHeadingH5, MTBHeadingH6} from '@components/widgets/Headings'
-import {WhiteButton} from '@components/widgets/StyledComponents'
-import {Box, Button, Checkbox, Divider, Drawer, FormControlLabel, FormGroup, Radio, RadioGroup} from '@mui/material'
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Drawer,
+  FormControlLabel,
+  FormGroup,
+  Radio,
+  RadioGroup,
+  Typography,
+} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AdherenceService from '@services/adherence.service'
+import {theme} from '@style/theme'
 import {AdherenceStatistics, AdherenceWeeklyReport} from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
@@ -15,20 +25,7 @@ export const useStyles = makeStyles(theme => ({
     backgroundColor: '#BBC3CD',
     marginBottom: theme.spacing(1),
   },
-  button: {
-    flexGrow: 1,
-    padding: theme.spacing(1.5),
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
 
-    '&:first-child': {
-      marginRight: '16px',
-      border: '1px solid black',
-    },
-    '&:last-child': {
-      backgroundColor: '#8FCDE2',
-      border: '1px solid #8FCDE2',
-    },
-  },
   checkbox: {
     padding: theme.spacing(0.6, 1),
   },
@@ -173,10 +170,13 @@ const Filter: FunctionComponent<FilterProps> = ({
       <Drawer anchor={'right'} open={open} onClose={handleClose}>
         <Box p={4} minWidth={416}>
           <Box display="flex" mb={2}>
-            <FilterIcon /> <MTBHeadingH6 style={{color: '#3B4141'}}>Filter Participants by:</MTBHeadingH6>
+            <FilterIcon />{' '}
+            <Typography variant="h4" sx={{fontSize: '16px'}}>
+              Filter Participants by:
+            </Typography>
           </Box>
 
-          <MTBHeadingH5 className={classes.subheader}>Schedule Visualizer</MTBHeadingH5>
+          <Typography variant="h4">Schedule Visualizer</Typography>
           <Divider className={classes.divider} />
           <FormGroup className={classes.group}>
             <FormControlLabel
@@ -215,7 +215,7 @@ const Filter: FunctionComponent<FilterProps> = ({
               />
             ))}
           </FormGroup>
-          <MTBHeadingH5 className={classes.subheader}>Adherence Levels</MTBHeadingH5>
+          <Typography variant="h4">Adherence Levels</Typography>
           <Divider className={classes.divider} />
           <RadioGroup
             className={classes.group}
@@ -253,15 +253,12 @@ const Filter: FunctionComponent<FilterProps> = ({
           </RadioGroup>
 
           <Box display="flex">
-            <WhiteButton className={classes.button} onClick={handleClose}>
+            <Button variant="outlined" sx={{marginRight: theme.spacing(2)}} onClick={handleClose}>
               Cancel
-            </WhiteButton>{' '}
-            <WhiteButton
-              disabled={searchLabels.length === 0}
-              className={classes.button}
-              onClick={() => applyFilterChange()}>
+            </Button>{' '}
+            <Button variant="contained" color="primary" onClick={() => applyFilterChange()}>
               Apply Filter
-            </WhiteButton>
+            </Button>
           </Box>
         </Box>
       </Drawer>

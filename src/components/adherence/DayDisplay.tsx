@@ -1,3 +1,5 @@
+import {BorderedTableCell} from '@components/widgets/StyledComponents'
+import {Typography} from '@mui/material'
 import {EventStreamDay} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
@@ -29,22 +31,18 @@ const DayDisplay: FunctionComponent<{
 
   let divStyle: React.CSSProperties = {
     width: `${dayWidth}px`,
-    borderRight: border ? '1px solid black' : 'none',
   }
   const weeklyTodayStyle: React.CSSProperties = {
     paddingTop: '10px',
-    backgroundColor: '#FFFF54',
+    backgroundColor: 'rgba(148, 153, 199, 0.15)',
     paddingBottom: '10px',
-    marginLeft: '-1px',
-    //marginRight: '-1px',
-    borderLeft: '1px solid black',
   }
 
   if (todayStyle && entry?.today) {
     divStyle = {...divStyle, ...weeklyTodayStyle}
   }
   if (!entry) {
-    return <div className={clsx(classes.dayCell)} style={divStyle}></div>
+    return <BorderedTableCell className={clsx(classes.dayCell)} style={divStyle}></BorderedTableCell>
   }
 
   //we have a carry over from previous week if it's the first day and the date is diff. from the report start date
@@ -52,21 +50,20 @@ const DayDisplay: FunctionComponent<{
 
   if (carryOver) {
     return (
-      <div
+      <BorderedTableCell
         className={clsx(classes.dayCell)}
         style={{
           ...divStyle,
-          fontSize: '9px',
-          fontStyle: 'italic',
-          paddingLeft: '4px',
         }}>
-        continued from previous week
-      </div>
+        <Typography sx={{paddingLeft: '4px', fontSize: '9px', fontStyle: 'italic'}}>
+          continued from previous week
+        </Typography>
+      </BorderedTableCell>
     )
   }
 
   return (
-    <div className={clsx(classes.dayCell, entry.today && 'today')} style={divStyle}>
+    <BorderedTableCell className={clsx(classes.dayCell, entry.today && 'today')} style={divStyle}>
       {entry.timeWindows.map((tw, itw) => (
         <TimeWindowPlotElement
           key={`${tw.timeWindowGuid}_window_all`}
@@ -81,7 +78,7 @@ const DayDisplay: FunctionComponent<{
           timeZone={timeZone}
         />
       ))}
-    </div>
+    </BorderedTableCell>
   )
 }
 

@@ -4,11 +4,6 @@ import {rest} from 'msw'
 import enrollment from '../mocks/enrollments.json'
 import participant from '../mocks/participant.json'
 
-type Search = {
-  pageSize: number
-  offsetBy: number
-}
-
 /* 
 endpoints:
 
