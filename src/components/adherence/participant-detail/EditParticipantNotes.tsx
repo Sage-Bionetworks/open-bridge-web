@@ -37,12 +37,12 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({par
           value={note}
           onChange={e => setNote(e.target.value)}
           multiline={true}
-          rows={10}
+          rows={5}
         />
       </FormControl>
 
       <Button
-        sx={{marginRight: 0, marginLeft: 'auto', marginTop: theme.spacing(2)}}
+        sx={{float: 'right', marginTop: theme.spacing(2)}}
         variant="contained"
         color="primary"
         onClick={() => {

@@ -3,20 +3,20 @@ import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
 import StudyBuilderHeader from '@components/studies/StudyBuilderHeader'
 import BreadCrumb from '@components/widgets/BreadCrumb'
-import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import ParticipantAdherenceContentShell from '@components/widgets/ParticipantAdherenceContentShell'
 import CheckIcon from '@mui/icons-material/CheckCircleTwoTone'
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
-import {Box, Button, Paper, styled, Tooltip, Typography} from '@mui/material'
+import {Box, Button, Paper, Tooltip, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useEnrollmentForParticipant} from '@services/enrollmentHooks'
 import {useEventsForUser} from '@services/eventHooks'
 import {useGetParticipant, useGetParticipantInfo} from '@services/participantHooks'
 import ParticipantService from '@services/participants.service'
 import {useStudy} from '@services/studyHooks'
+import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
-import {AdherenceDetailReport, ParticipantEvent, SessionDisplayInfo} from '@typedefs/types'
+import {AdherenceDetailReport, SessionDisplayInfo} from '@typedefs/types'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
@@ -28,14 +28,6 @@ import AdditionalAdherenceParticipantInfo from './AdditionalAdherenceParticipant
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
 import EditParticipantEvents from './EditParticipantEvents'
 import EditParticipantNotes from './EditParticipantNotes'
-
-const BottomBox = styled('div', {label: 'BottomBox'})(({theme}) => ({
-  display: 'flex',
-  margin: theme.spacing(8, -3, 0, -3),
-  padding: theme.spacing(4, 3, 2, 3),
-  backgroundColor: '#fff',
-  justifyContent: 'space-between',
-}))
 
 const useStyles = makeStyles(theme => ({
   mainContainer: {
@@ -103,13 +95,7 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
     },
   ]
 
-  const getDisplayTimeInStudyTime = (
-    events?: {
-      timeline_retrieved: Date | undefined
-      customEvents: ParticipantEvent[]
-    },
-    adherenceReport?: AdherenceDetailReport
-  ) => {
+  const getDisplayTimeInStudyTime = (adherenceReport?: AdherenceDetailReport) => {
     if (!adherenceReport?.dateRange) {
       return ''
     }
@@ -127,10 +113,16 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
         <StudyBuilderHeader study={study!} />
         <ParticipantAdherenceContentShell>
           <BreadCrumb links={getBreadcrumbLinks()}></BreadCrumb>
-          <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              paddingBottom: theme.spacing(3),
+              alignItems: 'flex-end',
+            }}>
             <Box>
               {/*adherenceReport?.progression === 'done' && <CelebrationBg className={classes.celebration} />*/}
-              <Box display="flex" alignItems="center" my={2}>
+              <Box display="flex" alignItems="center" my={4}>
                 {' '}
                 <PersonIcon />
                 <Typography variant="h2">
@@ -142,25 +134,16 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
                   </Tooltip>
                 )}
               </Box>
-              <Box mb={2}>
-                <MTBHeadingH4> Time in Study</MTBHeadingH4>
-                {getDisplayTimeInStudyTime(events, adherenceReport)}
-                {adherenceReport?.progression === 'done' && (
-                  <div>
-                    <strong>Completed</strong>
-                  </div>
-                )}
-              </Box>
-              <Box mb={2}>
-                <MTBHeadingH4> Client TimeZone</MTBHeadingH4>
-                {adherenceReport?.clientTimeZone || 'Unknown'}
-              </Box>
-              <Box pb={6}>
-                <MTBHeadingH4>Health Code </MTBHeadingH4>
-                {enrollment ? enrollment.healthCode : ''}
-              </Box>
+
+              <AdditionalAdherenceParticipantInfo
+                participantRequestInfo={participantRequestInfo}
+                participantClientData={participant?.clientData}
+                adherenceReport={adherenceReport!}
+                enrollment={enrollment!}
+              />
             </Box>
-            <Box>
+
+            <Box sx={{width: '440px'}}>
               <EditParticipantNotes participantId={participantId} studyId={studyId} enrollment={enrollment!} />
             </Box>
           </Box>
@@ -201,12 +184,6 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
               {adherenceReport?.progression === 'unstarted' ? '-' : `${adherenceReport?.adherencePercent} %`}
             </Box>
           </Box>
-          <BottomBox>
-            <AdditionalAdherenceParticipantInfo
-              participantRequestInfo={participantRequestInfo}
-              participantClientData={participant?.clientData}
-            />
-          </BottomBox>
         </Paper>
       </LoadingComponent>
       {isEditParticipant && (
