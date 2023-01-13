@@ -126,7 +126,7 @@ const UserAvatar: FunctionComponent<{sessionData?: UserSessionData; onClick: (e:
       if (!sessionData) {
         return '?'
       }
-      let initial = sessionData.userName?.substring(0, 1)
+      let initial = sessionData.username?.substring(0, 1)
       if (sessionData.firstName) {
         initial = `${sessionData.firstName.substring(0, 1)}${sessionData.lastName?.substring(0, 1)}`
       }

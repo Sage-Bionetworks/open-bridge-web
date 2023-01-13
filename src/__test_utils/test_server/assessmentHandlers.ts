@@ -14,8 +14,6 @@ Mocks for assessment endpoints
     assessmentSharedResources: '/v1/sharedassessments/identifier::identifier/resources',
     assmentsForSessions: '/v1/sessions/:sessionId/assessments',
 */
-const mtbAppId = constants.constants.MTB_APP_ID
-const arcAppId = constants.constants.ARC_APP_ID
 
 const endpoints = [
   //shared assessments

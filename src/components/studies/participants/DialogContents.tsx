@@ -1,23 +1,19 @@
 import Utility from '@helpers/utility'
-import {Box, CircularProgress, Paper} from '@mui/material'
+import {Box, CircularProgress} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService, {formatExternalId} from '@services/participants.service'
-import {latoFont} from '@style/theme'
 import {EnrolledAccountRecord, ParticipantAccountSummary, ParticipantActivityType, Phone, Study} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {useEffect} from 'react'
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    width: '80%',
-    fontFamily: latoFont,
-    fontSize: '16px',
-  },
   idList: {
     textAlign: 'center',
     fontWeight: 'bold',
-    marginBottom: theme.spacing(2.5),
+    marginBottom: theme.spacing(2),
     marginTop: theme.spacing(2),
+    padding: theme.spacing(2, 0),
+    backgroundColor: '#F1F3F5',
     '& span': {
       display: 'block',
     },
@@ -142,7 +138,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
 
   if (isProcessing || loadingData) {
     return (
-      <Box className={classes.root}>
+      <Box>
         <Box textAlign="center" mx="auto">
           <CircularProgress />
         </Box>
@@ -156,12 +152,19 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
 
   if (participantsWithError.length === 0) {
     return (
-      <Box className={classes.root}>
+      <Box>
         {!isProcessing && participantsWithError.length === 0 && (
           <Box display="flex" flexDirection="column">
             <Box mb={1}>
               {mode === 'DELETE' && (
-                <> 'Are you sure you would like to permanently remove the following participant(s):'</>
+                <>
+                  {' '}
+                  Are you sure you would like to permanently remove the following participant(s):
+                  <br />
+                  <strong>
+                    <i>This action cannot be undone.</i>
+                  </strong>
+                </>
               )}
               {mode === 'SMS'
                 ? `You will be sending the following SMS to the following ${participantData.length} participant(s) listed below:`
@@ -173,23 +176,19 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
                 and enter the following <strong>Study ID: {study.identifier}</strong>.
               </Box>
             )}
-            <Paper className={clsx(classes.idList, mode === 'SMS' && classes.smsIdListContainer)} elevation={0}>
+            <Box className={clsx(classes.idList, mode === 'SMS' && classes.smsIdListContainer)}>
               {selectedIds.map((id, index) => (
                 <span key={'selected-id' + index}>{id}</span>
               ))}
-            </Paper>
-            {mode === 'DELETE' ? (
-              <strong>This action cannot be undone.</strong>
-            ) : (
-              <Box>Please confirm this action.</Box>
-            )}
+            </Box>
+            {mode !== 'DELETE' && <Box>Please confirm this action.</Box>}
           </Box>
         )}
       </Box>
     )
   } else {
     return (
-      <Box className={classes.root}>
+      <Box>
         The following participant(s) could not be removed:
         <div className={clsx(classes.idList, mode === 'SMS' && classes.smsIdListContainer)}>
           {idsWithErrorsList.map(id => (

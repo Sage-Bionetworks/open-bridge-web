@@ -133,7 +133,7 @@ const Year: React.FunctionComponent<{
         allowPast,
       })
     }
-  }, [range, allowPast, allowFuture])
+  }, [range, allowPast, allowFuture, onUpdateFormat, step.inputItem])
 
   return (
     <>

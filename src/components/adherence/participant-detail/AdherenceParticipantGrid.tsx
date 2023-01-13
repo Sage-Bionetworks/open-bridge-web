@@ -1,7 +1,8 @@
 import {useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
 import {getSessionSymbolName} from '@components/widgets/SessionIcon'
+import {BorderedTableCell} from '@components/widgets/StyledComponents'
 import UtilityObject from '@helpers/utility'
-import {Box} from '@mui/material'
+import {Box, Table, TableBody, TableRow, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
 import {latoFont} from '@style/theme'
@@ -10,7 +11,6 @@ import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import AdherenceUtility from '../adherenceUtility'
 import DayDisplay from '../DayDisplay'
-import RowLabel from '../RowLabel'
 import {useCommonStyles} from '../styles'
 import TableHeader from '../TableHeader'
 
@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(0.5),
   },
   startEventId: {
-    width: theme.spacing(17),
+    width: '138px',
     fontSize: '12px',
     fontFamily: latoFont,
     padding: theme.spacing(0, 1, 0, 2),
@@ -91,20 +91,6 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
   const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
   const classes = {...useCommonStyles(), ...useStyles()}
 
-  const dayListingTitleStyle: React.CSSProperties = {
-    fontWeight: 'bold',
-    paddingLeft: '16px',
-    fontSize: '14px',
-    width: '235px',
-  }
-
-  const adHerenceLabelStyle: React.CSSProperties = {
-    top: '-7px',
-    lineHeight: '1',
-    width: `${dayWidthInPx}px`,
-    left: `${dayWidthInPx * 7}px`,
-  }
-
   const mergeWithClientData = (eventStreamDay: EventStreamDay): EventStreamDay => {
     if (clientData && UtilityObject.isArcApp()) {
       const windows = eventStreamDay.timeWindows.map(window => {
@@ -119,65 +105,84 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
     }
   }
 
+  const getRowLabel = (wkInStudy: number, sessionName: string, burstNum?: number) => {
+    const label = `Week ${wkInStudy}${burstNum !== undefined ? `/Burst ${burstNum}` : ''}/${sessionName}`
+    return (
+      <Tooltip title={label}>
+        <Box
+          sx={{
+            width: '110px',
+            display: 'block',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+          }}>
+          {label}
+        </Box>
+      </Tooltip>
+    )
+  }
+
   return (
-    <div ref={ref} className={classes.adherenceGrid}>
-      <div className={classes.daysList} key={'day_list'}>
+    <div ref={ref} style={{marginBottom: '32px'}}>
+      <Table sx={{border: '1px solid #EAECEE', borderCollapse: 'separate'}}>
         <TableHeader prefixColumns={[['Schedule by weekday', 138]]} unitWidth={dayWidthInPx} />
-      </div>
-      {adherenceReport.weeks.map((week, weekIndex) => (
-        <div className={classes.eventRowForWeek} key={`${'inner' + week.weekInStudy}_${weekIndex}`}>
-          <div key={'eventRowForWeek' + weekIndex} className={classes.eventRowForWeekSessions}>
-            <div key="sessions">
-              {week.rows.map((row, rowIndex) => (
-                <div className={classes.eventRowForWeekSingleSession} id={'session' + row.label}>
-                  <div className={classes.startEventId} key={'wk_name'}>
-                    <RowLabel wkInStudy={week.weekInStudy} burstNum={row.studyBurstNum} sessionName={row.sessionName} />
-                  </div>
-                  {/*  <Tooltip title={row.label}>
-                      <div className={classes.sessionLegendIcon}>
-                        <AdherenceSessionIcon
-                          sessionSymbol={row.sessionSymbol || undefined}
-                          windowState="completed">
-                          &nbsp;
-                        </AdherenceSessionIcon>
-                      </div>
-                      </Tooltip>*/}
-                  <div id={'wk' + weekIndex + 'events'} className={classes.sessionWindows}>
-                    {[...new Array(7)].map((i, dayIndex) => (
-                      <DayDisplay
-                        key={dayIndex}
-                        entry={mergeWithClientData(
-                          AdherenceUtility.getItemFromByDayEntries(week.byDayEntries, dayIndex, rowIndex)
-                        )}
-                        isCompliant={AdherenceUtility.isCompliant(week.adherencePercent)}
-                        dayWidth={dayWidthInPx}
-                        sessionSymbol={
-                          row.sessionSymbol ||
-                          getSessionSymbolName(sessions.findIndex(s => s.sessionGuid === row.sessionGuid))
-                        }
-                        numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(adherenceReport.weeks)}
-                        timeZone={adherenceReport.clientTimeZone}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div
-              key={'adherence'}
-              className={clsx(
-                classes.adherenceDisplay,
-                !AdherenceUtility.isCompliant(week.adherencePercent) &&
-                  adherenceReport.progression === 'in_progress' &&
-                  classes.red
-              )}>
-              {week.adherencePercent !== undefined && adherenceReport.progression !== 'unstarted'
-                ? `${week.adherencePercent}%`
-                : '-'}
-            </div>
-          </div>
-        </div>
-      ))}
+        <TableBody>
+          {adherenceReport.weeks.map((week, weekIndex) => (
+            <TableRow id="eventRowForWeek" key={`${'inner' + week.weekInStudy}_${weekIndex}`}>
+              <BorderedTableCell
+                key="sessions"
+                colSpan={8}
+                sx={{
+                  padding: 0,
+                  borderLeft: 'none',
+                  textAlign: 'center',
+                  backgroundColor: weekIndex % 2 == 0 ? '#fff' : '#FBFBFC',
+                }}>
+                <Table>
+                  {week.rows.map((row, rowIndex) => (
+                    <TableRow id={'session' + row.label}>
+                      <BorderedTableCell className={classes.startEventId} key={'wk_name'}>
+                        {getRowLabel(row.weekInStudy, row.sessionName, row.studyBurstNum)}
+                      </BorderedTableCell>
+
+                      {[...new Array(7)].map((i, dayIndex) => (
+                        <DayDisplay
+                          key={dayIndex}
+                          entry={mergeWithClientData(
+                            AdherenceUtility.getItemFromByDayEntries(week.byDayEntries, dayIndex, rowIndex)
+                          )}
+                          isCompliant={AdherenceUtility.isCompliant(week.adherencePercent)}
+                          dayWidth={dayWidthInPx}
+                          sessionSymbol={
+                            row.sessionSymbol ||
+                            getSessionSymbolName(sessions.findIndex(s => s.sessionGuid === row.sessionGuid))
+                          }
+                          numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(adherenceReport.weeks)}
+                          timeZone={adherenceReport.clientTimeZone}
+                        />
+                      ))}
+                    </TableRow>
+                  ))}
+                </Table>
+              </BorderedTableCell>
+              <BorderedTableCell
+                key={'adherence'}
+                className={clsx(
+                  classes.adherenceDisplay,
+                  !AdherenceUtility.isCompliant(week.adherencePercent) &&
+                    adherenceReport.progression === 'in_progress' &&
+                    classes.red
+                )}
+                sx={{backgroundColor: weekIndex % 2 == 0 ? '#fff' : '#FBFBFC'}}>
+                {week.adherencePercent !== undefined && adherenceReport.progression !== 'unstarted'
+                  ? `${week.adherencePercent}%`
+                  : '-'}
+              </BorderedTableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
       <UndefinedEvents startEventIds={adherenceReport.unsetEventIds} />
     </div>
   )

@@ -61,7 +61,7 @@ const NonDraftHeaderFunctionComponent: FunctionComponent<{
           {PhaseIcon[displayPhase].icon}&nbsp;{StudyService.getDisplayStatusForStudyPhase(study.phase)}
         </StyledPill>
       </Box>
-      <Typography variant="h4">{study.name}!</Typography>
+      <Typography variant="h4">{study.name}</Typography>
     </Box>
   )
 }

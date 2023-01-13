@@ -35,7 +35,7 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
 
   return (
     <Dialog open={true} maxWidth="sm" fullWidth scroll="body">
-      <DialogTitleWithClose onCancel={onCloseDialog} title="Edit Participant Event Date" isSmallTitle={true} />
+      <DialogTitleWithClose onCancel={onCloseDialog} title="Edit Participant Event Date" />
       <DialogContent>
         <EditParticipantEventsForm
           hideLoginEvent={true}

@@ -1,45 +1,9 @@
-import {SimpleTextInput} from '@components/widgets/StyledComponents'
-import {Button, CircularProgress} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
+import {Button, CircularProgress, FormControl} from '@mui/material'
 import {useUpdateParticipantInList} from '@services/participantHooks'
-import {poppinsFont} from '@style/theme'
+import {theme} from '@style/theme'
 import {EnrolledAccountRecord} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
-
-const useStyles = makeStyles(theme => ({
-  notesContainer: {
-    padding: theme.spacing(0, 2, 2, 0),
-    width: '50%',
-  },
-
-  notesText: {
-    borderColor: '#BBC3CD',
-    margin: theme.spacing(2, 0),
-    width: '100%',
-    '& .MuiOutlinedInput-inputMultiline': {
-      background: '#fff',
-      padding: theme.spacing(1),
-    },
-  },
-  saveBtn: {
-    backgroundColor: '#392D2D',
-    '&:hover': {
-      backgroundColor: '#392D2D',
-      fontWeight: 'bolder',
-    },
-    color: '#FFFFFF',
-    display: 'block',
-    margin: 0,
-    borderRadius: 0,
-    fontFamily: poppinsFont,
-  },
-  noteHeader: {
-    marginLeft: '10px',
-    fontWeight: 'bold',
-    fontSize: '16px',
-    fontFamily: poppinsFont,
-  },
-}))
 
 type EditParticipantNotesProps = {
   participantId: string
@@ -48,7 +12,6 @@ type EditParticipantNotesProps = {
 }
 
 const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({participantId, studyId, enrollment}) => {
-  const classes = useStyles()
   const [note, setNote] = React.useState(enrollment.note)
   const {isLoading, mutateAsync} = useUpdateParticipantInList()
 
@@ -62,19 +25,25 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({par
     })
   }
   return (
-    <div className={classes.notesContainer}>
-      <div className={classes.noteHeader}>Participant Notes</div>
-      <SimpleTextInput
-        className={classes.notesText}
-        value={note}
-        onChange={e => setNote(e.target.value)}
-        multiline={true}
-        rows={20}
-      />
+    <div>
+      <FormControl fullWidth>
+        <SimpleTextLabel>Participant Notes</SimpleTextLabel>
+
+        <SimpleTextInput
+          sx={{
+            '& .MuiOutlinedInput-root': {backgroundColor: '#FFF'},
+          }}
+          inputProps={{style: {backgroundColor: '#FFF'}}}
+          value={note}
+          onChange={e => setNote(e.target.value)}
+          multiline={true}
+          rows={5}
+        />
+      </FormControl>
+
       <Button
-        className={classes.saveBtn}
+        sx={{float: 'right', marginTop: theme.spacing(2)}}
         variant="contained"
-        size="large"
         color="primary"
         onClick={() => {
           const data = {note: note}

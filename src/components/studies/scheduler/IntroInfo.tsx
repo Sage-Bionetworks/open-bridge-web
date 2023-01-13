@@ -232,6 +232,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback}
                       onChange={e => setDuration(e.target.value)}
                       durationString={duration || ''}
                       unitLabel="study duration unit"
+                      inputWidth={8}
                       numberLabel="study duration number"
                       maxDurationDays={1825}
                       unitData={DWsEnum}
