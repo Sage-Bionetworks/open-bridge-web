@@ -1,5 +1,5 @@
 import {BorderedTableCell} from '@components/widgets/StyledComponents'
-import {Typography} from '@mui/material'
+import {Box, Typography} from '@mui/material'
 import {EventStreamDay} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
@@ -64,20 +64,22 @@ const DayDisplay: FunctionComponent<{
 
   return (
     <BorderedTableCell className={clsx(classes.dayCell, entry.today && 'today')} style={divStyle}>
-      {entry.timeWindows.map((tw, itw) => (
-        <TimeWindowPlotElement
-          key={`${tw.timeWindowGuid}_window_all`}
-          maxNumberOfWindows={numOfWin}
-          windowIndex={itw}
-          startDate={entry!.startDate}
-          startTime={tw.startTime}
-          endDate={tw.endDate}
-          windowState={tw.state}
-          sessionSymbol={sessionSymbol!}
-          isCompliant={isCompliant}
-          timeZone={timeZone}
-        />
-      ))}
+      <Box sx={{display: 'flex'}}>
+        {entry.timeWindows.map((tw, itw) => (
+          <TimeWindowPlotElement
+            key={`${tw.timeWindowGuid}_window_all`}
+            maxNumberOfWindows={numOfWin}
+            windowIndex={itw}
+            startDate={entry!.startDate}
+            startTime={tw.startTime}
+            endDate={tw.endDate}
+            windowState={tw.state}
+            sessionSymbol={sessionSymbol!}
+            isCompliant={isCompliant}
+            timeZone={timeZone}
+          />
+        ))}
+      </Box>
     </BorderedTableCell>
   )
 }
