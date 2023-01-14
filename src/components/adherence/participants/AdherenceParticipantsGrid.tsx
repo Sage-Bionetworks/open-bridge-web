@@ -1,5 +1,5 @@
 import {useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import {Box, styled, Table, TableBody, TableRow, Tooltip} from '@mui/material'
+import {Box, Table, TableBody, TableRow, Tooltip} from '@mui/material'
 import {Link} from 'react-router-dom'
 
 import makeStyles from '@mui/styles/makeStyles'
@@ -16,17 +16,6 @@ import DayDisplay from '../DayDisplay'
 import {useCommonStyles} from '../styles'
 import TableHeader from '../TableHeader'
 import NextActivity from './NextActivity'
-
-const StyledParticipantRow = styled(Box, {label: 'StyledParticipantRow'})<{progression?: ProgressionStatus}>(
-  ({theme, progression}) => ({
-    display: 'flex',
-    borderBottom: '4px solid #fbfbfb',
-    padding: theme.spacing(1, 0),
-    alignItems: 'center',
-    textAlign: 'center',
-    // backgroundColor: progression === 'done' ? '#F7FBF6;' : 'transparent',
-  })
-)
 
 export const useStyles = makeStyles(theme => ({
   adherenceCell: {

@@ -15,9 +15,8 @@ import ParticipantService from '@services/participants.service'
 import {useStudy} from '@services/studyHooks'
 import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
-import {AdherenceDetailReport, SessionDisplayInfo} from '@typedefs/types'
+import {SessionDisplayInfo} from '@typedefs/types'
 import clsx from 'clsx'
-import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
@@ -58,7 +57,7 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
     userId: string
   }>()
 
-  const {data: adherenceReport, error, isLoading: isAdherenceLoading} = useAdherence(studyId, participantId)
+  const {data: adherenceReport, isLoading: isAdherenceLoading} = useAdherence(studyId, participantId)
 
   const {data: participantRequestInfo} = useGetParticipantInfo(studyId, participantId)
 
@@ -68,11 +67,11 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
 
   const {
     data: enrollment,
-    error: enrollmentError,
+
     isLoading: isEnrollmentLoading,
   } = useEnrollmentForParticipant(studyId, participantId)
 
-  const {data: study, error: studyError, isLoading: isStudyLoading} = useStudy(studyId)
+  const {data: study, isLoading: isStudyLoading} = useStudy(studyId)
 
   const [participantSessions, setParticipantSessions] = React.useState<SessionDisplayInfo[]>([])
 
@@ -93,16 +92,6 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
       text: 'Active Participants',
     },
   ]
-
-  const getDisplayTimeInStudyTime = (adherenceReport?: AdherenceDetailReport) => {
-    if (!adherenceReport?.dateRange) {
-      return ''
-    }
-    const startDate = dayjs(adherenceReport.dateRange.startDate).format('MM/DD/YYYY')
-
-    const endDate = dayjs(adherenceReport.dateRange.endDate).format('MM/DD/YYYY')
-    return `${startDate}-${endDate}`
-  }
 
   return (
     <Box>
