@@ -1,5 +1,3 @@
-import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
-
 import {useAdherence} from '@components/studies/adherenceHooks'
 import StudyBuilderHeader from '@components/studies/StudyBuilderHeader'
 import BreadCrumb from '@components/widgets/BreadCrumb'
@@ -7,6 +5,7 @@ import LoadingComponent from '@components/widgets/Loader'
 import ParticipantAdherenceContentShell from '@components/widgets/ParticipantAdherenceContentShell'
 import CheckIcon from '@mui/icons-material/CheckCircleTwoTone'
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
+import PersonIcon from '@mui/icons-material/PersonTwoTone'
 import {Box, Button, Paper, Tooltip, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useEnrollmentForParticipant} from '@services/enrollmentHooks'
@@ -111,7 +110,12 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
         reqStatusLoading={isStudyLoading || isAdherenceLoading || isEnrollmentLoading || !enrollment}
         variant="full">
         <StudyBuilderHeader study={study!} />
-        <ParticipantAdherenceContentShell>
+        <ParticipantAdherenceContentShell
+          sx={
+            adherenceReport?.progression === 'done'
+              ? {background: 'linear-gradient(360deg, #F7FBF6 0%, #F7FBF6 85.05%)'}
+              : {}
+          }>
           <BreadCrumb links={getBreadcrumbLinks()}></BreadCrumb>
           <Box
             sx={{
@@ -124,13 +128,13 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
               {/*adherenceReport?.progression === 'done' && <CelebrationBg className={classes.celebration} />*/}
               <Box display="flex" alignItems="center" my={4}>
                 {' '}
-                <PersonIcon />
+                <PersonIcon sx={{fontSize: '32px', marginRight: theme.spacing(1), color: '#afb5bd'}} />
                 <Typography variant="h2">
                   {ParticipantService.formatExternalId(studyId, adherenceReport?.participant?.externalId || '', true)}
                 </Typography>
                 {adherenceReport?.progression === 'done' && (
                   <Tooltip title="Completed Study">
-                    <CheckIcon sx={{color: '#63A650'}} />
+                    <CheckIcon sx={{color: '#63A650', marginLeft: theme.spacing(1)}} />
                   </Tooltip>
                 )}
               </Box>

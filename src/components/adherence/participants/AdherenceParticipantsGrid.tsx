@@ -105,7 +105,12 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
             ) : (
               <TableRow key={`${item.participant}_${index}`}>
                 <BorderedTableCell
-                  sx={{width: '108px', textAlign: 'center', backgroundColor: index % 2 == 0 ? '#fff' : '#FBFBFC'}}
+                  $isDark={index % 2 === 1}
+                  $staticColor={item.progression === 'done' ? '#F7FBF6' : undefined}
+                  sx={{
+                    width: '108px',
+                    textAlign: 'center',
+                  }}
                   key={'pIdentifier'}>
                   <Link to={`adherence/${item.participant?.identifier || 'nothing'}`}>
                     {ParticipantService.formatExternalId(studyId, item.participant.externalId)}
@@ -115,10 +120,12 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                   colSpan={8}
                   key={'data'}
                   id="data"
+                  $isDark={index % 2 === 1}
+                  $staticColor={item.progression === 'done' ? '#F7FBF6' : undefined}
                   sx={{
                     padding: 0,
                     textAlign: 'center',
-                    backgroundColor: index % 2 == 0 ? '#fff' : '#FBFBFC',
+
                     borderLeft: 'none',
                   }}>
                   {!item.rows?.length ? (
@@ -164,7 +171,9 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                     </Table>
                   )}
                 </BorderedTableCell>
-                <BorderedTableCell sx={{backgroundColor: index % 2 == 0 ? '#fff' : '#FBFBFC'}}>
+                <BorderedTableCell
+                  $isDark={index % 2 === 1}
+                  $staticColor={item.progression === 'done' ? '#F7FBF6' : undefined}>
                   <AdherenceCell
                     progression={item.progression}
                     adherencePercent={item.weeklyAdherencePercent}
