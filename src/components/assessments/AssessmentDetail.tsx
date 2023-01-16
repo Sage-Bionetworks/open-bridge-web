@@ -134,7 +134,7 @@ const SectionWithIcon: FunctionComponent<{icon: ReactElement; heading: string; t
 }) => {
   return (
     <Box>
-      <Box sx={{display: 'flex', alignItems: 'center'}}>
+      <Box sx={{display: 'flex', alignItems: 'center', ' > svg': {color: '#878E95'}}}>
         {icon}
         <Typography variant="h4" sx={{marginLeft: theme.spacing(1)}}>
           {heading}
