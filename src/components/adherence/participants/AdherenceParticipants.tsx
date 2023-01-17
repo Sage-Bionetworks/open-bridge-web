@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import {Box, Button, darken} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {WeeklyAdherenceFilter} from '@services/adherence.service'
-import {latoFont} from '@style/theme'
+import {latoFont, theme} from '@style/theme'
 import {ProgressionStatus, SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
@@ -114,23 +114,8 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> = () 
           />
         )}
 
-        <div style={{marginLeft: 'auto'}}>
-          <ParticipantSearch
-            isSearchById={true}
-            onReset={() => {
-              setAdherenceParams({})
-              setCurrentPage(0)
-            }}
-            onSearch={(searchedValue: string) => {
-              setAdherenceParams({
-                idFilter: searchedValue,
-              })
-              setCurrentPage(0)
-            }}
-          />
-        </div>
         {fullAdherenceWeeklyReport?.items && weeklyStats && (
-          <div>
+          <div style={{marginLeft: 'auto', marginRight: theme.spacing(2)}}>
             <Filter
               adherenceStats={weeklyStats}
               adherenceReportItems={fullAdherenceWeeklyReport.items}
@@ -148,6 +133,21 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> = () 
               }}></Filter>
           </div>
         )}
+        <div>
+          <ParticipantSearch
+            isSearchById={true}
+            onReset={() => {
+              setAdherenceParams({})
+              setCurrentPage(0)
+            }}
+            onSearch={(searchedValue: string) => {
+              setAdherenceParams({
+                idFilter: searchedValue,
+              })
+              setCurrentPage(0)
+            }}
+          />
+        </div>
       </Box>
       <LoadingComponent reqStatusLoading={adhStatus === 'loading'}>
         {!hasNoFilter() && (

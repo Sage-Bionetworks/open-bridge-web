@@ -1,30 +1,11 @@
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import ClearIcon from '@mui/icons-material/Clear'
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone'
-import {Button, FormControl, IconButton, InputAdornment} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import {Box, FormControl, IconButton, InputAdornment} from '@mui/material'
 import {ParticipantActivityType} from '@typedefs/types'
 import React, {useEffect} from 'react'
 
 const ENTER_KEY = 'Enter'
-
-const useStyles = makeStyles(theme => ({
-  participantIDSearchBar: {
-    outline: 'none',
-    height: '38px',
-    width: '220px',
-    borderTopRightRadius: '0px',
-    borderBottomRightRadius: '0px',
-    padding: theme.spacing(0.7),
-    fontSize: '13px',
-  },
-
-  inputRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-}))
 
 type ParticipantSearchProps = {
   onReset: Function
@@ -34,9 +15,6 @@ type ParticipantSearchProps = {
 }
 
 const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({onReset, onSearch, isSearchById, tab}) => {
-  const classes = useStyles()
-  const [isSearchingForParticipant, setIsSearchingForParticipant] = React.useState(false)
-
   // True if the user is currently trying to search for a particular particpant
   const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)
   // Reference to the input component for searching for a participant using ID.
@@ -60,8 +38,8 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({onR
     handleResetSearch()
   }, [tab])
 
-  return isSearchingForParticipant ? (
-    <div className={classes.inputRow}>
+  return (
+    <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
       <FormControl>
         <SimpleTextInput
           id="input-with-icon-textfield"
@@ -70,7 +48,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({onR
               handleSearchParticipantRequest()
             }
           }}
-          sx={{borderRadius: '100px', '& input': {height: '28px'}}}
+          sx={{'& .MuiInputBase-root': {borderRadius: '100px'}, '& input': {height: '28px'}}}
           placeholder={isSearchById ? "Participant's ID" : "Participant's Phone Number"}
           inputRef={inputComponent}
           InputProps={{
@@ -85,24 +63,13 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({onR
             ),
             startAdornment: (
               <InputAdornment position="start">
-                <SearchTwoToneIcon sx={{color: '#878E95'}} />
+                <SearchTwoToneIcon sx={{color: '#878E95', fontSize: '24px'}} />
               </InputAdornment>
             ),
           }}
         />
       </FormControl>
-    </div>
-  ) : (
-    <Button
-      onClick={() => {
-        setIsSearchingForParticipant(true)
-      }}
-      variant="text"
-      color="primary"
-      id="start-searching-for-participant-button"
-      startIcon={<SearchTwoToneIcon />}>
-      Find Participant
-    </Button>
+    </Box>
   )
 }
 

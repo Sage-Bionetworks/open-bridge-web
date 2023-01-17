@@ -1,4 +1,4 @@
-//import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'/
+
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'

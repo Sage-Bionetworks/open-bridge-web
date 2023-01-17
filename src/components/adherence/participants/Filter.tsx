@@ -1,4 +1,4 @@
-import {ReactComponent as FilterIcon} from '@assets/filter.svg'
+import FilterIcon from '@mui/icons-material/FilterAltTwoTone'
 import {
   Box,
   Button,
@@ -163,8 +163,13 @@ const Filter: FunctionComponent<FilterProps> = ({
 
   return (
     <div key={`next_activity`}>
-      <Button variant="text" onClick={handleClick}>
-        <FilterIcon /> Filter
+      <Button
+        variant="outlined"
+        size="small"
+        sx={{height: '36px', padding: theme.spacing(0, 2)}}
+        onClick={handleClick}
+        startIcon={<FilterIcon />}>
+        Filter
       </Button>
 
       <Drawer anchor={'right'} open={open} onClose={handleClose}>
