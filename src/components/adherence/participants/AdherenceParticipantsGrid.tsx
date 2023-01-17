@@ -1,5 +1,5 @@
 import {useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import {Box, styled, Table, TableBody, TableRow, Tooltip} from '@mui/material'
+import {Box, Table, TableBody, TableRow, Tooltip} from '@mui/material'
 import {Link} from 'react-router-dom'
 
 import makeStyles from '@mui/styles/makeStyles'
@@ -16,17 +16,6 @@ import DayDisplay from '../DayDisplay'
 import {useCommonStyles} from '../styles'
 import TableHeader from '../TableHeader'
 import NextActivity from './NextActivity'
-
-const StyledParticipantRow = styled(Box, {label: 'StyledParticipantRow'})<{progression?: ProgressionStatus}>(
-  ({theme, progression}) => ({
-    display: 'flex',
-    borderBottom: '4px solid #fbfbfb',
-    padding: theme.spacing(1, 0),
-    alignItems: 'center',
-    textAlign: 'center',
-    // backgroundColor: progression === 'done' ? '#F7FBF6;' : 'transparent',
-  })
-)
 
 export const useStyles = makeStyles(theme => ({
   adherenceCell: {
@@ -105,7 +94,12 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
             ) : (
               <TableRow key={`${item.participant}_${index}`}>
                 <BorderedTableCell
-                  sx={{width: '108px', textAlign: 'center', backgroundColor: index % 2 == 0 ? '#fff' : '#FBFBFC'}}
+                  $isDark={index % 2 === 1}
+                  $staticColor={item.progression === 'done' ? '#F7FBF6' : undefined}
+                  sx={{
+                    width: '108px',
+                    textAlign: 'center',
+                  }}
                   key={'pIdentifier'}>
                   <Link to={`adherence/${item.participant?.identifier || 'nothing'}`}>
                     {ParticipantService.formatExternalId(studyId, item.participant.externalId)}
@@ -115,10 +109,12 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                   colSpan={8}
                   key={'data'}
                   id="data"
+                  $isDark={index % 2 === 1}
+                  $staticColor={item.progression === 'done' ? '#F7FBF6' : undefined}
                   sx={{
                     padding: 0,
                     textAlign: 'center',
-                    backgroundColor: index % 2 == 0 ? '#fff' : '#FBFBFC',
+
                     borderLeft: 'none',
                   }}>
                   {!item.rows?.length ? (
@@ -164,7 +160,9 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                     </Table>
                   )}
                 </BorderedTableCell>
-                <BorderedTableCell sx={{backgroundColor: index % 2 == 0 ? '#fff' : '#FBFBFC'}}>
+                <BorderedTableCell
+                  $isDark={index % 2 === 1}
+                  $staticColor={item.progression === 'done' ? '#F7FBF6' : undefined}>
                   <AdherenceCell
                     progression={item.progression}
                     adherencePercent={item.weeklyAdherencePercent}

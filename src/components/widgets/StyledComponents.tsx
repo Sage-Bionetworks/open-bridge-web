@@ -272,6 +272,24 @@ export const getStyledToolbarLinkStyle = (theme: Theme) => ({
   },*/
 })
 
-export const BorderedTableCell = styled(TableCell, {label: 'BorderedTableCell'})(({theme}) => ({
+function getColorForCell($isDark: boolean | undefined, $staticColor: string | undefined) {
+  if ($staticColor) {
+    return $staticColor
+  }
+  if ($isDark) {
+    return '#FBFBFC'
+  }
+  if ($isDark === undefined) {
+    return 'transparent'
+  }
+  return '#fff'
+}
+
+export const BorderedTableCell = styled(TableCell, {label: 'BorderedTableCell', shouldForwardProp: shouldForwardProp})<{
+  $isDark?: boolean
+  $staticColor?: string
+}>(({theme, $isDark, $staticColor}) => ({
   borderLeft: '1px solid #EAECEE',
+
+  backgroundColor: getColorForCell($isDark, $staticColor),
 }))

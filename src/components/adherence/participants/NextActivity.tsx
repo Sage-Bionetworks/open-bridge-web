@@ -1,5 +1,4 @@
 import {ReactComponent as Arrow} from '@assets/arrow_long.svg'
-import CheckIcon from '@mui/icons-material/CheckCircleTwoTone'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {theme} from '@style/theme'
@@ -90,10 +89,7 @@ const NoRows: FunctionComponent<NoRowsProps> = ({dayPxWidth, nextActivity, compl
         {completionStatus === 'in_progress' ? (
           <Arrow style={{transform: 'scaleX(-1)'}} />
         ) : completionStatus === 'done' ? (
-          <Box sx={{display: 'flex'}}>
-            <CheckIcon sx={{color: '#63A650'}} />
-            &nbsp;Completed
-          </Box>
+          <Box sx={{textAlign: 'center'}}>Completed</Box>
         ) : (
           ''
         )}
