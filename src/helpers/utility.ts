@@ -198,13 +198,15 @@ const redirectToSynapseLogin = () => {
     console.log('has code')
   }
 }
-const redirectToOneSage = (action: 'login' | 'validate' = 'login') => {
+
+//integration with one sage
+const getRedirectLinkToOneSage = (action: 'login' | 'validate' = 'login'): string => {
   let path = action === 'login' ? 'login' : 'authenticated/validate'
   let array = []
   array.push('appId=' + getOauthEnvironment().oneSageAppId)
   array.push('redirectURL=' + encodeURIComponent(getSynpaseRedirectUrl()))
   const url = `https://staging.accounts.sagebionetworks.synapse.org/${path}?${array.join('&')}`
-  window.location.replace(url)
+  return url
 }
 // function to use session storage (react hooks)
 
@@ -500,7 +502,7 @@ const Utility = {
   callEndpoint,
   callEndpointXHR,
   redirectToSynapseLogin,
-  redirectToOneSage,
+  getRedirectLinkToOneSage,
   getAllPages,
   getOauthEnvironment,
   getOauthEnvironmentFromLocation,

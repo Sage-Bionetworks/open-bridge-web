@@ -1,7 +1,7 @@
 import {Alert} from '@mui/lab'
 import {Box, Container} from '@mui/material'
+import {Redirect} from 'react-router-dom'
 import Utility from '../../helpers/utility'
-import AccountLogin from '../account/AccountLogin'
 
 export function ErrorFallback(props: any) {
   console.log('ERROR:', props.error.message)
@@ -10,14 +10,7 @@ export function ErrorFallback(props: any) {
   return (
     <Container maxWidth="md">
       {props.error.statusCode === 401 ? (
-        <Box mx="auto" bgcolor="white" p={5} textAlign="center">
-          <AccountLogin
-            {...props}
-            isArcSignIn={Utility.isArcApp()}
-            callbackFn={() => {
-              window.location.replace('/')
-            }}></AccountLogin>
-        </Box>
+        <Redirect to={Utility.getRedirectLinkToOneSage()} />
       ) : props.error.statusCode === 403 ? (
         <Box mx="auto" bgcolor="white" p={5} textAlign="center">
           <Alert variant="outlined" color="error" style={{marginBottom: '40px'}}>

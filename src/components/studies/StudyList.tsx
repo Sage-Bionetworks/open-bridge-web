@@ -337,16 +337,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           </Button>
 
           <Box sx={{position: 'absolute', top: '0px', right: theme.spacing(4)}}>
-            {isVerified ? (
-              'verified'
-            ) : (
-              <Button
-                onClick={() => {
-                  Utility.redirectToOneSage('validate')
-                }}>
-                Verify now
-              </Button>
-            )}
+            {isVerified ? 'verified' : <Button href={Utility.getRedirectLinkToOneSage('validate')}>Verify now</Button>}
           </Box>
         </Box>
 

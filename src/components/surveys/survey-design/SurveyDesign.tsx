@@ -2,6 +2,7 @@ import BannerInfo from '@components/studies/BannerInfo'
 import AlertBanner from '@components/widgets/AlertBanner'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
+import Utility from '@helpers/utility'
 import UtilityObject from '@helpers/utility'
 import {Box, Button, CircularProgress, Dialog, styled} from '@mui/material'
 import {
@@ -71,11 +72,7 @@ type SurveyDesignProps = SurveyDesignOwnProps & RouteComponentProps
 
 const ErrorBanner: React.FunctionComponent<{errors: (ExtendedError | null)[]}> = ({errors}) => {
   const [show, setShow] = React.useState<boolean>(false)
-  const login = (
-    <Button variant="text" sx={{color: '#fff', fontSize: '14px'}} onClick={e => UtilityObject.redirectToSynapseLogin()}>
-      Please sign in here.
-    </Button>
-  )
+
   console.log(errors)
   React.useEffect(() => {
     setShow(errors.some(e => e !== null))
@@ -95,7 +92,7 @@ const ErrorBanner: React.FunctionComponent<{errors: (ExtendedError | null)[]}> =
             icon={BannerInfo.bannerMap.get('error')!.icon[0]}
             isSelfClosing={e!.statusCode != 401}
             displayBottomOfPage={false}
-            displayText={e!.statusCode === 401 ? login : e!.message}
+            displayText={e!.statusCode === 401 ? <Redirect to={Utility.getRedirectLinkToOneSage()} /> : e!.message}
           />
         ))}
     </>
