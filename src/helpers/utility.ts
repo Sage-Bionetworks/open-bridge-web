@@ -173,6 +173,19 @@ const getAppId = () => {
   return getOauthEnvironment().appId
 }
 
+const getSynpaseRedirectUrl = (): string => {
+  let state = new Date().getTime().toString(32)
+
+  let array = []
+  array.push('response_type=code')
+  array.push('client_id=' + getOauthEnvironment().client)
+  array.push('scope=openid')
+  array.push('state=' + encodeURIComponent(state))
+  array.push('redirect_uri=' + encodeURIComponent(document.location.origin))
+  array.push('claims=' + encodeURIComponent('{"id_token":{"userid":null}}'))
+  return 'https://signin.synapse.org/?' + array.join('&')
+}
+
 const redirectToSynapseLogin = () => {
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
   let code: URL | null | string = new URL(window.location.href)
@@ -180,22 +193,20 @@ const redirectToSynapseLogin = () => {
   const {searchParams} = code
 
   if (!searchParams?.get('code')) {
-    let state = new Date().getTime().toString(32)
-
-    let array = []
-    array.push('response_type=code')
-    array.push('client_id=' + getOauthEnvironment().client)
-    array.push('scope=openid')
-    array.push('state=' + encodeURIComponent(state))
-    array.push('redirect_uri=' + encodeURIComponent(document.location.origin))
-    array.push('claims=' + encodeURIComponent('{"id_token":{"userid":null}}'))
-    window.location.replace('https://signin.synapse.org/?' + array.join('&'))
+    window.location.replace(getSynpaseRedirectUrl())
   } else {
     console.log('has code')
   }
 }
-
+const redirectToOneSage = () => {
+  let array = []
+  array.push('appId=' + getOauthEnvironment().oneSageAppId)
+  array.push('redirectURL=' + encodeURIComponent(getSynpaseRedirectUrl()))
+  const url = `https://staging.accounts.sagebionetworks.synapse.org/login?${array.join('&')}`
+  window.location.replace(url)
+}
 // function to use session storage (react hooks)
+
 const useSessionStorage = (
   key: string,
   initialValue: string | undefined
@@ -488,6 +499,7 @@ const Utility = {
   callEndpoint,
   callEndpointXHR,
   redirectToSynapseLogin,
+  redirectToOneSage,
   getAllPages,
   getOauthEnvironment,
   getOauthEnvironmentFromLocation,

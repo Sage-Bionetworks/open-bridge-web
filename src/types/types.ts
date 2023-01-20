@@ -41,6 +41,7 @@ export type OauthEnvironment = {
   vendor: string
   redirect: string
   appId: string
+  oneSageAppId: string
 }
 
 export type NavRouteType = {

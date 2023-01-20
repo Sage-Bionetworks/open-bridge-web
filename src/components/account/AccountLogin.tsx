@@ -55,22 +55,12 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn}) => {
-  const [alertMsg, setAlertMsg] = useState<{msg: string; type: AlertProps['severity']} | undefined>()
+  //const [alertMsg, setAlertMsg] = useState<{msg: string; type: AlertProps['severity']} | undefined>()
 
   const classes = useStyles()
 
   return (
     <>
-      <Snackbar
-        open={alertMsg !== undefined}
-        autoHideDuration={2000}
-        anchorOrigin={{vertical: 'top', horizontal: 'center'}}
-        onClose={() => setAlertMsg(undefined)}>
-        <Alert onClose={() => setAlertMsg(undefined)} severity={alertMsg?.type}>
-          {alertMsg?.msg}
-        </Alert>
-      </Snackbar>
-
       <Container component="main" maxWidth="xs" className={classes.buttonContainer}>
         <Box className={clsx(classes.text, !isArcSignIn && classes.mtbText)}>
           {isArcSignIn
@@ -78,10 +68,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn}) => {
             : 'Please sign in to Mobile Toolbox using your Synapse account.'}
         </Box>
         <div className={classes.paper}>
-          <Button
-            variant="contained"
-            onClick={e => Utility.redirectToSynapseLogin()}
-            className={classes.arcSubmitbutton}>
+          <Button variant="contained" onClick={e => Utility.redirectToOneSage()} className={classes.arcSubmitbutton}>
             <SynapseLogo />
           </Button>
         </div>
