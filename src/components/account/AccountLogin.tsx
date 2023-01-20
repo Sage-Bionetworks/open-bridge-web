@@ -1,14 +1,14 @@
 import {ReactComponent as SynapseLogo} from '@assets/synapse_logo_blue.svg'
 import Utility from '@helpers/utility'
-import {Box, Button, Container, Snackbar} from '@mui/material'
+import {Box, Button, Container} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import Alert, {AlertProps} from '@mui/material/Alert'
 import {poppinsFont} from '@style/theme'
 import clsx from 'clsx'
-import React, {FunctionComponent, useState} from 'react'
+import {FunctionComponent} from 'react'
 
 type AccountLoginOwnProps = {
   callbackFn: Function
+
   isArcSignIn?: boolean
 }
 
@@ -68,7 +68,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn}) => {
             : 'Please sign in to Mobile Toolbox using your Synapse account.'}
         </Box>
         <div className={classes.paper}>
-          <Button variant="contained" onClick={e => Utility.redirectToOneSage()} className={classes.arcSubmitbutton}>
+          <Button variant="contained" href={Utility.getRedirectLinkToOneSage()} className={classes.arcSubmitbutton}>
             <SynapseLogo />
           </Button>
         </div>

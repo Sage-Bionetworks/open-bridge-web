@@ -2,6 +2,7 @@ import LogoLarge from '@assets/logo_mtb_large.svg'
 import Logo from '@assets/logo_mtb_small.svg'
 import LogoSymbol from '@assets/logo_mtb_symbol.svg'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
+import Utility from '@helpers/utility'
 import ClearIcon from '@mui/icons-material/Clear'
 import MenuIcon from '@mui/icons-material/Menu'
 import {
@@ -278,7 +279,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                           disabled={isLoginButtonDisabled}
                           variant="text"
                           sx={{fontSize: '15px', lineHeight: '18px', color: '#393434'}}
-                          href={'/sign-in'}>
+                          href={Utility.getRedirectLinkToOneSage()}>
                           LOG IN
                         </Button>
                       </div>
@@ -337,7 +338,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                 variant="text"
                 disabled={/*isLoginButtonDisabled*/ false}
                 sx={{marginLeft: theme.spacing(1)}}
-                href={'/sign-in'}>
+                href={Utility.getRedirectLinkToOneSage()}>
                 Log in
               </Button>
             </Box>
