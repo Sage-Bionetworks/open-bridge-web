@@ -1,11 +1,17 @@
 const MTB_APP_ID = 'mobile-toolbox'
 const ARC_APP_ID = 'arc'
 const INV_ARC_ID = 'inv-arc'
+const MTB_ONESAGE_APP_ID = 'MTB'
+const ARC_ONESAGE_APP_ID = 'ARC'
+const INV_ARC_ONESAGE_APP_ID = 'INV-ARC'
 const constants = {
   constants: {
     MTB_APP_ID: MTB_APP_ID,
     ARC_APP_ID: ARC_APP_ID,
     INV_ARC_APP_ID: INV_ARC_ID,
+    MTB_ONESAGE_APP_ID: MTB_ONESAGE_APP_ID,
+    ARC_ONESAGE_APP_ID: ARC_ONESAGE_APP_ID,
+    INV_ARC_ONESAGE_APP_ID: INV_ARC_ONESAGE_APP_ID,
 
     SESSION_NAME: 'mtb-user-session',
     ENDPOINT: 'https://webservices.sagebridge.org',
@@ -41,6 +47,7 @@ const constants = {
       vendor: 'mtb-dev',
       redirect: 'http://127.0.0.1:3000',
       appId: MTB_APP_ID,
+      oneSageAppId: MTB_ONESAGE_APP_ID,
     },
     /* staging_mtb: {
       client: '100069',
@@ -51,36 +58,37 @@ const constants = {
       client: '100122',
       vendor: 'mtb-staging-studies',
       redirect: 'https://staging.studies.mobiletoolbox.org',
-
       appId: MTB_APP_ID,
+      oneSageAppId: MTB_ONESAGE_APP_ID,
     },
     prod_mtb_studies: {
       client: '100123',
       vendor: 'mtb-prod',
       redirect: 'https://studies.mobiletoolbox.org',
-
       appId: MTB_APP_ID,
+      oneSageAppId: MTB_ONESAGE_APP_ID,
     },
     local_arc: {
       client: '100104',
       vendor: 'arc-dev',
       redirect: 'http://127.0.0.1:3001',
       appId: ARC_APP_ID,
+      oneSageAppId: ARC_ONESAGE_APP_ID,
     },
 
     stage_arc_studies: {
       client: '100162',
       vendor: 'arc-stage',
-
       redirect: 'https://staging.arcdashboard.sagebionetworks.org',
       appId: ARC_APP_ID,
+      oneSageAppId: ARC_ONESAGE_APP_ID,
     },
     prod_arc_studies: {
       client: '100164',
       vendor: 'arc-prod',
-
       redirect: 'https://arcdashboard.sagebionetworks.org',
       appId: ARC_APP_ID,
+      oneSageAppId: ARC_ONESAGE_APP_ID,
     },
 
     local_inv_arc: {
@@ -88,18 +96,21 @@ const constants = {
       vendor: 'inv-arc-dev',
       redirect: 'http://127.0.0.1:3002',
       appId: INV_ARC_ID,
+      oneSageAppId: INV_ARC_ONESAGE_APP_ID,
     },
     stage_inv_arc_studies: {
       client: '100274',
       vendor: 'inv-arc-stage',
       redirect: 'https://staging.inv-arcdashboard.sagebionetworks.org',
       appId: INV_ARC_ID,
+      oneSageAppId: INV_ARC_ONESAGE_APP_ID,
     },
     prod_inv_arc_studies: {
       client: '100275',
       vendor: 'inv-arc-prod',
       redirect: 'https://inv-arcdashboard.sagebionetworks.org',
       appId: INV_ARC_ID,
+      oneSageAppId: INV_ARC_ONESAGE_APP_ID,
     },
   },
 
