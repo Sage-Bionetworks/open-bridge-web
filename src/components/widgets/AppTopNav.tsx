@@ -18,6 +18,7 @@ import {
   SxProps,
   Toolbar,
   Typography,
+  Link,
 } from '@mui/material'
 import Button from '@mui/material/Button'
 import {latoFont, shouldForwardProp, theme} from '@style/theme'
@@ -120,6 +121,14 @@ const MenuLinks: FunctionComponent<
 
   return <>{links}</>
 }
+
+const ProfileLink: FunctionComponent<{}> = () => (
+  <Link
+    sx={{textDecoration: 'none', color: '#353A3F', fontSize: '18px'}}
+    href={`${Utility.getRedirectLinkToOneSage('profile')}`}>
+    My Profile
+  </Link>
+)
 
 const UserAvatar: FunctionComponent<{sessionData?: UserSessionData; onClick: (e: React.MouseEvent) => void} & SxProps> =
   React.memo(({sessionData, onClick, ...otherSxProps}) => {
@@ -320,12 +329,17 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           sessionData={sessionData}
           isRightHandSide={true}
           setIsMobileOpen={setIsMobileOpen}>
-          <Box sx={{display: 'flex', alignItems: 'center', cursor: 'pointer', marginTop: theme.spacing(14)}}>
-            <UserAvatar
-              sessionData={sessionData}
-              onClick={event => setMenuAnchor(event.currentTarget as HTMLElement)}
-            />
-            <Logout element={<Typography sx={{marginLeft: theme.spacing(1), fontSize: '18px'}}>Log Out</Typography>} />
+          <Box sx={{alignItems: 'center', cursor: 'pointer', marginTop: theme.spacing(14)}}>
+            <Box sx={{display: 'flex', alignItems: 'center', cursor: 'pointer'}}>
+              <UserAvatar sessionData={sessionData} onClick={event => {}} />
+              &nbsp;&nbsp;&nbsp;
+              <ProfileLink />
+            </Box>
+            <Box sx={{paddingLeft: theme.spacing(6), marginTop: theme.spacing(3)}}>
+              <Logout
+                element={<Typography sx={{marginLeft: theme.spacing(1), fontSize: '18px'}}>Log Out</Typography>}
+              />
+            </Box>
           </Box>
 
           {window.location.pathname !== '/' && window.location.pathname !== '/sign-in' && (
@@ -358,18 +372,19 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           vertical: 'top',
           horizontal: 'center',
         }}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            boxShadow: 'none',
+          },
+        }}
         open={Boolean(menuAnchor)}
         onClose={handleMenuClose}>
-        {routes
-          .filter(r => r.isRhs)
-          .map(route => (
-            <MenuItem key={route.name} disabled={route.name === 'Edit Profile' || route.name === 'Settings'}>
-              <NavLink to={route.path}>{route.name}</NavLink>
-            </MenuItem>
-          ))}
-
         <MenuItem key={'logout'}>
-          <Logout element={<div>Log out</div>}></Logout>
+          <Logout element={<Box sx={{fontSize: '18px'}}>Log out</Box>}></Logout>
+        </MenuItem>
+        <MenuItem key={'profile'}>
+          <ProfileLink />
         </MenuItem>
       </Menu>
     </>

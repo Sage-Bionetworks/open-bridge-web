@@ -108,7 +108,6 @@ const Dropdown: React.FunctionComponent<SelectProps & DropdownStyleProps> = ({
   isRequired,
   ...other
 }) => {
-  console.log('EMV', emptyValueLabel)
   const classes = useStyles({width, itemHeight})
   const selectMenu = (
     <Select

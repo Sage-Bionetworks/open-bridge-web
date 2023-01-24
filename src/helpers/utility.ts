@@ -200,8 +200,19 @@ const redirectToSynapseLogin = () => {
 }
 
 //integration with one sage
-const getRedirectLinkToOneSage = (action: 'login' | 'validate' = 'login'): string => {
-  let path = action === 'login' ? 'login' : 'authenticated/validate'
+const getRedirectLinkToOneSage = (action: 'login' | 'validate' | 'profile' = 'login'): string => {
+  let path = 'login'
+  switch (action) {
+    case 'validate':
+      path = 'authenticated/validate'
+      break
+    case 'profile':
+      path = 'authenticated/myaccount'
+      break
+    default:
+      path = 'login'
+  }
+
   let array = []
   array.push('appId=' + getOauthEnvironment().oneSageAppId)
   array.push('redirectURL=' + encodeURIComponent(getSynpaseRedirectUrl()))
