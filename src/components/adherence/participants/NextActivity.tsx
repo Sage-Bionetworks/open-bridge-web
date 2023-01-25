@@ -3,6 +3,7 @@ import {Box, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {theme} from '@style/theme'
 import {AdherenceSessionInfo, ProgressionStatus} from '@typedefs/types'
+import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone'
 import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
 import {useCommonStyles} from '../styles'
@@ -43,7 +44,11 @@ const NoActivities: FunctionComponent<{
   switch (completionStatus) {
     case 'done':
       //innerElement = <Celebration />
-      // innerElement = <CheckIcon sx={{color: '#63A650'}} />
+      innerElement = (
+        <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px'}}>
+          <CheckCircleTwoToneIcon sx={{color: '#63A650', marginRight: '4px'}} /> Completed
+        </Box>
+      )
       break
     case 'in_progress':
       innerElement = (
@@ -89,7 +94,7 @@ const NoRows: FunctionComponent<NoRowsProps> = ({dayPxWidth, nextActivity, compl
         {completionStatus === 'in_progress' ? (
           <Arrow style={{transform: 'scaleX(-1)'}} />
         ) : completionStatus === 'done' ? (
-          <Box sx={{textAlign: 'center'}}>Completed</Box>
+          <Box sx={{textAlign: 'center'}}>&nbsp;</Box>
         ) : (
           ''
         )}
