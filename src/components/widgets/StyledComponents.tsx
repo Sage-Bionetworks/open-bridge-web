@@ -181,6 +181,7 @@ export const AlertWithText = withStyles(theme => ({
     backgroundColor: 'transparent',
     fontSize: '15px',
     fontFamily: latoFont,
+    boxShadow: 'none',
   },
 }))(Alert)
 export const PrevButton = withStyles(theme => ({

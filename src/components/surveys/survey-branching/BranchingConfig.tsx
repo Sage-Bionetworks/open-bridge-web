@@ -2,6 +2,7 @@ import SurveyUtils from '@components/surveys/SurveyUtils'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
 import {DialogButtonPrimary, DialogButtonSecondary} from '@components/widgets/StyledComponents'
 import CloseIcon from '@mui/icons-material/Close'
+import EastIcon from '@mui/icons-material/East'
 import {
   Box,
   Dialog,
@@ -28,73 +29,35 @@ import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 import {StyledDropDown, StyledDropDownItem} from '../widgets/StyledDropDown'
 import {detectCycle, getEdgesFromSteps} from './GetNodesToPlot'
 
-// agendel TODO: refactor duplicate
-const getBgColor = (mode: 'light' | 'dark' = 'dark') => {
-  return mode === 'light' ? '#F2F2F2' : '#565656'
-}
-const getColor = (mode: 'light' | 'dark' = 'dark') => {
-  return mode === 'light' ? '#4D4D4D' : '#fff'
-}
-
-const getSvgFilter = (mode: 'light' | 'dark' = 'dark') => {
-  return mode === 'light'
-    ? {}
-    : {
-        WebkitFilter: 'invert(1)',
-        filter: 'invert(1)',
-      }
-}
-
-const getBoxShadow = (mode: 'light' | 'dark' = 'dark') => {
-  return mode === 'light' ? ' 1px 2px 3px rgba(42, 42, 42, 0.1);' : 'none'
-}
-
-const StyledQuestionDisplay = styled(Box, {label: 'StyledQuestionDisplay'})<{
-  mode?: 'dark' | 'light'
-}>(({theme, mode = 'dark'}) => ({
-  backgroundColor: getBgColor(mode),
-  width: '80px',
+const StyledQuestionDisplay = styled(Box, {label: 'StyledQuestionDisplay'})<{}>(({theme}) => ({
   height: '48px',
-  boxShadow: getBoxShadow(mode),
-  '& > div, > div div ': {
-    backgroundColor: getBgColor(mode),
+  display: 'flex',
 
-    color: getColor(mode),
-  },
-  '& svg, img ': getSvgFilter(mode),
-}))
+  alignItems: 'center',
+  fontSize: '20px',
+  fontWeight: 700,
 
-const StyledSmallFont = styled(Typography, {label: 'StyledSmallFont'})(({theme}) => ({
-  fontFamily: latoFont,
-  fontWeight: 400,
-  fontSize: '12px',
-  color: '#fff',
-  width: '100%',
-  padding: theme.spacing(1, 0, 0.5, 0),
-  '&:last-child': {
-    padding: theme.spacing(1.5, 0, 0, 0),
-  },
+  '& svg, img ': {color: theme.palette.primary.main, marginRight: theme.spacing(1)},
 }))
 
 const StyledDialogTitle = styled(DialogTitle, {label: 'StyledDialogTitle'})(({theme}) => ({
-  background: ' #565656',
-  color: '#fff',
-  padding: theme.spacing(3, 3, 2, 3),
+  padding: theme.spacing(1, 0, 1, 0),
   fontSize: '16px',
   fontWeight: 700,
   position: 'relative',
 }))
 
 const StyledTable = styled('table', {label: 'StyledTable'})(({theme}) => ({
-  marginTop: theme.spacing(2.5),
+  margin: theme.spacing(2.5, 8, 5, 5),
   padding: theme.spacing(1),
-  backgroundColor: '#fff',
+
   '& td': {
-    borderBottom: '1px solid #BBC3CD',
-    width: '100%',
     borderSpacing: 0,
     verticalAlign: 'middle',
     padding: theme.spacing(1),
+    '&:first-of-type': {
+      paddingLeft: 0,
+    },
   },
 }))
 
@@ -161,14 +124,18 @@ const ErrorDisplay: FunctionComponent<{
     cycle: {
       title: 'Cycles detected..',
       body: (
-        <>{`Skipping to Question ${qNumber} will cause an infinite loop<br />
-      Please select another question to skip to.`}</>
+        <>
+          {' '}
+          <span>{`Skipping to Question ${qNumber} will cause an infinite loop.`} </span>
+          <br />
+          <span>Please select another question to skip to.</span>
+        </>
       ),
     },
   }
   const textToUse = qNumber !== undefined ? textObj.cycle : textObj.rule
   return (
-    <Box sx={{bgcolor: theme.palette.error.light, padding: theme.spacing(1, 1.5)}}>
+    <Box sx={{bgcolor: theme.palette.error.light, padding: theme.spacing(1, 1.5), margin: '0 -44px 0 -44px'}}>
       <AlertWithTextWrapper>
         <Box sx={{color: 'black', fontSize: '12px'}}>
           <strong>{textToUse.title}</strong>
@@ -298,35 +265,32 @@ const BranchingConfig: FunctionComponent<{
   }
   return (
     <Dialog
-      aria-labelledby="draggable-dialog-title"
+      aria-labelledby="configure_branching"
       maxWidth="sm"
+      fullWidth={true}
       PaperComponent={PaperComponent}
       open={isOpen}
       scroll="body">
-      <StyledDialogTitle style={{cursor: 'move'}} id="draggable-dialog-title">
+      <StyledDialogTitle style={{cursor: 'move'}} id="configure_branching">
         <CloseIcon
           onClick={closeModal}
-          fontSize="large"
+          fontSize="medium"
           sx={{
-            color: '#fff',
+            color: '#878E95',
             position: 'absolute',
-            top: '10px',
-
-            right: '10px',
+            top: '20px',
+            right: '0px',
           }}></CloseIcon>
-        <StyledQuestionDisplay mode="dark">
-          <DivContainer>
-            {QUESTIONS.get(extendedStepInfo.stepType)?.img}
-            <div>{extendedStepInfo.index}</div>
-          </DivContainer>
+        <StyledQuestionDisplay>
+          {QUESTIONS.get(extendedStepInfo.stepType)?.img}
+          <div>
+            {extendedStepInfo.index}. {step.title}
+          </div>
         </StyledQuestionDisplay>
-        <StyledSmallFont> {step.subtitle}</StyledSmallFont> {step.title}
-        <StyledSmallFont> {step.detail}</StyledSmallFont>
       </StyledDialogTitle>
       <ErrorDisplay qNumber={cycleErrQNum} isRuleError={hasUnreachableState} />
-
-      <DialogContent>
-        <Box sx={{padding: theme.spacing(3)}}>
+      <DialogContent sx={{padding: theme.spacing(2, 0.5), overflow: 'visible'}}>
+        <Box>
           {error && <div>{error}</div>}
           <RadioGroup onChange={e => onChangeNextOption(e.target.value)} value={Boolean(step.nextStepIdentifier)}>
             <FormControlLabel
@@ -336,13 +300,10 @@ const BranchingConfig: FunctionComponent<{
                 <div style={{display: 'flex'}}>
                   <div
                     style={{
-                      width: '148px',
                       margin: '12px 8px',
                       alignItems: 'center',
                     }}>
-                    Go to next
-                    <br />
-                    screen in sequence
+                    Go to next screen in sequence
                   </div>
                 </div>
               }
@@ -371,13 +332,30 @@ const BranchingConfig: FunctionComponent<{
             />
           </RadioGroup>
           {extendedStepInfo.stepType === 'SINGLE_SELECT' && (
-            <Box>
+            <Box sx={{backgroundColor: '#FBFBFC', margin: '40px -46px 40px -46px'}}>
               {(step as ChoiceQuestion).choices && (
                 <StyledTable>
                   {(step as ChoiceQuestion).choices.map(c => (
                     <tr key={c.value?.toString() || 'undefined'}>
-                      <td>{c.value}</td>
-                      <td style={{fontSize: '15px'}}>&rarr;</td>
+                      <td>something here{c.value}1</td>
+                      <td>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            minWidth: '100px',
+                            alignItems: 'center',
+                            color: '#878E95',
+                            position: 'relative',
+                          }}>
+                          <Box
+                            sx={{
+                              height: '1px',
+                              borderBottom: '2px solid #878E95',
+                              width: '100%',
+                            }}></Box>
+                          <EastIcon sx={{position: 'absolute', right: '-1px'}} />
+                        </Box>
+                      </td>
 
                       <td>
                         {' '}

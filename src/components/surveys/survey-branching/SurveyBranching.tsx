@@ -38,13 +38,13 @@ const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
     backgroundColor: '#fcfcfc',
   },
   '& .react-flow__node-default': {
-    borderRadius: 0,
+    borderRadius: '5px',
     background: '#F2F2F2',
     border: 'none',
     padding: 0,
     textAlign: 'center',
 
-    boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
+    boxShadow: 'none', //1px 2px 3px rgba(42, 42, 42, 0.1)',
     width: '85px',
     height: '48px',
     fontFamily: latoFont,

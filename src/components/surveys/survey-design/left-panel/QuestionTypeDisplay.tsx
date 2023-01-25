@@ -1,9 +1,15 @@
 import {styled} from '@mui/material'
+import {shouldForwardProp} from '@style/theme'
 import React from 'react'
 import QUESTIONS, {QuestionTypeKey} from './QuestionConfigs'
 
-export const DivContainer = styled('div', {label: 'DivContainer'})<{hover?: boolean}>(({theme, hover = true}) => ({
+export const DivContainer = styled('div', {label: 'DivContainer', shouldForwardProp: shouldForwardProp})<{
+  hover?: boolean
+  $type?: 'branching'
+}>(({theme, hover = true, $type}) => ({
   height: theme.spacing(6),
+  border: $type === 'branching' ? `1px solid ${theme.palette.primary.main}` : 'none',
+  borderRadius: $type === 'branching' ? `5px` : '0',
   display: 'flex',
   alignItems: 'center',
   width: '100%',
@@ -13,7 +19,7 @@ export const DivContainer = styled('div', {label: 'DivContainer'})<{hover?: bool
     flexGrow: 0,
     maxWidth: theme.spacing(6),
     maxHeight: theme.spacing(6),
-    color: '#DFE2E6',
+    color: $type === 'branching' ? theme.palette.primary.main : '#DFE2E6',
 
     margin: theme.spacing(2),
     '&.question-type-icon': {

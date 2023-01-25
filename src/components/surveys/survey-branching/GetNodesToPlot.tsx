@@ -37,7 +37,7 @@ function createNode(
 ): Node {
   const label = (
     <div style={{position: 'relative'}}>
-      <DivContainer>
+      <DivContainer $type="branching">
         {QUESTIONS.get(getQuestionId(q))?.img}
         {q.type !== 'completion' && q.type !== 'overview' && <Box>{qSequentialIndex}</Box>}
         <StyledQuestionTitle className="title" unconnected={isUnconnected}>
