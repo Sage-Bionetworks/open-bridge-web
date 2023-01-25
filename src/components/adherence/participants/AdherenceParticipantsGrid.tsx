@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom'
 import makeStyles from '@mui/styles/makeStyles'
 
 import {getSessionSymbolName} from '@components/widgets/SessionIcon'
-import {BorderedTableCell} from '@components/widgets/StyledComponents'
+import {BorderedTableCell, StyledLink} from '@components/widgets/StyledComponents'
 import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
 import {AdherenceWeeklyReport, ProgressionStatus, SessionDisplayInfo} from '@typedefs/types'
@@ -101,9 +101,9 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                     textAlign: 'center',
                   }}
                   key={'pIdentifier'}>
-                  <Link to={`adherence/${item.participant?.identifier || 'nothing'}`}>
+                  <StyledLink to={`adherence/${item.participant?.identifier || 'nothing'}`}>
                     {ParticipantService.formatExternalId(studyId, item.participant.externalId)}
-                  </Link>
+                  </StyledLink>
                 </BorderedTableCell>
                 <BorderedTableCell
                   colSpan={8}

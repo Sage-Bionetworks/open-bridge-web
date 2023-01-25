@@ -8,6 +8,7 @@ import EditParticipantForm from '@components/studies/participants/modify/EditPar
 import WithdrawParticipantForm from '@components/studies/participants/modify/WithdrawParticipantForm'
 import HideWhen from '@components/widgets/HideWhen'
 import SelectAll from '@components/widgets/SelectAll'
+import {StyledLink} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
 import {Box, Button, Checkbox, CircularProgress, Dialog, IconButton, Paper, styled} from '@mui/material'
@@ -332,7 +333,7 @@ function getColumns(
     {
       field: 'externalId',
       headerName: isEnrolledById ? 'Participant ID' : `${gridType === 'TEST' ? 'Log in' : 'Reference'} ID`,
-      renderCell: params => <Link to={`adherence/${params.row['id']}`}>{params.value}</Link>,
+      renderCell: params => <StyledLink to={`adherence/${params.row['id']}`}>{params.value}</StyledLink>,
       width: 125,
     },
 
