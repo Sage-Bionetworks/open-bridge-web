@@ -153,6 +153,9 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
       onEnableNext(false)
       return
     }
+  }, [certifyStatements])
+
+  useEffect(() => {
     if (study.irbDecisionType === 'approved' || !study.irbDecisionType) {
       const approvalDate = study.irbDecisionOn
       const approvedUntil = study.irbExpiresOn
@@ -162,7 +165,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
         return
       }
     } else {
-      const exemptDate = study.irbExpiresOn
+      const exemptDate = study.irbDecisionOn
       if (!exemptDate) {
         onEnableNext(false)
         return
@@ -501,8 +504,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                           if (!updatedStudy.irbDecisionType) {
                             updatedStudy.irbDecisionType = 'exempt'
                           }
-                          if (!updatedStudy.irbExpiresOn) {
-                            updatedStudy.irbExpiresOn = getFormattedDate(e)
+                          if (updatedStudy.irbExpiresOn) {
+                            updatedStudy.irbExpiresOn = undefined
                           }
                           updatedStudy.irbDecisionOn = getFormattedDate(e)
                           onChange(updatedStudy)
