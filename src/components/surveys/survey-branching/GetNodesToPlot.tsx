@@ -84,7 +84,7 @@ function getChildNodes(questions: (ChoiceQuestion | Step)[], q: ChoiceQuestion |
     const nextIds = [
       ...new Set(
         surveyRules
-          .filter(rule => rule.matchingAnswer && qChoiceValues.includes(rule.matchingAnswer))
+          .filter(rule => rule.matchingAnswer !== undefined && qChoiceValues.includes(rule.matchingAnswer))
           .map(rule => rule.skipToIdentifier)
       ),
     ]
