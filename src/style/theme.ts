@@ -522,6 +522,7 @@ const theme: Theme = createTheme({
       fontSize: '24px',
       fontWeight: 400,
       color: gray_custom.A100,
+      marginBottom: '16px',
     },
     h4: {
       fontFamily: latoFont,
@@ -530,6 +531,12 @@ const theme: Theme = createTheme({
       margin: 0,
 
       color: gray_custom.A100,
+    },
+    h5: {
+      fontFamily: latoFont,
+      fontSize: '16px',
+      fontWeight: 500,
+      lineHeight: '20px',
     },
     subtitle1: {
       //Small Copy/Breadcrumb-Card
