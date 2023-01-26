@@ -127,7 +127,7 @@ const PhoneCell: FunctionComponent<{
   }
 
   return params.formattedValue ? (
-    <div style={{textAlign: 'center', width: '115px'}}>
+    <div style={{textAlign: 'left', width: '115px'}}>
       {!isHidden && params.formattedValue}
       <Button onClick={onClick} style={{minWidth: 'auto', margin: '0 auto', padding: '4px'}}>
         {isHidden ? <ShowPhoneIcon /> : <HidePhoneIcon />}
@@ -310,7 +310,7 @@ function getColumns(
 
       renderHeader: () => {
         return (
-          <Box display="flex" flexDirection="row" alignItems="center">
+          <Box display="flex" flexDirection="row" alignItems="left">
             Phone Number
             <Button
               onClick={() => setIsGloballyHidePhone(!isGloballyHidePhone)}
@@ -346,7 +346,7 @@ function getColumns(
     {
       field: 'clientTimeZone',
       headerName: 'Time Zone',
-      align: 'center',
+      align: 'left',
       valueGetter: params => params.value || '-',
       width: 150,
     },
