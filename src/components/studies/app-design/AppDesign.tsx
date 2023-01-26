@@ -53,11 +53,11 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
   },
   steps: {
     listStyleType: 'none',
-    margin: theme.spacing(5, 0, 0, 0),
+    margin: theme.spacing(1, 0, 0, 0),
     padding: 0,
     '& li': {
       display: 'flex',
-      marginBottom: theme.spacing(6),
+      marginBottom: theme.spacing(4),
       textAlign: 'left',
       borderTop: '1px solid #EAECEE',
       paddingTop: theme.spacing(3),
@@ -786,13 +786,16 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
         <Container maxWidth="md">
           <Paper className={classes.section} elevation={2} id="container">
             <Box className={classes.fields}>
-              <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
-              <p className={classes.smallScreenText}>
-                When a participant downloads the app and signs into the study, they are greeted with a welcome screen.
-                <br></br>
-                <br></br>
-                Customize what you would like to display to participants below:
-              </p>
+              <Typography variant="h3">Welcome Screen</Typography>
+
+              <Typography variant="h5" paragraph>
+                Welcome Screen When a participant downloads the app, they will be presented a welcome screen after
+                signing into the study.
+              </Typography>
+              <Typography variant="h5" paragraph>
+                You can choose a default message or customize this screen below by adding your logo, background color,
+                and message. View how it would be displayed to the right.
+              </Typography>
 
               <div>
                 <ol className={classes.steps}>
@@ -805,9 +808,11 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
                   />
                   <a id="hex-color-picker"></a>
                   <Subsection heading="Select background color">
-                    <p>
-                      Select a background color that matches your institution or study to be seen beneath your logo.
-                    </p>
+                    <Box>
+                      <Typography variant="h5" paragraph>
+                        Select a background color that matches your institution or study to be seen beneath your logo.
+                      </Typography>
+                    </Box>
                     <Box width="250px" height="230px" ml={-1.25}>
                       <HexColorPicker color={color} onChange={updateColor} />
                     </Box>

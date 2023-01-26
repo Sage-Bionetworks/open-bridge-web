@@ -4,10 +4,10 @@ import React from 'react'
 
 const useStyles = makeStyles(theme => ({
   formFields: {
-    // fontFamily: poppinsFont,
-    //  fontSize: '14px',
-    marginBottom: theme.spacing(3),
-    '& .MuiFormControl-root:not(:last-child)': {
+    '&:not(:last-of-type)': {
+      marginBottom: theme.spacing(3),
+    },
+    '& .MuiFormControl-root:not(:last-of-type)': {
       marginBottom: theme.spacing(2),
     },
   },

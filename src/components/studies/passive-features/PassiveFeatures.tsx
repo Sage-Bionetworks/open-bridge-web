@@ -172,7 +172,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
                 flextGrow: 1,
                 flexDirection: 'row',
                 height: theme.spacing(3),
-                marginBottom: theme.spacing(4),
+                marginBottom: theme.spacing(2),
                 justifyContent: 'space-between',
               }}>
               <Typography variant="h3">{sensors[recorderType]!.title}</Typography>
