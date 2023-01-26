@@ -360,7 +360,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                         </SessionCreator>
                       </Route>
                       <Route>
-                        <IntroInfo id={id} studyName={study.name} onShowFeedback={showFeedback}>
+                        <IntroInfo
+                          id={id}
+                          studyName={study.name}
+                          isReadOnly={!StudyService.isStudyInDesign(study)}
+                          onShowFeedback={showFeedback}>
                           {navButtons}
                         </IntroInfo>
                       </Route>
