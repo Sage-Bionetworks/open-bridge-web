@@ -8,11 +8,24 @@ import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {MTBHeadingH2} from '@components/widgets/Headings'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Button, Checkbox, CircularProgress, Container, FormControl, Paper, Switch, Typography} from '@mui/material'
+import {
+  Box,
+  Button,
+  Checkbox,
+  CircularProgress,
+  Container,
+  FormControl,
+  FormControlLabel,
+  Paper,
+  Radio,
+  RadioGroup,
+  Switch,
+  Typography,
+} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
-import {latoFont, ThemeType} from '@style/theme'
+import {latoFont, theme, ThemeType} from '@style/theme'
 import constants from '@typedefs/constants'
 import {Contact, Study, SubType, WelcomeScreenData} from '@typedefs/types'
 import clsx from 'clsx'
@@ -789,12 +802,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
               <Typography variant="h3">Welcome Screen</Typography>
 
               <Typography variant="h5" paragraph>
-                Welcome Screen When a participant downloads the app, they will be presented a welcome screen after
-                signing into the study.
+                When a participant downloads the app and signs into the study, they are greeted with a welcome screen.
               </Typography>
               <Typography variant="h5" paragraph>
-                You can choose a default message or customize this screen below by adding your logo, background color,
-                and message. View how it would be displayed to the right.
+                Customize what you would like to display to participants below:
               </Typography>
 
               <div>
@@ -829,18 +840,27 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
                       )}
                     </Box>
                   </Subsection>
-                  <Subsection heading="Welcome screen messaging">
-                    <div className={classes.switchContainer}>
-                      <Box mr={1.5}>Use default message</Box>
-                      <Box mt={0.5}>
-                        <Switch
-                          color="primary"
-                          checked={!study.clientData.welcomeScreenData?.isUsingDefaultMessage || false}
-                          onChange={e => updateDefaultMessageToggle(e.target.checked)}
-                        />
-                      </Box>
-                      <Box ml={1.5}>Customize message</Box>
-                    </div>
+                  <Subsection heading="Welcome screen messaging" variant="h5">
+                    <RadioGroup
+                      row
+                      value={study.clientData.welcomeScreenData?.isUsingDefaultMessage ? 'true' : 'false'}
+                      onChange={e => {
+                        console.log(e.target.value !== 'true')
+                        updateDefaultMessageToggle(e.target.value !== 'true')
+                      }}>
+                      <FormControlLabel
+                        value="true"
+                        control={<Radio color="secondary" />}
+                        label="Use default message"
+                        id="default-message-radio-button"
+                      />
+                      <FormControlLabel
+                        value="false"
+                        control={<Radio color="secondary" />}
+                        label="Customize message"
+                        id="customize-message-radio-button"
+                      />
+                    </RadioGroup>
                     {!study.clientData.welcomeScreenData?.isUsingDefaultMessage && (
                       <>
                         <FormGroupWrapper>
