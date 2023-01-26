@@ -375,7 +375,7 @@ function getColumns(
     headerName: ' ',
     //AGv5  disableClickEventBubbling: true,
     disableColumnMenu: true,
-    width: 80,
+    width: 60,
 
     renderCell: (params: GridCellParams) => (
       <EditCell params={params} studyId={studyId} token={token!} onSetParticipantToEdit={setParticipantToEdit} />
