@@ -45,7 +45,7 @@ const NoActivities: FunctionComponent<{
     case 'done':
       //innerElement = <Celebration />
       innerElement = (
-        <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px'}}>
+        <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px'}}>
           <CheckCircleTwoToneIcon sx={{color: '#63A650', marginRight: '4px'}} /> Completed
         </Box>
       )

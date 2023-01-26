@@ -90,12 +90,12 @@ const useStyles = makeStyles((theme: Theme) =>
 export interface IntroInfoProps {
   studyName: string
   id: string
-
+  isReadOnly?: boolean
   children: React.ReactNode
   onShowFeedback: Function
 }
 
-const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback}) => {
+const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback, isReadOnly}) => {
   const classes = useStyles()
 
   const [studyName, setStudyName] = React.useState('')
@@ -207,7 +207,14 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback}
               }
               className={classes.formControl}
               labelPlacement="start"
-              control={<SimpleTextInput fullWidth value={studyName} onChange={e => setStudyName(e.target.value)} />}
+              control={
+                <SimpleTextInput
+                  disabled={isReadOnly}
+                  fullWidth
+                  value={studyName}
+                  onChange={e => setStudyName(e.target.value)}
+                />
+              }
             />
             <Divider className={classes.divider}></Divider>
             <Box className={classes.middleContainer}>
@@ -236,6 +243,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback}
                       numberLabel="study duration number"
                       maxDurationDays={1825}
                       unitData={DWsEnum}
+                      disabled={isReadOnly}
                       isIntro={true}></Duration>
                     <span className={classes.hint}>
                       <strong>The study duration must be shorter than 5 years.</strong>
@@ -263,13 +271,15 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback}
         color="primary"
         key="saveButton"
         onClick={e =>
-          createScheduleAndNameStudy(
-            id,
+          isReadOnly
+            ? history.push(`/studies/builder/${id}/session-creator`)
+            : createScheduleAndNameStudy(
+                id,
 
-            studyName,
-            duration,
-            'timeline_retrieved'
-          )
+                studyName,
+                duration,
+                'timeline_retrieved'
+              )
         }
         disabled={!(duration && studyName)}>
         Continue
