@@ -446,6 +446,14 @@ const theme: Theme = createTheme({
         },*/
       },
     },
+    MuiAutocomplete: {
+      styleOverrides: {
+        tag: {
+          fontSize: '14px',
+          backgroundColor: 'rgba(79, 82, 125, 0.25)',
+        },
+      },
+    },
     MuiTab: {
       styleOverrides: {
         root: {

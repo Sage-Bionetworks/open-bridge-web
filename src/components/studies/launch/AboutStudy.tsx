@@ -31,8 +31,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       display: 'none',
     },
     '& .MuiChip-root': {
-      backgroundColor: '#87D2EA',
-      fontSize: '14px',
       borderColor: 'transparent',
     },
     '& .MuiChip-deleteIcon': {
@@ -195,6 +193,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({study, onChange, 
         id="keywords"
         options={suggestions.map(option => option)}
         freeSolo
+        autoSelect={true}
         onChange={changeKeywords}
         value={getSplitValue(study.keywords)}
         renderTags={(value: string[], getTagProps) =>
