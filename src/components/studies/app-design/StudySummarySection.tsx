@@ -30,7 +30,7 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
 }) => {
   const classes = useStyles()
   return (
-    <Subsection heading="Study Summary">
+    <Subsection heading="About The Study" variant="h5">
       <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
           <TextInputWrapper

@@ -1,5 +1,16 @@
-import {Box, Button, CircularProgress, FormControl, FormControlLabel, Radio, RadioGroup} from '@mui/material'
+import {SimpleTextInput} from '@components/widgets/StyledComponents'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Typography,
+} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import {theme} from '@style/theme'
 import clsx from 'clsx'
 import React from 'react'
 import Utility from '../../../helpers/utility'
@@ -70,15 +81,13 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
 }) => {
   const classes = useStyles()
   return (
-    <Subsection heading="IRB or Ethics Board Contact">
-      <Box width="80%" mt={1.5} fontSize="15px" lineHeight="18px" fontFamily="Lato" mb={2}>
+    <Subsection heading="IRB or Ethics Board Contact" variant="h5">
+      <Typography variant="body1">
         For questions about your rights as a research participant in this study, please contact :
-      </Box>
+      </Typography>
       <FormGroupWrapper>
-        <Box pl={0.25} mt={1}>
-          What is your IRB of record?*
-        </Box>
-        <Box width="100%" boxSizing="border-box" mt={1} pl={6} pr={1}>
+        <Typography sx={{marginTop: theme.spacing(1), fontWeight: 700}}>What is your IRB of record?*</Typography>
+        <Box width="100%" boxSizing="border-box" mt={1} pr={1}>
           <RadioGroup
             aria-label="gender"
             value={irbNameSameAsInstitution ? 'affiliation_same' : 'affiliation_other'}
@@ -105,16 +114,10 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               id="affiliation-other-radio-button"
             />
           </RadioGroup>
-          <FormControl className={classes.irbInputFormControl}>
-            <TextInputWrapper
-              SimpleTextInputStyles={
-                {
-                  fontSize: '15px',
-                  width: '100%',
-                  height: '44px',
-                  boxSizing: 'border-box',
-                } as React.CSSProperties
-              }
+          <FormControl
+            className={classes.irbInputFormControl}
+            sx={{marginLeft: theme.spacing(3.7), marginTop: theme.spacing(-2)}}>
+            <SimpleTextInput
               id="ethics-board-input"
               placeholder="Name IRB of record"
               value={getContactName(irbInfo.name)}
@@ -123,9 +126,8 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
                 newEthicsBoardBoard.name = e.target.value
                 onUpdate(newEthicsBoardBoard, protocolId)
               }}
-              titleText=""
-              readOnly={irbNameSameAsInstitution}
-              hasError={irbNameHasError}
+              $readOnly={irbNameSameAsInstitution}
+              error={irbNameHasError}
             />
           </FormControl>
         </Box>

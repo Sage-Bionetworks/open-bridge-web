@@ -1,5 +1,6 @@
-import {FormControl, Link} from '@mui/material'
+import {FormControl, Link, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import {theme} from '@style/theme'
 import React from 'react'
 import constants from '../../../types/constants'
 import {Contact} from '../../../types/types'
@@ -54,7 +55,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
 }) => {
   const classes = useStyles()
   return (
-    <Subsection heading="Information about the Study Leads">
+    <Subsection heading="Information About The Study Leads" variant="h5">
       <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
           <LeadInvestigatorDropdown
@@ -67,17 +68,17 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
               onUpdate(newStudyLeadObject, funder, ethicsBoardContact)
             }}
             currentInvestigatorSelected={getContactName(leadPrincipalInvestigator?.name)}></LeadInvestigatorDropdown>
-          <p className={classes.principleInvestigatorsParagraph}>
+          <Typography paragraph variant="body1" sx={{fontStyle: 'italic', marginTop: theme.spacing(1)}}>
             Principal Investigators are required to be part of the study as a “Study Administrator”.
-            <br></br>
-            <br></br>
+          </Typography>
+          <Typography paragraph variant="body1" sx={{fontStyle: 'italic'}}>
             If your PI is not listed in the dropdown, please add them to the study and/or make them a{' '}
             <strong>Co-Study Administrator</strong> via the{' '}
             <Link href={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', studyIdentifier)}>
               Access Settings
             </Link>{' '}
             tab on the top right hand side.{' '}
-          </p>
+          </Typography>
         </FormControl>
         <FormControl>
           <TextInputWrapper

@@ -961,11 +961,11 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
         <Container maxWidth="md">
           <Paper className={classes.section} elevation={2}>
             <Box className={classes.fields}>
-              <MTBHeadingH2>Study Page</MTBHeadingH2>
-              <p className={classes.smallScreenText}>
+              <Typography variant="h3">Study Page</Typography>
+              <Typography variant="h5" paragraph>
                 Within the app, there will be a dedicated page where you can describe your study further and list who to
                 contact for participant support.
-              </p>
+              </Typography>
               <a id="summary" />
               <ol className={classes.steps}>
                 <StudySummarySection
