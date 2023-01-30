@@ -1,4 +1,4 @@
-import {Box, FormControl} from '@mui/material'
+import {Box, FormControl, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
@@ -58,11 +58,11 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
 }) => {
   const classes = useStyles()
   return (
-    <Subsection heading="General Contact and Support">
-      <Box width="80%" mt={1.5} fontSize="15px" lineHeight="18px" fontFamily="Lato">
+    <Subsection heading="General Contact and Support" variant="h5">
+      <Typography variant="body1">
         For general questions about the study or to <strong>withdraw</strong> from the study, who should the participant
         contact?{' '}
-      </Box>
+      </Typography>
       <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
           <TextInputWrapper
