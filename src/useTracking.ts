@@ -13,10 +13,9 @@ export const useTracking = (trackingId: string) => {
   useEffect(() => {
     if (window.gtag) {
       if (!trackingId) {
-        console.log('Need tracking id.')
+        console.error('Need tracking id.')
         return
       }
-      console.log(window.location.href)
       window.gtag('config', trackingId, {page_path: location.pathname, page_location: window.location.href})
     }
   }, [trackingId, location])
