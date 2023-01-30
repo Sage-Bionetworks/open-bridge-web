@@ -7,6 +7,7 @@ import {ErrorBoundary} from 'react-error-boundary'
 import {QueryClient, QueryClientProvider} from 'react-query'
 import {BrowserRouter as Router, Redirect} from 'react-router-dom'
 import useLogin from 'useLogin'
+import {useTracking} from 'useTracking'
 import AuthenticatedApp from './AuthenticatedApp'
 import {ErrorFallback, ErrorHandler} from './components/widgets/ErrorHandler'
 import Loader from './components/widgets/Loader'
@@ -25,6 +26,7 @@ const queryClient = new QueryClient()
 
 function App() {
   const {id, isLoading, redirect} = useLogin()
+  useTracking('G-2FM7R03YJC')
 
   //dynamically set favicon and app depending on domain
   useEffect(() => {
@@ -45,38 +47,40 @@ function App() {
   }, [])
 
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theTheme}>
-        <Typography component={'div'}>
-          <CssBaseline />
-
-          <Router basename={process.env.PUBLIC_URL}>
-            <QueryClientProvider client={queryClient}>
-              <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-                {redirect && <Redirect to={redirect}></Redirect>}
-                {/*  <React.StrictMode>*/}
-                <FeatureToggleProvider featureToggles={{'SURVEY BUILDER': true}}>
-                  <Container
-                    id="outer"
-                    maxWidth="xl"
-                    sx={{borderLeft: '1px solid #DFE2E6', padding: {xs: 0}, borderRight: '1px solid #DFE2E6'}}>
-                    {id ? (
-                      <AuthenticatedApp />
-                    ) : (
-                      <Loader reqStatusLoading={isLoading}>
-                        <UnauthenticatedApp appId={Utility.getAppId()} />
-                      </Loader>
-                    )}
-                  </Container>
-                </FeatureToggleProvider>
-                {/*  </React.StrictMode>*/}
-              </ErrorBoundary>
-            </QueryClientProvider>
-          </Router>
-        </Typography>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <QueryClientProvider client={queryClient}>
+      <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+        {redirect && <Redirect to={redirect}></Redirect>}
+        {/*  <React.StrictMode>*/}
+        <FeatureToggleProvider featureToggles={{'SURVEY BUILDER': true}}>
+          <Container
+            id="outer"
+            maxWidth="xl"
+            sx={{borderLeft: '1px solid #DFE2E6', padding: {xs: 0}, borderRight: '1px solid #DFE2E6'}}>
+            {id ? (
+              <AuthenticatedApp />
+            ) : (
+              <Loader reqStatusLoading={isLoading}>
+                <UnauthenticatedApp appId={Utility.getAppId()} />
+              </Loader>
+            )}
+          </Container>
+        </FeatureToggleProvider>
+        {/*  </React.StrictMode>*/}
+      </ErrorBoundary>
+    </QueryClientProvider>
   )
 }
 
-export default App
+export default () => (
+  <StyledEngineProvider injectFirst>
+    <ThemeProvider theme={theTheme}>
+      <Typography component={'div'}>
+        <CssBaseline />
+
+        <Router basename={process.env.PUBLIC_URL}>
+          <App />
+        </Router>
+      </Typography>
+    </ThemeProvider>
+  </StyledEngineProvider>
+)
