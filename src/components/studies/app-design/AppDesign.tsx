@@ -5,7 +5,6 @@ import PhoneBg from '@assets/appdesign/phone_bg.svg'
 
 import {ReactComponent as PhoneBottomImg} from '@assets/appdesign/phone_buttons.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import {MTBHeadingH2} from '@components/widgets/Headings'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import {
@@ -19,13 +18,12 @@ import {
   Paper,
   Radio,
   RadioGroup,
-  Switch,
   Typography,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
-import {latoFont, theme, ThemeType} from '@style/theme'
+import {latoFont, ThemeType} from '@style/theme'
 import constants from '@typedefs/constants'
 import {Contact, Study, SubType, WelcomeScreenData} from '@typedefs/types'
 import clsx from 'clsx'
@@ -113,7 +111,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '16px',
   },
   phoneBottom: {
-    height: '70px',
+    height: '90px',
     overflow: 'hidden',
     marginBottom: theme.spacing(-3),
     width: '320px',
@@ -193,9 +191,9 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     marginLeft: theme.spacing(-1.5),
   },
   optionalDisclaimerTextOnPhone: {
-    fontSize: '12px',
+    fontSize: '14px',
     fontStyle: 'italic',
-    paddingLeft: theme.spacing(4),
+    padding: theme.spacing(0, 4),
     textAlign: 'left',
   },
 

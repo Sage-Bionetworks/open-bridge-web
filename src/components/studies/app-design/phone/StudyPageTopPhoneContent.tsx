@@ -8,8 +8,8 @@ import SectionIndicator from '../widgets/SectionIndicator'
 const useStyles = makeStyles(theme => ({
   divider: {
     width: '256px',
-    marginTop: theme.spacing(3.75),
-    marginBottom: theme.spacing(3.75),
+    marginTop: theme.spacing(3.5),
+    marginBottom: theme.spacing(3.5),
   },
   sectionIndicatorPosition: {
     position: 'absolute',
@@ -22,15 +22,7 @@ const useStyles = makeStyles(theme => ({
 
     marginLeft: theme.spacing(1.25),
   },
-  innerContainer: {
-    height: '100%',
-    width: '100%',
-    padding: theme.spacing(3, 2, 3, 2),
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    position: 'relative',
-  },
+
   studySummaryRoles: {
     marginBottom: theme.spacing(3),
   },
@@ -76,32 +68,24 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         }}>
         {studyLogoUrl ? <img src={studyLogoUrl} style={{height: `${imgHeight - 16}px`}} alt="study-logo" /> : <></>}
       </Box>
-      <Box className={classes.innerContainer}>
+      <Box>
         {!isReadOnly && <SectionIndicator index={4} className={classes.sectionIndicatorPosition} />}
         <Box>
           <Typography variant="h3">{studyTitle || 'Title of study...'}</Typography>
-          <p>{studySummaryBody || 'Body...'}</p>
+          <Typography paragraph>{studySummaryBody || 'Body...'}</Typography>
         </Box>
       </Box>
       <Divider className={classes.divider} />
-      <Box className={classes.innerContainer}>
+      <Box>
         <StudySummaryRoles
           type="Lead Principal Investigator"
           name={getContactName(leadInvestigator.name) || 'placeholder'}
-          className={classes.studySummaryRoles}
+          sx={{mb: 2}}
         />
         {!isReadOnly && <SectionIndicator index={5} className={classes.sectionIndicatorPosition} />}
 
-        <StudySummaryRoles
-          type="Institution"
-          name={leadInvestigator.affiliation || 'placeholder'}
-          className={classes.studySummaryRoles}
-        />
-        <StudySummaryRoles
-          type="Funder"
-          name={getContactName(funder.name) || 'placeholder'}
-          className={classes.studySummaryRoles}
-        />
+        <StudySummaryRoles type="Institution" name={leadInvestigator.affiliation || 'placeholder'} sx={{mb: 2}} />
+        <StudySummaryRoles type="Funder" name={getContactName(funder.name) || 'placeholder'} />
       </Box>
     </Box>
   )

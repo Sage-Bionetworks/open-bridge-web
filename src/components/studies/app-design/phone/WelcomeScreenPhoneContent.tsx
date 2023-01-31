@@ -18,18 +18,6 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(-6),
     marginTop: theme.spacing(-0.25),
   },
-
-  fromText: {
-    marginTop: theme.spacing(1),
-  },
-
-  salutationText: {
-    marginTop: theme.spacing(5),
-  },
-  disclaimerText: {
-    marginTop: theme.spacing(10),
-    fontStyle: 'italic',
-  },
 }))
 
 type WelcomeScreenPhoneContentProps = {
@@ -70,18 +58,25 @@ const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneConte
   }
 
   return (
-    <Box className={classes.phoneInner}>
+    <Box
+      className={classes.phoneInner}
+      sx={{
+        '& p': {
+          fontSize: '16px',
+          lineHeight: '20px',
+        },
+      }}>
       {!welcomeScreenContent.isUsingDefaultMessage && !isReadOnly && (
         <SectionIndicator index={3} className={classes.sectionThreeIndicatorPosition} />
       )}
       <Typography variant="h3">{getMessage('welcomeScreenHeader')}</Typography>
-      <p>{getMessage('welcomeScreenBody')}</p>
-      <p>{getMessage('welcomeScreenSalutation')}</p>
-      <p className={classes.fromText}>{getMessage('welcomeScreenFromText')}</p>
+      <Typography paragraph>{getMessage('welcomeScreenBody')}</Typography>
+      <Typography paragraph>{getMessage('welcomeScreenSalutation')}</Typography>
+      <Typography paragraph>{getMessage('welcomeScreenFromText')}</Typography>
       {welcomeScreenContent.isUsingDefaultMessage && (
-        <p className={classes.disclaimerText}>
+        <Typography paragraph variant="h5">
           This is a research Study. It does not provide medical advice, diagnosis, or treatment.
-        </p>
+        </Typography>
       )}
     </Box>
   )
