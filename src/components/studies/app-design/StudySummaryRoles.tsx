@@ -1,18 +1,23 @@
 import React from 'react'
-import {MTBHeadingH4} from '../../widgets/Headings'
-import {Box} from '@mui/material'
+
+import {Box, SxProps, Typography} from '@mui/material'
+import {theme} from '@style/theme'
 
 type StudySummaryRoleProps = {
   type: String
   name: String
-  className?: string
+  sx?: SxProps
 }
 
-const StudySummaryRoles: React.FunctionComponent<StudySummaryRoleProps> = ({type, name, className}) => {
+const StudySummaryRoles: React.FunctionComponent<StudySummaryRoleProps> = ({type, name, sx}) => {
   return (
-    <Box className={className} style={{wordWrap: 'break-word', textAlign: 'left'}}>
-      <MTBHeadingH4>{name}</MTBHeadingH4>
-      {type}
+    <Box sx={{wordWrap: 'break-word', textAlign: 'left', ...sx}}>
+      <Typography variant="h4" sx={{color: '#060606', fontWeight: 400}}>
+        {name}
+      </Typography>
+      <Typography variant="h4" sx={{color: theme.palette.grey[700], fontStyle: 'italic', fontWeight: 400}}>
+        {type}
+      </Typography>
     </Box>
   )
 }

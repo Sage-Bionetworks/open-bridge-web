@@ -1,4 +1,4 @@
-import {Box, Divider} from '@mui/material'
+import {Box, Divider, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import {Contact} from '@typedefs/types'
@@ -18,20 +18,11 @@ const useStyles = makeStyles(theme => ({
   },
   divider: {
     width: '256px',
-    marginTop: theme.spacing(3.75),
+    margin: theme.spacing(3.5, 0),
   },
-  contactAndSupportText: {
-    fontWeight: 'normal',
-    fontSize: '18px',
-    lineHeight: '24px',
-    textAlign: 'left',
-  },
+
   summaryRoles: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
+    marginLeft: theme.spacing(3),
     marginBottom: theme.spacing(1.25),
     marginTop: theme.spacing(1),
     position: 'relative',
@@ -51,9 +42,7 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
     width: '100%',
     padding: theme.spacing(3, 2, 3, 2),
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
+    textAlign: 'left',
   },
   withdrawFromStudyContainer: {
     height: '140px',
@@ -106,10 +95,10 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
   return (
     <Box className={classes.container}>
       <Box className={classes.innerContainer}>
-        <Box className={classes.contactAndSupportText}>General Support</Box>
-        <p className={classes.bodyPhoneText}>
+        <Typography variant="h4">General Support</Typography>
+        <Typography variant="h4" sx={{fontWeight: '400', mt: 1}}>
           For general questions about the study or to <strong>withdraw</strong> from the study, please contact:
-        </p>
+        </Typography>
         <Box className={classes.summaryRoles}>
           {!isReadOnly && <SectionIndicator index={6} className={classes.sectionSixAndSevenIndicatorPosition} />}
           <StudySummaryRoles
@@ -132,9 +121,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           </Box>
         </Box>
         <Divider className={classes.divider} />
-        <Box className={classes.contactAndSupportText} mt={3}>
-          Your Participant Rights
-        </Box>
+        <Typography variant="h4">Your Participant Rights</Typography>
         <p className={classes.bodyPhoneText}>
           For questions about your rights as a research participant, please contact :
         </p>
@@ -146,7 +133,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           />
         </Box>
         <ContactInformation phoneNumber={irbPhoneNumber} email={ethicsBoardInfo.email || ''} />
-        <Box mt={1.5} width="100%">
+        <Box className={classes.summaryRoles} sx={{fontSize: '14px'}}>
           IRB Protocol ID: {irbProtocolId || 'placeholder'}
         </Box>
       </Box>
