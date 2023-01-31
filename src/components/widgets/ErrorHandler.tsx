@@ -1,17 +1,16 @@
 import {Alert} from '@mui/lab'
 import {Box, Container} from '@mui/material'
-import {Redirect} from 'react-router-dom'
-import Utility from '../../helpers/utility'
 
 export function ErrorFallback(props: any) {
   console.log('ERROR:', props.error.message)
   console.log('STACK:', props.error.stack)
+  if (props.error.statusCode === 401) {
+    window.location.assign('/')
+  }
 
   return (
     <Container maxWidth="md">
-      {props.error.statusCode === 401 ? (
-        <Redirect to={Utility.getRedirectLinkToOneSage()} />
-      ) : props.error.statusCode === 403 ? (
+      {props.error.statusCode === 403 ? (
         <Box mx="auto" bgcolor="white" p={5} textAlign="center">
           <Alert variant="outlined" color="error" style={{marginBottom: '40px'}}>
             You do not have the permission to access this feature. Please contact your study administrator
