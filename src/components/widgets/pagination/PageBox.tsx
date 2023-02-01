@@ -1,25 +1,6 @@
 import {Button} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import {theme} from '@style/theme'
 import React from 'react'
-
-const useStyles = makeStyles(theme => ({
-  pageBoxSurrounding: {
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '25px',
-    width: '25px',
-    minWidth: '0px',
-    borderRadius: '0px',
-  },
-  withBlackBorder: {
-    border: `1px solid black`,
-  },
-  withGrayBorder: {
-    border: `1px solid ${theme.palette.background.default}`,
-  },
-}))
 
 type PageBoxProps = {
   isSelected: boolean
@@ -29,11 +10,21 @@ type PageBoxProps = {
 }
 
 const PageBox: React.FunctionComponent<PageBoxProps> = ({isSelected, pageNumber, onPageSelected, index}) => {
-  const classes = useStyles()
   return (
     <Button
+      sx={{
+        display: 'inline-block',
+        height: '25px',
+        marginRight: '5px',
+        borderBottom: isSelected ? `1px solid ${theme.palette.primary.main}` : 'none',
+        color: isSelected ? theme.palette.primary.main : '#515359',
+        textDecoration: 'none',
+        '&:hover': {
+          textDecoration: 'none',
+          borderBottom: `1px solid ${theme.palette.primary.main}`,
+        },
+      }}
       id={`pagebox-button-${index}`}
-      className={`${classes.pageBoxSurrounding} ${isSelected ? classes.withBlackBorder : classes.withGrayBorder}`}
       onClick={() => onPageSelected(pageNumber - 1)}>
       {pageNumber}
     </Button>

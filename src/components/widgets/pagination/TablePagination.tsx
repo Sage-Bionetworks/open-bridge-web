@@ -1,7 +1,6 @@
 import {MenuItem, TextField} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
-import Pluralize from 'react-pluralize'
 import PageSelector, {PageSelectorValues} from './PageSelector'
 
 const useStyles = makeStyles(theme => ({
@@ -37,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
 
     // border: '1px solid black',
-    width: '70px',
+    width: '140px',
 
     '& .MuiSelect-select': {
       paddingLeft: theme.spacing(1),
@@ -50,15 +49,15 @@ const useStyles = makeStyles(theme => ({
 const PAGE_SIZES = [
   {
     value: 25,
-    label: '25',
+    label: '25 per page',
   },
   {
     value: 50,
-    label: '50',
+    label: '50 per page',
   },
   {
     value: 100,
-    label: '100',
+    label: '100 per page',
   },
 ]
 
@@ -116,14 +115,6 @@ const TablePagination: React.FunctionComponent<TablePaginationProps> = ({
   }
   return (
     <div className={classes.footerWrapper}>
-      <div id="item_page_data" className={classes.partitipantNumberText}>
-        {itemsShownMin} - {itemsShownMax}/
-        <Pluralize
-          singular={counterTextSingular}
-          count={totalItems}
-          plural={counterTextPlural || counterTextSingular + 's'}
-        />{' '}
-      </div>
       <PageSelector
         onPageSelected={onPageSelectedChanged}
         currentPageSelected={currentPage}
@@ -133,7 +124,11 @@ const TablePagination: React.FunctionComponent<TablePaginationProps> = ({
         }
       />
       <div className={classes.pageSizeSelectorContainer}>
-        <div className={classes.showEntryText}>{'show entries: '}</div>
+        <div className={classes.showEntryText}>
+          <div id="item_page_data" className={classes.partitipantNumberText}>
+            {itemsShownMin} - {itemsShownMax}/{totalItems} total rows
+          </div>
+        </div>
         <TextField
           id="page-selector"
           color="secondary"
