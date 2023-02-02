@@ -201,7 +201,7 @@ const redirectToSynapseLogin = () => {
 
 //integration with one sage
 const getRedirectLinkToOneSage = (action: 'login' | 'validate' | 'profile' = 'login'): string => {
-  let path = 'login'
+  let path = ''
   switch (action) {
     case 'validate':
       path = 'authenticated/validate'
@@ -210,7 +210,7 @@ const getRedirectLinkToOneSage = (action: 'login' | 'validate' | 'profile' = 'lo
       path = 'authenticated/myaccount'
       break
     default:
-      path = 'login'
+      path = ''
   }
 
   let array = []
