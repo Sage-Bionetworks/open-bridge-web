@@ -1,6 +1,6 @@
 import appStoreBtn from '@assets/preview/appStoreBtn.png'
 import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
-import {ReactComponent as PhoneImg} from '@assets/preview/preview_phone.svg'
+import PhoneImg from '@assets/preview/preview_phone.svg'
 import {ReactComponent as PhoneImgAssmnt} from '@assets/preview/preview_phone_assessment.svg'
 import AuthorizedIcon from '@assets/preview/reminder_of_use_authorization_icon.svg'
 import MedicalIcon from '@assets/preview/reminder_of_use_medical_icon.svg'
@@ -11,14 +11,23 @@ import QrCode from '@assets/qr_code.png'
 import AssessmentSmall from '@components/assessments/AssessmentSmall'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
-import {MTBHeadingH1} from '@components/widgets/Headings'
 import {SimpleTextInput, StyledLink} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Button, Dialog, DialogActions, DialogContent, Divider, FormControl, FormLabel} from '@mui/material'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  FormControl,
+  FormLabel,
+  Typography,
+} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService from '@services/participants.service'
-import {latoFont, playfairDisplayFont, poppinsFont, ThemeType} from '@style/theme'
+import {latoFont, playfairDisplayFont, poppinsFont, theme, ThemeType} from '@style/theme'
 import {Assessment} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {useEffect} from 'react'
@@ -29,13 +38,13 @@ import {BuilderWrapper} from '../StudyBuilder'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    padding: theme.spacing(0, 6, 7, 6),
+    /*  padding: theme.spacing(0, 6, 7, 6),
     textAlign: 'left',
     position: 'relative',
 
     '&$assessmentDemo': {
       backgroundColor: 'inherit',
-    },
+    },*/
   },
 
   phone: {
@@ -55,19 +64,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '12px',
     textAlign: 'center',
   },
-  inputs: {
-    display: 'block',
-    '& .MuiFormControl-root': {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    '& label': {
-      marginTop: theme.spacing(2),
-      width: theme.spacing(17),
-      flexShrink: 0,
-    },
-    marginTop: theme.spacing(-1.5),
-  },
+
   storeButtons: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -251,59 +248,118 @@ const PreviewIdGenerated: React.FunctionComponent<{
 }> = ({testParticipantId, studyId, isAssessmentDemo, children}) => {
   const classes = useStyles()
   const studyDemoIntro = (
-    <>
-      <p className={classes.reminderOfUseText}>Your draft study has been generated.</p>
-      <p className={classes.reminderOfUseText}>
+    <Box sx={{textAlign: 'left', mb: 4}}>
+      <Typography variant="h2" sx={{mb: 3}}>
+        Preview Your Study
+      </Typography>
+      <Typography variant="h5" paragraph>
+        Your draft study has been generated.
+      </Typography>
+      <Typography variant="h5">
         Please download and/or open the <strong>Mobile Toolbox App</strong> and login with the following credentials
         below.
-      </p>
-    </>
+      </Typography>
+    </Box>
   )
 
   const assessmentDemoIntro = (
     <>
-      <MTBHeadingH1>Mobile Toolbox Assessment Demo</MTBHeadingH1>
-      <p className={classes.reminderOfUseText}>
+      <Typography variant="h3">Mobile Toolbox Assessment Demo</Typography>
+      <Typography variant="h5">
         To try out our assessments from our library, please download the <strong>Mobile Toolbox App</strong> and enter
         your personalized codes below to log in.
-      </p>{' '}
+      </Typography>{' '}
     </>
   )
 
   return (
     <div className={clsx(classes.root, isAssessmentDemo && classes.assessmentDemo)}>
-      <Box width="548px" mx="auto">
-        <Box display="flex" width="100%">
+      <Box sx={isAssessmentDemo ? {width: '548px'} : {}} mx="auto">
+        {!isAssessmentDemo && <Box> {studyDemoIntro}</Box>}
+        <Box sx={{display: 'flex', width: '100%'}}>
           {isAssessmentDemo ? (
             <div className={classes.phone}>
               <PhoneImgAssmnt />
             </div>
           ) : (
-            <div className={classes.phone}>
-              <PhoneImg />
-              <div className={classes.mtbApp}> Mobile Toolbox App</div>
-            </div>
+            <>
+              <Box
+                sx={{
+                  backgroundImage: `url(${PhoneImg})`,
+                  backgroundRepeat: 'no-repeat',
+                  width: '220px',
+                  height: '420px',
+                  marginRight: theme.spacing(6),
+                }}>
+                <>
+                  <Box sx={{my: 3, mx: 'auto', p: 2, textAlign: 'center'}}>
+                    <img src={QrCode} width="120px" alt="qr code" />{' '}
+                  </Box>
+
+                  <a
+                    href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
+                    target="_blank"
+                    rel="noreferrer">
+                    <img src={appStoreBtn} alt="app store" />
+                  </a>
+                  <a
+                    href="https://play.google.com/store/apps/details?id=org.sagebionetworks.research.mobiletoolbox.app"
+                    target="_blank"
+                    rel="noreferrer">
+                    <img src={googlePlayBtn} alt="google play" />
+                  </a>
+                </>
+              </Box>
+            </>
           )}
-          <div>
-            {isAssessmentDemo ? assessmentDemoIntro : studyDemoIntro}
-            <Box my={3} mx="auto" p={2} bgcolor="white" textAlign="center">
-              <img src={QrCode} width="95px" alt="qr code" />
-            </Box>
-            <div className={classes.storeButtons}>
-              <a href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408" target="_blank" rel="noreferrer">
-                <img src={appStoreBtn} alt="app store" />
-              </a>
-              <a
-                href="https://play.google.com/store/apps/details?id=org.sagebionetworks.research.mobiletoolbox.app"
-                target="_blank"
-                rel="noreferrer">
-                <img src={googlePlayBtn} alt="google play" />
-              </a>
-            </div>
-            <p className={classes.reminderOfUseText}>
-              This login is only for preview purposes and allows you to view the study as a participant would.
-            </p>
-            <div className={classes.inputs}>
+          <Box sx={{textAlign: isAssessmentDemo ? 'center' : 'left'}}>
+            {isAssessmentDemo && (
+              <>
+                {assessmentDemoIntro}
+                <Box my={3} mx="auto" p={2} bgcolor="white" textAlign="center">
+                  <img src={QrCode} width="95px" alt="qr code" />
+                </Box>
+                <div className={classes.storeButtons}>
+                  <a
+                    href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
+                    target="_blank"
+                    rel="noreferrer">
+                    <img src={appStoreBtn} alt="app store" />
+                  </a>
+                  <a
+                    href="https://play.google.com/store/apps/details?id=org.sagebionetworks.research.mobiletoolbox.app"
+                    target="_blank"
+                    rel="noreferrer">
+                    <img src={googlePlayBtn} alt="google play" />
+                  </a>
+                </div>
+              </>
+            )}
+            <Typography variant="h3" sx={{mt: isAssessmentDemo ? 2 : 9}}>
+              App Login Information*
+            </Typography>
+            <Typography paragraph variant="subtitle2">
+              *This login is only for preview purposes and allows you to view the study as a participant would.
+            </Typography>
+            <Box
+              sx={{
+                display: isAssessmentDemo ? 'block' : 'flex',
+                textAlign: 'left',
+                '& .MuiFormControl-root': {
+                  flexDirection: isAssessmentDemo ? 'row' : 'column',
+                  alignItems: isAssessmentDemo ? 'center' : 'flex-start',
+                  marginTop: isAssessmentDemo ? 2 : 0.5,
+                  '&:first-of-type': {
+                    marginRight: theme.spacing(3),
+                  },
+                },
+                '& label': {
+                  marginTop: theme.spacing(2),
+                  width: theme.spacing(17),
+                  flexShrink: 0,
+                },
+                marginTop: theme.spacing(-1.5),
+              }}>
               <FormControl component="div">
                 <FormLabel component="label" className={classes.idLabel}>
                   Study ID:
@@ -325,8 +381,8 @@ const PreviewIdGenerated: React.FunctionComponent<{
                   $readOnly={true}
                   value={testParticipantId}></SimpleTextInput>
               </FormControl>
-            </div>
-          </div>
+            </Box>
+          </Box>
         </Box>
         {children && children}
       </Box>
@@ -373,7 +429,7 @@ const PreviewIntroScreen: React.FunctionComponent<{
             </Box>
           )}
         </Box>
-        <Box className={clsx(isAssessmentDemo ? classes.tosContainerAssessment : '')}>
+        <Box>
           <StyledLink
             to="/MTB-ToS-v2-210923.pdf"
             target="_blank"
@@ -394,7 +450,6 @@ const PreviewIntroScreen: React.FunctionComponent<{
 }
 
 const Preview: React.FunctionComponent<PreviewProps> = ({id, isAssessmentDemo, children}: PreviewProps) => {
-  const classes = useStyles()
   const {token, demoExternalId} = useUserSessionDataState()
 
   const [testParticipantId, setTestParticipantId] = React.useState('')
@@ -428,14 +483,23 @@ const Preview: React.FunctionComponent<PreviewProps> = ({id, isAssessmentDemo, c
         <PreviewIntroScreen isAssessmentDemo={isAssessmentDemo} onGetParticipantId={() => getTestParticipantId()} />
       )}
 
-      {testParticipantId && (
-        <BuilderWrapper sectionName="Preview Your  Study">
-          <PreviewIdGenerated isAssessmentDemo={isAssessmentDemo} testParticipantId={testParticipantId} studyId={id}>
-            {!isAssessmentDemo && false && <PreviewAssessments studyId={id} />}
-          </PreviewIdGenerated>
-          {!isAssessmentDemo && children}
-        </BuilderWrapper>
-      )}
+      {testParticipantId &&
+        (!isAssessmentDemo ? (
+          <>
+            <BuilderWrapper sectionName="Preview Your  Study">
+              <PreviewIdGenerated isAssessmentDemo={false} testParticipantId={testParticipantId} studyId={id}>
+                {/* agendel: we are hiding this for now
+            !isAssessmentDemo && false  <PreviewAssessments studyId={id} />*/}
+              </PreviewIdGenerated>
+            </BuilderWrapper>
+            {children}
+          </>
+        ) : (
+          <PreviewIdGenerated
+            isAssessmentDemo={true}
+            testParticipantId={testParticipantId}
+            studyId={id}></PreviewIdGenerated>
+        ))}
     </>
   )
 }
