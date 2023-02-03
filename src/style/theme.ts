@@ -556,7 +556,8 @@ const theme: Theme = createTheme({
     },
 
     subtitle2: {
-      fontFamily: playfairDisplayFont,
+      fontFamily: latoFont,
+      fontSize: '14px',
       fontWeight: 400,
       fontStyle: 'italic',
     },
