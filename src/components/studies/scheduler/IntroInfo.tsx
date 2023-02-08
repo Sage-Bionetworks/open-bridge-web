@@ -14,6 +14,7 @@ import React from 'react'
 import {useHistory} from 'react-router-dom'
 import {BuilderWrapper} from '../StudyBuilder'
 import Duration from './Duration'
+import ReadOnlyIntroInfo from './read-only-pages/ReadOnlyIntroInfo'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -187,7 +188,9 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback,
     }
   }
 
-  return (
+  return study && schedule && isReadOnly ? (
+    <ReadOnlyIntroInfo name={study.name} duration={schedule?.duration} />
+  ) : (
     <>
       <BuilderWrapper sectionName="Study Details">
         <Container maxWidth="md" className={classes.container}>
@@ -207,14 +210,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback,
               }
               className={classes.formControl}
               labelPlacement="start"
-              control={
-                <SimpleTextInput
-                  disabled={isReadOnly}
-                  fullWidth
-                  value={studyName}
-                  onChange={e => setStudyName(e.target.value)}
-                />
-              }
+              control={<SimpleTextInput fullWidth value={studyName} onChange={e => setStudyName(e.target.value)} />}
             />
             <Divider className={classes.divider}></Divider>
             <Box className={classes.middleContainer}>
@@ -243,7 +239,6 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback,
                       numberLabel="study duration number"
                       maxDurationDays={1825}
                       unitData={DWsEnum}
-                      disabled={isReadOnly}
                       isIntro={true}></Duration>
                     <span className={classes.hint}>
                       <strong>The study duration must be shorter than 5 years.</strong>
@@ -271,15 +266,13 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback,
         color="primary"
         key="saveButton"
         onClick={e =>
-          isReadOnly
-            ? history.push(`/studies/builder/${id}/session-creator`)
-            : createScheduleAndNameStudy(
-                id,
+          createScheduleAndNameStudy(
+            id,
 
-                studyName,
-                duration,
-                'timeline_retrieved'
-              )
+            studyName,
+            duration,
+            'timeline_retrieved'
+          )
         }
         disabled={!(duration && studyName)}>
         Continue

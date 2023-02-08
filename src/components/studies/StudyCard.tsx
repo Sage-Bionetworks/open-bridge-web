@@ -1,10 +1,11 @@
 import {ReactComponent as ParticipantsIcon} from '@assets/participants_icon.svg'
 import CardWithMenu, {StatusColor} from '@components/widgets/CardWithMenu'
+import Utility from '@helpers/utility'
 import {Box, styled} from '@mui/material'
 import StudyService from '@services/study.service'
 import {DisplayStudyPhase, Study} from '@typedefs/types'
 import dayjs from 'dayjs'
-import {capitalize} from 'lodash'
+
 import {FunctionComponent} from 'react'
 import {useAdherenceForWeek} from './adherenceHooks'
 
@@ -91,7 +92,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
       onRename={onRename}
       isRename={isRename}
       shouldHighlight={isNewlyAddedStudy}
-      topStatus={capitalize(displayStatus)}
+      topStatus={Utility.capitalize(displayStatus)}
       statusColor={statusColor}
       shouldHaveSpaceAfterName={shouldHaveSpaceAfterName}
       leftBottomChild={leftBottomChild}

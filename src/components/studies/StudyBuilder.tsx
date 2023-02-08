@@ -111,7 +111,8 @@ export type SchedulerErrorType = {
   entity: any
 }
 
-export const BuilderWrapper: FunctionComponent<{sectionName: string; sx?: SxProps}> = ({
+export const BuilderWrapper: FunctionComponent<{sectionName: string; isReadOnly?: boolean; sx?: SxProps}> = ({
+  isReadOnly,
   sectionName,
   children,
   ...sx
@@ -122,13 +123,14 @@ export const BuilderWrapper: FunctionComponent<{sectionName: string; sx?: SxProp
       sx={{
         backgroundColor: '#FBFBFC',
         paddingLeft: theme.spacing(8),
-        paddingTop: theme.spacing(4),
+        paddingTop: isReadOnly ? theme.spacing(0) : theme.spacing(4),
         paddingBottom: theme.spacing(8),
         paddingRight: theme.spacing(8),
+        height: isReadOnly ? '100%' : 'auto',
       }}>
       {/*<MTBHeadingH1 sx={{textAlign: 'left'}}>{sectionName}</MTBHeadingH1>*/}
 
-      <Box pt={3} id="builderContainer" {...sx}>
+      <Box pt={3} id="builderContainer" sx={{height: isReadOnly ? '100%' : 'auto', ...sx}}>
         {children}
       </Box>
     </Box>
@@ -323,7 +325,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
               )}
 
               <LoadingComponent reqStatusLoading={!study}>
-                <Box id="builderWorkArea">
+                <Box id="builderWorkArea" sx={{height: '100%'}}>
                   {study && (
                     <Switch>
                       <Route path={`/studies/builder/:id/scheduler`}>
@@ -355,7 +357,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                         <PassiveFeatures id={id}>{navButtons}</PassiveFeatures>
                       </Route>
                       <Route path={`/studies/builder/:id/session-creator`}>
-                        <SessionCreator id={id} onShowFeedback={showFeedback}>
+                        <SessionCreator
+                          id={id}
+                          isReadOnly={!StudyService.isStudyInDesign(study)}
+                          onShowFeedback={showFeedback}>
                           {navButtons}
                         </SessionCreator>
                       </Route>

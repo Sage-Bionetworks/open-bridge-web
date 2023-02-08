@@ -1,4 +1,4 @@
-import {Box, styled, Typography} from '@mui/material'
+import {Box, Typography} from '@mui/material'
 import EventService from '@services/event.service'
 import {NotificationTimeAtEnum, ScheduleNotification, StudySession} from '@typedefs/scheduling'
 import _ from 'lodash'
@@ -14,11 +14,6 @@ type ReadOnlySchedulerProps = {
   studySessionIndex: number
   originEventId?: string
 }
-
-const StyledText = styled(Typography, {label: 'StyledText'})(({theme}) => ({
-  fontSize: '16px',
-  fontWeight: 700,
-}))
 
 const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
   session,
@@ -50,44 +45,33 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
     <Box mb={2} display="flex" key={session.guid}>
       <Box flexGrow="1" pb={2.5} pl={4}>
         <Box>
-          <SchedulingFormSection
-            label={
-              <StyledText>
-                {session.name}&nbsp;
-                {session.delay ? (
-                  <span>
-                    starts
-                    <br />
-                    <strong>{getFormattedTimeDateFromPeriodString(session.delay)}</strong> from:{' '}
-                  </span>
-                ) : (
-                  'starts on:'
-                )}
-              </StyledText>
-            }>
-            <StyledText>
+          <SchedulingFormSection label={''}>
+            <Typography variant="h4">
+              Session &nbsp;
+              {session.delay ? (
+                <span>
+                  Starts
+                  <br />
+                  <strong>{getFormattedTimeDateFromPeriodString(session.delay)}</strong> from:{' '}
+                </span>
+              ) : (
+                'Starts On:'
+              )}
+            </Typography>
+            <Typography>
               {EventService.formatEventIdForDisplay(_.first(session.startEventIds) || originEventId || 'Unknown')}
-            </StyledText>
+            </Typography>
           </SchedulingFormSection>
         </Box>
 
-        <SchedulingFormSection label={<Box>End after:</Box>}>
-          <StyledText>{`${session.occurrences ? session.occurrences + ' times' : ' End of study'}`}</StyledText>
+        <SchedulingFormSection label={<Typography variant="h4">End After</Typography>}>
+          <Typography>{`${session.occurrences ? session.occurrences + ' times' : ' End of study'}`}</Typography>
         </SchedulingFormSection>
 
-        <SchedulingFormSection
-          label={
-            <Box
-              style={{
-                fontWeight: 'normal',
-                maxWidth: '170px',
-              }}>
-              Run this session every:
-            </Box>
-          }>
-          <StyledText>{getSessionIntervalText(session)}</StyledText>
+        <SchedulingFormSection label={<Typography variant="h4">Run This Session Every</Typography>}>
+          <Typography>{getSessionIntervalText(session)}</Typography>
         </SchedulingFormSection>
-        <SchedulingFormSection label={<Box>Session window:</Box>}>
+        <SchedulingFormSection label={<Typography variant="h4">Session Window</Typography>}>
           <Box flexGrow={1}>
             {(session || defaultSchedule).timeWindows?.map((window, index) => {
               return (
@@ -95,13 +79,13 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                   key={'read-only-assessment-window-' + index}
                   startTime={window.startTime}
                   index={index + 1}
-                  expireAfter={window.expiration || 'N/A'}
+                  expireAfter={window.expiration}
                 />
               )
             })}
           </Box>
         </SchedulingFormSection>
-        <SchedulingFormSection label={<Box>Session Notifications:</Box>}>
+        <SchedulingFormSection label={<Typography variant="h4">Session Notifications</Typography>}>
           <Box flexGrow={1}>
             {(session || defaultSchedule).notifications?.map((notification, index) => {
               return (
@@ -116,7 +100,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
             })}
           </Box>
           {(session || defaultSchedule).notifications?.length === 0 && (
-            <StyledText>Participants will not receive any notification for this session.</StyledText>
+            <Typography>Participants will not receive any notification for this session.</Typography>
           )}
         </SchedulingFormSection>
       </Box>

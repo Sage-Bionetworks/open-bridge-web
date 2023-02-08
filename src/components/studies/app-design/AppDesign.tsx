@@ -239,13 +239,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-const SimpleTextInputStyles = {
-  /*  fontSize: '15px',
-  width: '100%',
-  height: '44px',
-  paddingTop: '8px',
-  boxSizing: 'border-box',*/
-} as React.CSSProperties
+const SimpleTextInputStyles = {} as React.CSSProperties
 
 export type ContactType = 'principal_investigator' | 'irb' | 'sponsor' | 'study_support'
 

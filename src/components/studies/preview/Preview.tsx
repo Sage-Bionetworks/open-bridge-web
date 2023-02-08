@@ -230,7 +230,7 @@ const PreviewAssessments: React.FunctionComponent<{
           {uniqueAssessments.map((assessment, index) => {
             return (
               <Box onClick={() => {}} mb={2}>
-                <AssessmentSmall hasHover={false} assessment={assessment} key={index} />
+                <AssessmentSmall isReadOnly={true} assessment={assessment} key={index} />
               </Box>
             )
           })}

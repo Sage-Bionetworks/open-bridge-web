@@ -65,7 +65,7 @@ describe('Delete Button', () => {
       await userEvent.click(getDeleteButton(true)!)
     })
     expect(screen.queryByText(/permanently delete this question/)).toBeInTheDocument()
-    expect(onChange).not.toHaveBeenCalled
+    expect(onChange).not.toHaveBeenCalled()
   })
 
   it('should be disabled if there are dependent questions', async () => {

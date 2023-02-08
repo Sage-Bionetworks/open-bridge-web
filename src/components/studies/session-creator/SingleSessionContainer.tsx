@@ -30,10 +30,11 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     borderBottom: '1px solid #DFE2E6',
 
     '& h4': {
-      fontWeight: '700',
-      fontSize: '14px',
-      lineHeight: '20px',
-      textDecorationLine: 'underline',
+      // fontWeight: '700',
+      //  fontSize: '14px',
+      // lineHeight: '20px',
+
+      textDecoration: 'underline',
 
       color: theme.palette.primary.main,
     },
@@ -123,7 +124,20 @@ type SingleSessionContainerProps = {
   onRemoveSession: Function
   numberOfSessions: number
 }
-
+export const SessionTimeDisplay: FunctionComponent<{assessments: Assessment[] | undefined}> = ({assessments}) => {
+  return (
+    <Box sx={{fontSize: '12px', textAlign: 'right', color: '#4A5056'}}>
+      {getTotalSessionTime(assessments) || 0} min
+      <AccessTimeTwoToneIcon
+        sx={{
+          fontSize: '12px',
+          color: '#878E95',
+          verticalAlign: 'middle',
+          marginLeft: theme.spacing(0.5),
+        }}></AccessTimeTwoToneIcon>
+    </Box>
+  )
+}
 const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = ({
   sessionIndex,
   studySession,
@@ -195,6 +209,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                 marginLeft: theme.spacing(0.5),
               }}></AccessTimeTwoToneIcon>
           </Box>
+          <SessionTimeDisplay assessments={studySession.assessments} />
         </Box>
 
         <DragDropContext
