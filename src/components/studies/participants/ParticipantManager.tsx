@@ -1,7 +1,6 @@
 import {ReactComponent as CollapseIcon} from '@assets/collapse.svg'
 import {ReactComponent as AddTestParticipantsIcon} from '@assets/participants/add_test_participants.svg'
-import {ReactComponent as UnderConstructionCone} from '@assets/participants/under_construction_cone.svg'
-import {ReactComponent as UnderConstructionGirl} from '@assets/participants/under_construction_girl.svg'
+
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import ParticipantAdherenceContentShell from '@components/widgets/ParticipantAdherenceContentShell'
@@ -14,7 +13,7 @@ import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone'
 import LinkTwoToneIcon from '@mui/icons-material/LinkTwoTone'
 import PersonAddAlt1TwoToneIcon from '@mui/icons-material/PersonAddAlt1TwoTone'
 import PersonRemoveAlt1TwoToneIcon from '@mui/icons-material/PersonRemoveAlt1TwoTone'
-import {Box, Button, CircularProgress, Container, styled, Tab, Tabs} from '@mui/material'
+import {Box, Button, CircularProgress, styled, Tab, Tabs} from '@mui/material'
 import Alert from '@mui/material/Alert'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import StudyService from '@services/study.service'
@@ -88,20 +87,6 @@ const TAB_DEFs = [
   {type: 'WITHDRAWN', label: 'Withdrawn Participants', icon: <PersonRemoveAlt1TwoToneIcon />},
   {type: 'TEST', label: 'Test Accounts', icon: <HandymanTwoToneIcon />},
 ]
-
-/***  subcomponents  */
-const UnderConstructionSC: FunctionComponent = () => (
-  <Container maxWidth="md" fixed style={{minHeight: '90vh'}}>
-    <Box textAlign="center" my={7}>
-      <UnderConstructionCone />
-      <Box lineHeight="21px" py={5}>
-        <p>Sorry this page is under construction.</p>
-        <p> We are working on making it available soon.</p>
-      </Box>
-      <UnderConstructionGirl />
-    </Box>
-  </Container>
-)
 
 const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({title}) => {
   const classes = useStyles()
@@ -304,12 +289,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   return (
     <Box id="participantManager">
       <StudyBuilderHeader study={study} />
-
-      {displayPlaceholderScreen && <ParticipantManagerPlaceholder />}
-      {['COMPLETED', 'WITHDRAWN'].includes(StudyService.getDisplayStatusForStudyPhase(study.phase)) && (
-        <UnderConstructionSC />
-      )}
-      {!displayPlaceholderScreen && (
+      {displayPlaceholderScreen ? (
+        <ParticipantManagerPlaceholder study={study} />
+      ) : (
         <>
           <ParticipantAdherenceContentShell title="Participant Manager">
             <Tabs
@@ -327,7 +309,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   icon={
                     <Box sx={{display: 'flex', flexDirection: 'row'}}>
                       {tabDef.icon}
-
                       <div>
                         &nbsp;&nbsp;
                         {`${tabDef.label} ${tab === tabDef.type ? (data ? `(${data.total})` : '(...)') : ''}`}
@@ -417,7 +398,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           Batch Edit
                         </Button>
                       )}
-
                       <ParticipantDownloadTrigger
                         hasImage={true}
                         onDownload={() => downloadParticipants(isAllSelected ? 'ALL' : 'SOME')}
@@ -453,7 +433,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       }}
                       onSearch={(searchedValue: string) => {
                         resetSelectAll()
-
                         setSearchValue(searchedValue)
                       }}
                       tab={tab}
@@ -514,7 +493,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               </Box>
             </CollapsibleLayout>
           </Box>
-
           <BatchEditForm
             isEnrolledById={Utility.isSignInById(study.signInTypes)}
             isBatchEditOpen={isBatchEditOpen}
