@@ -211,7 +211,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
   return (
     <>
       {' '}
-      <BuilderWrapper sectionName="Optional Background Monitoring">
+      <BuilderWrapper sectionName="Optional Background Monitoring" isReadOnly={isReadOnly}>
         <Container maxWidth="lg">
           <Box sx={{fontSize: '16px'}}>
             {isReadOnly ? (
@@ -264,7 +264,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
           </Box>
         </Container>
       </BuilderWrapper>
-      {children}
+      {!isReadOnly && children}
     </>
   )
 }

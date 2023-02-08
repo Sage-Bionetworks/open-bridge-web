@@ -25,18 +25,6 @@ import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
 dayjs.extend(duration)
-/*
-export const useStyles = makeStyles((theme: ThemeType) => ({
-  notifySwitch: {
-    fontFamily: latoFont,
-    fontSize: '15px',
-    textTransform: 'uppercase',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    fontWeight: 'normal',
-  },
-}))*/
 
 export const defaultSchedule: SessionSchedule = {
   performanceOrder: 'participant_choice',

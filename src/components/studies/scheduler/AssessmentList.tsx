@@ -1,6 +1,6 @@
 import AssessmentSmall from '@components/assessments/AssessmentSmall'
 import {Box, FormControlLabel, FormGroup, MenuItem, Select, Typography} from '@mui/material'
-import {latoFont, theme} from '@style/theme'
+import {theme} from '@style/theme'
 import {PerformanceOrder, StudySession} from '@typedefs/scheduling'
 import {Assessment} from '@typedefs/types'
 import React from 'react'
@@ -70,7 +70,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
     //{value: 'randomized', label: 'Randomized Order'},
   ]
 
-  const assessmentOrderElement = !isReadOnly ? (
+  const assessmentOrderElement = (
     <Select
       fullWidth
       variant="outlined"
@@ -84,33 +84,38 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
         </MenuItem>
       ))}
     </Select>
-  ) : (
-    <Box fontSize="14px" fontFamily={latoFont}>
-      {performanceOrderList.find(el => el.value === performanceOrder)?.label || ''}
-    </Box>
   )
 
   return (
     <Box>
-      {studySession.assessments && studySession.assessments.length > 1 && (
-        <FormGroup aria-label="assessments" sx={{marginBottom: theme.spacing(2), width: '100%'}}>
-          <FormControlLabel
-            labelPlacement="top"
-            sx={{
-              width: '100%',
+      {studySession.assessments &&
+        studySession.assessments.length > 1 &&
+        (isReadOnly ? (
+          <>
+            <Typography variant="h4"> Assessment Order:</Typography>
+            <Typography paragraph>
+              {performanceOrderList.find(el => el.value === performanceOrder)?.label || ''}
+            </Typography>
+          </>
+        ) : (
+          <FormGroup aria-label="assessments" sx={{marginBottom: theme.spacing(2), width: '100%'}}>
+            <FormControlLabel
+              labelPlacement="top"
+              sx={{
+                width: '100%',
 
-              marginLeft: theme.spacing(0),
-              marginTop: theme.spacing(1.5),
-            }}
-            control={assessmentOrderElement}
-            label={
-              <Typography variant="h4" sx={{textSlign: 'left', width: '100%', marginBottom: theme.spacing(1)}}>
-                Assessment Order:
-              </Typography>
-            }
-          />
-        </FormGroup>
-      )}
+                marginLeft: theme.spacing(0),
+                marginTop: theme.spacing(1.5),
+              }}
+              control={assessmentOrderElement}
+              label={
+                <Typography variant="h4" sx={{textSlign: 'left', width: '100%', marginBottom: theme.spacing(1)}}>
+                  Assessment Order:
+                </Typography>
+              }
+            />
+          </FormGroup>
+        ))}
 
       {studySession.assessments &&
         assessmentsToDisplay.map((assessmentInfo, index) => (
@@ -125,7 +130,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
             <AssessmentSmall
               isHideDuration={false}
               assessment={assessmentInfo.assessment}
-              hasHover={false}
+              isReadOnly={true}
               isDragging={false}></AssessmentSmall>
           </Box>
         ))}

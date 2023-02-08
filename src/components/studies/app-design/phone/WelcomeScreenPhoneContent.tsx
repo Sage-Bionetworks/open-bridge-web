@@ -66,7 +66,7 @@ const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneConte
           lineHeight: '20px',
         },
       }}>
-      {!welcomeScreenContent.isUsingDefaultMessage && !isReadOnly && (
+      {!welcomeScreenContent.isUsingDefaultMessage && (
         <SectionIndicator index={3} className={classes.sectionThreeIndicatorPosition} />
       )}
       <Typography variant="h3">{getMessage('welcomeScreenHeader')}</Typography>

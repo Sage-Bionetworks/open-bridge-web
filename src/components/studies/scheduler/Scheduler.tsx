@@ -1,4 +1,3 @@
-
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
@@ -19,6 +18,7 @@ import {
   IconButton,
   styled,
   Theme,
+  Typography,
 } from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
@@ -431,7 +431,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
 
   return (
     <>
-      <BuilderWrapper sectionName="Schedule Sessions">
+      <BuilderWrapper sectionName="Schedule Sessions" isReadOnly={isReadOnly}>
         <NavigationPrompt when={hasObjectChanged} key="prompt">
           {({onConfirm, onCancel}) => (
             <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
@@ -439,6 +439,11 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
         </NavigationPrompt>
         <div>{saveLoader && <CircularProgress />}</div>
         <Box textAlign="left" key="content">
+          {isReadOnly && (
+            <Typography variant="h2" sx={{mb: 3}}>
+              Schedule Sessions
+            </Typography>
+          )}
           <div className={clsx(classes.scheduleHeader, isReadOnly && 'readOnly')} key="intro">
             {!isReadOnly ? (
               <Box>
@@ -497,23 +502,23 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                 </Box>
               </Box>
             ) : (
-              <>
+              <Box sx={{display: 'flex', '& div:first-of-type': {marginRight: theme.spacing(6)}}}>
                 <div>
-                  <span>Study duration:</span>
-                  <strong>
-                    {schedule.duration ? getFormattedTimeDateFromPeriodString(schedule.duration) : 'No duration set'}
-                  </strong>
+                  <Typography variant="h4" sx={{mb: 1}}>
+                    Study Duration
+                  </Typography>
+
+                  {schedule.duration ? getFormattedTimeDateFromPeriodString(schedule.duration) : 'No duration set'}
                 </div>
 
                 <div>
-                  <span>Study starts on:</span>
-                  <strong>
-                    {study.studyStartEventId
-                      ? EventService.formatEventIdForDisplay(study.studyStartEventId)
-                      : 'unkonwn'}
-                  </strong>
+                  <Typography variant="h4" sx={{mb: 1}}>
+                    Study Starts On:
+                  </Typography>
+
+                  {study.studyStartEventId ? EventService.formatEventIdForDisplay(study.studyStartEventId) : 'unkonwn'}
                 </div>
-              </>
+              </Box>
             )}
 
             {hasObjectChanged && (
@@ -563,7 +568,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
           </Box>
         </Box>
       </BuilderWrapper>
-      {children}
+      {!isReadOnly && children}
 
       <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body" fullWidth>
         <DialogTitleWithClose onCancel={() => setOpenModal(undefined)} title="Edit Event Drop Down" />
@@ -715,7 +720,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                     />
                     <StyledButtonBar>
                       <Button variant="contained" onClick={() => onCancelSessionUpdate()}>
-                        Close
+                        {isReadOnly ? 'Cancel' : 'Close'}
                       </Button>
                     </StyledButtonBar>
                   </>
