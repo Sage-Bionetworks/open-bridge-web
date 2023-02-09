@@ -199,16 +199,6 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
             </IconButton>
           )}
 
-          <Box sx={{fontSize: '12px', textAlign: 'right', color: '#4A5056'}}>
-            {getTotalSessionTime(studySession.assessments) || 0} min
-            <AccessTimeTwoToneIcon
-              sx={{
-                fontSize: '12px',
-                color: '#878E95',
-                verticalAlign: 'middle',
-                marginLeft: theme.spacing(0.5),
-              }}></AccessTimeTwoToneIcon>
-          </Box>
           <SessionTimeDisplay assessments={studySession.assessments} />
         </Box>
 
