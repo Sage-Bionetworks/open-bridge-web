@@ -3,6 +3,7 @@ import {ReactComponent as CalendarBlue} from '@assets/adherence/calendar_blue.sv
 import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import {ReactComponent as CheckEmpty} from '@assets/adherence/round_check_empty.svg'
 import {ReactComponent as CheckGreen} from '@assets/adherence/round_check_green.svg'
+import {useAdherenceAlerts} from '@components/studies/adherenceHooks'
 import Loader from '@components/widgets/Loader'
 import CommentIcon from '@mui/icons-material/Comment'
 import {Box, Checkbox, styled} from '@mui/material'
@@ -17,7 +18,7 @@ import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
 
 type AdherenceAlertsProps = {
-  studyId?: string
+  studyId: string
 }
 
 type AlertType = 'enrollment' | 'adherence' | 'upcoming'
@@ -122,9 +123,19 @@ const TypeIcons = new Map<AlertType, React.ReactNode>([
   ['upcoming', <CalendarBlue />],
 ])
 
-const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
+const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => {
   const [alerts, setAlerts] = React.useState<AdhAlert[] | undefined>(_alerts)
   const [checked, setChecked] = React.useState([0])
+
+  const {data, error, isLoading} = useAdherenceAlerts(studyId, [
+    'new_enrollment',
+    'timeline_accessed',
+    'low_adherence',
+    'upcoming_study_burst',
+    'study_burst_change',
+  ])
+
+  console.log('data', data)
 
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value)
@@ -140,7 +151,7 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
   }
 
   return (
-    <Loader reqStatusLoading={!alerts}>
+    <Loader reqStatusLoading={isLoading}>
       {alerts && (
         <Box>
           <Box>

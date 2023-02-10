@@ -115,6 +115,7 @@ const constants = {
   },
 
   endpoints: {
+    adherenceAlerts: '/v5/studies/:studyId/alerts',
     adherenceDetail: '/v5/studies/:studyId/participants/:userId/adherence/study',
     adherenceStats: '/v5/studies/:studyId/adherence/stats',
     adherenceUserWeekly: '/v5/studies/:studyId/participants/:userId/adherence/weekly',

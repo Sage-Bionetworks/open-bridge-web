@@ -7,7 +7,6 @@ import {Box, CircularProgress, Tab, Tabs} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useStudy} from '@services/studyHooks'
 import {latoFont, poppinsFont, theme} from '@style/theme'
-import {ExtendedParticipantAccountSummary} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {ErrorBoundary} from 'react-error-boundary'
@@ -51,13 +50,9 @@ const useStyles = makeStyles(theme => ({
 }))
 
 /** types and constants  */
-type ParticipantData = {
-  items: ExtendedParticipantAccountSummary[]
-  total: number
-}
 
 const TAB_DEFs = [
-  // {type: 'SUMMARY', label: 'Adherence Summary'},
+  // UNCOMMENT FOR ALERTS {type: 'SUMMARY', label: 'Adherence Summary'},
   {type: 'ENROLLED', label: 'Active Participants'},
 ]
 
