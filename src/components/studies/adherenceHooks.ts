@@ -1,6 +1,13 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import AdherenceService, {WeeklyAdherenceFilter} from '@services/adherence.service'
-import {AdherenceDetailReport, AdherenceStatistics, AdherenceWeeklyReport, ExtendedError} from '@typedefs/types'
+import {
+  AdherenceAlert,
+  AdherenceAlertCategory,
+  AdherenceDetailReport,
+  AdherenceStatistics,
+  AdherenceWeeklyReport,
+  ExtendedError,
+} from '@typedefs/types'
 import {useQuery} from 'react-query'
 
 export const ADHERENCE_KEYS = {
@@ -30,6 +37,8 @@ export const ADHERENCE_KEYS = {
     ] as const,
 
   detail: (studyId: string, userId: string) => [...ADHERENCE_KEYS.list(studyId), userId] as const,
+  alerts: (studyId: string, category: string, currentPage: number = 0, pageSize: number = 0) =>
+    [...ADHERENCE_KEYS.list(studyId, currentPage, pageSize, '', ''), 'summary', category] as const,
 }
 
 export const useAdherence = (studyId: string, userId: string | undefined) => {
@@ -45,27 +54,6 @@ export const useAdherence = (studyId: string, userId: string | undefined) => {
     }
   )
 }
-/*
-
-AG 4/4: not used:
-export const useAdherenceForWeekForUsers = (
-  studyId: string,
-  userIds: string[]
-) => {
-  const {token} = useUserSessionDataState()
-
-  return useQuery<AdherenceWeeklyReport[], ExtendedError>(
-    ADHERENCE_KEYS.list(studyId),
-
-    () =>
-      AdherenceService.getAdherenceForWeekForUsers(studyId, userIds, token!),
-    {
-      enabled: !!studyId && userIds.length > 0 && !!token,
-      retry: true,
-      refetchOnWindowFocus: true,
-    }
-  )
-}*/
 
 export const useAdherenceStatsForWeek = (studyId: string) => {
   const {token} = useUserSessionDataState()
@@ -73,6 +61,25 @@ export const useAdherenceStatsForWeek = (studyId: string) => {
   return useQuery<AdherenceStatistics, ExtendedError>(
     ADHERENCE_KEYS.list(studyId),
     () => AdherenceService.getAdherenceStatsForWeek(studyId, token!),
+    {
+      enabled: !!studyId && !!token,
+      retry: true,
+      refetchOnWindowFocus: true,
+    }
+  )
+}
+
+export const useAdherenceAlerts = (
+  studyId: string,
+  categories: AdherenceAlertCategory[],
+  pageSize: number = 25,
+  offsetBy = 0
+) => {
+  const cat = categories.join()
+  const {token} = useUserSessionDataState()
+  return useQuery<{items: AdherenceAlert[]; total: number}, ExtendedError>(
+    ADHERENCE_KEYS.alerts(studyId, cat, offsetBy, pageSize),
+    () => AdherenceService.getAdherenceAlerts(studyId, categories, pageSize, offsetBy, token!),
     {
       enabled: !!studyId && !!token,
       retry: true,

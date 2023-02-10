@@ -1,4 +1,11 @@
-import {AdherenceDetailReport, AdherenceStatistics, AdherenceWeeklyReport, ProgressionStatus} from '@typedefs/types'
+import {
+  AdherenceAlert,
+  AdherenceAlertCategory,
+  AdherenceDetailReport,
+  AdherenceStatistics,
+  AdherenceWeeklyReport,
+  ProgressionStatus,
+} from '@typedefs/types'
 import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
@@ -100,7 +107,43 @@ async function getAdherenceForParticipant(
   return result.data
 }
 
+//TODO: API for adherence alerts
+/*
+https://developer.sagebridge.org/swagger-ui/index.html#/Studies/getAlerts
+https://developer.sagebridge.org/swagger-ui/index.html#/Studies/deleteAlerts
+https://developer.sagebridge.org/swagger-ui/index.html#/Studies/markAlertsRead
+https://developer.sagebridge.org/swagger-ui/index.html#/Studies/markAlertsUnread
+/v5/studies/{studyId}/alerts
+Fetches all alerts for a study.
+POST
+/v5/studies/{studyId}/alerts/delete
+Deletes alerts given a list of their ids.
+POST
+/v5/studies/{studyId}/alerts/read
+Mark alerts as read.
+POST
+/v5/studies/{studyId}/alerts/unread
+Mark alerts as unread.*/
+
+async function getAdherenceAlerts(
+  studyId: string,
+  categories: AdherenceAlertCategory[],
+  pageSize: number,
+  offsetBy: number,
+  token: string
+) {
+  const endpoint = constants.endpoints.adherenceAlerts.replace(':studyId', studyId)
+  const result = await Utility.callEndpoint<{items: AdherenceAlert[]; total: number}>(
+    endpoint,
+    'POST',
+    {pageSize: pageSize, offsetBy: offsetBy, alertCategories: categories},
+    token
+  )
+  return result.data
+}
+
 const AdherenceService = {
+  getAdherenceAlerts,
   getAdherenceForParticipant,
   getAdherenceForWeek,
   getAdherenceForWeekForUsers,

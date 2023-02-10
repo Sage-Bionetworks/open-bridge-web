@@ -475,6 +475,21 @@ export type AdherenceStatistics = {
   entries: AdherenceStatisticsEntry[]
 }
 
+export type AdherenceAlertCategory =
+  | 'new_enrollment'
+  | 'timeline_accessed'
+  | 'low_adherence'
+  | 'upcoming_study_burst'
+  | 'study_burst_change'
+
+export type AdherenceAlert = {
+  id: string
+  createdOn: string
+  participant: {identifier: string; externalId: string}
+  category: AdherenceAlertCategory
+  data: string
+}
+
 export type ParticipantRequestInfo = {
   userId: string
   clientInfo: {
