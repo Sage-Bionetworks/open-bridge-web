@@ -7,13 +7,6 @@ import server from '__test_utils/test_server/server'
 import mockSchedule from '../__test_utils/mocks/schedule.json'
 import mockStudy from '../__test_utils/mocks/study.json'
 
-/*export const getScheduleResponse = rest.get(
-  `*${constants.endpoints.schedule}`,
-  async (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(mockSchedule))
-  }
-)*/
-
 export const getStudyResponse = rest.get(
   `*${constants.endpoints.study}`,
   async (req, res, ctx) => {
@@ -24,14 +17,13 @@ export const getStudyResponse = rest.get(
 
 describe('Copy Study', () => {
   it('should copy a study with without export information', async () => {
-    // server.use(getScheduleResponse)
     server.use(getStudyResponse)
 
     jest.spyOn(ScheduleService, 'getSchedule').mockImplementation(function () {
       return Promise.resolve(mockSchedule.data as unknown as Schedule)
     })
 
-    const createScheduleSpy = jest
+    jest
       .spyOn(ScheduleService, 'createSchedule')
       .mockImplementation(function () {
         return Promise.resolve(mockSchedule.data as unknown as Schedule)
