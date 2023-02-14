@@ -3,7 +3,6 @@ import {rest} from 'msw'
 import * as assessments from '../mocks/assessments'
 /*
 Mocks for assessment endpoints
-
     assessment: '/v1/assessments/:id',
     assessmentShared: '/v1/sharedassessments/:id',
     assessments: '/v1/assessments/?includeDeleted=false',
@@ -14,13 +13,15 @@ Mocks for assessment endpoints
 */
 const mtbAppId = constants.constants.MTB_APP_ID
 const arcAppId = constants.constants.ARC_APP_ID
-
 const endpoints = [
   //shared assessments
   rest.get(
     `*${constants.endpoints.assessmentsShared.split('/?')[0]}/*`,
     (req, res, ctx) => {
-      console.log('REQ', req)
+      console.log(
+        'getting assessment',
+        `*${constants.endpoints.assessmentsShared.split('/?')[0]}/*`
+      )
       return res(
         ctx.json({
           items: [assessments.SharedAssessmentsArc],
@@ -29,7 +30,6 @@ const endpoints = [
       )
     }
   ),
-
   //get local assessments
   rest.get(
     `*${constants.endpoints.assessments.split('/?')[0]}/*`,
@@ -42,7 +42,6 @@ const endpoints = [
       )
     }
   ),
-
   rest.post(
     `*${constants.endpoints.assessment.replace(':id', '')}`,
     (req, res, ctx) => {
