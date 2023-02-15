@@ -1,0 +1,63 @@
+{
+  "items": [
+    {
+      "id": "JHnmnYJTxCT_9IltWOCikv9r",
+      "createdOn": "2023-02-15T17:45:50.743Z",
+      "participant": {
+        "identifier": "4fnjADyEq4IYu2wrbBDZ5qJ8",
+        "externalId": "355474:hprczm",
+        "type": "AccountRef"
+      },
+      "category": "timeline_accessed",
+      "data": null,
+      "read": false,
+      "type": "Alert"
+    },
+    {
+      "id": "JHnmnYJTxCT_9IltWOCikv9m",
+      "createdOn": "2023-02-15T17:45:50.743Z",
+      "participant": {
+        "identifier": "EJLons0o5XqSQfd9LZTbK2f3",
+        "externalId": "085314:hprczm",
+        "type": "AccountRef"
+      },
+      "category": "timeline_accessed",
+      "data": null,
+      "read": false,
+      "type": "Alert"
+    },
+    {
+      "id": "TttDN5haFQxhQsMTNunH0oWM",
+      "createdOn": "2023-02-15T17:43:58.156Z",
+      "participant": {
+        "identifier": "2HIN8r7r1HCjI6SYeVPNYCpt",
+        "externalId": "207423:hprczm",
+        "type": "AccountRef"
+      },
+      "category": "new_enrollment",
+      "data": null,
+      "read": false,
+      "type": "Alert"
+    },
+    {
+      "id": "tK-qaH63yO15c_TOQVefxgTs",
+      "createdOn": "2023-02-15T17:43:33.286Z",
+      "participant": {
+        "identifier": "4fnjADyEq4IYu2wrbBDZ5qJ8",
+        "externalId": "355474:hprczm",
+        "type": "AccountRef"
+      },
+      "category": "new_enrollment",
+      "data": null,
+      "read": false,
+      "type": "Alert"
+    }
+  ],
+  "total": 3,
+  "requestParams": {
+    "pageSize": 50,
+    "offsetBy": 0,
+    "type": "RequestParams"
+  },
+  "type": "PagedResourceList"
+}
