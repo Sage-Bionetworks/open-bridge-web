@@ -142,8 +142,39 @@ async function getAdherenceAlerts(
   return result.data
 }
 
+async function markAdherenceAlertsAsRead(
+  studyId: string,
+  alertIds: string[],
+  token: string
+): Promise<any> {
+  const endpoint = constants.endpoints.adherenceAlertsMarkRead.replace(':studyId', studyId)
+  const result = await Utility.callEndpoint(
+    endpoint,
+    'POST',
+    {studyId: studyId, alertIds: alertIds},
+    token
+  )
+  return result
+}
+
+async function markAdherenceAlertsAsUnread(
+  studyId: string,
+  alertIds: string[],
+  token: string
+): Promise<any> {
+  const endpoint = constants.endpoints.adherenceAlertsMarkUnread.replace(':studyId', studyId)
+  const result = await Utility.callEndpoint(
+    endpoint,
+    'POST',
+    {studyId: studyId, alertIds: alertIds},
+    token
+  )
+}
+
 const AdherenceService = {
   getAdherenceAlerts,
+  markAdherenceAlertsAsRead,
+  markAdherenceAlertsAsUnread,
   getAdherenceForParticipant,
   getAdherenceForWeek,
   getAdherenceForWeekForUsers,

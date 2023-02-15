@@ -1,4 +1,4 @@
-import {useAdherenceAlerts} from '@components/studies/adherenceHooks'
+import {useAdherenceAlerts, useUpdateAdherenceAlerts} from '@components/studies/adherenceHooks'
 import Loader from '@components/widgets/Loader'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import {
@@ -26,6 +26,7 @@ import MenuItem from '@mui/material/MenuItem'
 import NotificationsNoneTwoToneIcon from '@mui/icons-material/NotificationsNoneTwoTone'
 import ParticipantService from '@services/participants.service'
 import PublishedWithChangesRoundedIcon from '@mui/icons-material/PublishedWithChangesRounded'
+import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined'
 
 type AdherenceAlertsProps = {
   studyId: string
@@ -41,10 +42,10 @@ const CheckboxBox = styled(Box)(({theme}) => ({
 
 const ALERT_CATEGORY: {label: string; value: AdherenceAlertCategory}[] = [
   {label: 'New Enrollment', value: 'new_enrollment'},
-  {label: 'Timeline Retrieved', value: 'timeline_accessed'},
-  {label: 'Low Adherence', value: 'low_adherence'},
+  {label: 'Adherence', value: 'low_adherence'},
   {label: 'Upcoming Test Cycle', value: 'upcoming_study_burst'},
-  {label: 'Study Burst Dates Changed', value: 'study_burst_change'},
+  {label: 'Test Window Changes', value: 'study_burst_change'},
+  {label: 'Timeline Retrieved', value: 'timeline_accessed'},
 ]
 
 const alertCategoryToLabel = (value: AdherenceAlertCategory) => {
@@ -56,19 +57,19 @@ const alertCategoryToText = (category: AdherenceAlertCategory, data: string) => 
     case 'new_enrollment':
       return 'has newly enrolled.'
     case 'timeline_accessed':
-      return 'has accessed timeline.'
+      return 'has logged in for the first time.'
     case 'low_adherence':
       return `has adherence below ${JSON.parse(data).adherenceThreshold}`
     case 'upcoming_study_burst':
       return 'has an upcoming burst.'
     case 'study_burst_change':
-      return 'has a change to study burst dates.'
+      return 'is owed $32.'
   }
 }
 
 const AlertIcons = new Map<AdherenceAlertCategory, ReactElement>([
   ['new_enrollment', <PersonAddAlt />],
-  ['timeline_accessed', <QuestionMark />], // not shown in Figma
+  ['timeline_accessed', <PersonPinCircleOutlinedIcon />],
   ['low_adherence', <TrendingDown />],
   ['upcoming_study_burst', <DateRange />],
   ['study_burst_change', <PublishedWithChangesRoundedIcon />],
@@ -107,7 +108,7 @@ const AlertSentenceText = styled(Typography)(({theme}) => ({
 
 const AlertText: FunctionComponent<{alert: AdherenceAlert; studyId: string}> = ({alert, studyId}) => {
   return (
-    <Box sx={{display: 'inline-block', justifyContent: 'space-between'}}>
+    <Box sx={{display: 'inline-block'}}>
       <AlertDateText>
         {`${alertCategoryToLabel(alert.category)?.toUpperCase()} | 
         ${dayjs(alert.createdOn).format('M/D/YYYY @ h:mm a')}`}
@@ -123,16 +124,11 @@ const AlertText: FunctionComponent<{alert: AdherenceAlert; studyId: string}> = (
   )
 }
 
-const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => {
-  // set hooks
-  // ...checkboxes
-  const [checked, setChecked] = React.useState(ALERT_CATEGORY.map(a => a.value))
-
-  // ...table
-  const [currentPage, setCurrentPage] = React.useState(0)
-  const [pageSize, setPageSize] = React.useState(50)
-
-  // ...menu - https://mui.com/material-ui/react-menu/#basic-menu
+const AlertMenu: FunctionComponent<{
+  alert: AdherenceAlert
+  studyId: string
+}> = ({alert, studyId}) => {
+  // menu - https://mui.com/material-ui/react-menu/#basic-menu
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -141,6 +137,69 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
   const handleClose = () => {
     setAnchorEl(null)
   }
+
+  // update alerts state
+  const [error, setError] = React.useState<Error>()
+  const {isLoading, error: alertUpdateError, mutateAsync} = useUpdateAdherenceAlerts()
+  React.useEffect(() => {
+    if (alertUpdateError) setError(alertUpdateError as Error)
+  }, [alertUpdateError])
+
+  const onUpdateAlert = async (action: 'READ' | 'UNREAD' | 'DELETE') => {
+    mutateAsync({
+      studyId: studyId,
+      alertIds: [alert.id],
+      action: action,
+    })
+  }
+
+  return (
+    <Box sx={{display: 'inline-block', float: 'right'}}>
+      <IconButton
+        aria-label="more"
+        id="adherence-alert-status-button"
+        aria-controls={open ? 'adherence-alert-status-menu' : undefined}
+        aria-expanded={open ? 'true' : undefined}
+        aria-haspopup="true"
+        onClick={handleClick}>
+        <MoreVertIcon />
+      </IconButton>
+      <Menu
+        id="adherence-alert-status-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'adherence-alert-status-button',
+        }}>
+        <MenuItem
+          onClick={() => {
+            handleClose()
+            // mark unread if currently read, or vice-versa
+            alert.read ? onUpdateAlert('UNREAD') : onUpdateAlert('READ')
+          }}>
+          {`Mark as ${alert.read ? 'Unread' : 'Read'}`}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose()
+            // onUpdateAlert('DELETE')
+          }}>
+          Resolve
+        </MenuItem>
+      </Menu>
+    </Box>
+  )
+}
+
+const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => {
+  // set hooks
+  // ...checkboxes
+  const [checked, setChecked] = React.useState(ALERT_CATEGORY.map(a => a.value))
+
+  // ...table
+  const [currentPage, setCurrentPage] = React.useState(0)
+  const [pageSize, setPageSize] = React.useState(50)
 
   // fetch data
   const offset = currentPage * pageSize
@@ -171,7 +230,15 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
           <FormGroup key={item.value}>
             <FormControlLabel
               value={item.value}
-              control={<Checkbox checked={checked.indexOf(item.value) !== -1} onChange={handleToggle(item.value)} />}
+              control={
+                <Checkbox
+                  checked={checked.indexOf(item.value) !== -1}
+                  onChange={handleToggle(item.value)}
+                  // handle case alerts endpoint returns all alerts
+                  // ...when no categories are selected
+                  disabled={checked.length === 1 && item.value === checked[0]}
+                />
+              }
               label={item.label}
               labelPlacement="end"
             />
@@ -186,42 +253,7 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
                 <BorderedTableCell>
                   <IconWithRoundBackground icon={AlertIcons.get(alert.category)} isRead={alert.read} />
                   <AlertText alert={alert} studyId={studyId} />
-                  <div style={{display: 'inline-block', float: 'right'}}>
-                    <IconButton
-                      aria-label="more"
-                      id="adherence-alert-status-button"
-                      aria-controls={open ? 'adherence-alert-status-menu' : undefined}
-                      aria-expanded={open ? 'true' : undefined}
-                      aria-haspopup="true"
-                      onClick={handleClick}>
-                      <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                      id="adherence-alert-status-menu"
-                      anchorEl={anchorEl}
-                      open={open}
-                      onClose={handleClose}
-                      MenuListProps={{
-                        'aria-labelledby': 'adherence-alert-status-button',
-                      }}>
-                      <MenuItem
-                        onClick={() => {
-                          handleClose()
-                          // hook -> API call to mark alert as read or unread
-                          // ...e.g. useAdherenceAlertsRead useAdheerenceAlertsUnread
-                        }}>
-                        {`Mark as ${alert.read ? 'Unread' : 'Read'}`}
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          handleClose()
-                          // hook -> API call to delete alert
-                          // ...e.g. useAdherenceAlertsDelete
-                        }}>
-                        Resolve
-                      </MenuItem>
-                    </Menu>
-                  </div>
+                  <AlertMenu alert={alert} studyId={studyId} />
                 </BorderedTableCell>
               </TableRow>
             ))}

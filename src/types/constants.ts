@@ -116,6 +116,9 @@ const constants = {
 
   endpoints: {
     adherenceAlerts: '/v5/studies/:studyId/alerts',
+    adherenceAlertsMarkRead: '/v5/studies/:studyId/alerts/read',
+    adherenceAlertsMarkUnread: '/v5/studies/:studyId/alerts/unread',
+    // adherenceAlertsDelete: '/v5/studies/:studyId/alerts/delete',
     adherenceDetail: '/v5/studies/:studyId/participants/:userId/adherence/study',
     adherenceStats: '/v5/studies/:studyId/adherence/stats',
     adherenceUserWeekly: '/v5/studies/:studyId/participants/:userId/adherence/weekly',
