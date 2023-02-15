@@ -18,7 +18,20 @@ async function getAllSchedules(): Promise<Schedule[]> {
   return s || []
 }*/
 
+import * as adherenceAlerts from '../__test_utils/mocks/adherenceAlerts.json'
+
+import constants from '@typedefs/constants'
+import {rest} from 'msw'
+
 export const handlers = [
+  rest.post(`*${constants.endpoints.adherenceAlerts}`, async (req, res, ctx) => {
+    // Check if the user is authenticated in this session
+    //const isAuthenticated = sessionStorage.getItem('is-authenticated')
+    console.log('getting mocked alerts!')
+
+    return res(ctx.status(200), ctx.json(adherenceAlerts))
+  }),
+
   // get all studies
   /*
   rest.get(`*${constants.endpoints.studies}`, async (req, res, ctx) => {
