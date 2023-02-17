@@ -22,7 +22,6 @@ const useStyles = makeStyles<ThemeType>((theme: ThemeType) => ({
       height: '28px',
     },
   },
-  ////  }),
   animation: {
     animation: '$fade-in 0.5s ease',
   },

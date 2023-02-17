@@ -1,5 +1,6 @@
 import {Box, Divider, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import {theme} from '@style/theme'
 import {Contact} from '@typedefs/types'
 import React from 'react'
 import StudySummaryRoles from '../StudySummaryRoles'
@@ -68,7 +69,7 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         }}>
         {studyLogoUrl ? <img src={studyLogoUrl} style={{height: `${imgHeight - 16}px`}} alt="study-logo" /> : <></>}
       </Box>
-      <Box>
+      <Box sx={{position: 'relative', margin: theme.spacing(0, 2)}}>
         {!isReadOnly && <SectionIndicator index={4} className={classes.sectionIndicatorPosition} />}
         <Box>
           <Typography variant="h3">{studyTitle || 'Title of study...'}</Typography>
@@ -76,7 +77,7 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         </Box>
       </Box>
       <Divider className={classes.divider} />
-      <Box>
+      <Box sx={{position: 'relative', margin: theme.spacing(0, 2)}}>
         <StudySummaryRoles
           type="Lead Principal Investigator"
           name={getContactName(leadInvestigator.name) || 'placeholder'}

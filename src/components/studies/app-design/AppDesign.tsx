@@ -782,13 +782,13 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({children, id, onSho
     <>none</>
   ) : (
     <>
-      <BuilderWrapper sectionName="Customize your App" sx={{counterReset: 'orderedlist'}}>
+      <BuilderWrapper sectionName="Customize your App">
         <NavigationPrompt when={hasObjectChanged} key="prompt">
           {({onConfirm, onCancel}) => (
             <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
           )}
         </NavigationPrompt>
-        <Container maxWidth="md">
+        <Container maxWidth="md" sx={{counterReset: 'orderedlist'}}>
           <Paper className={classes.section} elevation={2} id="container">
             <Box className={classes.fields}>
               <Typography variant="h3">Welcome Screen</Typography>
