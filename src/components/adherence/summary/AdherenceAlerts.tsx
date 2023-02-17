@@ -19,7 +19,7 @@ import {AdherenceAlert, AdherenceAlertCategory} from '@typedefs/types'
 import {theme} from '@style/theme'
 import dayjs from 'dayjs'
 import {BorderedTableCell, StyledLink} from '../../widgets/StyledComponents'
-import {DateRange, PersonAddAlt, QuestionMark, TrendingDown} from '@mui/icons-material'
+import {DateRange, PersonAddAlt, TrendingDown} from '@mui/icons-material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -32,7 +32,7 @@ type AdherenceAlertsProps = {
   studyId: string
 }
 
-const CheckboxBox = styled(Box)(({theme}) => ({
+const BoxForFilters = styled(Box)(({theme}) => ({
   padding: theme.spacing(1, 2),
   display: 'flex',
   mt: 0,
@@ -40,40 +40,33 @@ const CheckboxBox = styled(Box)(({theme}) => ({
   background: '#F1F3F5',
 }))
 
-const ALERT_CATEGORY: {label: string; value: AdherenceAlertCategory}[] = [
-  {label: 'New Enrollment', value: 'new_enrollment'},
-  {label: 'Adherence', value: 'low_adherence'},
-  {label: 'Upcoming Test Cycle', value: 'upcoming_study_burst'},
-  {label: 'Test Window Changes', value: 'study_burst_change'},
-  {label: 'Timeline Retrieved', value: 'timeline_accessed'},
-]
-
-const alertCategoryToLabel = (value: AdherenceAlertCategory) => {
-  return ALERT_CATEGORY.find(pair => pair.value === value)?.label
+const ALERTS = {
+  new_enrollment: {
+    label: 'New Enrollment',
+    icon: <PersonAddAlt />,
+    text: 'has newly enrolled.',
+  },
+  low_adherence: {
+    label: 'Adherence',
+    icon: <TrendingDown />,
+    text: 'has adherence below [threshold]%.',
+  },
+  upcoming_study_burst: {
+    label: 'Upcoming Test Cycle',
+    icon: <DateRange />,
+    text: 'has an upcoming burst.',
+  },
+  study_burst_change: {
+    label: 'Test Window Changes',
+    icon: <PublishedWithChangesRoundedIcon />,
+    text: 'is owed $32.',
+  },
+  timeline_accessed: {
+    label: 'Timeline Retrieved',
+    icon: <PersonPinCircleOutlinedIcon />,
+    text: 'has logged in for the first time.',
+  },
 }
-
-const alertCategoryToText = (category: AdherenceAlertCategory, data: string) => {
-  switch (category) {
-    case 'new_enrollment':
-      return 'has newly enrolled.'
-    case 'timeline_accessed':
-      return 'has logged in for the first time.'
-    case 'low_adherence':
-      return `has adherence below ${JSON.parse(data).adherenceThreshold}`
-    case 'upcoming_study_burst':
-      return 'has an upcoming burst.'
-    case 'study_burst_change':
-      return 'is owed $32.'
-  }
-}
-
-const AlertIcons = new Map<AdherenceAlertCategory, ReactElement>([
-  ['new_enrollment', <PersonAddAlt />],
-  ['timeline_accessed', <PersonPinCircleOutlinedIcon />],
-  ['low_adherence', <TrendingDown />],
-  ['upcoming_study_burst', <DateRange />],
-  ['study_burst_change', <PublishedWithChangesRoundedIcon />],
-])
 
 const IconWithRoundBackground: FunctionComponent<{icon: ReactElement | undefined; isRead: boolean}> = ({
   icon,
@@ -107,10 +100,12 @@ const AlertSentenceText = styled(Typography)(({theme}) => ({
 }))
 
 const AlertText: FunctionComponent<{alert: AdherenceAlert; studyId: string}> = ({alert, studyId}) => {
+  const alertSentence = ALERTS[alert.category].text
+
   return (
     <Box sx={{display: 'inline-block'}}>
       <AlertDateText>
-        {`${alertCategoryToLabel(alert.category)?.toUpperCase()} | 
+        {`${ALERTS[alert.category].label.toUpperCase()} | 
         ${dayjs(alert.createdOn).format('M/D/YYYY @ h:mm a')}`}
       </AlertDateText>
       <AlertSentenceText sx={{fontWeight: alert.read ? 400 : 700}}>
@@ -118,7 +113,10 @@ const AlertText: FunctionComponent<{alert: AdherenceAlert; studyId: string}> = (
         <StyledLink to={`adherence/${alert.participant?.identifier || 'nothing'}`}>
           {ParticipantService.formatExternalId(studyId, alert.participant.externalId)}
         </StyledLink>
-        &nbsp;{alertCategoryToText(alert.category, alert.data)}
+        &nbsp;
+        {alert.category === 'low_adherence'
+          ? alertSentence.replace('[threshold]', alert.data!.adherenceThreshold)
+          : alertSentence}
       </AlertSentenceText>
     </Box>
   )
@@ -127,7 +125,10 @@ const AlertText: FunctionComponent<{alert: AdherenceAlert; studyId: string}> = (
 const AlertMenu: FunctionComponent<{
   alert: AdherenceAlert
   studyId: string
-}> = ({alert, studyId}) => {
+  checked: AdherenceAlertCategory[]
+  currentPage: number
+  pageSize: number
+}> = ({alert, studyId, checked, currentPage, pageSize}) => {
   // menu - https://mui.com/material-ui/react-menu/#basic-menu
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -145,11 +146,14 @@ const AlertMenu: FunctionComponent<{
     if (alertUpdateError) setError(alertUpdateError as Error)
   }, [alertUpdateError])
 
-  const onUpdateAlert = async (action: 'READ' | 'UNREAD' | 'DELETE') => {
+  const onUpdateAdherenceAlert = async (action: 'READ' | 'UNREAD' | 'DELETE') => {
     mutateAsync({
       studyId: studyId,
       alertIds: [alert.id],
       action: action,
+      categories: checked.join(),
+      currentPage: currentPage,
+      pageSize: pageSize,
     })
   }
 
@@ -176,13 +180,14 @@ const AlertMenu: FunctionComponent<{
           onClick={() => {
             handleClose()
             // mark unread if currently read, or vice-versa
-            alert.read ? onUpdateAlert('UNREAD') : onUpdateAlert('READ')
+            alert.read ? onUpdateAdherenceAlert('UNREAD') : onUpdateAdherenceAlert('READ')
           }}>
           {`Mark as ${alert.read ? 'Unread' : 'Read'}`}
         </MenuItem>
         <MenuItem
           onClick={() => {
             handleClose()
+            // TODO - add confirmation modal
             // onUpdateAlert('DELETE')
           }}>
           Resolve
@@ -195,15 +200,14 @@ const AlertMenu: FunctionComponent<{
 const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => {
   // set hooks
   // ...checkboxes
-  const [checked, setChecked] = React.useState(ALERT_CATEGORY.map(a => a.value))
+  const [checked, setChecked] = React.useState(Object.keys(ALERTS) as AdherenceAlertCategory[])
 
   // ...table
   const [currentPage, setCurrentPage] = React.useState(0)
   const [pageSize, setPageSize] = React.useState(50)
 
   // fetch data
-  const offset = currentPage * pageSize
-  const {data, error, isLoading} = useAdherenceAlerts(studyId, checked, pageSize, offset)
+  const {data, error, isLoading} = useAdherenceAlerts(studyId, checked, pageSize, currentPage)
 
   // update checked boxes
   const handleToggle = (value: AdherenceAlertCategory) => () => {
@@ -225,38 +229,52 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
       <Typography variant="h3">
         <NotificationsNoneTwoToneIcon fontSize="large" style={{verticalAlign: 'middle'}} /> Alerts
       </Typography>
-      <CheckboxBox>
-        {ALERT_CATEGORY.map((item, index) => (
-          <FormGroup key={item.value}>
+      <BoxForFilters>
+        {Object.keys(ALERTS).map(category => (
+          <FormGroup key={category}>
             <FormControlLabel
-              value={item.value}
+              value={category}
               control={
                 <Checkbox
-                  checked={checked.indexOf(item.value) !== -1}
-                  onChange={handleToggle(item.value)}
+                  checked={checked.indexOf(category as AdherenceAlertCategory) !== -1}
+                  onChange={handleToggle(category as AdherenceAlertCategory)}
                   // handle case alerts endpoint returns all alerts
                   // ...when no categories are selected
-                  disabled={checked.length === 1 && item.value === checked[0]}
+                  disabled={checked.length === 1 && category === checked[0]}
                 />
               }
-              label={item.label}
+              label={ALERTS[category as AdherenceAlertCategory].label}
               labelPlacement="end"
             />
           </FormGroup>
         ))}
-      </CheckboxBox>
+      </BoxForFilters>
       <Table>
         <TableBody>
           {data !== undefined &&
-            data.items.map((alert, index) => (
-              <TableRow key={index}>
-                <BorderedTableCell>
-                  <IconWithRoundBackground icon={AlertIcons.get(alert.category)} isRead={alert.read} />
-                  <AlertText alert={alert} studyId={studyId} />
-                  <AlertMenu alert={alert} studyId={studyId} />
-                </BorderedTableCell>
-              </TableRow>
-            ))}
+            data.items
+              .sort((a, b) => {
+                if (a.read && !b.read) return 1
+                if (b.read && !a.read) return -1
+                if (dayjs(a.createdOn) < dayjs(b.createdOn)) return 1
+                if (dayjs(a.createdOn) > dayjs(b.createdOn)) return -1
+                return 0
+              })
+              .map((alert, index) => (
+                <TableRow key={index}>
+                  <BorderedTableCell>
+                    <IconWithRoundBackground icon={ALERTS[alert.category].icon} isRead={alert.read} />
+                    <AlertText alert={alert} studyId={studyId} />
+                    <AlertMenu
+                      alert={alert}
+                      studyId={studyId}
+                      checked={checked}
+                      currentPage={currentPage}
+                      pageSize={pageSize}
+                    />
+                  </BorderedTableCell>
+                </TableRow>
+              ))}
         </TableBody>
       </Table>
       <TablePagination
@@ -267,7 +285,7 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
         currentPage={currentPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
-        counterTextSingular="participant"
+        counterTextSingular="alerts"
       />
     </Loader>
   )

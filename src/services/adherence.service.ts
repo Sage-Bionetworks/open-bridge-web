@@ -129,52 +129,39 @@ async function getAdherenceAlerts(
   studyId: string,
   categories: AdherenceAlertCategory[],
   pageSize: number,
-  offsetBy: number,
+  currentPage: number,
   token: string
 ) {
   const endpoint = constants.endpoints.adherenceAlerts.replace(':studyId', studyId)
+  const offset = currentPage * pageSize; 
   const result = await Utility.callEndpoint<{items: AdherenceAlert[]; total: number}>(
     endpoint,
     'POST',
-    {pageSize: pageSize, offsetBy: offsetBy, alertCategories: categories},
+    {pageSize: pageSize, offsetBy: offset > 0 ? offset : 0, alertCategories: categories},
     token
   )
   return result.data
 }
 
-async function markAdherenceAlertsAsRead(
+async function updateAdherenceAlerts(
   studyId: string,
   alertIds: string[],
+  action: 'READ' | 'UNREAD' | 'DELETE',
   token: string
 ): Promise<any> {
-  const endpoint = constants.endpoints.adherenceAlertsMarkRead.replace(':studyId', studyId)
+  const endpoint = `${constants.endpoints.adherenceAlerts.replace(':studyId', studyId)}/${action.toLowerCase()}`
   const result = await Utility.callEndpoint(
     endpoint,
     'POST',
-    {studyId: studyId, alertIds: alertIds},
+    {alertIds: alertIds},
     token
   )
   return result
 }
 
-async function markAdherenceAlertsAsUnread(
-  studyId: string,
-  alertIds: string[],
-  token: string
-): Promise<any> {
-  const endpoint = constants.endpoints.adherenceAlertsMarkUnread.replace(':studyId', studyId)
-  const result = await Utility.callEndpoint(
-    endpoint,
-    'POST',
-    {studyId: studyId, alertIds: alertIds},
-    token
-  )
-}
-
 const AdherenceService = {
   getAdherenceAlerts,
-  markAdherenceAlertsAsRead,
-  markAdherenceAlertsAsUnread,
+  updateAdherenceAlerts,
   getAdherenceForParticipant,
   getAdherenceForWeek,
   getAdherenceForWeekForUsers,
