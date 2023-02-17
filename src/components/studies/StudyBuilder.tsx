@@ -152,9 +152,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   const handleError = useErrorHandler()
   const [open, setOpen] = React.useState(true)
   const [displayFeedbackBanner, setDisplayFeedbackBanner] = React.useState(false)
-  const [displayEditabilityBanner, setDisplayEditabilityBanner] = React.useState(false)
-  const [cancelBanner, setCancelBanner] = React.useState(false)
-  const [editabilityBannerType, setEditabilityBannerType] = React.useState<BannerInfoType | undefined>()
+
   const [feedbackBannerType, setFeedbackBannerType] = React.useState<BannerInfoType | undefined>()
 
   React.useEffect(() => {
@@ -172,29 +170,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   React.useEffect(() => {
     if (study) {
       setFeedbackBannerType(getFeedbackBannerInfo(!!error))
-      setEditabilityBannerType(getEditabilityBannerInfo(study))
-      if (!StudyService.isStudyInDesign(study)) {
-        setDisplayEditabilityBanner(true)
-      }
     }
-  }, [study?.phase, study, section, cancelBanner, error])
+  }, [study, error])
 
   const getFeedbackBannerInfo = (hasError: boolean) => {
     const bannerType = hasError ? 'error' : 'success'
     return BannerInfo.bannerMap.get(bannerType)
-  }
-
-  const getEditabilityBannerInfo = (study: Study) => {
-    const phase = study.phase
-
-    const displayPhase = StudyService.getDisplayStatusForStudyPhase(phase)
-    if (displayPhase === 'DRAFT') {
-      return
-    }
-    const bannerInfo = BannerInfo.bannerMap.get(displayPhase)
-    // const isEditable = isSectionEditableWhenLive(section)
-    //return {bannerType, isEditable}
-    return bannerInfo
   }
 
   const allSessionsHaveAssessments = () => {
@@ -267,30 +248,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                 isSelfClosing={feedbackBannerType?.type === 'success'}
                 displayBottomOfPage={false}
                 displayText={feedbackBannerType?.displayText[0]!}></AlertBanner>
-              {study && (
-                <AlertBanner
-                  backgroundColor={editabilityBannerType?.bgColor!}
-                  textColor={editabilityBannerType?.textColor!}
-                  onClose={() => {
-                    // setCancelBanner(true)
-                    setDisplayEditabilityBanner(false)
-                  }}
-                  isVisible={displayEditabilityBanner}
-                  icon={
-                    isSectionEditableWhenLive(section) &&
-                    StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
-                      ? editabilityBannerType?.icon[1]!
-                      : editabilityBannerType?.icon[0]!
-                  }
-                  isSelfClosing={false}
-                  displayBottomOfPage={true}
-                  displayText={
-                    isSectionEditableWhenLive(section) &&
-                    StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
-                      ? editabilityBannerType?.displayText[1]!
-                      : editabilityBannerType?.displayText[0]!
-                  }></AlertBanner>
-              )}
+
               <LoadingComponent
                 reqStatusLoading={isStudyLoading || isScheduleLoading}
                 variant="small"
@@ -301,7 +259,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                   top: '30px',
                   left: '50%',
                 }}></LoadingComponent>
-              {study && <StudyBuilderHeader study={study} />}
+              {study && (
+                <StudyBuilderHeader
+                  study={study}
+                  isReadOnly={
+                    (!isSectionEditableWhenLive(section) && !StudyService.isStudyInDesign(study)) ||
+                    StudyService.isStudyClosedToEdits(study)
+                  }
+                />
+              )}
               {!_.isEmpty(error) && (Array.isArray(error) || (!!error && error.length > 1)) && (
                 <Alert variant="outlined" color="error" style={{marginBottom: '16px'}}>
                   {Array.isArray(error) ? (
