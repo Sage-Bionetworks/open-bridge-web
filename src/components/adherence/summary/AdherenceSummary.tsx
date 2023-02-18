@@ -1,4 +1,4 @@
-import {Box} from '@mui/material'
+import {Box, Grid} from '@mui/material'
 import {FunctionComponent} from 'react'
 import {useParams} from 'react-router-dom'
 import AdherenceAlerts from './AdherenceAlerts'
@@ -14,7 +14,11 @@ const AdherenceSummary: FunctionComponent<AdherenceSummaryProps> = () => {
   return (
     <Box>
       {/*<AdherencePlot />*/}
-      <AdherenceAlerts studyId={studyId} />
+      <Grid container spacing={1}>
+        <Grid item xs={8}>
+          <AdherenceAlerts studyId={studyId} />
+        </Grid>
+      </Grid>
     </Box>
   )
 }

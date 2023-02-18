@@ -1,5 +1,6 @@
 import {useAdherenceAlerts, useUpdateAdherenceAlerts} from '@components/studies/adherenceHooks'
 import Loader from '@components/widgets/Loader'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import {
   Box,
@@ -68,12 +69,44 @@ const ALERTS = {
   },
 }
 
+const AlertIconWithYellowDot: FunctionComponent = () => {
+  return (
+    <div
+      style={{
+        position: 'relative',
+        width: '23px',
+        display: 'inline-block',
+        verticalAlign: 'middle',
+        marginRight: theme.spacing(1),
+      }}>
+      <NotificationsNoneTwoToneIcon
+        sx={{
+          fontSize: theme.typography.h3.fontSize,
+          color: '#878E95',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '7px',
+          height: '7px',
+          background: '#FFA825',
+          borderRadius: '50%',
+          zIndex: 2,
+        }}
+      />
+    </div>
+  )
+}
+
 const IconWithRoundBackground: FunctionComponent<{icon: ReactElement | undefined; isRead: boolean}> = ({
   icon,
   isRead,
 }) => {
   return (
-    <Box sx={{display: 'inline-block', padding: theme.spacing(1)}}>
+    <Box sx={{display: 'inline-block', padding: theme.spacing(1), paddingRight: theme.spacing(5)}}>
       <Avatar
         sx={{
           backgroundColor: isRead ? '#F1F3F5' : '#FFA82526',
@@ -139,6 +172,13 @@ const AlertMenu: FunctionComponent<{
     setAnchorEl(null)
   }
 
+  // confirmation diaglog
+  const [isConfirmDialogOpen, setIsConfirmationDialogOpen] = React.useState<'DELETE' | undefined>(undefined)
+
+  const closeConfirmationDialog = () => {
+    setIsConfirmationDialogOpen(undefined)
+  }
+
   // update alerts state
   const [error, setError] = React.useState<Error>()
   const {isLoading, error: alertUpdateError, mutateAsync} = useUpdateAdherenceAlerts()
@@ -177,6 +217,7 @@ const AlertMenu: FunctionComponent<{
           'aria-labelledby': 'adherence-alert-status-button',
         }}>
         <MenuItem
+          key={alert.read ? 'unread' : 'read'}
           onClick={() => {
             handleClose()
             // mark unread if currently read, or vice-versa
@@ -185,14 +226,34 @@ const AlertMenu: FunctionComponent<{
           {`Mark as ${alert.read ? 'Unread' : 'Read'}`}
         </MenuItem>
         <MenuItem
+          key="delete"
           onClick={() => {
             handleClose()
-            // TODO - add confirmation modal
-            // onUpdateAlert('DELETE')
+            setIsConfirmationDialogOpen('DELETE')
           }}>
           Resolve
         </MenuItem>
       </Menu>
+      <ConfirmationDialog
+        isOpen={isConfirmDialogOpen === 'DELETE'}
+        title={'Are you sure you want to resolve this alert?'}
+        type={'DELETE'}
+        actionText={'Resolve Alert'}
+        onCancel={closeConfirmationDialog}
+        onConfirm={() => {
+          closeConfirmationDialog()
+          console.log('DELETE THE ALERT')
+          // onUpdateAdherenceAlert('DELETE')
+        }}>
+        <div>
+          <p>
+            Marking this alert as resolved will remove the alert from this list.&nbsp;
+            <strong>
+              <i>This action can not be undone.</i>
+            </strong>
+          </p>
+        </div>
+      </ConfirmationDialog>
     </Box>
   )
 }
@@ -227,7 +288,8 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
   return (
     <Loader reqStatusLoading={isLoading}>
       <Typography variant="h3">
-        <NotificationsNoneTwoToneIcon fontSize="large" style={{verticalAlign: 'middle'}} /> Alerts
+        <AlertIconWithYellowDot />
+        Alerts
       </Typography>
       <BoxForFilters>
         {Object.keys(ALERTS).map(category => (
@@ -253,16 +315,23 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
         <TableBody>
           {data !== undefined &&
             data.items
-              .sort((a, b) => {
+              /* .sort((a, b) => {
                 if (a.read && !b.read) return 1
                 if (b.read && !a.read) return -1
                 if (dayjs(a.createdOn) < dayjs(b.createdOn)) return 1
                 if (dayjs(a.createdOn) > dayjs(b.createdOn)) return -1
                 return 0
-              })
+              }) */
               .map((alert, index) => (
                 <TableRow key={index}>
-                  <BorderedTableCell>
+                  <BorderedTableCell
+                    $isDark={index % 2 === 1}
+                    sx={{
+                      padding: theme.spacing(0.5),
+                      borderLeft: 'none',
+                      borderTop: '1px solid #EAECEE',
+                      borderBottom: '1px solid #EAECEE',
+                    }}>
                     <IconWithRoundBackground icon={ALERTS[alert.category].icon} isRead={alert.read} />
                     <AlertText alert={alert} studyId={studyId} />
                     <AlertMenu
