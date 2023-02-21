@@ -191,9 +191,6 @@ const AlertMenu: FunctionComponent<{
       studyId: studyId,
       alertIds: [alert.id],
       action: action,
-      categories: checked.join(),
-      currentPage: currentPage,
-      pageSize: pageSize,
     })
   }
 
@@ -242,8 +239,7 @@ const AlertMenu: FunctionComponent<{
         onCancel={closeConfirmationDialog}
         onConfirm={() => {
           closeConfirmationDialog()
-          console.log('DELETE THE ALERT')
-          // onUpdateAdherenceAlert('DELETE')
+          onUpdateAdherenceAlert('DELETE')
         }}>
         <div>
           <p>

@@ -135,9 +135,9 @@ async function getAdherenceAlerts(
   const endpoint = constants.endpoints.adherenceAlerts.replace(':studyId', studyId)
   const offset = currentPage * pageSize; 
   const result = await Utility.callEndpoint<{items: AdherenceAlert[]; total: number}>(
-    endpoint,
+    `${endpoint}?pageSize=${pageSize}&offsetBy=${offset > 0 ? offset : 0}`,
     'POST',
-    {pageSize: pageSize, offsetBy: offset > 0 ? offset : 0, alertCategories: categories},
+    {alertCategories: categories},
     token
   )
   return result.data
