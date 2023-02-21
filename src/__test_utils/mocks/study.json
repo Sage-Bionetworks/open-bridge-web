@@ -1,0 +1,85 @@
+{
+  "identifier": "rhhgfb",
+  "name": "Jazz HNRP Mobile Toolbox",
+  "studyStartEventId": "timeline_retrieved",
+  "deleted": false,
+
+  "createdOn": "2022-11-15T19:53:32.666Z",
+  "modifiedOn": "2022-11-15T22:45:02.849Z",
+  "clientData": {
+    "generateIds": false,
+    "welcomeScreenData": {
+      "welcomeScreenBody": "We are conducting this research study to examine how well this newly-developed battery of smartphone-based mobile cognitive tests works. \n\nYou are being asked to take these tests today, 3 times over the next week, then again at your follow-up visit.",
+      "welcomeScreenFromText": "HNRP Mobile Toolbox Study Team",
+      "welcomeScreenSalutation": "Thank you for your contribution,",
+      "welcomeScreenHeader": "Mobile Toolbox Study",
+      "useOptionalDisclaimer": true,
+      "isUsingDefaultMessage": false
+    },
+    "backgroundRecorders": {"motion": true, "microphone": true, "weather": true}
+  },
+  "exporter3Configuration": {
+    "dataAccessTeamId": 3446321,
+    "participantVersionTableId": "syn29300164",
+    "projectId": "syn29300163",
+    "rawDataFolderId": "syn29300165",
+    "storageLocationId": 41458,
+    "configured": true,
+    "type": "Exporter3Configuration"
+  },
+  "exporter3Enabled": true,
+  "phase": "recruitment",
+  "details": "Welcome to the Mobile Toolbox!\n\nWe are conducting this research study to examine how well this newly-developed battery of smartphone-based mobile cognitive tests works.\n\nYou are being asked to take these tests first at your in-lab baseline visit, 3 times over the next week on your own, then one final time at your in-lab follow-up visit. \n\nIf you can, please complete all the tests in one sitting during your at-home testing days, which will take 20-30 minutes.",
+  "irbName": "Mobile Toolbox Clinical Validation Study in Persons With HIV",
+  "irbDecisionOn": "2021-08-25",
+  "irbExpiresOn": "2022-08-24",
+  "irbDecisionType": "approved",
+  "irbProtocolId": "210398",
+  "studyLogoUrl": "https://docs.sagebridge.org/VZJTUEN47twc5SmVvFHKsR5z.1641327278427",
+  "colorScheme": {"background": "#5186ae", "type": "ColorScheme"},
+  "scheduleGuid": "x5ZRWcDWoZ51ei1H7bGd-fqH",
+  "keywords": "neurodegeneration, neurology",
+  "version": 9,
+  "contacts": [
+    {
+      "name": "UCSD",
+      "role": "irb",
+      "position": "IRB/Ethics Board of Record",
+      "email": "hrpp@ucsd.edu",
+      "phone": {
+        "number": "+18582464777",
+        "regionCode": "US",
+        "nationalFormat": "(858) 246-4777",
+        "type": "Phone"
+      },
+      "type": "Contact"
+    },
+    {"name": "NIA/NIH", "role": "sponsor", "type": "Contact"},
+    {
+      "name": "Anne Heaton",
+      "role": "study_support",
+      "position": "Study Coordinator",
+      "email": "hnrprecruitment@ucsd.edu",
+      "phone": {
+        "number": "+16195435000",
+        "regionCode": "US",
+        "nationalFormat": "(619) 543-5000",
+        "type": "Phone"
+      },
+      "type": "Contact"
+    },
+    {
+      "name": "Jasmine Teofilo",
+      "role": "principal_investigator",
+      "affiliation": "UCSD",
+      "type": "Contact"
+    }
+  ],
+  "diseases": ["HIV/AIDS"],
+  "studyDesignTypes": ["validate"],
+  "signInTypes": ["external_id_password"],
+  "customEvents": [
+    {"eventId": "Follow-Up", "updateType": "mutable", "type": "CustomEvent"}
+  ],
+  "type": "Study"
+}

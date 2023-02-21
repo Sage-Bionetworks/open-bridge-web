@@ -1,3 +1,4 @@
+import Loader from '@components/widgets/Loader'
 import {SessionSymbols} from '@components/widgets/SessionIcon'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import {Alert, Box, Button, Container, Divider, FormControlLabel, Theme} from '@mui/material'
@@ -101,24 +102,21 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback,
 
   const [studyName, setStudyName] = React.useState('')
   const [duration, setDuration] = React.useState<any>('')
-  const {data: study, error: studyError} = useStudy(id)
-  const {data: schedule, error: scheduleError} = useSchedule(id)
+  const {data: study, error: studyError, isLoading: isLoadingStudy} = useStudy(id)
+  const {data: schedule, error: scheduleError, isLoading: isLoadingSchedule} = useSchedule(id)
   const {mutate: mutateSchedule} = useUpdateSchedule()
   const history = useHistory()
 
   const {mutate: mutateStudy} = useUpdateStudyDetail()
 
   React.useEffect(() => {
-    console.log('getting study')
     if (study && study.name !== constants.constants.NEW_STUDY_NAME) {
       setStudyName(study.name)
     }
   }, [study])
 
   React.useEffect(() => {
-    console.log('getting schedule')
     if (schedule && !scheduleError) {
-      console.log('setting duration', schedule.duration)
       setDuration(schedule.duration)
     }
   }, [schedule, scheduleError])
@@ -188,8 +186,10 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback,
     }
   }
 
-  return study && schedule && isReadOnly ? (
-    <ReadOnlyIntroInfo name={study.name} duration={schedule?.duration} />
+  return isReadOnly ? (
+    <Loader reqStatusLoading={isLoadingSchedule || isLoadingSchedule}>
+      {study && <ReadOnlyIntroInfo name={study.name} duration={schedule?.duration} />}
+    </Loader>
   ) : (
     <>
       <BuilderWrapper sectionName="Study Details">

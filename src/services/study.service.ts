@@ -1,4 +1,5 @@
 import {Schedule} from '@typedefs/scheduling'
+
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {DisplayStudyPhase, ExtendedError, FileRevision, Study, StudyPhase} from '../types/types'
@@ -164,6 +165,9 @@ async function copyStudy(studyId: string, appId: string, token: string): Promise
   } catch (error) {
     console.log(error, 'no schedule')
   } //dont' do anything . no schedule
+  //remove exporter related fields
+  delete studyToCopy.exporter3Configuration
+  delete studyToCopy.exporter3Enabled
   const newStudyId = Utility.generateNonambiguousCode(6, 'CONSONANTS')
   const newStudy = {
     ...studyToCopy,

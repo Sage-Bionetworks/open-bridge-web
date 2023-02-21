@@ -20,7 +20,7 @@ const DrawerStyled = styled(Drawer, {label: 'DrawerStyled', shouldForwardProp: p
   flexShrink: 0,
   whiteSpace: 'nowrap',
   backgroundColor: 'white',
-  marginRight: '3px',
+
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: isOpen ? theme.transitions.duration.enteringScreen : theme.transitions.duration.leavingScreen,

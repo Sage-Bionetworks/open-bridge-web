@@ -5,7 +5,6 @@ import * as Assessments from '../mocks/assessments'
 import AssessmentConfig from '../mocks/surveySampleA'
 /*
 Mocks for assessment endpoints
-
     assessment: '/v1/assessments/:id',
     assessmentShared: '/v1/sharedassessments/:id',
     assessments: '/v1/assessments/?includeDeleted=false',
@@ -57,4 +56,5 @@ const endpoints = [
     return res(ctx.json(req.body), ctx.status(200))
   }),
 ]
+
 export default endpoints

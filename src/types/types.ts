@@ -198,6 +198,8 @@ export type Study = {
   irbDecisionType?: 'exempt' | 'approved'
   irbName?: string
   studyStartEventId?: string
+  exporter3Enabled?: boolean
+  exporter3Configuration?: {}
 }
 
 export type WelcomeScreenData = {
