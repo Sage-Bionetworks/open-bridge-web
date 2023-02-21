@@ -38,10 +38,10 @@ export const ADHERENCE_KEYS = {
 
   detail: (studyId: string, userId: string) => [...ADHERENCE_KEYS.list(studyId), userId] as const,
 
-  alerts: (studyId: string) => 
+  alertsAll: (studyId: string) => 
     [...ADHERENCE_KEYS.all, 'alerts', studyId],
-  alert: (studyId: string, category: string, currentPage: number, pageSize: number) => 
-    [...ADHERENCE_KEYS.alerts(studyId), category, currentPage, pageSize]
+  alerts: (studyId: string, category: string, currentPage: number, pageSize: number) => 
+    [...ADHERENCE_KEYS.alertsAll(studyId), category, currentPage, pageSize]
 }
 
 export const useAdherence = (studyId: string, userId: string | undefined) => {
@@ -81,7 +81,7 @@ export const useAdherenceAlerts = (
   const cat = categories.sort().join()
   const {token} = useUserSessionDataState()
   return useQuery<{items: AdherenceAlert[]; total: number}, ExtendedError>(
-    ADHERENCE_KEYS.alert(studyId, cat, currentPage, pageSize),
+    ADHERENCE_KEYS.alerts(studyId, cat, currentPage, pageSize),
     () => AdherenceService.getAdherenceAlerts(studyId, categories, pageSize, currentPage, token!),
     {
       enabled: !!studyId && !!token,
@@ -107,7 +107,7 @@ export const useUpdateAdherenceAlerts = () => {
   // invalidate alerts data
   const mutation = useMutation(update, {
     onMutate: async props => {
-      queryClient.cancelQueries(ADHERENCE_KEYS.alerts(props.studyId))
+      queryClient.cancelQueries(ADHERENCE_KEYS.alertsAll(props.studyId))
     },
     onError: (err, variables, context) => {
       console.log(err, variables, context)
@@ -115,7 +115,7 @@ export const useUpdateAdherenceAlerts = () => {
     onSettled: async (data, error, props) => {
       // prevent stale data with refetechInactive
       // queryClient.invalidateQueries({queryKey: ADHERENCE_KEYS.alerts(props.studyId), refetchInactive: true})
-      queryClient.invalidateQueries({queryKey: ADHERENCE_KEYS.alerts(props.studyId)})
+      queryClient.invalidateQueries({queryKey: ADHERENCE_KEYS.alertsAll(props.studyId)})
     },
   })
   return mutation

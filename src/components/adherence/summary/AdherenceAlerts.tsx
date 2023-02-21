@@ -3,6 +3,7 @@ import Loader from '@components/widgets/Loader'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import {
+  Badge,
   Box,
   Checkbox,
   FormControlLabel,
@@ -71,33 +72,25 @@ const ALERTS = {
 
 const AlertIconWithYellowDot: FunctionComponent = () => {
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '23px',
+    <Badge
+      sx={{
         display: 'inline-block',
         verticalAlign: 'middle',
         marginRight: theme.spacing(1),
-      }}>
+        '& .MuiBadge-badge': {
+          backgroundColor: '#FFA825',
+        },
+      }}
+      color="warning"
+      overlap="circular"
+      variant="dot">
       <NotificationsNoneTwoToneIcon
         sx={{
           fontSize: theme.typography.h3.fontSize,
           color: '#878E95',
         }}
       />
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          width: '7px',
-          height: '7px',
-          background: '#FFA825',
-          borderRadius: '50%',
-          zIndex: 2,
-        }}
-      />
-    </div>
+    </Badge>
   )
 }
 
