@@ -113,9 +113,7 @@ export const useUpdateAdherenceAlerts = () => {
       console.log(err, variables, context)
     }, 
     onSettled: async (data, error, props) => {
-      // prevent stale data with refetechInactive
-      // queryClient.invalidateQueries({queryKey: ADHERENCE_KEYS.alerts(props.studyId), refetchInactive: true})
-      queryClient.invalidateQueries({queryKey: ADHERENCE_KEYS.alertsAll(props.studyId)})
+      queryClient.invalidateQueries({queryKey: ADHERENCE_KEYS.alertsAll(props.studyId), refetchActive: true, refetchInactive: true})
     },
   })
   return mutation
