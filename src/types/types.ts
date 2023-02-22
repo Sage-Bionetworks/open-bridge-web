@@ -489,7 +489,8 @@ export type AdherenceAlert = {
   createdOn: string
   participant: {identifier: string; externalId: string}
   category: AdherenceAlertCategory
-  data: string
+  data: {adherenceThreshold: string} | null
+  read: boolean
 }
 
 export type ParticipantRequestInfo = {

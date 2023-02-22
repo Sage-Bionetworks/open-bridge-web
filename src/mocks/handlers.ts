@@ -18,7 +18,37 @@ async function getAllSchedules(): Promise<Schedule[]> {
   return s || []
 }*/
 
+/* import * as adherenceAlerts from '../__test_utils/mocks/adherenceAlerts.json'
+
+import constants from '@typedefs/constants'
+import {rest} from 'msw'
+import { AdherenceAlertCategory } from '@typedefs/types';
+
+interface AdherenceAlertsRequestBody {
+  pageSize: number;
+  offsetBy: number;
+  alertCategories: AdherenceAlertCategory[]
+} */
+
 export const handlers = [
+  // get example alerts
+  /*  rest.post<AdherenceAlertsRequestBody>(`*${constants.endpoints.adherenceAlerts}`, async (req, res, ctx) => {
+    // Check if the user is authenticated in this session
+    //const isAuthenticated = sessionStorage.getItem('is-authenticated')
+    console.log('getting mocked alerts!')
+
+    // get pagination info
+    const { pageSize, offsetBy, alertCategories } = req.body
+  
+    // filter json accordingly
+    // ...doesn't currently handle categories
+    let test = adherenceAlerts
+    let updatedItems = test.items.slice(offsetBy, Math.min(offsetBy + pageSize, test.items.length - 1))
+    let updatedTest = {...adherenceAlerts, items: updatedItems, requestParams: {pageSize: pageSize, offsetBy: offsetBy} }
+    
+    return res(ctx.status(200), ctx.json(updatedTest))
+  }), */
+
   // get all studies
   /*
   rest.get(`*${constants.endpoints.studies}`, async (req, res, ctx) => {

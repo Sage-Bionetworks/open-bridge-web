@@ -129,21 +129,39 @@ async function getAdherenceAlerts(
   studyId: string,
   categories: AdherenceAlertCategory[],
   pageSize: number,
-  offsetBy: number,
+  currentPage: number,
   token: string
 ) {
   const endpoint = constants.endpoints.adherenceAlerts.replace(':studyId', studyId)
+  const offset = currentPage * pageSize; 
   const result = await Utility.callEndpoint<{items: AdherenceAlert[]; total: number}>(
-    endpoint,
+    `${endpoint}?pageSize=${pageSize}&offsetBy=${offset > 0 ? offset : 0}`,
     'POST',
-    {pageSize: pageSize, offsetBy: offsetBy, alertCategories: categories},
+    {alertCategories: categories},
     token
   )
   return result.data
 }
 
+async function updateAdherenceAlerts(
+  studyId: string,
+  alertIds: string[],
+  action: 'READ' | 'UNREAD' | 'DELETE',
+  token: string
+): Promise<any> {
+  const endpoint = `${constants.endpoints.adherenceAlerts.replace(':studyId', studyId)}/${action.toLowerCase()}`
+  const result = await Utility.callEndpoint(
+    endpoint,
+    'POST',
+    {alertIds: alertIds},
+    token
+  )
+  return result
+}
+
 const AdherenceService = {
   getAdherenceAlerts,
+  updateAdherenceAlerts,
   getAdherenceForParticipant,
   getAdherenceForWeek,
   getAdherenceForWeekForUsers,

@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
 /** types and constants  */
 
 const TAB_DEFs = [
-  // UNCOMMENT FOR ALERTS {type: 'SUMMARY', label: 'Adherence Summary'},
+  {type: 'SUMMARY', label: 'Adherence Summary'},
   {type: 'ENROLLED', label: 'Active Participants'},
 ]
 

@@ -8,7 +8,7 @@ import {
   AdherenceWeeklyReport,
   ExtendedError,
 } from '@typedefs/types'
-import {useQuery} from 'react-query'
+import {useMutation, useQuery, useQueryClient} from 'react-query'
 
 export const ADHERENCE_KEYS = {
   all: ['adherence'] as const,
@@ -37,8 +37,11 @@ export const ADHERENCE_KEYS = {
     ] as const,
 
   detail: (studyId: string, userId: string) => [...ADHERENCE_KEYS.list(studyId), userId] as const,
-  alerts: (studyId: string, category: string, currentPage: number = 0, pageSize: number = 0) =>
-    [...ADHERENCE_KEYS.list(studyId, currentPage, pageSize, '', ''), 'summary', category] as const,
+
+  alertsAll: (studyId: string) => 
+    [...ADHERENCE_KEYS.all, 'alerts', studyId],
+  alerts: (studyId: string, category: string, currentPage: number, pageSize: number) => 
+    [...ADHERENCE_KEYS.alertsAll(studyId), category, currentPage, pageSize]
 }
 
 export const useAdherence = (studyId: string, userId: string | undefined) => {
@@ -73,19 +76,47 @@ export const useAdherenceAlerts = (
   studyId: string,
   categories: AdherenceAlertCategory[],
   pageSize: number = 25,
-  offsetBy = 0
+  currentPage = 0
 ) => {
-  const cat = categories.join()
+  const cat = categories.sort().join()
   const {token} = useUserSessionDataState()
   return useQuery<{items: AdherenceAlert[]; total: number}, ExtendedError>(
-    ADHERENCE_KEYS.alerts(studyId, cat, offsetBy, pageSize),
-    () => AdherenceService.getAdherenceAlerts(studyId, categories, pageSize, offsetBy, token!),
+    ADHERENCE_KEYS.alerts(studyId, cat, currentPage, pageSize),
+    () => AdherenceService.getAdherenceAlerts(studyId, categories, pageSize, currentPage, token!),
     {
       enabled: !!studyId && !!token,
       retry: true,
       refetchOnWindowFocus: true,
     }
   )
+}
+
+export const useUpdateAdherenceAlerts = () => {
+  const {token} = useUserSessionDataState()
+  const queryClient = useQueryClient()
+
+  // update alerts status on the server
+  const update = async (props: {
+    studyId: string, 
+    alertIds: string[], 
+    action: 'READ' | 'UNREAD' | 'DELETE',
+  }): Promise<any> => {
+    return await AdherenceService.updateAdherenceAlerts(props.studyId, props.alertIds, props.action, token!)
+  }
+
+  // invalidate alerts data
+  const mutation = useMutation(update, {
+    onMutate: async props => {
+      queryClient.cancelQueries(ADHERENCE_KEYS.alertsAll(props.studyId))
+    },
+    onError: (err, variables, context) => {
+      console.log(err, variables, context)
+    }, 
+    onSettled: async (data, error, props) => {
+      queryClient.invalidateQueries({queryKey: ADHERENCE_KEYS.alertsAll(props.studyId), refetchActive: true, refetchInactive: true})
+    },
+  })
+  return mutation
 }
 
 export const useAdherenceForWeek = (
