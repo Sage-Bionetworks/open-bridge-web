@@ -4,6 +4,7 @@ import ConfirmationDialog, {ConfirmationDialogType} from '@components/widgets/Co
 import Loader from '@components/widgets/Loader'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
+import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone'
 import {Box, Button, Container, Menu, MenuItem, styled, Typography} from '@mui/material'
 import Link from '@mui/material/Link'
 import StudyService from '@services/study.service'
@@ -15,7 +16,6 @@ import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {Redirect, RouteComponentProps} from 'react-router-dom'
 import StudyCard from './StudyCard'
-import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone'
 
 type StudyListOwnProps = {}
 
@@ -178,12 +178,8 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   )
 }
 
-const VerifyBanner: FunctionComponent<{isVerified: boolean | undefined}> = ({isVerified}) => {
-  const [displayVerifyBanner, setDisplayVerifyBanner] = React.useState<boolean>(!isVerified)
-
-  if (typeof isVerified === undefined) {
-    return null
-  }
+const VerifyBanner: FunctionComponent = () => {
+  const [displayVerifyBanner, setDisplayVerifyBanner] = React.useState<boolean>(true)
 
   const displayText = (
     <Box
@@ -533,7 +529,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           </Container>
         </Box>
       </Box>
-      <VerifyBanner isVerified={isVerified} />
+      {isVerified !== true && <VerifyBanner />}
     </Loader>
   )
 }
