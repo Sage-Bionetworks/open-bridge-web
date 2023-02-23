@@ -51,8 +51,10 @@ type AlertBannerProps = {
   displayBottomOfPage?: boolean
   backgroundColor: string
   textColor: string
-  icon: string
+  icon: string | React.ReactNode
   isSelfClosing?: boolean
+  borderLeftColor?: string
+  isFullWidthMessage?: boolean
 }
 
 let timeout: NodeJS.Timeout
@@ -66,6 +68,8 @@ const AlertBanner: React.FunctionComponent<AlertBannerProps> = ({
   textColor,
   icon,
   isSelfClosing,
+  borderLeftColor,
+  isFullWidthMessage,
 }) => {
   const classes = useStyles()
 
@@ -83,6 +87,13 @@ const AlertBanner: React.FunctionComponent<AlertBannerProps> = ({
       onClose={() => onClose()}
       severity="error"
       style={{color: textColor, backgroundColor: backgroundColor}}
+      sx={{
+        borderLeft: `10px solid ${typeof borderLeftColor === undefined ? backgroundColor : borderLeftColor}`,
+        '& .MuiAlert-message': {
+          width: isFullWidthMessage ? '100%' : undefined,
+          minWidth: isFullWidthMessage ? 0 : undefined,
+        },
+      }}
       className={clsx(
         classes.container,
         classes.animation,
@@ -90,7 +101,7 @@ const AlertBanner: React.FunctionComponent<AlertBannerProps> = ({
         displayBottomOfPage && classes.bottomOfPagePosition,
         !isVisible && classes.invisible
       )}
-      icon={<img src={icon} style={{height: '24px'}} alt={'message'}></img>}>
+      icon={typeof icon === 'string' ? <img src={icon} style={{height: '24px'}} alt={'message'}></img> : icon}>
       {displayText}
     </Alert>
   )
