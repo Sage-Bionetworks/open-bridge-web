@@ -1,38 +1,42 @@
 import {useAdherenceAlerts, useUpdateAdherenceAlerts} from '@components/studies/adherenceHooks'
-import Loader from '@components/widgets/Loader'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
+import Loader from '@components/widgets/Loader'
 import TablePagination from '@components/widgets/pagination/TablePagination'
+import {DateRange, PersonAddAlt, TrendingDown} from '@mui/icons-material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import NotificationsNoneTwoToneIcon from '@mui/icons-material/NotificationsNoneTwoTone'
+import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined'
+import PublishedWithChangesRoundedIcon from '@mui/icons-material/PublishedWithChangesRounded'
 import {
+  Alert,
+  Avatar,
   Badge,
   Box,
   Checkbox,
+  CircularProgress,
   FormControlLabel,
   FormGroup,
-  Table,
-  TableRow,
-  TableBody,
   IconButton,
-  Typography,
-  Avatar,
   styled,
+  Table,
+  TableBody,
+  TableRow,
+  Typography,
 } from '@mui/material'
-import React, {FunctionComponent, ReactElement} from 'react'
-import {AdherenceAlert, AdherenceAlertCategory} from '@typedefs/types'
-import {theme} from '@style/theme'
-import dayjs from 'dayjs'
-import {BorderedTableCell, StyledLink} from '../../widgets/StyledComponents'
-import {DateRange, PersonAddAlt, TrendingDown} from '@mui/icons-material'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import NotificationsNoneTwoToneIcon from '@mui/icons-material/NotificationsNoneTwoTone'
 import ParticipantService from '@services/participants.service'
-import PublishedWithChangesRoundedIcon from '@mui/icons-material/PublishedWithChangesRounded'
-import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined'
+import {theme} from '@style/theme'
+import {AdherenceAlert, AdherenceAlertCategory} from '@typedefs/types'
+import dayjs from 'dayjs'
+import React, {FunctionComponent, ReactElement} from 'react'
+import {BorderedTableCell, StyledLink} from '../../widgets/StyledComponents'
 
 type AdherenceAlertsProps = {
   studyId: string
 }
+
+type Action = 'READ' | 'UNREAD' | 'DELETE'
 
 const BoxForFilters = styled(Box)(({theme}) => ({
   padding: theme.spacing(1, 2),
@@ -150,11 +154,9 @@ const AlertText: FunctionComponent<{alert: AdherenceAlert; studyId: string}> = (
 
 const AlertMenu: FunctionComponent<{
   alert: AdherenceAlert
-  studyId: string
-  checked: AdherenceAlertCategory[]
-  currentPage: number
-  pageSize: number
-}> = ({alert, studyId, checked, currentPage, pageSize}) => {
+  isLoading: boolean
+  onUpdateAdherenceAlert: (a: Action) => void
+}> = ({alert, isLoading, onUpdateAdherenceAlert}) => {
   // menu - https://mui.com/material-ui/react-menu/#basic-menu
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -172,21 +174,6 @@ const AlertMenu: FunctionComponent<{
     setIsConfirmationDialogOpen(undefined)
   }
 
-  // update alerts state
-  const [error, setError] = React.useState<Error>()
-  const {isLoading, error: alertUpdateError, mutateAsync} = useUpdateAdherenceAlerts()
-  React.useEffect(() => {
-    if (alertUpdateError) setError(alertUpdateError as Error)
-  }, [alertUpdateError])
-
-  const onUpdateAdherenceAlert = async (action: 'READ' | 'UNREAD' | 'DELETE') => {
-    mutateAsync({
-      studyId: studyId,
-      alertIds: [alert.id],
-      action: action,
-    })
-  }
-
   return (
     <Box sx={{display: 'inline-block', float: 'right'}}>
       <IconButton
@@ -196,7 +183,7 @@ const AlertMenu: FunctionComponent<{
         aria-expanded={open ? 'true' : undefined}
         aria-haspopup="true"
         onClick={handleClick}>
-        <MoreVertIcon />
+        {isLoading ? <CircularProgress /> : <MoreVertIcon />}
       </IconButton>
       <Menu
         id="adherence-alert-status-menu"
@@ -259,6 +246,11 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
   // fetch data
   const {data, error, isLoading} = useAdherenceAlerts(studyId, checked, pageSize, currentPage)
 
+  // update alerts state
+  const [updateError, setUpdateError] = React.useState<Error>()
+  const [processingAlertId, setProcessingAlertId] = React.useState<string | undefined>(undefined)
+  const {isLoading: isMutating, error: alertUpdateError, mutate} = useUpdateAdherenceAlerts()
+
   // update checked boxes
   const handleToggle = (value: AdherenceAlertCategory) => () => {
     const currentIndex = checked.indexOf(value)
@@ -274,12 +266,37 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
     setChecked(newChecked)
   }
 
+  const onUpdateAdherenceAlert = async (alertId: string, action: Action) => {
+    setProcessingAlertId(alertId)
+    mutate(
+      {
+        studyId: studyId,
+        alertIds: [alertId],
+        action: action,
+      },
+      {
+        onSuccess(data, variables, context) {
+          setUpdateError(undefined)
+        },
+        onError() {
+          setUpdateError(alertUpdateError as Error)
+        },
+        onSettled() {
+          setTimeout(() => {
+            setProcessingAlertId(undefined)
+          }, 500)
+        },
+      }
+    )
+  }
+
   return (
-    <Loader reqStatusLoading={isLoading}>
+    <>
       <Typography variant="h3">
         <AlertIconWithYellowDot />
         Alerts
       </Typography>
+      {updateError && <Alert color="error">{updateError}</Alert>}
       <BoxForFilters>
         {Object.keys(ALERTS).map(category => (
           <FormGroup key={category}>
@@ -300,52 +317,52 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
           </FormGroup>
         ))}
       </BoxForFilters>
-      <Table>
-        <TableBody>
-          {data !== undefined &&
-            data.items
-              /* .sort((a, b) => {
+      <Loader reqStatusLoading={isLoading}>
+        <Table>
+          <TableBody>
+            {data !== undefined &&
+              data.items
+                /* .sort((a, b) => {
                 if (a.read && !b.read) return 1
                 if (b.read && !a.read) return -1
                 if (dayjs(a.createdOn) < dayjs(b.createdOn)) return 1
                 if (dayjs(a.createdOn) > dayjs(b.createdOn)) return -1
                 return 0
               }) */
-              .map((alert, index) => (
-                <TableRow key={index}>
-                  <BorderedTableCell
-                    $isDark={index % 2 === 1}
-                    sx={{
-                      padding: theme.spacing(0.5),
-                      borderLeft: 'none',
-                      borderTop: '1px solid #EAECEE',
-                      borderBottom: '1px solid #EAECEE',
-                    }}>
-                    <IconWithRoundBackground icon={ALERTS[alert.category].icon} isRead={alert.read} />
-                    <AlertText alert={alert} studyId={studyId} />
-                    <AlertMenu
-                      alert={alert}
-                      studyId={studyId}
-                      checked={checked}
-                      currentPage={currentPage}
-                      pageSize={pageSize}
-                    />
-                  </BorderedTableCell>
-                </TableRow>
-              ))}
-        </TableBody>
-      </Table>
-      <TablePagination
-        totalItems={typeof data === 'undefined' ? 0 : data!.total}
-        onPageSelectedChanged={(pageSelected: number) => {
-          setCurrentPage(pageSelected)
-        }}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        counterTextSingular="alerts"
-      />
-    </Loader>
+                .map((alert, index) => (
+                  <TableRow key={index}>
+                    <BorderedTableCell
+                      $isDark={index % 2 === 1}
+                      sx={{
+                        padding: theme.spacing(0.5),
+                        borderLeft: 'none',
+                        borderTop: '1px solid #EAECEE',
+                        borderBottom: '1px solid #EAECEE',
+                      }}>
+                      <IconWithRoundBackground icon={ALERTS[alert.category].icon} isRead={alert.read} />
+                      <AlertText alert={alert} studyId={studyId} />
+                      <AlertMenu
+                        alert={alert}
+                        isLoading={processingAlertId === alert.id}
+                        onUpdateAdherenceAlert={(action: Action) => onUpdateAdherenceAlert(alert.id, action)}
+                      />
+                    </BorderedTableCell>
+                  </TableRow>
+                ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          totalItems={typeof data === 'undefined' ? 0 : data!.total}
+          onPageSelectedChanged={(pageSelected: number) => {
+            setCurrentPage(pageSelected)
+          }}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          counterTextSingular="alerts"
+        />
+      </Loader>
+    </>
   )
 }
 
