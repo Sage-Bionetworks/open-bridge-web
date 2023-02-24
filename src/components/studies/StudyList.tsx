@@ -1,8 +1,10 @@
 import {default as CollapsableMenu} from '@components/surveys/widgets/MenuDropdown'
+import AlertBanner from '@components/widgets/AlertBanner'
 import ConfirmationDialog, {ConfirmationDialogType} from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
+import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone'
 import {Box, Button, Container, Menu, MenuItem, styled, Typography} from '@mui/material'
 import Link from '@mui/material/Link'
 import StudyService from '@services/study.service'
@@ -176,6 +178,55 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   )
 }
 
+const VerifyBanner: FunctionComponent = () => {
+  const [displayVerifyBanner, setDisplayVerifyBanner] = React.useState<boolean>(true)
+
+  const displayText = (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+      <Box
+        sx={{
+          mx: 2,
+          width: '60%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+        }}>
+        <strong>Get Verified to launch your studies</strong>
+        <br />
+        You can create studies but will not be able to launch them until you're Verified. Verification can take a bit of
+        time so it's best to start this process early!
+      </Box>
+      <Button sx={{flexShrink: 0, flexGrow: 0}} variant="contained" href={Utility.getRedirectLinkToOneSage('validate')}>
+        Become Verified
+      </Button>
+    </Box>
+  )
+
+  return (
+    <AlertBanner
+      backgroundColor="rgba(255, 242, 222)"
+      textColor="#22252A"
+      onClose={() => {
+        setDisplayVerifyBanner(false)
+      }}
+      isVisible={displayVerifyBanner}
+      icon={<InfoTwoToneIcon sx={{color: '#FFA825'}} />}
+      isSelfClosing={false}
+      displayBottomOfPage={true}
+      displayText={displayText}
+      borderLeftColor="#FFA825"
+      isFullWidthMessage={true}
+    />
+  )
+}
+
 const StudyList: FunctionComponent<StudyListProps> = () => {
   const handleError = useErrorHandler()
   const {isVerified} = useUserSessionDataState()
@@ -335,10 +386,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             onClick={() => createStudy()}>
             + Create New Study
           </Button>
-
-          <Box sx={{position: 'absolute', top: '0px', right: theme.spacing(4)}}>
-            {isVerified ? 'verified' : <Button href={Utility.getRedirectLinkToOneSage('validate')}>Verify now</Button>}
-          </Box>
         </Box>
 
         <Box sx={{backgroundColor: '#FBFBFC', paddingTop: theme.spacing(7)}}>
@@ -482,6 +529,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           </Container>
         </Box>
       </Box>
+      {isVerified !== true && <VerifyBanner />}
     </Loader>
   )
 }
