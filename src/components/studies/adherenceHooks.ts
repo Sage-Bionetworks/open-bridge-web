@@ -38,10 +38,13 @@ export const ADHERENCE_KEYS = {
 
   detail: (studyId: string, userId: string) => [...ADHERENCE_KEYS.list(studyId), userId] as const,
 
-  alertsAll: (studyId: string) => 
-    [...ADHERENCE_KEYS.all, 'alerts', studyId],
-  alerts: (studyId: string, category: string, currentPage: number, pageSize: number) => 
-    [...ADHERENCE_KEYS.alertsAll(studyId), category, currentPage, pageSize]
+  alertsAll: (studyId: string) => [...ADHERENCE_KEYS.all, 'alerts', studyId],
+  alerts: (studyId: string, category: string, currentPage: number, pageSize: number) => [
+    ...ADHERENCE_KEYS.alertsAll(studyId),
+    category,
+    currentPage,
+    pageSize,
+  ],
 }
 
 export const useAdherence = (studyId: string, userId: string | undefined) => {
@@ -97,9 +100,9 @@ export const useUpdateAdherenceAlerts = () => {
 
   // update alerts status on the server
   const update = async (props: {
-    studyId: string, 
-    alertIds: string[], 
-    action: 'READ' | 'UNREAD' | 'DELETE',
+    studyId: string
+    alertIds: string[]
+    action: 'READ' | 'UNREAD' | 'DELETE'
   }): Promise<any> => {
     return await AdherenceService.updateAdherenceAlerts(props.studyId, props.alertIds, props.action, token!)
   }
@@ -111,9 +114,12 @@ export const useUpdateAdherenceAlerts = () => {
     },
     onError: (err, variables, context) => {
       console.log(err, variables, context)
-    }, 
+    },
     onSettled: async (data, error, props) => {
-      queryClient.invalidateQueries({queryKey: ADHERENCE_KEYS.alertsAll(props.studyId), refetchActive: true, refetchInactive: true})
+      queryClient.invalidateQueries(ADHERENCE_KEYS.alertsAll(props.studyId), {
+        refetchActive: true,
+        refetchInactive: true,
+      })
     },
   })
   return mutation
