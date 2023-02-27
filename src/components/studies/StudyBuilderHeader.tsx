@@ -27,7 +27,7 @@ const StyledStudyHeader = styled(Box, {label: 'StyledStudyHeader'})(({theme}) =>
   //marginBottom: theme.spacing(4),
 }))
 
-const StudyBuilderHeader: React.FunctionComponent<{study: Study; isReadOnly: boolean; sx?: SxProps}> = ({
+const StudyBuilderHeader: React.FunctionComponent<{study: Study; isReadOnly?: boolean; sx?: SxProps}> = ({
   study,
   isReadOnly,
   sx = {},

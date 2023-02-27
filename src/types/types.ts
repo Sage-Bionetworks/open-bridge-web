@@ -514,6 +514,43 @@ export type ParticipantRequestInfo = {
   timelineAccessedOn: string
 }
 
+export type AdherenceAssessmentLevelReportSessionRecord = {
+  sessionName: string
+  sessionGuid: string
+  sessionStart?: string
+  sessionCompleted?: string
+  burstName?: string
+  burstId?: string
+  assessmentRecords: AdherenceAssessmentLevelReportAdhRecord[]
+}
+
+export type AdherenceAssessmentLevelReportAdhRecord = {
+  assessmentId: string
+
+  assessmentName: string
+
+  assessmentGuid: string
+  assessmentInstanceGuid: string
+  assessmentStatus: 'Completed' | 'Declined'
+  assessmentStart?: string
+  assessmentCompleted?: string
+  uploadedOn?: string
+}
+
+export type AdherenceAssessmentLevelReportParticipant = {
+  identifier: string
+  firstName: string
+  lastName: string
+  email: string
+}
+
+export type AdherenceAssessmentLevelReport = {
+  participant: AdherenceAssessmentLevelReportParticipant
+  testAccount: boolean
+  clientTimeZone: string
+  sessionRecords: AdherenceAssessmentLevelReportSessionRecord[]
+}
+
 // POST MVP
 
 export type StudyArm = {
