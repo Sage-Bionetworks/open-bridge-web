@@ -14,8 +14,8 @@ jest.mock('@helpers/AuthContext')
 const mockedAuth = useUserSessionDataState as jest.Mocked<typeof useUserSessionDataState>
 mockedAuth.useUserSessionDataState.mockImplementation(() => loggedInSessionData)
 
-function renderComponent(isVerified: boolean) {
-  const userData = isVerified ? {...loggedInSessionData, isVerified: isVerified} : loggedInSessionData
+function renderComponent(isVerified: boolean | undefined) {
+  const userData = {...loggedInSessionData, isVerified: isVerified}
   mockedAuth.useUserSessionDataState.mockImplementation(() => userData)
 
   const routeComponentPropsMock = {
@@ -67,7 +67,20 @@ test('verify banner appears when user is not verified', async () => {
   expect(screen.queryByRole('link', {name: /become verified/i}))
 })
 
-test('verify banner does not appear when usser is verified', async () => {
+test('verify banner appears when isVerified is undefined', async () => {
+  // set up
+  renderComponent(undefined)
+
+  await waitFor(() => {
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+  })
+
+  // show that banner appears
+  expect(screen.queryByRole('alert')).toBeInTheDocument()
+  expect(screen.queryByRole('link', {name: /become verified/i}))
+})
+
+test('verify banner does not appear when user is verified', async () => {
   // set up
   renderComponent(true)
 
