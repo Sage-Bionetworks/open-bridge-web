@@ -63,7 +63,7 @@ test('verify banner appears when user is not verified', async () => {
   })
 
   // show that banner appears
-  expect(screen.queryByRole('alert')).not.toHaveAttribute('link')
+  expect(screen.queryByRole('alert')).toBeInTheDocument()
   expect(screen.queryByRole('link', {name: /become verified/i}))
 })
 
