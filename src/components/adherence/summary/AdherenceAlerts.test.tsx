@@ -34,52 +34,54 @@ export const renderComponent = () => {
   return element
 }
 
-test("renders the 'adherence alerts' table with all filters checked", async () => {
-  // set up
-  renderComponent()
-  expect(screen.queryByRole('progressbar')).toBeInTheDocument()
-  await waitFor(() => {
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
-  })
-
-  // all filters are checked
-  screen.queryAllByRole('checkbox').forEach(eachCheckbox => {
-    expect(eachCheckbox).toHaveProperty('checked', true)
-  })
-
-  // table exists
-  expect(screen.queryByRole('table')).toBeInTheDocument()
-})
-
-test('table is not rendered when there are no alerts', async () => {
-  // override server handler
-  server.use(
-    rest.post(`*${constants.endpoints.adherenceAlerts}`, async (req, res, ctx) => {
-      console.log('getting empty mocked alerts!')
-      return res(
-        ctx.status(200),
-        ctx.json({
-          items: [],
-          total: 0,
-          requestParams: {
-            pageSize: 50,
-            offsetBy: 0,
-            type: 'RequestParams',
-          },
-          type: 'PagedResourceList',
-        })
-      )
+describe('AdherenceAlerts', () => {
+  test('should render table with all filters checked', async () => {
+    // set up
+    renderComponent()
+    expect(screen.queryByRole('progressbar')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
     })
-  )
 
-  // set up
-  renderComponent()
+    // all filters are checked
+    screen.queryAllByRole('checkbox').forEach(eachCheckbox => {
+      expect(eachCheckbox).toHaveProperty('checked', true)
+    })
 
-  // checkboxes exist
-  screen.queryAllByRole('checkbox').forEach(eachCheckbox => {
-    expect(eachCheckbox).toHaveProperty('checked', true)
+    // table exists
+    expect(screen.queryByRole('table')).toBeInTheDocument()
   })
 
-  // table does not exist
-  expect(screen.queryByRole('table')).not.toBeInTheDocument()
+  test('should not render table when there are no alerts', async () => {
+    // override server handler
+    server.use(
+      rest.post(`*${constants.endpoints.adherenceAlerts}`, async (req, res, ctx) => {
+        console.log('getting empty mocked alerts!')
+        return res(
+          ctx.status(200),
+          ctx.json({
+            items: [],
+            total: 0,
+            requestParams: {
+              pageSize: 50,
+              offsetBy: 0,
+              type: 'RequestParams',
+            },
+            type: 'PagedResourceList',
+          })
+        )
+      })
+    )
+
+    // set up
+    renderComponent()
+
+    // checkboxes exist
+    screen.queryAllByRole('checkbox').forEach(eachCheckbox => {
+      expect(eachCheckbox).toHaveProperty('checked', true)
+    })
+
+    // table does not exist
+    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+  })
 })

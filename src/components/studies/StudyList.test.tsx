@@ -26,7 +26,7 @@ function renderComponent(isVerified: boolean | undefined) {
 
   const queryClient = new QueryClient()
 
-  // stub for adherence weekly handler
+  // stub for adherence weekly handler - StudyCard calls useAdherenceForWeek hook
   server.use(
     rest.post(`*${constants.endpoints.adherenceWeekly}`, async (req, res, ctx) => {
       console.log('stubbing out adherence weekly')
@@ -54,41 +54,43 @@ function renderComponent(isVerified: boolean | undefined) {
   )
 }
 
-test('verify banner appears when user is not verified', async () => {
-  // set up
-  renderComponent(false)
+describe('Verify Banner', () => {
+  test('should appear when user is not verified', async () => {
+    // set up
+    renderComponent(false)
 
-  await waitFor(() => {
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
+
+    // show that banner appears
+    expect(screen.queryByRole('alert')).toBeInTheDocument()
+    expect(screen.queryByRole('link', {name: /become verified/i}))
   })
 
-  // show that banner appears
-  expect(screen.queryByRole('alert')).toBeInTheDocument()
-  expect(screen.queryByRole('link', {name: /become verified/i}))
-})
+  test('should appear when isVerified is undefined', async () => {
+    // set up
+    renderComponent(undefined)
 
-test('verify banner appears when isVerified is undefined', async () => {
-  // set up
-  renderComponent(undefined)
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
 
-  await waitFor(() => {
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    // show that banner appears
+    expect(screen.queryByRole('alert')).toBeInTheDocument()
+    expect(screen.queryByRole('link', {name: /become verified/i}))
   })
 
-  // show that banner appears
-  expect(screen.queryByRole('alert')).toBeInTheDocument()
-  expect(screen.queryByRole('link', {name: /become verified/i}))
-})
+  test('should not appear when user is verified', async () => {
+    // set up
+    renderComponent(true)
 
-test('verify banner does not appear when user is verified', async () => {
-  // set up
-  renderComponent(true)
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
 
-  await waitFor(() => {
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    // show that banner is not present
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', {name: /become verified/i})).not.toBeInTheDocument()
   })
-
-  // show that banner is not present
-  expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-  expect(screen.queryByRole('link', {name: /become verified/i})).not.toBeInTheDocument()
 })
