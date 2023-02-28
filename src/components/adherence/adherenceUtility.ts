@@ -8,6 +8,13 @@ import {
 import _ from 'lodash'
 
 import dayjs from 'dayjs'
+import advanced from 'dayjs/plugin/advancedFormat'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(advanced)
 
 function getMaxNumberOfTimeWindows(streams: (AdherenceDetailReportWeek | AdherenceWeeklyReport)[]): number {
   const maxNumberOfWindowsInStreams = streams.map(stream => {
@@ -64,12 +71,23 @@ function getUniqueSessionsInfo(items: AdherenceWeeklyReport[] | AdherenceDetailR
   return _.uniqBy(result, 'sessionGuid')
 }
 
-function getDateForDisplay(date?: string) {
-  return date ? dayjs(date).format('MM/DD/YYYY') : 'Event date is not defined'
+function getDateForDisplay(date: string | undefined, emptyText: string = 'Event date is not defined') {
+  return date ? dayjs(date).format('MM/DD/YYYY') : emptyText
 }
 
 function getTimeForDisplay(time: string | undefined | null, atSymbol: boolean = true) {
-  return time ? `${atSymbol ? ' @ ' : ''} ${dayjs(time, 'HH:mm').format('h:mma')}` : ''
+  const localTz = dayjs.tz.guess()
+  return time ? `${atSymbol ? ' @ ' : ''} ${dayjs(time, 'HH:mm').tz(localTz).format('h:mma z')}` : ''
+}
+
+function getDateTimeForDisplay(datetime: string | undefined) {
+  const localTz = dayjs.tz.guess()
+
+  if (!datetime) {
+    return ''
+  }
+  const converted = dayjs(datetime).tz(localTz).format('MM/DD/YY h:mm A z')
+  return converted
 }
 
 function getItemFromByDayEntries(byDayEntries: AdherenceByDayEntries, dayIndex: number, rowIndex: number) {
@@ -80,6 +98,7 @@ const AdherenceUtility = {
   getMaxNumberOfTimeWindows,
   getUniqueSessionsInfo,
   getDateForDisplay,
+  getDateTimeForDisplay,
   getTimeForDisplay,
   isCompliant,
   getDisplayFromLabel,

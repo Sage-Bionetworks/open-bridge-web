@@ -24,6 +24,7 @@ import SessionLegend from '../SessionLegend'
 import {useCommonStyles} from '../styles'
 import AdditionalAdherenceParticipantInfo from './AdditionalAdherenceParticipantInfo'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
+import AdherenceReport from './AdherenceReport'
 import EditParticipantEvents from './EditParticipantEvents'
 import EditParticipantNotes from './EditParticipantNotes'
 
@@ -177,16 +178,19 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
               {adherenceReport?.progression === 'unstarted' ? '-' : `${adherenceReport?.adherencePercent} %`}
             </Box>
           </Box>
+
+          {isEditParticipant && (
+            <EditParticipantEvents
+              studyId={studyId}
+              participantId={participantId}
+              clientTimeZone={adherenceReport?.clientTimeZone}
+              onCloseDialog={() => setIsEditParticipant(false)}
+            />
+          )}
+
+          <AdherenceReport />
         </Paper>
       </LoadingComponent>
-      {isEditParticipant && (
-        <EditParticipantEvents
-          studyId={studyId}
-          participantId={participantId}
-          clientTimeZone={adherenceReport?.clientTimeZone}
-          onCloseDialog={() => setIsEditParticipant(false)}
-        />
-      )}
     </Box>
   )
 }
