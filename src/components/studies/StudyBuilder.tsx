@@ -9,7 +9,6 @@ import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
 import {Route, RouteComponentProps, Switch, useParams} from 'react-router-dom'
-import {Schedule} from '../../types/scheduling'
 import {ExtendedError, StringDictionary, Study} from '../../types/types'
 import AlertBanner from '../widgets/AlertBanner'
 import LoadingComponent from '../widgets/Loader'
@@ -144,10 +143,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     section: StudySection
   }>()
 
-  const {data: scheduleSource, error: scheduleError, isLoading: isScheduleLoading} = useSchedule(id)
+  const {data: schedule, error: scheduleError, isLoading: isScheduleLoading} = useSchedule(id)
   const {data: studySource, error: studyError, isLoading: isStudyLoading} = useStudy(id)
   const [study, setStudy] = React.useState<Study | undefined>()
-  const [schedule, setSchedule] = React.useState<Schedule | undefined>()
+
   const [error, setError] = React.useState<string>()
   const handleError = useErrorHandler()
   const [open, setOpen] = React.useState(true)
@@ -156,16 +155,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   const [feedbackBannerType, setFeedbackBannerType] = React.useState<BannerInfoType | undefined>()
 
   React.useEffect(() => {
-    if (!study) {
-      setStudy(studySource)
-    }
+    //if (!study) {
+    setStudy(studySource)
+    //  }
   }, [studySource])
-
-  React.useEffect(() => {
-    if (!schedule) {
-      setSchedule(scheduleSource)
-    }
-  }, [scheduleSource])
 
   React.useEffect(() => {
     if (study) {
@@ -179,9 +172,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   }
 
   const allSessionsHaveAssessments = () => {
-    return (
-      !_.isEmpty(scheduleSource?.sessions) && !scheduleSource?.sessions!.find(session => _.isEmpty(session.assessments))
-    )
+    return !_.isEmpty(schedule?.sessions) && !schedule?.sessions!.find(session => _.isEmpty(session.assessments))
   }
 
   const navButtons = (
