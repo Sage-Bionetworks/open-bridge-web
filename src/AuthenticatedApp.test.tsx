@@ -6,9 +6,9 @@ import {Assessment, ExtendedError, Study} from '@typedefs/types'
 import {UseBaseQueryResult, UseQueryResult} from 'react-query'
 import {MemoryRouter} from 'react-router-dom'
 import {surveyList} from '__test_utils/mocks/useAssessmentResponses'
-import AuthenticatedApp from '../AuthenticatedApp'
-import {loggedInSessionData, notLoggedInSessionData} from '../__test_utils/mocks/user'
-import {noStudy, studyData} from '../__test_utils/mocks/useStudyResponses'
+import AuthenticatedApp from './AuthenticatedApp'
+import {loggedInSessionData, notLoggedInSessionData} from './__test_utils/mocks/user'
+import {noStudy, studyData} from './__test_utils/mocks/useStudyResponses'
 jest.mock('@helpers/AuthContext')
 jest.mock('@services/studyHooks')
 jest.mock('@services/assessmentHooks')

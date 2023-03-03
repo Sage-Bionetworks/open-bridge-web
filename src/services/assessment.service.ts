@@ -108,7 +108,6 @@ async function getAssessmentsWithResources(
       .filter(i => i.status === 'rejected')
       //@ts-ignore
       .map(i => i.reason)
-    console.log(itemsFailed)
 
     const allTags = items.map(item => item.tags).flat()
     const tags = allTags.reduce((acc, curr) => {
