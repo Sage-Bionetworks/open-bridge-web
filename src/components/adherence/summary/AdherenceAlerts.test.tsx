@@ -1,13 +1,22 @@
 import * as useUserSessionDataState from '@helpers/AuthContext'
-import {render, screen, waitFor} from '@testing-library/react'
+import AdherenceService from '@services/adherence.service'
+import {act, render, screen, waitFor} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import constants from '@typedefs/constants'
+import {AdherenceAlert} from '@typedefs/types'
 import {rest} from 'msw'
 import {QueryClient, QueryClientProvider} from 'react-query'
 import {MemoryRouter} from 'react-router-dom'
+import * as adherenceAlerts from '__test_utils/mocks/adherenceAlerts.json'
 import {loggedInSessionData} from '__test_utils/mocks/user'
 import server from '__test_utils/test_server/server'
 import {ProvideTheme} from '__test_utils/utils'
 import AdherenceAlerts from './AdherenceAlerts'
+
+type AdherenceAlertBody = {
+  items: AdherenceAlert[]
+  total: number
+}
 
 const studyId = 'hprczm'
 
@@ -50,6 +59,58 @@ describe('AdherenceAlerts', () => {
 
     // table exists
     expect(screen.queryByRole('table')).toBeInTheDocument()
+    expect(screen.queryAllByRole('row')).toHaveLength(adherenceAlerts.total)
+  })
+
+  test('should call service with appropriate filters', async () => {
+    const user = userEvent.setup()
+
+    // spy on adherence alerts service
+    const spyOnGetAdherenceAlerts = jest.spyOn(AdherenceService, 'getAdherenceAlerts').mockImplementation(() => {
+      console.log('getting all mocked alerts from spy!')
+      return Promise.resolve(adherenceAlerts as AdherenceAlertBody)
+    })
+    const filters = [
+      'low_adherence',
+      'new_enrollment',
+      'study_burst_change',
+      'timeline_accessed',
+      'upcoming_study_burst',
+    ]
+
+    // set up
+    renderComponent()
+    await waitFor(() => {
+      expect(screen.queryByRole('table')).toBeInTheDocument()
+    })
+
+    // correct call made
+    expect(spyOnGetAdherenceAlerts).toHaveBeenCalledTimes(1)
+    expect(spyOnGetAdherenceAlerts).toHaveBeenLastCalledWith(
+      studyId,
+      filters,
+      expect.any(Number),
+      expect.any(Number),
+      loggedInSessionData.token
+    )
+
+    // uncheck filter and show that hook is called correctly
+    const checkbox = screen.getByRole('checkbox', {name: /adherence/i})
+    await act(async () => await user.click(checkbox))
+    expect(screen.queryByRole('table')).toBeInTheDocument()
+
+    // hook called with correct categories
+    expect(spyOnGetAdherenceAlerts).toHaveBeenCalledTimes(2)
+    expect(spyOnGetAdherenceAlerts).toHaveBeenLastCalledWith(
+      studyId,
+      filters.splice(1),
+      expect.any(Number),
+      expect.any(Number),
+      loggedInSessionData.token
+    )
+
+    // restore
+    spyOnGetAdherenceAlerts.mockRestore()
   })
 
   test('should not render table when there are no alerts', async () => {
