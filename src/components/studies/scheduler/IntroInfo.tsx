@@ -104,10 +104,10 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback,
   const [duration, setDuration] = React.useState<any>('')
   const {data: study, error: studyError, isLoading: isLoadingStudy} = useStudy(id)
   const {data: schedule, error: scheduleError, isLoading: isLoadingSchedule} = useSchedule(id)
-  const {mutate: mutateSchedule} = useUpdateSchedule()
+  const {mutateAsync: mutateSchedule} = useUpdateSchedule()
   const history = useHistory()
 
-  const {mutate: mutateStudy} = useUpdateStudyDetail()
+  const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
 
   React.useEffect(() => {
     if (study && study.name !== constants.constants.NEW_STUDY_NAME) {
@@ -147,21 +147,17 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback,
           duration,
         }
       }
-
-      mutateSchedule(
-        {
+      try {
+        await mutateSchedule({
           studyId: id,
           schedule: updatedSchedule,
           action,
-        },
-        {
-          onError: (e: any) => {
-            onShowFeedback(e)
-            hasError = true
-          },
-          onSuccess: () => console.log(`schedule ${action}d`),
-        }
-      )
+        })
+        console.log(`schedule ${action}d`)
+      } catch (e: any) {
+        onShowFeedback(e)
+        hasError = true
+      }
     }
 
     if (shouldUpdateStudy) {
@@ -170,16 +166,13 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback,
         name: studyName,
       }
 
-      mutateStudy(
-        {study: updatedStudy},
-        {
-          onError: (e: any) => {
-            onShowFeedback(e)
-            hasError = true
-          },
-          onSuccess: () => console.log(`study updated`),
-        }
-      )
+      try {
+        await mutateStudy({study: updatedStudy})
+        console.log(`study updated`)
+      } catch (e: any) {
+        onShowFeedback(e)
+        hasError = true
+      }
     }
     if (!hasError) {
       history.push(`/studies/builder/${id}/session-creator`)

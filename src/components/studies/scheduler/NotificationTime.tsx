@@ -61,15 +61,12 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
       minutes: periodMinutes,
       days: days,
     })
-    const durationWithoutNegatives = dayjs.duration({
-      days: durationFirstPass.days(),
-      hours: durationFirstPass.hours(),
-      minutes: durationFirstPass.minutes(),
-    })
-    console.log('parsed-z', durationWithoutNegatives.toISOString())!!!
+    //converting it to minutes and back gets rid of negatives times if the notification time is before window start time
+    const durationWithoutNegatives = dayjs.duration(durationFirstPass.asMinutes(), 'm').toISOString()
+
     onChange({
       notifyAt: 'after_window_start',
-      offset: durationWithoutNegatives.toISOString(),
+      offset: durationWithoutNegatives,
     })
   }
 
@@ -92,21 +89,19 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   React.useEffect(() => {
     if (offset) {
       //get the offset
-      const parsedOffset = dayjs.duration(offset)
+      let parsedOffset = dayjs.duration(offset)
 
       //get and remove the days
       const daysOffset = parsedOffset.days()
-      parsedOffset.subtract(daysOffset, 'd')
+      parsedOffset = parsedOffset.subtract(daysOffset, 'd')
       //get the window start time as duration
       const offsetMinutes = parsedOffset.asMinutes()
       const windowStartPeriodMinutes = dayjs.duration(`PT${windowStartTime?.replace(':', 'H')}M`).asMinutes()
-
       //round minutes to 15
       const offsetTimeMinutes = Math.round((windowStartPeriodMinutes + offsetMinutes) / 15) * 15
 
       var offsetTime = dayjs.duration(offsetTimeMinutes, 'minute')
       //if there is days overflow when you add the interval + start time
-
       setDaysForMultidayOffset(daysOffset + offsetTime.days())
       setTimeForMultidayOffset(
         `${offsetTime.hours().toString().padStart(2, '0')}:${offsetTime.minutes().toString().padStart(2, '0')}`
@@ -210,12 +205,12 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
           type="number"
           isLessThanOneAllowed={false}
           value={daysForMultidayOffset}
-          onChange={e =>
+          onChange={e => {
             changeMultidayOffset({
               days: Number(e.target.value),
               time: timeForMultidayOffset,
             })
-          }
+          }}
         />
 
         <Box mx={0.5}>day(s) after at:</Box>
