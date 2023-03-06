@@ -58,7 +58,6 @@ export const useUpdateEventsForUser = () => {
       queryClient.invalidateQueries(EVENTS_KEYS.detail(props.studyId, props.participantId))
       queryClient.invalidateQueries(ADHERENCE_KEYS.detail(props.studyId, props.participantId))
       queryClient.refetchQueries(ADHERENCE_KEYS.detail(props.studyId, props.participantId))
-      console.debug('refetch')
     },
   })
 

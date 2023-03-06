@@ -17,15 +17,13 @@ import {
   Radio,
   RadioGroup,
   styled,
-  Typography,
 } from '@mui/material'
-import {latoFont, theme} from '@style/theme'
+import {theme} from '@style/theme'
 import {ChoiceQuestion, Step, SurveyRuleOperator} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
 import Draggable from 'react-draggable'
 import useQuestionInfo from '../hooks/useQuestionInfo'
 import QUESTIONS, {getQuestionId} from '../survey-design/left-panel/QuestionConfigs'
-import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 import {StyledDropDown, StyledDropDownItem} from '../widgets/StyledDropDown'
 import {detectCycle, getEdgesFromSteps} from './GetNodesToPlot'
 
@@ -337,7 +335,7 @@ const BranchingConfig: FunctionComponent<{
                 <StyledTable>
                   {(step as ChoiceQuestion).choices.map(c => (
                     <tr key={c.value?.toString() || 'undefined'}>
-                      <td>something here{c.value}1</td>
+                      <td>{c.value}</td>
                       <td>
                         <Box
                           sx={{

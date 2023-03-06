@@ -94,7 +94,6 @@ test('additional options for integer multiselect', async () => {
   expect(screen.getByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
   expect(screen.getByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
   expect(screen.getByRole('menuitem', {name: /other/i})).toBeInTheDocument()
-  screen.debug(screen.getByRole('menuitem', {name: /other/i}))
   expect(screen.getByRole('menuitem', {name: /other/i})).toHaveClass('Mui-disabled')
 })
 
