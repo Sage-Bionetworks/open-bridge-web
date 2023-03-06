@@ -15,12 +15,8 @@ test('should create edges for selection rules', () => {
   const {nodes, edges} = getNodes(SurveyQuestions)
   const choiceQ = SurveyQuestions.find(q => q.identifier === 'choiceQ1') as ChoiceQuestion
   const choiceQRules = choiceQ.surveyRules
-
   const choiceQEdges = edges.filter(e => e.source === 'choiceQ1')
   expect(choiceQEdges.length).toEqual(choiceQRules!.length)
-  // const sortedNodeIds = nodes.map(n => n.id).sort()
-  // console.log(pizzaEdges)
-  // expect(questionIds).toEqual(sortedNodeIds)
 })
 
 test('should create edge for nextStepIdentifier', () => {
@@ -53,6 +49,7 @@ test('should NOT create edge for nextStepIdentifier if there are rules for each 
 
 test('should detect cycle', () => {
   let edges = getNodes(SurveyQuestions).edges
+  console.log(edges.map(s => ({source: s.source, target: s.target})))
   var hasCycle = detectCycle(edges)
   expect(hasCycle).toBe(false)
 
