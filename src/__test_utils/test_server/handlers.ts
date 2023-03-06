@@ -1,9 +1,10 @@
 import constants from '@typedefs/constants'
-import {rest} from 'msw'
+import { rest } from 'msw'
+import AdherenceAlertsHandlers from './adherenceAlertsHandlers'
 import AssessmentRequests from './assessmentHandlers'
 import EnrollmentParticipantRequests from './enrollmentParticipantHandlers'
 import ScheduleRequests from './scheduleHandlers'
-import {default as AccountRequests, default as StudyRequests} from './studyHandlers'
+import { default as AccountRequests, default as StudyRequests } from './studyHandlers'
 
 export const handlers = [
   ...AssessmentRequests,
@@ -11,6 +12,7 @@ export const handlers = [
   ...StudyRequests,
   ...AccountRequests,
   ...ScheduleRequests,
+  ...AdherenceAlertsHandlers,
 
   rest.get(`*${constants.endpoints.events}`, async (req, res, ctx) => {
     return res(

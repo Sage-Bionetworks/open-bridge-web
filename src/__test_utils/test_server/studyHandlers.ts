@@ -1,6 +1,6 @@
 import constants from '@typedefs/constants'
-import {Study} from '@typedefs/types'
-import {rest} from 'msw'
+import { Study } from '@typedefs/types'
+import { rest } from 'msw'
 import * as studies from '../mocks/studies.json'
 
 export const handlers = [
@@ -15,6 +15,7 @@ export const handlers = [
       ctx.status(200),
       ctx.json({
         items: studies.data,
+        total: 6,
       })
     )
   }),
