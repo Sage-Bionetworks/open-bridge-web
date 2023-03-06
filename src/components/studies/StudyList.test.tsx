@@ -2,11 +2,9 @@ import * as useUserSessionDataState from '@helpers/AuthContext'
 import {render, screen, waitFor} from '@testing-library/react'
 import constants from '@typedefs/constants'
 import {rest} from 'msw'
-import {QueryClient, QueryClientProvider} from 'react-query'
-import {MemoryRouter} from 'react-router-dom'
 import {loggedInSessionData} from '__test_utils/mocks/user'
 import server from '__test_utils/test_server/server'
-import {ProvideTheme} from '__test_utils/utils'
+import {createWrapper} from '__test_utils/utils'
 import StudyList from './StudyList'
 
 jest.mock('@helpers/AuthContext')
@@ -23,8 +21,6 @@ function renderComponent(isVerified: boolean | undefined) {
     location: {} as any,
     match: {} as any,
   }
-
-  const queryClient = new QueryClient()
 
   // stub for adherence weekly handler - StudyCard calls useAdherenceForWeek hook
   server.use(
@@ -43,15 +39,7 @@ function renderComponent(isVerified: boolean | undefined) {
   // scroll window placeholder
   window.scrollTo = jest.fn()
 
-  return render(
-    <MemoryRouter>
-      <ProvideTheme>
-        <QueryClientProvider client={queryClient}>
-          <StudyList {...routeComponentPropsMock} />
-        </QueryClientProvider>
-      </ProvideTheme>
-    </MemoryRouter>
-  )
+  return render(<StudyList {...routeComponentPropsMock} />, {wrapper: createWrapper()})
 }
 
 describe('Verify Banner', () => {
