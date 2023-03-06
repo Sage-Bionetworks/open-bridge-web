@@ -5,12 +5,10 @@ import userEvent from '@testing-library/user-event'
 import constants from '@typedefs/constants'
 import {AdherenceAlert} from '@typedefs/types'
 import {rest} from 'msw'
-import {QueryClient, QueryClientProvider} from 'react-query'
-import {MemoryRouter} from 'react-router-dom'
 import * as adherenceAlerts from '__test_utils/mocks/adherenceAlerts.json'
 import {loggedInSessionData} from '__test_utils/mocks/user'
 import server from '__test_utils/test_server/server'
-import {ProvideTheme} from '__test_utils/utils'
+import {createWrapper} from '__test_utils/utils'
 import AdherenceAlerts from './AdherenceAlerts'
 
 type AdherenceAlertBody = {
@@ -29,17 +27,7 @@ export const renderComponent = () => {
   const userData = loggedInSessionData
   mockedAuth.useUserSessionDataState.mockImplementation(() => userData)
 
-  const queryClient = new QueryClient()
-
-  const element = render(
-    <ProvideTheme>
-      <MemoryRouter>
-        <QueryClientProvider client={queryClient}>
-          <AdherenceAlerts studyId={studyId} />
-        </QueryClientProvider>
-      </MemoryRouter>
-    </ProvideTheme>
-  )
+  const element = render(<AdherenceAlerts studyId={studyId} />, {wrapper: createWrapper()})
   return element
 }
 
