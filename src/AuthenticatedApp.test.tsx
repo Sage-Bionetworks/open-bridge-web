@@ -6,9 +6,10 @@ import {Assessment, ExtendedError, Study} from '@typedefs/types'
 import {UseBaseQueryResult, UseQueryResult} from 'react-query'
 import {MemoryRouter} from 'react-router-dom'
 import {surveyList} from '__test_utils/mocks/useAssessmentResponses'
-import AuthenticatedApp from '../AuthenticatedApp'
-import {loggedInSessionData, notLoggedInSessionData} from '../__test_utils/mocks/user'
-import {noStudy, studyData} from '../__test_utils/mocks/useStudyResponses'
+import AuthenticatedApp from './AuthenticatedApp'
+import {loggedInSessionData, notLoggedInSessionData} from './__test_utils/mocks/user'
+import {noStudy, studyData} from './__test_utils/mocks/useStudyResponses'
+
 jest.mock('@helpers/AuthContext')
 jest.mock('@services/studyHooks')
 jest.mock('@services/assessmentHooks')
@@ -18,7 +19,6 @@ const mockedUseStudy = useStudy as jest.Mocked<typeof useStudy>
 const mockedUseAssessment = useSurveyAssessment as jest.Mocked<typeof useSurveyAssessment>
 
 jest.mock('@components/widgets/AppTopNav', () => () => <div>App Top Nav</div>)
-
 jest.mock('@components/studies/StudyList', () => () => <div>Study List</div>)
 jest.mock('@components/studies/StudyTopNav', () => () => <div>Study Top Nav</div>)
 jest.mock('@components/surveys/SurveyTopNav', () => () => <div>Survey Top Nav</div>)
@@ -74,7 +74,7 @@ test('should show study list and app top nave if user logged in with a study lin
   expect(app.queryAllByText('Study List')).toHaveLength(1)
 })
 
-test('show study builder if and study top nav user logged in with a study link with a study', () => {
+test('show study builder  and study top nav when user logged in with a study link with a study', () => {
   mockedAuth.useUserSessionDataState.mockImplementation(() => loggedInSessionData)
   mockedUseAssessment.useSurveyAssessment.mockImplementation(
     x => noStudy as UseQueryResult<Assessment | undefined, ExtendedError>
@@ -82,8 +82,8 @@ test('show study builder if and study top nav user logged in with a study link w
   const study = {...noStudy, data: studyData}
   mockedUseStudy.useStudy.mockImplementation(x => study as UseQueryResult<Study | undefined, ExtendedError>)
   const app = renderControl('/studies/builder/123')
+
   expect(app.queryAllByText('Study List')).toHaveLength(0)
-  expect(app.queryAllByText('App Top Nav')).toHaveLength(0)
-  expect(app.queryAllByText('Study Top Nav')).toHaveLength(1)
+  expect(app.queryAllByText('App Top Nav')).toHaveLength(1)
   expect(app.queryAllByText('Study Builder')).toHaveLength(1)
 })

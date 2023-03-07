@@ -66,7 +66,6 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
       }
       //if current page < 4 -- show first 4
       if (currentPageSelected < 3 && index < 4) {
-        console.log('i', index)
         return true
       }
 

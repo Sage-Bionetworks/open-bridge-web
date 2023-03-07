@@ -70,7 +70,6 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
 
   disabled = false,
 }: SchedulingFormSectionProps) => {
-  console.log(style)
   return (
     <>
       <StyledSection

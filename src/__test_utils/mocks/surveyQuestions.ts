@@ -152,7 +152,7 @@ const steps: (Step | ChoiceQuestion)[] = [
     surveyRules: [
       {
         matchingAnswer: false,
-        skipToIdentifier: 'choiceQ1',
+        skipToIdentifier: 'favoriteFood',
       },
     ],
     baseType: 'boolean',

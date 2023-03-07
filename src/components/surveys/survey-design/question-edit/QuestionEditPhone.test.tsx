@@ -28,7 +28,7 @@ describe('QuestionEditPhone', () => {
     expect(surveyQuestions[0].type).toBe('overview')
     expect(screen.queryByRole('button', {name: /make required/i})).not.toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /allow skip/i})).not.toBeInTheDocument()
-    expect(screen.queryByText('Skip question')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Skip question/i)).not.toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /sort alpha/i})).not.toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /sort reverse/i})).not.toBeInTheDocument()
   })
@@ -38,7 +38,7 @@ describe('QuestionEditPhone', () => {
     expect(surveyQuestions[2].type).toBe('simpleQuestion')
     expect(screen.queryByRole('button', {name: /make required/i})).toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /allow skip/i})).toBeInTheDocument()
-    expect(screen.queryByText('Skip question')).toBeInTheDocument()
+    expect(screen.queryByText(/Skip question/i)).toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /sort alpha/i})).not.toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /sort reverse/i})).not.toBeInTheDocument()
   })
@@ -48,7 +48,7 @@ describe('QuestionEditPhone', () => {
     expect(surveyQuestions[1].type).toBe('choiceQuestion')
     expect(screen.queryByRole('button', {name: /make required/i})).toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /allow skip/i})).toBeInTheDocument()
-    expect(screen.queryByText('Skip question')).toBeInTheDocument()
+    expect(screen.queryByText(/Skip question/i)).toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /sort alpha/i})).toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /sort reverse/i})).toBeInTheDocument()
   })
@@ -58,7 +58,7 @@ it('should render with correct buttons with config set to SKIP', () => {
 
   expect(screen.queryByRole('button', {name: /make required/i})).not.toBeInTheDocument()
   expect(screen.queryByRole('button', {name: /allow skip/i})).not.toBeInTheDocument()
-  expect(screen.queryByText('Skip question')).toBeInTheDocument()
+  expect(screen.queryByText(/Skip question/i)).toBeInTheDocument()
 })
 
 it('should render with correct buttons with config set to MAKE ALL REQUIRED ', () => {
@@ -66,5 +66,5 @@ it('should render with correct buttons with config set to MAKE ALL REQUIRED ', (
 
   expect(screen.queryByRole('button', {name: /make required/i})).not.toBeInTheDocument()
   expect(screen.queryByRole('button', {name: /allow skip/i})).not.toBeInTheDocument()
-  expect(screen.queryByText('Skip question')).not.toBeInTheDocument()
+  expect(screen.queryByText(/Skip question/i)).not.toBeInTheDocument()
 })
