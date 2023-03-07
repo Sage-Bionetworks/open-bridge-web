@@ -1,24 +1,24 @@
 import {cleanup, render} from '@testing-library/react'
 import {SurveyConfig} from '@typedefs/surveys'
-import {MemoryRouter} from 'react-router-dom'
 import surveySample from '__test_utils/mocks/surveySampleA'
+import {createWrapper} from '__test_utils/utils'
 import LeftPanel from './LeftPanel'
 
-const onUpdateStep = jest.fn()
+const onReorderSteps = jest.fn()
 const onNavigateStep = jest.fn()
 
 function renderControl(location: string, guid: string, surveyId: string, surveyConfig?: SurveyConfig) {
-  return render(
-    <MemoryRouter initialEntries={[location]}>
-      <LeftPanel
-        onUpdateSteps={onUpdateStep}
-        guid={guid}
-        surveyId={surveyId}
-        onNavigateStep={onNavigateStep}
-        surveyConfig={surveyConfig}
-      />
-    </MemoryRouter>
+  const element = render(
+    <LeftPanel
+      onReorderSteps={onReorderSteps}
+      guid={guid}
+      surveyId={surveyId}
+      onNavigateStep={onNavigateStep}
+      surveyConfig={surveyConfig}
+    />,
+    {wrapper: createWrapper()}
   )
+  return element
 }
 
 afterEach(() => {

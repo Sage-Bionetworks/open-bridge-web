@@ -49,7 +49,6 @@ test('should NOT create edge for nextStepIdentifier if there are rules for each 
 
 test('should detect cycle', () => {
   let edges = getNodes(SurveyQuestions).edges
-  console.log(edges.map(s => ({source: s.source, target: s.target})))
   var hasCycle = detectCycle(edges)
   expect(hasCycle).toBe(false)
 
