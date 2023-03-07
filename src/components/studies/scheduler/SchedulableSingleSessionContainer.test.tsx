@@ -111,10 +111,14 @@ function setUp(session: StudySession) {
 
 test('renders and changes reminder notification type', async () => {
   const {user} = setUp(studySession)
-  const reminderNotification = screen.getByText(/Send a reminder notification/i).parentElement
+  const reminderNotification = screen
+    .getByText(/Follow-up Notification/i)
+    .parentElement?.closest('div.MuiPaper-root') as HTMLElement
+
   const radioButton = within(reminderNotification!).getByRole('radio', {
     name: /after start of window/i,
   })
+
   expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
 
   await act(async () => {
@@ -140,7 +144,9 @@ test('renders and changes reminder notification type', async () => {
 
 test('renders and changes reminder notification interval', async () => {
   const {user} = setUp(studySession)
-  const reminderNotification = screen.getByText(/Send a reminder notification/i).parentElement
+  const reminderNotification = screen
+    .getByText(/Follow-up Notification/i)
+    .parentElement?.closest('div.MuiPaper-root') as HTMLElement
   const value = within(reminderNotification!).getByRole('spinbutton')
 
   await act(async () => {
