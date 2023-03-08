@@ -109,7 +109,7 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
       <NavButton
         onClick={() => handlePageNavigationArrowPressed('B')}
         disabled={currentPageSelected === 0}
-        id="back-one-page-button">
+        id="back-0-button">
         <ChevronLeftTwoToneIcon />
       </NavButton>
       {pages.map((element, index) =>
@@ -128,7 +128,7 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
       <NavButton
         onClick={() => handlePageNavigationArrowPressed('F')}
         disabled={currentPageSelected + 1 === numberOfPages}
-        id="forward-one-page-button">
+        id="forward-all-button">
         <ChevronRightTwoToneIcon />
       </NavButton>
     </Box>

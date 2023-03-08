@@ -104,8 +104,6 @@ const TablePagination: React.FunctionComponent<TablePaginationProps> = ({
   pageSize,
   setPageSize,
   // handlePageNavigationArrowPressed,
-  counterTextSingular,
-  counterTextPlural,
 }) => {
   const classes = useStyles()
   let itemsShownMin = pageSize * currentPage + 1
