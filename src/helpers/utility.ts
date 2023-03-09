@@ -79,7 +79,7 @@ const callEndpoint = async <T>(
   isSynapseEndpoint?: boolean
 ): Promise<Response<T>> => {
   /* 
-  Agendel: this is only used for e2e which we are doing doing here
+  Agendel: this is only used for e2e which we are not  doing here
   const ls = window.localStorage
   const isE2E = ls.getItem('crc_e2e')
   */
