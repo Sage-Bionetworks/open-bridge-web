@@ -1,14 +1,16 @@
 import StudyWithPhaseImage from '@components/widgets/StudyWithPhaseImage'
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone'
-import {Box, Button, SxProps} from '@mui/material'
-import constants from '@typedefs/constants'
+import {Box, Button, Dialog, SxProps} from '@mui/material'
 import {DisplayStudyPhase, Study} from '@typedefs/types'
 
+import AccessSettings from '@components/access-settings/AccessSettings'
+import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import Utility from '@helpers/utility'
 import ErrorTwoToneIcon from '@mui/icons-material/ErrorTwoTone'
 import {styled} from '@mui/material'
 import StudyService from '@services/study.service'
 import {theme} from '@style/theme'
+import React from 'react'
 import {useHistory} from 'react-router-dom'
 
 const BG_COLOR: Record<DisplayStudyPhase, string> = {
@@ -33,6 +35,7 @@ const StudyBuilderHeader: React.FunctionComponent<{study: Study; isReadOnly?: bo
   sx = {},
 }) => {
   const history = useHistory()
+  const [isOpenAS, setIsOpenAS] = React.useState(false)
 
   return (
     <>
@@ -44,10 +47,7 @@ const StudyBuilderHeader: React.FunctionComponent<{study: Study; isReadOnly?: bo
         <StudyWithPhaseImage study={study} />
 
         {(Utility.isInAdminRole() || true) /* enable all aggess*/ && (
-          <Button
-            variant="text"
-            onClick={() => history.push(constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', study.identifier))}
-            startIcon={<SettingsTwoToneIcon />}>
+          <Button variant="text" onClick={() => setIsOpenAS(true)} startIcon={<SettingsTwoToneIcon />}>
             Access settings
           </Button>
         )}
@@ -66,6 +66,10 @@ const StudyBuilderHeader: React.FunctionComponent<{study: Study; isReadOnly?: bo
           can not be edited.
         </Box>
       )}
+      <Dialog open={isOpenAS} fullWidth={true} maxWidth="lg" scroll="body">
+        <DialogTitleWithClose onCancel={() => setIsOpenAS(false)} title={'    Access Settings'} />
+        <AccessSettings study={study} />
+      </Dialog>
     </>
   )
 }
