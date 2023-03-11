@@ -42,7 +42,6 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({newOrgAccount, onUp
         sx={{marginBottom: theme.spacing(2)}}
         onChange={e => setEmail(e.target.value)}
         onBlur={e => onUpdate({...newOrgAccount, email: email})}
-        color="secondary"
         value={email || ''}
         placeholder="email@synapse.org"
         style={{fontFamily: latoFont}}></TextField>

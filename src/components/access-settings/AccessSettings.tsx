@@ -188,7 +188,7 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
       if (isSubscribed) {
         setMembers(result)
       }
-      setIsAccessLoading(true)
+      setIsAccessLoading(false)
     }
     fetchData()
       .catch(error => handleError(error))
@@ -327,7 +327,7 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
         </Box>
       </Box>
       <Loader
-        reqStatusLoading={!currentMemberAccess?.member || isAccessLoading}
+        reqStatusLoading={(!currentMemberAccess?.member && !isAddingNewMember) || isAccessLoading}
         style={{width: 'auto', margin: '0 auto'}}>
         {currentMemberAccess && !isAddingNewMember && (
           <>
