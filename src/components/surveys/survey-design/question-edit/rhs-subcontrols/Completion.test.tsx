@@ -1,7 +1,8 @@
 //unit tests for ./Completion.tsx using react-testing-library
 
-import {screen} from '@testing-library/react'
+import {act, screen} from '@testing-library/react'
 import {Step} from '@typedefs/surveys'
+import {createMemoryHistory} from 'history'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
 import Completion from './Completion'
 
@@ -29,7 +30,14 @@ const step: Step = {
 }
 
 test('has the link to branching', async () => {
-  renderComponent(step)
-  const link = screen.getByRole('link')
+  const history = createMemoryHistory()
+  console.log(history)
+  const {user} = renderComponent(step)
+  const link = screen.getByRole('button', {name: 'Preview Branching Logic'})
+  console.log(link.attributes.length)
+  await act(async () => await user.click(link))
+  console.log(history)
+  expect(history.length).toBe(2)
+  expect(history.location.pathname).toBe('/about')
   expect(link.getAttribute('href')).toBe('/surveys/survey_12345/branching')
 })
