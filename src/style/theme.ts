@@ -116,11 +116,14 @@ const theme: Theme = createTheme({
         // color: 'green'
       },
       styleOverrides: {
-        colorPrimary: '#D0D4D9',
+        colorPrimary: '#878E95',
         root: {
           color: '#D0D4D9',
           '&.Mui-checked': {
             color: '#4F527D',
+          },
+          '&.Mui-disabled': {
+            color: '#eee',
           },
         },
       },
@@ -245,7 +248,7 @@ const theme: Theme = createTheme({
           },
           '&.Mui-disabled': {
             backgroundColor: 'transparent',
-            color: '#AEB5BC;',
+            color: '#AEB5BC',
           },
         },
       },
