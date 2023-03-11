@@ -25,7 +25,6 @@ function renderComponent(isVerified: boolean | undefined) {
   // stub for adherence weekly handler - StudyCard calls useAdherenceForWeek hook
   server.use(
     rest.post(`*${constants.endpoints.adherenceWeekly}`, async (req, res, ctx) => {
-      console.log('stubbing out adherence weekly')
       return res(
         ctx.status(200),
         ctx.json({

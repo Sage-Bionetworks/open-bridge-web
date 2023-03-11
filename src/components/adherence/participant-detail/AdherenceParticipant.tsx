@@ -23,8 +23,8 @@ import AdherenceUtility from '../adherenceUtility'
 import SessionLegend from '../SessionLegend'
 import {useCommonStyles} from '../styles'
 import AdditionalAdherenceParticipantInfo from './AdditionalAdherenceParticipantInfo'
+import AdherenceAssessmentLevelReport from './AdherenceAssessmentLevelReport'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
-import AdherenceReport from './AdherenceReport'
 import EditParticipantEvents from './EditParticipantEvents'
 import EditParticipantNotes from './EditParticipantNotes'
 
@@ -188,7 +188,7 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
             />
           )}
 
-          <AdherenceReport />
+          <AdherenceAssessmentLevelReport />
         </Paper>
       </LoadingComponent>
     </Box>
