@@ -79,7 +79,12 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
       return offset
     }
     const parsedOffset = dayjs.duration(offset)
-    if (parsedOffset.days() || (parsedOffset.minutes() && parsedOffset.hours())) {
+    //if for some reason it's not in a single unit -- convert it to minutes (should not happen)
+    if (
+      (parsedOffset.days() && parsedOffset.minutes()) ||
+      (parsedOffset.days() && parsedOffset.hours()) ||
+      (parsedOffset.minutes() && parsedOffset.hours())
+    ) {
       const result = `PT${parsedOffset.asMinutes()}M`
       return result
     }

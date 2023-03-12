@@ -209,8 +209,15 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     updateSessionSchedule(newSessionSchedule)
   }
 
+  const createNotificationKey = (notification: ScheduleNotification) => {
+    let result = notification.notifyAt
+    let message = notification.messages && notification.messages.length ? notification.messages[0] : undefined
+    let messageKey = message ? message.lang + message.subject + message.message : 'sometitlesomebody'
+    return result + messageKey
+  }
+
   return (
-    <Box sx={{backgroundColor: '#fff', flexGrow: '1', paddingBottom: 0, paddingLeft: theme.spacing(4)}}>
+    <Box sx={{backgroundColor: '#fff', flexGrow: '1', paddingBottom: 0, paddingLeft: theme.spacing(4)}} id="SSC">
       {sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
         <Box sx={{marginTop: theme.spacing(4), marginLeft: theme.spacing(2)}}>
           {sessionErrorState.generalErrorMessage.map((el, index) => {
@@ -367,7 +374,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   index={index}
                   notification={notification}
                   isMultiday={hasWindowLongerThan24h()}
-                  key={index}
+                  key={createNotificationKey(notification)}
                   onDelete={() => {
                     deleteNotification(index)
                   }}
