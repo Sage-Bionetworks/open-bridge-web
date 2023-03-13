@@ -209,11 +209,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     updateSessionSchedule(newSessionSchedule)
   }
 
-  const createNotificationKey = (notification: ScheduleNotification) => {
+  const createNotificationKey = (notification: ScheduleNotification, index: number) => {
     let result = notification.notifyAt
     let message = notification.messages && notification.messages.length ? notification.messages[0] : undefined
     let messageKey = message ? message.lang + message.subject + message.message : 'sometitlesomebody'
-    return result + messageKey
+    return index + result + messageKey
   }
 
   return (
@@ -374,7 +374,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   index={index}
                   notification={notification}
                   isMultiday={hasWindowLongerThan24h()}
-                  key={createNotificationKey(notification)}
+                  key={createNotificationKey(notification, index)}
                   onDelete={() => {
                     deleteNotification(index)
                   }}

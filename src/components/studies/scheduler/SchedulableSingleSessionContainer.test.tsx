@@ -125,6 +125,9 @@ test('renders and changes reminder notification type', async () => {
     await user.click(radioButton)
   })
 
+  // notification key includes notifyAt, so will remove old notification and mount new instance
+  expect(reminderNotification).not.toBeInTheDocument()
+
   expect(onUpdateFn).toHaveBeenCalledWith(
     expect.objectContaining({
       // notifications: expect.anything(),
@@ -139,7 +142,13 @@ test('renders and changes reminder notification type', async () => {
     undefined
   )
 
-  expect(radioButton.parentElement).toHaveClass('Mui-checked')
+  const updatedNotification = screen
+    .getByText(/Follow-up Notification/i)
+    .parentElement?.closest('div.MuiPaper-root') as HTMLElement
+  const updatedRadioButton = within(updatedNotification!).getByRole('radio', {
+    name: /after start of window/i,
+  })
+  expect(updatedRadioButton.parentElement).toHaveClass('Mui-checked')
 })
 
 test('renders and changes reminder notification interval', async () => {
