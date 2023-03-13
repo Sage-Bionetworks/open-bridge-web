@@ -127,7 +127,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   const initialWindow = (
     <SchedulingFormSection label={'Notify participant:'} border={false}>
       <RadioGroup
-        aria-label="Session Starts On"
+        aria-label="Session Notification Starts On"
         name="startDate"
         value={hasOffset}
         onChange={e => toggleOffsetForInitialNotification(e.target.value)}>
@@ -223,7 +223,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
           value={timeForMultidayOffset || windowStartTime}
           style={{marginLeft: 0}}
           sourceData={getDropdownTimeItems()}
-          id="from"
+          name="from"
           onChange={e =>
             changeMultidayOffset({
               days: daysForMultidayOffset,

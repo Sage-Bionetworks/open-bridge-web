@@ -43,6 +43,8 @@ export interface SchedulingFormSectionProps {
   isHideLabel?: boolean
 
   disabled?: boolean
+
+  ariaLabel?: string
 }
 
 function getLabel(isRequired?: boolean, label?: ReactNode) {
@@ -69,10 +71,13 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
   border = true,
 
   disabled = false,
+
+  ariaLabel = 'scheduling-form-section',
 }: SchedulingFormSectionProps) => {
   return (
     <>
       <StyledSection
+        aria-label={ariaLabel}
         sx={{
           borderBottom: border === false ? 'none' : '1px solid #EAECEE',
           opacity: disabled ? 0.3 : 1,
