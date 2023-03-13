@@ -210,7 +210,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   }
 
   const createNotificationKey = (notification: ScheduleNotification, index: number) => {
-    let result = notification.notifyAt
+    let result = notification.notifyAt + notification.offset
     let message = notification.messages && notification.messages.length ? notification.messages[0] : undefined
     let messageKey = message ? message.lang + message.subject + message.message : 'sometitlesomebody'
     return index + result + messageKey
