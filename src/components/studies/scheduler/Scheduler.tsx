@@ -622,14 +622,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                   marginBottom: 0,
                 },
               }}
-              key={getOpenStudySession().guid}
-              border={
-                schedulerErrorState.get(
-                  `${openStudySession.name}-${schedule.sessions.findIndex(s => s.guid === openStudySession.guid) + 1}`
-                )
-                  ? `1px solid ${theme.palette.error.main}`
-                  : ''
-              }>
+              key={getOpenStudySession().guid}>
               <Box
                 sx={{
                   width: '336px',
@@ -662,41 +655,51 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
               <Box sx={{flexGrow: 1}}>
                 {!isReadOnly ? (
                   <>
-                    <SchedulableSingleSessionContainer
-                      onOpenEventsEditor={() => setOpenModal('EVENTS')}
-                      key={getOpenStudySession().guid}
-                      customEvents={study?.customEvents}
-                      studySession={getOpenStudySession()}
-                      hasCriticalStartEvent={sessionHasCriticalStudyStartEvent(getOpenStudySession())}
-                      burstOriginEventId={_.first(schedule.studyBursts)?.originEventId}
-                      onUpdateSessionSchedule={(
-                        session: StudySession,
-                        shouldInvalidateBurst: boolean,
-                        shouldUpdaeStudyStartEvent: boolean
-                      ) => {
-                        if (
-                          shouldUpdaeStudyStartEvent &&
-                          session.startEventIds.length > 0 &&
-                          session.startEventIds[0]
-                        ) {
-                          console.log('UPDAING')
-                          updateStudyStartEventId(session.startEventIds[0])
-                        }
-                        scheduleUpdateFn({
-                          type: ActionTypes.UpdateSessionSchedule,
-                          payload: {
-                            sessionId: getOpenStudySession().guid!,
-                            schedule: session,
-                            shouldInvalidateBurst,
-                          },
-                        })
-                      }}
-                      sessionErrorState={schedulerErrorState.get(
-                        `${getOpenStudySession().name}-${
-                          schedule.sessions.findIndex(s => s.guid === openStudySession.guid) + 1
-                        }`
-                      )}></SchedulableSingleSessionContainer>
-
+                    <Box
+                      border={
+                        schedulerErrorState.get(
+                          `${openStudySession.name}-${
+                            schedule.sessions.findIndex(s => s.guid === openStudySession.guid) + 1
+                          }`
+                        )
+                          ? `1px solid ${theme.palette.error.main}`
+                          : ''
+                      }>
+                      <SchedulableSingleSessionContainer
+                        onOpenEventsEditor={() => setOpenModal('EVENTS')}
+                        key={getOpenStudySession().guid}
+                        customEvents={study?.customEvents}
+                        studySession={getOpenStudySession()}
+                        hasCriticalStartEvent={sessionHasCriticalStudyStartEvent(getOpenStudySession())}
+                        burstOriginEventId={_.first(schedule.studyBursts)?.originEventId}
+                        onUpdateSessionSchedule={(
+                          session: StudySession,
+                          shouldInvalidateBurst: boolean,
+                          shouldUpdaeStudyStartEvent: boolean
+                        ) => {
+                          if (
+                            shouldUpdaeStudyStartEvent &&
+                            session.startEventIds.length > 0 &&
+                            session.startEventIds[0]
+                          ) {
+                            console.log('UPDAING')
+                            updateStudyStartEventId(session.startEventIds[0])
+                          }
+                          scheduleUpdateFn({
+                            type: ActionTypes.UpdateSessionSchedule,
+                            payload: {
+                              sessionId: getOpenStudySession().guid!,
+                              schedule: session,
+                              shouldInvalidateBurst,
+                            },
+                          })
+                        }}
+                        sessionErrorState={schedulerErrorState.get(
+                          `${getOpenStudySession().name}-${
+                            schedule.sessions.findIndex(s => s.guid === openStudySession.guid) + 1
+                          }`
+                        )}></SchedulableSingleSessionContainer>{' '}
+                    </Box>
                     <StyledButtonBar>
                       <Button variant="outlined" onClick={() => onCancelSessionUpdate()}>
                         Cancel

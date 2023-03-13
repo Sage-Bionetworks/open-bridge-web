@@ -19,10 +19,10 @@ const StyledNonSBListItemStyles = (theme: Theme, isActive?: boolean, isOpen?: bo
   },
 })
 
-const StyledSBListItemStyles = (theme: Theme, isActive?: boolean, isOpen?: boolean) => ({
+const StyledSBListItemStyles = (theme: Theme, isActive?: boolean) => ({
   color: isActive ? '#fff' : theme.palette.action.active,
   height: '48px',
-  paddingLeft: isOpen ? theme.spacing(0) : theme.spacing(0),
+  paddingLeft: theme.spacing(0),
   backgroundColor: isActive ? '#9499C7' : 'transparent',
   marginBottom: theme.spacing(0.5),
 
@@ -43,15 +43,21 @@ const StyledSBListItemStyles = (theme: Theme, isActive?: boolean, isOpen?: boole
 const StyledDarkListItemStyles = (theme: Theme, isActive?: boolean) => ({
   height: theme.spacing(9),
   display: 'flex',
-  color: theme.palette.common.white,
+  color: '#22252A',
+
   '& button': {
-    color: theme.palette.common.white,
+    color: '#22252A',
+    fontWeight: 'normal',
+    fontSize: '14px',
+    lineHeight: '20px',
     borderRadius: 0,
   },
-  backgroundColor: isActive ? '#444' : 'inherit',
-  borderLeft: isActive ? '4px solid #FFE500' : 'none',
+  backgroundColor: isActive ? '#f4f5f9' : 'inherit',
+  borderLeft: isActive ? '4px solid #9499C7' : 'none',
+  borderTop: '1px solid #EAECEE',
+  borderBottom: '1px solid #EAECE',
   '&:hover': {
-    backgroundColor: '#333',
+    backgroundColor: '#f4f5f9',
   },
 })
 
@@ -68,7 +74,7 @@ const StyledListItem = styled(ListItem, {
   if ($isDark) {
     return StyledDarkListItemStyles(theme, $isActive)
   } else if ($inStudyBuilder) {
-    return StyledSBListItemStyles(theme, $isActive, $isOpen)
+    return StyledSBListItemStyles(theme, $isActive)
   }
   return StyledNonSBListItemStyles(theme, $isActive, $isOpen)
 })

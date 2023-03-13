@@ -61,7 +61,7 @@ const Completion: React.FunctionComponent<{
         color="primary"
         variant="contained"
         startIcon={<MediationTwoToneIcon />}
-        onClick={() => history.push(`/surveys/${surveyGuid}/branching`)}
+        href={`/surveys/${surveyGuid}/branching`}
         sx={{padding: theme.spacing(1, 2.5), margin: theme.spacing(1.5, 0, 5, 0)}}>
         Preview Branching Logic
       </Button>

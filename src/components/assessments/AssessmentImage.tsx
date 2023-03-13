@@ -15,7 +15,7 @@ const CardTop = styled(Box, {label: 'StyledCardMedia'})(({theme}) => ({
   '& img': {
     width: '150px',
     height: '150px',
-    backgroundColor: 'pink',
+    // backgroundColor: 'pink',
   },
   '> div': {
     height: '150px',
