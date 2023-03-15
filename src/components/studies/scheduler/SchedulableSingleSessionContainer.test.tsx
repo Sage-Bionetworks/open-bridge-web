@@ -239,6 +239,322 @@ describe('SchedulableSingleSessionContainer', () => {
       expect(await within(formGroup).findByLabelText(/initial_login/i)).toBeInTheDocument()
     })
   })
+
+  describe('end date', () => {
+    test('should update end date - end at study end', async () => {
+      const {user} = setUp({...studySession, occurrences: 5})
+
+      const endDateSection = screen.getByRole('region', {name: /scheduling-form-section-end-date/i})
+      const endAfterStudyRadioButton = within(endDateSection).getByRole('radio', {name: /end-after-study/i})
+      const nOccurrencesRadioButton = within(endDateSection).getByRole('radio', {name: /end-after-n-occurrences/i})
+      const repeatFrequencySection = screen.getByRole('region', {name: /scheduling-form-section-repeat-frequency/i})
+
+      expect(endAfterStudyRadioButton.parentElement).not.toHaveClass('Mui-checked')
+      expect(nOccurrencesRadioButton.parentElement).toHaveClass('Mui-checked')
+      expect(repeatFrequencySection).toHaveTextContent(/for 5 times/i)
+
+      await act(async () => {
+        await user.click(endAfterStudyRadioButton)
+      })
+      expect(endAfterStudyRadioButton.parentElement).toHaveClass('Mui-checked')
+      expect(nOccurrencesRadioButton.parentElement).not.toHaveClass('Mui-checked')
+      expect(repeatFrequencySection).toHaveTextContent(/until the end of study/i)
+
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenLastCalledWith(studySession, undefined, undefined)
+    })
+
+    test('should update end date - end after n occurrences', async () => {
+      const {user} = setUp(studySession)
+
+      const endDateSection = screen.getByRole('region', {name: /scheduling-form-section-end-date/i})
+      const endAfterStudyRadioButton = within(endDateSection).getByRole('radio', {name: /end-after-study/i})
+      const nOccurrencesRadioButton = within(endDateSection).getByRole('radio', {name: /end-after-n-occurrences/i})
+      const nOccurrencesValue = within(endDateSection).getByRole('textbox', {name: /n-occurrences/i})
+      const repeatFrequencySection = screen.getByRole('region', {name: /scheduling-form-section-repeat-frequency/i})
+
+      expect(endAfterStudyRadioButton.parentElement).toHaveClass('Mui-checked')
+      expect(nOccurrencesRadioButton.parentElement).not.toHaveClass('Mui-checked')
+      expect(repeatFrequencySection).toHaveTextContent(/until the end of study/i)
+
+      await act(async () => {
+        await user.click(nOccurrencesRadioButton)
+      })
+      expect(endAfterStudyRadioButton.parentElement).not.toHaveClass('Mui-checked')
+      expect(nOccurrencesRadioButton.parentElement).toHaveClass('Mui-checked')
+      expect(repeatFrequencySection).toHaveTextContent(/until the end of study/i)
+
+      await act(async () => {
+        await user.clear(nOccurrencesValue)
+        await user.type(nOccurrencesValue, '5')
+      })
+      expect(nOccurrencesValue).toHaveValue('5')
+      expect(repeatFrequencySection).toHaveTextContent(/for 5 times/i)
+
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenLastCalledWith({...studySession, occurrences: '5'}, undefined, undefined)
+    })
+  })
+
+  describe('repeat frequency', () => {
+    test('should update repeat frequency - duration', async () => {
+      const {user} = setUp({...studySession, occurrences: 5})
+
+      const repeatFrequencySection = screen.getByRole('region', {name: /scheduling-form-section-repeat-frequency/i})
+      expect(repeatFrequencySection).toHaveTextContent(/for 5 times/i)
+
+      const durationBox = within(repeatFrequencySection).getByLabelText('duration-box')
+      const durationValue = within(durationBox).getByRole('spinbutton')
+
+      expect(durationValue).toHaveValue(null)
+      expect(durationBox).toHaveTextContent('days')
+
+      await act(async () => {
+        await user.clear(durationValue)
+        await user.type(durationValue, '20')
+        await user.keyboard('{Tab}') // to trigger onUpdateFn
+      })
+
+      expect(durationValue).toHaveValue(20)
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenLastCalledWith(
+        {...studySession, occurrences: 5, interval: 'P20D'},
+        undefined,
+        undefined
+      )
+    })
+
+    test('should update repeat frequency - duration units', async () => {
+      const {user} = setUp({...studySession, occurrences: 5, interval: 'P20D'})
+
+      const repeatFrequencySection = screen.getByRole('region', {name: /scheduling-form-section-repeat-frequency/i})
+      expect(repeatFrequencySection).toHaveTextContent(/for 5 times/i)
+
+      const durationBox = within(repeatFrequencySection).getByLabelText('duration-box')
+      const durationUnitsButton = within(within(durationBox).getByLabelText(/repeat every/i)).getByRole('button')
+      expect(durationBox).toHaveTextContent('days')
+
+      user.click(durationUnitsButton)
+      const durationDropdownItem = await screen.findByRole('option', {name: /weeks/i})
+      user.click(durationDropdownItem)
+      await waitForElementToBeRemoved(durationDropdownItem)
+
+      expect(durationBox).toHaveTextContent('weeks')
+      expect(onUpdateFn).toHaveBeenLastCalledWith(
+        {...studySession, occurrences: 5, interval: 'P20W'},
+        undefined,
+        undefined
+      )
+    })
+
+    test('should clear repeat frequency after clicking clear button', async () => {
+      const {user} = setUp({...studySession, occurrences: 5, interval: 'P20D'})
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-repeat-frequency/i})
+      const durationValue = within(section).getByRole('spinbutton')
+      const clearButton = within(section).getByRole('button', {name: /clear-duration-value/i})
+
+      expect(durationValue).toHaveValue(20)
+
+      await act(async () => {
+        await user.click(clearButton)
+      })
+
+      expect(durationValue).toHaveValue(null)
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenCalledWith({...studySession, occurrences: 5}, undefined, undefined)
+    })
+  })
+
+  describe('assessment window', () => {
+    test('should update session window - start time', async () => {
+      const {user} = setUp(studySession)
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-session-window/i})
+      const sessionWindow = within(section).getByLabelText(/session-window-2/i)
+      const startTimeContainer = within(sessionWindow).getByLabelText(/start-time/i)
+
+      const startTimeButton = within(startTimeContainer).getByRole('button')
+      expect(startTimeButton).toHaveTextContent('10:15 AM')
+
+      user.click(startTimeButton)
+      const dropdownTime = await screen.findByRole('option', {name: /5:30 pm/i})
+      user.click(dropdownTime)
+      await waitForElementToBeRemoved(dropdownTime)
+
+      expect(sessionWindow).not.toBeInTheDocument()
+      const sessionWindowUpdated = within(section).getByLabelText(/session-window-2/i)
+      expect(sessionWindowUpdated).toHaveTextContent(/5:30 pm/i)
+
+      const updatedTimeWindow = {
+        ...studySession.timeWindows[1],
+        startTime: '17:30',
+      }
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenCalledWith(
+        {...studySession, timeWindows: [studySession.timeWindows[0], updatedTimeWindow]},
+        undefined,
+        undefined
+      )
+    })
+
+    test('should update session window - expiration duration', async () => {
+      const {user} = setUp(studySession)
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-session-window/i})
+      const sessionWindow = within(section).getByLabelText(/session-window-2/i)
+      const durationBox = within(sessionWindow).getByLabelText('duration-box')
+      const durationValue = within(durationBox).getByRole('spinbutton')
+
+      expect(durationValue).toHaveValue(2)
+      expect(durationBox).toHaveTextContent('hours')
+
+      await act(async () => {
+        await user.clear(durationValue)
+        await user.type(durationValue, '18')
+        await user.keyboard('{Tab}') // to trigger onUpdateFn
+      })
+
+      const updatedTimeWindow = {
+        ...studySession.timeWindows[1],
+        expiration: 'PT18H',
+      }
+
+      expect(durationValue).toHaveValue(18)
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenLastCalledWith(
+        {...studySession, timeWindows: [studySession.timeWindows[0], updatedTimeWindow]},
+        undefined,
+        undefined
+      )
+    })
+
+    test('should update session window - expiration duration units', async () => {
+      const {user} = setUp(studySession)
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-session-window/i})
+      const sessionWindow = within(section).getByLabelText(/session-window-2/i)
+      const durationBox = within(sessionWindow).getByLabelText('duration-box')
+      const durationUnitsButton = within(within(durationBox).getByLabelText(/expire after/i)).getByRole('button')
+      expect(durationBox).toHaveTextContent('hours')
+
+      user.click(durationUnitsButton)
+      const durationDropdownItem = await screen.findByRole('option', {name: /days/i})
+      user.click(durationDropdownItem)
+      await waitForElementToBeRemoved(durationDropdownItem)
+      expect(durationBox).toHaveTextContent('days')
+
+      const updatedTimeWindow = {
+        ...studySession.timeWindows[1],
+        expiration: 'P2D',
+      }
+
+      expect(onUpdateFn).toHaveBeenLastCalledWith(
+        {...studySession, timeWindows: [studySession.timeWindows[0], updatedTimeWindow]},
+        undefined,
+        undefined
+      )
+    })
+
+    test('should clear expiration duration after clicking clear button', async () => {
+      const {user} = setUp(studySession)
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-session-window/i})
+      const sessionWindow = within(section).getByLabelText(/session-window-2/i)
+      const durationValue = within(sessionWindow).getByRole('spinbutton')
+      const clearButton = within(sessionWindow).getByRole('button', {name: /clear-duration-value/i})
+
+      expect(durationValue).toHaveValue(2)
+
+      await act(async () => {
+        await user.click(clearButton)
+      })
+
+      expect(durationValue).not.toBeInTheDocument()
+      const durationValueUpdated = within(within(section).getByLabelText(/session-window-2/i)).getByRole('spinbutton')
+      expect(durationValueUpdated).toHaveValue(null)
+
+      const updatedTimeWindow = {
+        ...studySession.timeWindows[1],
+        expiration: undefined,
+      }
+
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenCalledWith(
+        {...studySession, timeWindows: [studySession.timeWindows[0], updatedTimeWindow]},
+        undefined,
+        undefined
+      )
+    })
+
+    test('should remove session window', async () => {
+      const {user} = setUp(studySession)
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-session-window/i})
+      const sessionWindow = within(section).getByLabelText(/session-window-1/i)
+      expect(within(section).getByLabelText(/session-window-2/i)).toBeInTheDocument()
+
+      const deleteButton = within(sessionWindow).getByRole('button', {name: /delete-button/i})
+      await act(async () => {
+        await user.click(deleteButton)
+      })
+      expect(sessionWindow).not.toBeInTheDocument()
+
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenCalledWith(
+        {...studySession, timeWindows: studySession.timeWindows.slice(1)},
+        undefined,
+        undefined
+      )
+
+      const remainingSessionWindow = within(section).getByLabelText(/session.window-1/i)
+      const durationBox = within(remainingSessionWindow).getByLabelText('duration-box')
+      const durationValue = within(durationBox).getByRole('spinbutton')
+
+      expect(durationValue).toHaveValue(2)
+      expect(durationBox).toHaveTextContent('hours')
+      expect(remainingSessionWindow).toHaveTextContent(/10:15 am/i)
+    })
+
+    test('should add session window', async () => {
+      // create a deep copy of studySession
+      // ...since addNewWindow mutates the original session
+      const copyStudySession = {
+        ...studySession,
+        timeWindows: [...studySession.timeWindows],
+      }
+      const {user} = setUp(copyStudySession)
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-session-window/i})
+
+      const addButton = within(section).getByRole('button', {name: /add-assessment-window-button/i})
+      user.click(addButton)
+      await within(section).findByLabelText(/session-window-3/i)
+
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenCalledWith(
+        {...studySession, timeWindows: [...studySession.timeWindows, {startTime: '08:00'}]},
+        undefined,
+        undefined
+      )
+    })
+
+    test('should disable ability to add new session if window longer than 24 hours', async () => {
+      const longTimeWindow = {
+        guid: '0QvoUQCbczCYo27Sy84YbBxX',
+        startTime: '08:00',
+        expiration: 'P3D',
+        persistent: false,
+        type: 'TimeWindow',
+      }
+      const {user} = setUp({...studySession, timeWindows: [longTimeWindow]})
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-session-window/i})
+
+      const addButton = within(section).getByRole('button', {name: /add-assessment-window-button/i})
+      expect(addButton).toBeDisabled()
+    })
+  })
 })
 
 test.skip('renders and changes reminder notification type', async () => {

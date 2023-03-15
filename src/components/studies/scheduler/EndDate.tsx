@@ -23,14 +23,15 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({occurrences, onChange}:
   }
 
   return (
-    <SchedulingFormSection label={'End after*:'}>
+    <SchedulingFormSection label={'End after*:'} ariaLabel="scheduling-form-section-end-date">
       <RadioGroup
         aria-label="End after"
         name="endAfter"
         value={endType}
         onChange={e => changeEndDate(e.target.value as SessionScheduleEndType)}>
-        <FormControlLabel value={'END_STUDY'} control={<Radio />} label="End of study " />
+        <FormControlLabel aria-label="end-after-study" value={'END_STUDY'} control={<Radio />} label="End of study " />
         <FormControlLabel
+          aria-label="end-after-n-occurrences"
           control={
             <>
               <Radio value={'N_OCCURRENCES'} />{' '}
@@ -39,7 +40,8 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({occurrences, onChange}:
                 control={
                   <SmallTextBox
                     onFocus={() => changeEndDate('N_OCCURRENCES')}
-                    id="occurrences"
+                    aria-label="n-occurrences"
+                    name="occurrences"
                     sx={{marginBottom: 0, marginRight: '10px'}}
                     isLessThanOneAllowed={false}
                     onChange={e => onChange(e.target.value)}

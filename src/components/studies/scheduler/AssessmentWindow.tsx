@@ -24,12 +24,13 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
 }: AssessmentWindowProps) => {
   return (
     <Paper
+      aria-label={`session-window-${index + 1}`}
       sx={{margin: theme.spacing(2, 0), border: errorText ? `1px solid ${theme.palette.error.main}` : 'none'}}
       elevation={2}>
       <StyledSmallSectionHeader onClick={() => onDelete()} title={`Session Window ${index + 1}`} />
 
       <Box sx={{display: 'flex', padding: theme.spacing(0, 3, 2, 3)}}>
-        <FormGroup row={true} style={{alignItems: 'center'}}>
+        <FormGroup aria-label="start-time" row={true} style={{alignItems: 'center'}}>
           <InputLabel htmlFor="from"> Start:&nbsp;&nbsp;</InputLabel>
 
           <SelectWithEnum
@@ -45,7 +46,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
             }></SelectWithEnum>
         </FormGroup>
 
-        <FormGroup row={true} style={{alignItems: 'center'}}>
+        <FormGroup aria-label="expiration-after" row={true} style={{alignItems: 'center'}}>
           <InputLabel htmlFor="expire">Expire after: &nbsp;&nbsp;</InputLabel>
           <Box display="inline-flex" alignItems="center">
             <Duration
