@@ -201,6 +201,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     setDisplayFeedbackBanner(true)
   }
 
+  const hideFeedback = () => {
+    setDisplayFeedbackBanner(false)
+  }
+
   return (
     <Box id="studyBuilder">
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
@@ -289,6 +293,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                         <Scheduler
                           id={id}
                           onShowFeedback={showFeedback}
+                          onHideFeedback={hideFeedback}
                           isReadOnly={!StudyService.isStudyInDesign(study)}>
                           {navButtons}
                         </Scheduler>

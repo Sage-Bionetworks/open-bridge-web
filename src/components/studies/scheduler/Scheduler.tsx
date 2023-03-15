@@ -126,6 +126,7 @@ type SchedulerProps = {
   id: string
   isReadOnly: boolean
   onShowFeedback: Function
+  onHideFeedback: Function
 }
 
 /* default schedule is each session only has:
@@ -153,7 +154,13 @@ function isScheduleDefault(schedule: Schedule) {
   return true
 }
 
-const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isReadOnly, onShowFeedback}) => {
+const Scheduler: React.FunctionComponent<SchedulerProps> = ({
+  id,
+  children,
+  isReadOnly,
+  onShowFeedback,
+  onHideFeedback,
+}) => {
   const classes = useStyles()
 
   const {data: _study} = useStudy(id)
@@ -701,7 +708,12 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                         )}></SchedulableSingleSessionContainer>{' '}
                     </Box>
                     <StyledButtonBar>
-                      <Button variant="outlined" onClick={() => onCancelSessionUpdate()}>
+                      <Button
+                        variant="outlined"
+                        onClick={() => {
+                          onHideFeedback()
+                          onCancelSessionUpdate()
+                        }}>
                         Cancel
                       </Button>
 

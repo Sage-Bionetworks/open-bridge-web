@@ -27,6 +27,10 @@ export interface DurationProps {
   placeHolder?: string
   selectWidth?: number
   inputWidth?: number
+  /* maxDigits: max number of digits that can be entered for the value, sets width of input field accordingly, defaults to 3
+  ...can override max digits restriction by setting maxDurationDays
+  ...can override input field width by setting inputWidth */
+  maxDigits?: number
 }
 
 const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> = ({
@@ -42,6 +46,7 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
   placeHolder,
   selectWidth,
   inputWidth,
+  maxDigits = 3,
   isShowClear = true,
   ...props
 }: DurationProps) => {
@@ -67,9 +72,13 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
     }
   }, [durationString])
 
+  const hasAppropriateNumberOfDigits = (value: number) => {
+    return `${value}`.length <= maxDigits
+  }
+
   const validate = (value: number, unit: string) => {
     if (!maxDurationDays) {
-      return true
+      return hasAppropriateNumberOfDigits(value)
     }
     const days = unit === 'W' ? value * 7 : value
     return days <= maxDurationDays
@@ -112,7 +121,8 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           changeValue(Number(e.target.value as string), unt)
         }}
-        inputWidth={inputWidth}></SmallTextBox>
+        // inputWidth is theme.spacing
+        inputWidth={inputWidth || maxDigits + 4}></SmallTextBox>
 
       <SelectWithEnum
         disabled={!!disabled}
