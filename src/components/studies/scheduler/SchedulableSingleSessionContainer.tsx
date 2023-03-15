@@ -300,13 +300,19 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
           <SchedulingFormSection
             label="Session Window"
             isRequired={true}
+            ariaLabel="scheduling-form-section-session-window"
             postLabel={
               <Tooltip title="Add assessment window">
                 <InfoTwoToneIcon sx={{fontSize: '15px'}} />
               </Tooltip>
             }
             rightElement={
-              <Button onClick={addNewWindow} size="small" variant="outlined" disabled={hasWindowLongerThan24h()}>
+              <Button
+                aria-label="add-assessment-window-button"
+                onClick={addNewWindow}
+                size="small"
+                variant="outlined"
+                disabled={hasWindowLongerThan24h()}>
                 Add Window
               </Button>
             }>
@@ -367,6 +373,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                 </Button>
               ) : undefined
             }
+            ariaLabel="scheduling-form-section-session-notifications"
             label={'Session Notifications'}>
             <Box flexGrow={1}>
               {schedulableSession.notifications?.map((notification, index) => (

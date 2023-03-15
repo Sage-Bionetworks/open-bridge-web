@@ -106,11 +106,12 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
     return (
       <FormControl className={classes.formControl}>
         <Select
+          aria-label="select-event-id"
           variant="outlined"
           disabled={disabled}
           classes={{select: classes.select}}
           onChange={e => onChangeFn(e.target.value)}
-          id={'id'}
+          name={'id'}
           value={value}>
           {eventDropdownValues.map(item => (
             <MenuItem value={item.value} key={item.value}>
@@ -123,14 +124,14 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   }
 
   return (
-    <SchedulingFormSection label="Start Session On">
+    <SchedulingFormSection label="Start Session On" ariaLabel="scheduling-form-section-start-date">
       <div className={isBurst ? classes.disabled : ''}>
         <RadioGroup
           aria-label="Session Starts On"
           name="startDate"
           value={hasDelay}
           onChange={e => changeStartDelayType(e.target.value === 'true')}>
-          <FormGroup row={true} style={{alignItems: 'center'}}>
+          <FormGroup aria-label="event-only" row={true} style={{alignItems: 'center'}}>
             <Radio value={false} disabled={isBurst} color="secondary" />
             <SelectEventId
               disabled={hasDelay || isBurst}
@@ -139,7 +140,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
             <ToolIcon onOpenEventsEditor={onOpenEventsEditor} />
             {isBurst ? children : ''}
           </FormGroup>
-          <FormGroup row={true} style={{alignItems: 'center'}}>
+          <FormGroup aria-label="event-and-duration" row={true} style={{alignItems: 'center'}}>
             <Radio value={true} color="secondary" disabled={isBurst} />{' '}
             <Duration
               onChange={e => {

@@ -675,10 +675,10 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({id, children, isRea
                         onUpdateSessionSchedule={(
                           session: StudySession,
                           shouldInvalidateBurst: boolean,
-                          shouldUpdaeStudyStartEvent: boolean
+                          shouldUpdateStudyStartEvent: boolean
                         ) => {
                           if (
-                            shouldUpdaeStudyStartEvent &&
+                            shouldUpdateStudyStartEvent &&
                             session.startEventIds.length > 0 &&
                             session.startEventIds[0]
                           ) {

@@ -100,7 +100,7 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
   }
 
   return (
-    <Box sx={{display: 'flex', alignItems: 'center'}} onBlur={triggerChange}>
+    <Box aria-label="duration-box" sx={{display: 'flex', alignItems: 'center'}} onBlur={triggerChange}>
       <SmallTextBox
         disabled={!!disabled}
         sx={{marginBottom: 0}}
@@ -108,7 +108,7 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
         aria-label={numberLabel}
         type="number"
         {...props}
-        id={numberLabel.replace(' ', '')}
+        name={numberLabel.replace(' ', '')}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           changeValue(Number(e.target.value as string), unt)
         }}
@@ -121,11 +121,14 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
         value={unt}
         label={placeHolder}
         sourceData={unitData}
-        id={unitLabel.replace(' ', '')}
+        name={unitLabel.replace(' ', '')}
         onChange={e => changeValue(num, e.target.value as string)}
         sx={{width: `${selectWidth || 100}px`}}></SelectWithEnum>
       {isShowClear && (
-        <StyledIconButton onClick={_e => onChange({target: {value: undefined}})} size="large">
+        <StyledIconButton
+          aria-label="clear-duration-value"
+          onClick={_e => onChange({target: {value: undefined}})}
+          size="large">
           <ClearIcon />
         </StyledIconButton>
       )}

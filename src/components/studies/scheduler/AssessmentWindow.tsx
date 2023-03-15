@@ -36,7 +36,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
             value={window.startTime}
             style={{marginLeft: 0}}
             sourceData={getDropdownTimeItems()}
-            id="from"
+            name="from"
             onChange={e =>
               onChange({
                 ...window,

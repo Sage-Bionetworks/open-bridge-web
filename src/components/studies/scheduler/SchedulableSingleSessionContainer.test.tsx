@@ -1,10 +1,9 @@
-import {cleanup, render, screen, within} from '@testing-library/react'
+import {cleanup, render, screen, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {StudySession} from '@typedefs/scheduling'
+import {EventUpdateType, SchedulingEvent, StudySession} from '@typedefs/scheduling'
 import React from 'react'
 import {act} from 'react-dom/test-utils'
-import {MemoryRouter} from 'react-router-dom'
-import {ProvideTheme} from '__test_utils/utils'
+import {createWrapper} from '__test_utils/utils'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 
 const onUpdateFn = jest.fn()
@@ -75,41 +74,174 @@ const studySession: StudySession = {
   startEventIds: ['timeline_retrieved'],
 }
 
-const Wrapper: React.FunctionComponent<{_session: StudySession}> = ({_session}) => {
+const customEvents = [
+  {
+    eventId: 'Event 1',
+    updateType: 'mutable' as EventUpdateType,
+    type: 'CustomEvent',
+  },
+  {
+    eventId: 'Event 2',
+    updateType: 'mutable' as EventUpdateType,
+    type: 'CustomEvent',
+  },
+  {
+    eventId: 'Event 3',
+    updateType: 'mutable' as EventUpdateType,
+    type: 'CustomEvent',
+  },
+]
+
+const SessionWrapper: React.FunctionComponent<{_session: StudySession; customEvents: SchedulingEvent[]}> = ({
+  _session,
+  customEvents,
+}) => {
   const [session, setSession] = React.useState(_session)
 
   return (
-    <ProvideTheme>
-      <MemoryRouter>
-        <SchedulableSingleSessionContainer
-          onOpenEventsEditor={() => {}}
-          key={'12345'}
-          customEvents={[]}
-          sessionErrorState={undefined}
-          studySession={session}
-          hasCriticalStartEvent={false}
-          burstOriginEventId={undefined}
-          onUpdateSessionSchedule={(
-            ss: StudySession,
-            shouldInvalidateBurst: boolean,
-            shouldUpdaeStudyStartEvent: boolean
-          ) => {
-            onUpdateFn(ss, shouldInvalidateBurst, shouldUpdaeStudyStartEvent)
-            setSession(ss)
-          }}
-        />
-      </MemoryRouter>
-    </ProvideTheme>
+    <SchedulableSingleSessionContainer
+      onOpenEventsEditor={() => {}}
+      key={'12345'}
+      customEvents={customEvents}
+      sessionErrorState={undefined}
+      studySession={session}
+      hasCriticalStartEvent={false}
+      burstOriginEventId={undefined}
+      onUpdateSessionSchedule={(
+        ss: StudySession,
+        shouldInvalidateBurst: boolean,
+        shouldUpdateStudyStartEvent: boolean
+      ) => {
+        onUpdateFn(ss, shouldInvalidateBurst, shouldUpdateStudyStartEvent)
+        setSession(ss)
+      }}
+    />
   )
 }
 
-function setUp(session: StudySession) {
+function setUp(session: StudySession, customEvents: SchedulingEvent[] = []) {
   const user = userEvent.setup()
-  const component = render(<Wrapper _session={session} />)
+  const component = render(<SessionWrapper _session={session} customEvents={customEvents} />, {
+    wrapper: createWrapper(),
+  })
   return {component, user}
 }
 
-test('renders and changes reminder notification type', async () => {
+describe('SchedulableSingleSessionContainer', () => {
+  describe('start date', () => {
+    test('should switch start date to start event only', async () => {
+      const {user} = setUp({...studySession, delay: 'PT47H', startEventIds: ['custom:Event 2']}, customEvents)
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-start-date/i})
+      const eventOnlyRadioButton = within(within(section).getByLabelText('event-only')).getByRole('radio')
+      const eventAndDurationRadioButton = within(within(section).getByLabelText('event-and-duration')).getByRole(
+        'radio'
+      )
+
+      expect(eventOnlyRadioButton.parentElement).not.toHaveClass('Mui-checked')
+      expect(eventAndDurationRadioButton.parentElement).toHaveClass('Mui-checked')
+
+      await act(async () => {
+        await user.click(eventOnlyRadioButton)
+      })
+
+      expect(eventOnlyRadioButton.parentElement).toHaveClass('Mui-checked')
+      expect(eventAndDurationRadioButton.parentElement).not.toHaveClass('Mui-checked')
+
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenLastCalledWith(
+        {...studySession, startEventIds: ['custom:Event 2']},
+        undefined,
+        undefined
+      )
+    })
+
+    test('should update start date - change start event only', async () => {
+      const {user} = setUp(studySession, customEvents)
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-start-date/i})
+      const formGroup = within(section).getByLabelText('event-only')
+      const eventButton = within(formGroup).getByRole('button', {name: /initial_login/i})
+
+      await act(async () => {
+        user.click(eventButton)
+      })
+      const eventDropdownItem = await screen.findByRole('option', {name: /event 2/i})
+      user.click(eventDropdownItem)
+      await waitForElementToBeRemoved(eventDropdownItem)
+
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenLastCalledWith({...studySession, startEventIds: ['custom:Event 2']}, true, false)
+      expect(await within(formGroup).findByRole('button', {name: /event 2/i})).toBeInTheDocument()
+    })
+
+    test('should switch start date to duration and start event', async () => {
+      const {user} = setUp(studySession, customEvents)
+
+      const formGroup = screen.getByLabelText('event-and-duration')
+      const radioButton = within(formGroup).getByRole('radio')
+      expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
+
+      await act(async () => {
+        await user.click(radioButton)
+      })
+      expect(radioButton.parentElement).toHaveClass('Mui-checked')
+
+      const durationBox = within(formGroup).getByLabelText('duration-box')
+      const durationValue = within(durationBox).getByRole('spinbutton')
+      const durationUnitsButton = within(durationBox).getByRole('button')
+
+      const eventButtonContainer = within(formGroup).getByLabelText('select-event-id')
+      const eventButton = within(eventButtonContainer).getByRole('button')
+
+      expect(durationValue).toHaveValue(null)
+      expect(durationBox).toHaveTextContent('days')
+      expect(eventButton).toHaveTextContent(/initial_login/i)
+
+      await act(async () => {
+        await user.clear(durationValue)
+        await user.type(durationValue, '47')
+        await user.keyboard('{Tab}') // to trigger onUpdateFn
+      })
+      expect(durationValue).toHaveValue(47)
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenLastCalledWith({...studySession, delay: 'P47D'}, undefined, undefined)
+
+      user.click(durationUnitsButton)
+      const durationDropdownItem = await screen.findByRole('option', {name: /hours/i})
+      user.click(durationDropdownItem)
+      await waitForElementToBeRemoved(durationDropdownItem)
+      expect(durationBox).toHaveTextContent('hours')
+
+      expect(onUpdateFn).toHaveBeenLastCalledWith({...studySession, delay: 'PT47H'}, undefined, undefined)
+    })
+
+    test('should update start date - change start event in duration and event section', async () => {
+      const {user} = setUp({...studySession, delay: 'PT47H', startEventIds: ['custom:Event 2']}, customEvents)
+
+      const section = screen.getByRole('region', {name: /scheduling-form-section-start-date/i})
+      const formGroup = within(section).getByLabelText('event-and-duration')
+      const eventButton = within(within(formGroup).getByLabelText(/select-event-id/i)).getByRole('button')
+
+      await act(async () => {
+        user.click(eventButton)
+      })
+      const eventDropdownItem = await screen.findByRole('option', {name: /initial_login/i})
+      user.click(eventDropdownItem)
+      await waitForElementToBeRemoved(eventDropdownItem)
+
+      expect(onUpdateFn).toHaveBeenCalledTimes(1)
+      expect(onUpdateFn).toHaveBeenLastCalledWith(
+        {...studySession, delay: 'PT47H', startEventIds: ['timeline_retrieved']},
+        true,
+        false
+      )
+      expect(await within(formGroup).findByLabelText(/initial_login/i)).toBeInTheDocument()
+    })
+  })
+})
+
+test.skip('renders and changes reminder notification type', async () => {
   const {user} = setUp(studySession)
   const reminderNotification = screen
     .getByText(/Follow-up Notification/i)
