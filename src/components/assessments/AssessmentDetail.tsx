@@ -19,20 +19,9 @@ import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
 import AssessmentImage from './AssessmentImage'
 
-const ImageTextRow = styled(Box)(({theme}) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginLeft: theme.spacing(2),
-
-  marginTop: theme.spacing(2.5),
-  marginBottom: theme.spacing(2.5),
-}))
-
 const InfoTextInContainer = styled(Box)(({theme}) => ({
   fontSize: '14px',
   lineHeight: '18px',
-  fontFamily: poppinsFont,
 }))
 
 const StyledDivider = styled(Divider)(({theme}) => ({
