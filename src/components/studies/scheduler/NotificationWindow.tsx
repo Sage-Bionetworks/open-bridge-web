@@ -62,6 +62,7 @@ export interface NotificationWindowProps {
   notification: ScheduleNotification
   children: React.ReactNode
   isError: boolean
+  canDelete?: boolean
 }
 
 const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
@@ -72,6 +73,7 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
   isMultiday,
   children,
   isError,
+  canDelete,
 }: NotificationWindowProps) => {
   const updateMessage = (options: {subject?: string; message?: string}) => {
     const messages = notification.messages || []
@@ -89,13 +91,14 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
       <StyledSmallSectionHeader
         onClick={() => onDelete()}
         title={`${index + 1}. ${index === 0 ? 'Initial Notification' : 'Follow-up Notification'}`}
+        canDelete={canDelete}
       />
 
       <Box mx="auto" width="auto" sx={{padding: theme.spacing(3, 3, 0, 3)}}>
         <FormControl fullWidth sx={{marginBottom: theme.spacing(1)}}>
-          <SimpleTextLabel htmlFor="subject-line">Subject line: (30 character limit)</SimpleTextLabel>
+          <SimpleTextLabel htmlFor={`subject-line-${index}`}>Subject line: (30 character limit)</SimpleTextLabel>
           <SimpleTextInput
-            id="subject-line"
+            id={`subject-line-${index}`}
             variant="outlined"
             multiline={false}
             fullWidth={true}
@@ -107,8 +110,9 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
         </FormControl>
 
         <FormControl fullWidth sx={{marginBottom: theme.spacing(1)}}>
-          <SimpleTextLabel htmlFor="body-text">Body text: (40 character limit)</SimpleTextLabel>
+          <SimpleTextLabel htmlFor={`body-text-${index}`}>Body text: (40 character limit)</SimpleTextLabel>
           <SimpleTextInput
+            id={`body-text-${index}`}
             multiline={true}
             fullWidth={true}
             variant="outlined"
