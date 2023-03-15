@@ -13,7 +13,7 @@ const durationProps: DurationProps = {
   durationString: '',
   unitData: DWsEnum,
   unitLabel: 'unit',
-  numberLabel: 'value',
+  numberLabel: 'number',
 }
 
 function setUp(durationProps: DurationProps) {
@@ -103,14 +103,14 @@ describe('<Duration />', () => {
   test('should use maxDigits to set input field width when inputWidth not set', async () => {
     setUp({...durationProps})
 
-    const valueParent = screen.getByLabelText(/value/i)
+    const valueParent = screen.getByLabelText(/number/i)
     expect(valueParent).toHaveAttribute('width', '7')
   })
 
   test('should use inputWidth to set input field width', async () => {
     setUp({...durationProps, inputWidth: 50})
 
-    const valueParent = screen.getByLabelText(/value/i)
+    const valueParent = screen.getByLabelText(/number/i)
     expect(valueParent).toHaveAttribute('width', '50')
   })
 })
