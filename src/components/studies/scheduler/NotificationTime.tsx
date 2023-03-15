@@ -114,6 +114,32 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     }
   }, [offset, isMultiday])
 
+  // Hook to track previous value of a prop, from: https://stackoverflow.com/a/57706747
+  const usePrevious = <T extends unknown>(value: T): T | undefined => {
+    const ref = React.useRef<T>()
+    React.useEffect(() => {
+      ref.current = value
+    })
+    return ref.current
+  }
+
+  /* Re-calculate offset when windowStartTime changes. 
+  Track prevWindowStartTime so can tell when windowStartTime has actually changed, as opposed to 
+  just when the offset is updated, which updates the NotificationWindow key and treats windowStarTime as changed. 
+  See: https://stackoverflow.com/a/60979832 */
+  const prevWindowStartTime = usePrevious(windowStartTime)
+  React.useEffect(() => {
+    if (
+      isFollowUp &&
+      isMultiday &&
+      prevWindowStartTime !== undefined &&
+      windowStartTime !== undefined &&
+      prevWindowStartTime !== windowStartTime
+    ) {
+      changeMultidayOffset({days: daysForMultidayOffset, time: timeForMultidayOffset})
+    }
+  }, [windowStartTime])
+
   //--- initial notification fns ----//
   const toggleOffsetForInitialNotification = (value: string) => {
     if (value === 'false') {
@@ -223,7 +249,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
           value={timeForMultidayOffset || windowStartTime}
           style={{marginLeft: 0}}
           sourceData={getDropdownTimeItems()}
-          name="from"
+          name="after"
           onChange={e =>
             changeMultidayOffset({
               days: daysForMultidayOffset,
