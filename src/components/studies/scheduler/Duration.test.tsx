@@ -1,8 +1,10 @@
-import {act, cleanup, render, screen, waitForElementToBeRemoved} from '@testing-library/react'
+import {act, cleanup, fireEvent, render, screen, waitForElementToBeRemoved} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {DWsEnum} from '@typedefs/scheduling'
 import {createWrapper} from '__test_utils/utils'
 import Duration, {DurationProps} from './Duration'
+
+const onChangeFn = jest.fn()
 
 afterEach(() => {
   cleanup()
@@ -18,9 +20,17 @@ const durationProps: DurationProps = {
 
 function setUp(durationProps: DurationProps) {
   const user = userEvent.setup()
-  const component = render(<Duration {...durationProps} onChange={() => {}} />, {
-    wrapper: createWrapper(),
-  })
+  const component = render(
+    <Duration
+      {...durationProps}
+      onChange={e => {
+        onChangeFn(e)
+      }}
+    />,
+    {
+      wrapper: createWrapper(),
+    }
+  )
   const value = screen.getByRole('spinbutton')
   const unitButton = screen.getAllByRole('button')[0]
   return {component, user, value, unitButton}
@@ -38,16 +48,28 @@ describe('<Duration />', () => {
     })
     expect(value).toHaveValue(123)
 
+    fireEvent.blur(value)
+    expect(onChangeFn).toHaveBeenCalledTimes(1)
+    expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P123D'}})
+
     await act(async () => {
       await user.type(value, '456')
     })
     expect(value).toHaveValue(123)
+
+    fireEvent.blur(value)
+    expect(onChangeFn).toHaveBeenCalledTimes(2)
+    expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P123D'}})
 
     await act(async () => {
       await user.clear(value)
       await user.type(value, '5678')
     })
     expect(value).toHaveValue(567)
+
+    fireEvent.blur(value)
+    expect(onChangeFn).toHaveBeenCalledTimes(3)
+    expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P567D'}})
   })
 
   test('should use maxDurationDays to restrict value entered in days', async () => {
@@ -58,6 +80,8 @@ describe('<Duration />', () => {
     user.click(dropdown)
     await waitForElementToBeRemoved(dropdown)
 
+    expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: undefined}})
+
     expect(value).toHaveValue(null)
     expect(unitButton).toHaveTextContent('days')
 
@@ -67,12 +91,18 @@ describe('<Duration />', () => {
     expect(value).toHaveValue(1825)
     expect(unitButton).toHaveTextContent('days')
 
+    fireEvent.blur(value)
+    expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P1825D'}})
+
     await act(async () => {
       await user.clear(value)
       await user.type(value, '1826')
     })
     expect(value).toHaveValue(182)
     expect(unitButton).toHaveTextContent('days')
+
+    fireEvent.blur(value)
+    expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P182D'}})
   })
 
   test('should use maxDurationDays to restrict value entered in weeks', async () => {
@@ -86,11 +116,17 @@ describe('<Duration />', () => {
     expect(value).toHaveValue(null)
     expect(unitButton).toHaveTextContent('weeks')
 
+    fireEvent.blur(value)
+    expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: undefined}})
+
     await act(async () => {
       await user.type(value, '260')
     })
     expect(value).toHaveValue(260)
     expect(unitButton).toHaveTextContent('weeks')
+
+    fireEvent.blur(value)
+    expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P260W'}})
 
     await act(async () => {
       await user.clear(value)
@@ -98,6 +134,46 @@ describe('<Duration />', () => {
     })
     expect(value).toHaveValue(26)
     expect(unitButton).toHaveTextContent('weeks')
+
+    fireEvent.blur(value)
+    expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P26W'}})
+  })
+
+  test('should not allow user to change unit into invalid state when maxDurationDays set', async () => {
+    const {user, value, unitButton} = setUp({...durationProps, durationString: 'P1825D', maxDurationDays: 1825})
+
+    expect(value).toHaveValue(1825)
+    expect(unitButton).toHaveTextContent('days')
+
+    user.click(unitButton)
+    const dropdown = await screen.findByRole('option', {name: /weeks/i})
+    user.click(dropdown)
+    await waitForElementToBeRemoved(dropdown)
+
+    expect(unitButton).toHaveTextContent('days')
+    expect(onChangeFn).toHaveBeenCalledWith({target: {value: 'P1825D'}})
+  })
+
+  test('should not overwrite historic data with more digits than maxDigits', async () => {
+    const {user, value, unitButton} = setUp({...durationProps, maxDigits: 1, durationString: 'P123456789D'})
+
+    expect(value).toHaveValue(123456789)
+    expect(unitButton).toHaveTextContent('days')
+
+    fireEvent.blur(value)
+    expect(onChangeFn).toHaveBeenCalledTimes(1)
+    expect(onChangeFn).toHaveBeenCalledWith({target: {value: 'P123456789D'}})
+
+    user.click(unitButton)
+    const dropdown = await screen.findByRole('option', {name: /weeks/i})
+    user.click(dropdown)
+    await waitForElementToBeRemoved(dropdown)
+
+    expect(value).toHaveValue(123456789)
+    expect(unitButton).toHaveTextContent('days')
+
+    fireEvent.blur(value)
+    expect(onChangeFn).toHaveBeenCalledWith({target: {value: 'P123456789D'}})
   })
 
   test('should use maxDigits to set input field width when inputWidth not set', async () => {
