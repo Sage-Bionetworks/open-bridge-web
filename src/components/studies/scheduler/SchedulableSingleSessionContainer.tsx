@@ -217,11 +217,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   }
 
   const canDeleteNotification = (notifications: ScheduleNotification[], index: number) => {
-    // follow-up notifications are always deleteable
-    if (index > 0) return true
-
     // initial notifications are only deletable if no other notifications exist
-    return index === 0 && notifications.length === 1
+    // follow-up notifications are always deleteable
+    return index > 0 || notifications.length === 1
   }
 
   return (
