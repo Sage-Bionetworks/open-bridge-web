@@ -216,6 +216,12 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     return index + result + messageKey
   }
 
+  const canDeleteNotification = (notifications: ScheduleNotification[], index: number) => {
+    // initial notifications are only deletable if no other notifications exist
+    // follow-up notifications are always deleteable
+    return index > 0 || notifications.length === 1
+  }
+
   return (
     <Box sx={{backgroundColor: '#fff', flexGrow: '1', paddingBottom: 0, paddingLeft: theme.spacing(4)}} id="SSC">
       {sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
@@ -388,7 +394,8 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   onChange={(notification: ScheduleNotification) => {
                     updateNotification(notification, index)
                   }}
-                  isError={sessionErrorState?.notificationErrors.has(index + 1) || false}>
+                  isError={sessionErrorState?.notificationErrors.has(index + 1) || false}
+                  canDelete={canDeleteNotification(schedulableSession.notifications!, index)}>
                   <NotificationTime
                     notifyAt={notification.notifyAt}
                     offset={notification.offset}

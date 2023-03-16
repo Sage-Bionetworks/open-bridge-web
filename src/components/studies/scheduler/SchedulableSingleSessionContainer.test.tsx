@@ -1,4 +1,5 @@
-import {cleanup, render, screen, waitForElementToBeRemoved, within} from '@testing-library/react'
+import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
+import {cleanup, render, screen, waitFor, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {EventUpdateType, SchedulingEvent, StudySession} from '@typedefs/scheduling'
 import React from 'react'
@@ -46,25 +47,25 @@ const studySession: StudySession = {
   notifications: [
     {
       notifyAt: 'after_window_start',
-      offset: 'PT40M',
-      allowSnooze: false,
-      messages: [
-        {
-          lang: 'en',
-          subject: 'New Activities are Live',
-          message: 'Please complete',
-        },
-      ],
-    },
-    {
-      notifyAt: 'before_window_end',
       offset: 'PT15M',
       allowSnooze: false,
       messages: [
         {
           lang: 'en',
-          subject: 'New Activities are Live',
-          message: 'Please complete',
+          subject: 'initial',
+          message: '1234',
+        },
+      ],
+    },
+    {
+      notifyAt: 'before_window_end',
+      offset: 'PT1H',
+      allowSnooze: false,
+      messages: [
+        {
+          lang: 'en',
+          subject: 'reminder',
+          message: '5678',
         },
       ],
     },
@@ -72,6 +73,12 @@ const studySession: StudySession = {
   studyBurstIds: [],
   labels: [],
   startEventIds: ['timeline_retrieved'],
+}
+
+const multidaySession = {
+  ...studySession,
+  timeWindows: [{...studySession.timeWindows[0], expiration: 'P3D'}],
+  notifications: [DEFAULT_NOTIFICATION, DEFAULT_NOTIFICATION],
 }
 
 const customEvents = [
@@ -91,6 +98,9 @@ const customEvents = [
     type: 'CustomEvent',
   },
 ]
+
+const thirtyCharString = '012345678901234567890123456789'
+const fortyCharString = '0123456789012345678901234567890123456789'
 
 const SessionWrapper: React.FunctionComponent<{_session: StudySession; customEvents: SchedulingEvent[]}> = ({
   _session,
@@ -555,80 +565,759 @@ describe('SchedulableSingleSessionContainer', () => {
       expect(addButton).toBeDisabled()
     })
   })
-})
 
-test.skip('renders and changes reminder notification type', async () => {
-  const {user} = setUp(studySession)
-  const reminderNotification = screen
-    .getByText(/Follow-up Notification/i)
-    .parentElement?.closest('div.MuiPaper-root') as HTMLElement
+  describe('session notifications', () => {
+    const getNotification = (type: string) => {
+      const search = type === 'initial' ? /initial notification/i : /follow-up notification/i
+      return screen.getByText(search).parentElement?.closest('div.MuiPaper-root') as HTMLElement
+    }
 
-  const radioButton = within(reminderNotification!).getByRole('radio', {
-    name: /after start of window/i,
+    describe('toggle notifications', () => {
+      test('should turn session notifications off', async () => {
+        // start with one notification, so we can demonstrate that addButton is removed
+        const {user} = setUp({...studySession, notifications: [studySession.notifications![0]]})
+
+        const section = screen.getByRole('region', {name: /scheduling-form-section-session-notifications/i})
+        const checkbox = within(section).getByRole('checkbox')
+        const addButton = within(section).getByRole('button', {name: /add a reminder notification/i})
+        const notification = within(section).getByText(/initial notification/i)
+
+        expect(checkbox.parentElement).toHaveClass('Mui-checked')
+        expect(section).toHaveTextContent(/on/i)
+
+        user.click(checkbox)
+        await waitFor(async () => {
+          expect(checkbox.parentElement).not.toHaveClass('Mui-checked')
+          expect(section).toHaveTextContent(/off/i)
+          expect(addButton).not.toBeInTheDocument()
+          expect(notification).not.toBeInTheDocument()
+        })
+
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith({...studySession, notifications: []}, undefined, undefined)
+      })
+
+      test('should turn session notifications on', async () => {
+        const {user} = setUp({...studySession, notifications: []})
+
+        const section = screen.getByRole('region', {name: /scheduling-form-section-session-notifications/i})
+        const checkbox = within(section).getByRole('checkbox')
+
+        expect(checkbox.parentElement).not.toHaveClass('Mui-checked')
+        expect(section).toHaveTextContent(/off/i)
+
+        user.click(checkbox)
+        await waitFor(async () => {
+          expect(checkbox.parentElement).toHaveClass('Mui-checked')
+          expect(section).toHaveTextContent(/on/i)
+          expect(within(section).getByRole('button', {name: /add a reminder notification/i})).toBeInTheDocument()
+          expect(within(section).getByText(/initial notification/i)).toBeInTheDocument()
+        })
+
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {...studySession, notifications: [DEFAULT_NOTIFICATION]},
+          undefined,
+          undefined
+        )
+      })
+    })
+
+    describe('add and remove notifications', () => {
+      test('should add reminder notification', async () => {
+        const {user} = setUp({...studySession, notifications: [studySession.notifications![0]]})
+
+        const section = screen.getByRole('region', {name: /scheduling-form-section-session-notifications/i})
+        const addButton = within(section).getByRole('button', {name: /add a reminder notification/i})
+
+        expect(within(section).getByText(/initial notification/i)).toBeInTheDocument()
+        expect(within(section).queryByText(/follow-up notification/i)).not.toBeInTheDocument()
+
+        user.click(addButton)
+        await waitForElementToBeRemoved(addButton)
+
+        expect(within(section).getByText(/initial notification/i)).toBeInTheDocument()
+        expect(within(section).getByText(/follow-up notification/i)).toBeInTheDocument()
+
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {...studySession, notifications: [studySession.notifications![0], DEFAULT_NOTIFICATION]},
+          undefined,
+          undefined
+        )
+      })
+
+      test('should remove the only notification with the delete button', async () => {
+        const {user} = setUp({...studySession, notifications: [studySession.notifications![0]]})
+
+        const section = screen.getByRole('region', {name: /scheduling-form-section-session-notifications/i})
+        const checkbox = within(section).getByRole('checkbox')
+        const addButton = within(section).getByRole('button', {name: /add a reminder notification/i})
+        const notification = getNotification('initial')
+        const deleteButton = within(notification).getByRole('button', {name: /delete-button/i})
+
+        expect(checkbox.parentElement).toHaveClass('Mui-checked')
+        expect(section).toHaveTextContent(/on/i)
+
+        user.click(deleteButton)
+        await waitFor(async () => {
+          expect(notification).not.toBeInTheDocument()
+          expect(addButton).not.toBeInTheDocument()
+          expect(checkbox.parentElement).not.toHaveClass('Mui-checked')
+          expect(section).toHaveTextContent(/off/i)
+        })
+
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith({...studySession, notifications: []}, undefined, undefined)
+      })
+
+      test('should not be able to delete the first notification when two notifications exist', async () => {
+        setUp(studySession)
+
+        const firstNotification = getNotification('initial')
+        const secondNotification = getNotification('reminder')
+
+        expect(within(firstNotification).queryByRole('button', {name: /delete-button/i})).not.toBeInTheDocument()
+        expect(within(secondNotification).getByRole('button', {name: /delete-button/i})).toBeInTheDocument()
+      })
+
+      test('should remove the second notification with the delete button', async () => {
+        const {user} = setUp(studySession)
+
+        const section = screen.getByRole('region', {name: /scheduling-form-section-session-notifications/i})
+        const firstNotification = getNotification('initial')
+        const secondNotification = getNotification('reminder')
+        const deleteButton = within(secondNotification).getByRole('button', {name: /delete-button/i})
+
+        const subject = within(firstNotification).getByRole('textbox', {name: /subject line/i})
+        const body = within(firstNotification).getByRole('textbox', {name: /body text/i})
+        const value = within(firstNotification).getByRole('spinbutton')
+
+        expect(subject).toHaveValue('initial')
+        expect(body).toHaveValue('1234')
+        expect(value).toHaveValue(15)
+        expect(within(firstNotification).getByRole('button', {name: /minutes/i})).toBeInTheDocument()
+        expect(within(section).queryByText(/add a reminder notification/i)).not.toBeInTheDocument()
+
+        await act(async () => {
+          user.click(deleteButton)
+        })
+        await waitForElementToBeRemoved(secondNotification)
+
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {...studySession, notifications: [{...studySession.notifications![0]}]},
+          undefined,
+          undefined
+        )
+
+        expect(firstNotification).toBeInTheDocument()
+        expect(subject).toHaveValue('initial')
+        expect(body).toHaveValue('1234')
+        expect(value).toHaveValue(15)
+        expect(within(firstNotification).getByRole('button', {name: /minutes/i})).toBeInTheDocument()
+        expect(within(section).getByRole('button', {name: /add a reminder notification/i})).toBeInTheDocument()
+      })
+    })
+
+    describe('initial notification', () => {
+      test('should allow subject line <= 30 chararcters', async () => {
+        const {user} = setUp(studySession)
+
+        const notification = getNotification('initial')
+        const subject = within(notification).getByRole('textbox', {name: /subject line/i})
+
+        expect(subject).toHaveValue('initial')
+
+        await act(async () => {
+          await user.clear(subject)
+          await user.type(subject, thirtyCharString)
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+        expect(notification).not.toBeInTheDocument()
+
+        const newMessage = {...studySession.notifications![0].messages[0], subject: thirtyCharString}
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {
+            ...studySession,
+            notifications: [
+              {...studySession.notifications![0], messages: [newMessage]},
+              studySession.notifications![1],
+            ],
+          },
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('initial')
+        const updatedSubject = within(updatedNotification).getByRole('textbox', {name: /subject line/i})
+
+        expect(updatedSubject).toHaveValue(thirtyCharString)
+      })
+
+      test('should not allow subject line > 30 characters', async () => {
+        const {user} = setUp(studySession)
+
+        const notification = getNotification('initial')
+        const subject = within(notification).getByRole('textbox', {name: /subject line/i})
+
+        expect(subject).toHaveValue('initial')
+
+        await act(async () => {
+          await user.clear(subject)
+          await user.type(subject, thirtyCharString + 'extra_chars')
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+        expect(notification).not.toBeInTheDocument()
+
+        const newMessage = {...studySession.notifications![0].messages[0], subject: thirtyCharString}
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {
+            ...studySession,
+            notifications: [
+              {...studySession.notifications![0], messages: [newMessage]},
+              studySession.notifications![1],
+            ],
+          },
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('initial')
+        const updatedSubject = within(updatedNotification).getByRole('textbox', {name: /subject line/i})
+
+        expect(updatedSubject).toHaveValue(thirtyCharString)
+      })
+
+      test('should allow body text <= 40 chararcters', async () => {
+        const {user} = setUp(studySession)
+
+        const notification = getNotification('initial')
+        const body = within(notification).getByRole('textbox', {name: /body text/i})
+
+        expect(body).toHaveValue('1234')
+
+        await act(async () => {
+          await user.clear(body)
+          await user.type(body, fortyCharString)
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+        expect(notification).not.toBeInTheDocument()
+
+        const newMessage = {...studySession.notifications![0].messages[0], message: fortyCharString}
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {
+            ...studySession,
+            notifications: [
+              {...studySession.notifications![0], messages: [newMessage]},
+              studySession.notifications![1],
+            ],
+          },
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('initial')
+        const updatedBody = within(updatedNotification).getByRole('textbox', {name: /body text/i})
+
+        expect(updatedBody).toHaveValue(fortyCharString)
+      })
+
+      test('should not allow body text > 40 chararcters', async () => {
+        const {user} = setUp(studySession)
+
+        const notification = getNotification('initial')
+        const body = within(notification).getByRole('textbox', {name: /body text/i})
+
+        expect(body).toHaveValue('1234')
+
+        await act(async () => {
+          await user.clear(body)
+          await user.type(body, fortyCharString + '_extra_char')
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+        expect(notification).not.toBeInTheDocument()
+
+        const newMessage = {...studySession.notifications![0].messages[0], message: fortyCharString}
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {
+            ...studySession,
+            notifications: [
+              {...studySession.notifications![0], messages: [newMessage]},
+              studySession.notifications![1],
+            ],
+          },
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('initial')
+        const updatedBody = within(updatedNotification).getByRole('textbox', {name: /body text/i})
+
+        expect(updatedBody).toHaveValue(fortyCharString)
+      })
+
+      test('should update initial notification - notification is offset from start of window', async () => {
+        const {user} = setUp({...studySession, notifications: [DEFAULT_NOTIFICATION]})
+
+        const notification = getNotification('initial')
+        const radioButton = within(notification!).getByRole('radio', {
+          name: /after start of window/i,
+        })
+        const value = within(notification!).getByRole('spinbutton')
+
+        expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
+
+        await act(async () => {
+          await user.click(radioButton)
+          await user.type(value, '30')
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+
+        // notification key includes notifyAt, so will remove old notification and mount new instance
+        expect(notification).not.toBeInTheDocument()
+
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {
+            ...studySession,
+            notifications: [{...DEFAULT_NOTIFICATION, offset: 'PT30M'}],
+          },
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('initial')
+        const updatedRadioButton = within(updatedNotification!).getByRole('radio', {
+          name: /after start of window/i,
+        })
+        expect(updatedRadioButton.parentElement).toHaveClass('Mui-checked')
+      })
+
+      test('should update initial notification - notification is at start of window', async () => {
+        const {user} = setUp({...studySession, notifications: [{...DEFAULT_NOTIFICATION, offset: 'PT30M'}]})
+
+        const notification = getNotification('initial')
+        const radioButton = within(notification!).getByRole('radio', {
+          name: /at start of window/i,
+        })
+
+        expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
+
+        await act(async () => {
+          await user.click(radioButton)
+        })
+
+        // notification key includes notifyAt, so will remove old notification and mount new instance
+        expect(notification).not.toBeInTheDocument()
+
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {
+            ...studySession,
+            notifications: [DEFAULT_NOTIFICATION],
+          },
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('initial')
+        const updatedRadioButton = within(updatedNotification!).getByRole('radio', {
+          name: /at start of window/i,
+        })
+        expect(updatedRadioButton.parentElement).toHaveClass('Mui-checked')
+      })
+    })
+
+    describe('reminder notification', () => {
+      test('should allow subject line <= 30 chararcters', async () => {
+        const {user} = setUp(studySession)
+
+        const notification = getNotification('reminder')
+        const subject = within(notification).getByRole('textbox', {name: /subject line/i})
+
+        expect(subject).toHaveValue('reminder')
+
+        await act(async () => {
+          await user.clear(subject)
+          await user.type(subject, thirtyCharString)
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+        expect(notification).not.toBeInTheDocument()
+
+        const newMessage = {...studySession.notifications![1].messages[0], subject: thirtyCharString}
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {
+            ...studySession,
+            notifications: [
+              studySession.notifications![0],
+              {...studySession.notifications![1], messages: [newMessage]},
+            ],
+          },
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('reminder')
+        const updatedSubject = within(updatedNotification).getByRole('textbox', {name: /subject line/i})
+
+        expect(updatedSubject).toHaveValue(thirtyCharString)
+      })
+
+      test('should not allow subject line > 30 characters', async () => {
+        const {user} = setUp(studySession)
+
+        const notification = getNotification('reminder')
+        const subject = within(notification).getByRole('textbox', {name: /subject line/i})
+
+        expect(subject).toHaveValue('reminder')
+
+        await act(async () => {
+          await user.clear(subject)
+          await user.type(subject, thirtyCharString + 'extra_chars')
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+        expect(notification).not.toBeInTheDocument()
+
+        const newMessage = {...studySession.notifications![1].messages[0], subject: thirtyCharString}
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {
+            ...studySession,
+            notifications: [
+              studySession.notifications![0],
+              {...studySession.notifications![1], messages: [newMessage]},
+            ],
+          },
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('reminder')
+        const updatedSubject = within(updatedNotification).getByRole('textbox', {name: /subject line/i})
+
+        expect(updatedSubject).toHaveValue(thirtyCharString)
+      })
+
+      test('should allow body text <= 40 chararcters', async () => {
+        const {user} = setUp(studySession)
+
+        const notification = getNotification('reminder')
+        const body = within(notification).getByRole('textbox', {name: /body text/i})
+
+        expect(body).toHaveValue('5678')
+
+        await act(async () => {
+          await user.clear(body)
+          await user.type(body, fortyCharString)
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+        expect(notification).not.toBeInTheDocument()
+
+        const newMessage = {...studySession.notifications![1].messages[0], message: fortyCharString}
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {
+            ...studySession,
+            notifications: [
+              studySession.notifications![0],
+              {...studySession.notifications![1], messages: [newMessage]},
+            ],
+          },
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('reminder')
+        const updatedBody = within(updatedNotification).getByRole('textbox', {name: /body text/i})
+
+        expect(updatedBody).toHaveValue(fortyCharString)
+      })
+
+      test('should not allow body text > 40 chararcters', async () => {
+        const {user} = setUp(studySession)
+
+        const notification = getNotification('reminder')
+        const body = within(notification).getByRole('textbox', {name: /body text/i})
+
+        expect(body).toHaveValue('5678')
+
+        await act(async () => {
+          await user.clear(body)
+          await user.type(body, fortyCharString + '_extra_char')
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+        expect(notification).not.toBeInTheDocument()
+
+        const newMessage = {...studySession.notifications![1].messages[0], message: fortyCharString}
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          {
+            ...studySession,
+            notifications: [
+              studySession.notifications![0],
+              {...studySession.notifications![1], messages: [newMessage]},
+            ],
+          },
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('reminder')
+        const updatedBody = within(updatedNotification).getByRole('textbox', {name: /body text/i})
+
+        expect(updatedBody).toHaveValue(fortyCharString)
+      })
+
+      test('should update offset days for reminder notification in multiday session', async () => {
+        const {user} = setUp({...multidaySession})
+
+        const reminderNotification = getNotification('reminder')
+        const freqValue = within(reminderNotification).getByRole('spinbutton')
+        const repeatCheckbox = within(reminderNotification).getByRole('checkbox')
+
+        expect(freqValue).toHaveValue(null)
+        expect(repeatCheckbox).not.toHaveProperty('checked', true)
+        expect(within(reminderNotification).getByRole('button', {name: /8:00 am/i})).toBeInTheDocument()
+
+        // change freq value
+        await act(async () => {
+          await user.type(freqValue, '5')
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+        expect(reminderNotification).not.toBeInTheDocument()
+
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenLastCalledWith(
+          {...multidaySession, notifications: [DEFAULT_NOTIFICATION, {...DEFAULT_NOTIFICATION, offset: 'P5D'}]},
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('reminder')
+        expect(within(updatedNotification).getByRole('spinbutton')).toHaveValue(5)
+      })
+
+      test('should update offset time for reminder notification in multiday session', async () => {
+        const {user} = setUp({
+          ...multidaySession,
+          notifications: [DEFAULT_NOTIFICATION, {...DEFAULT_NOTIFICATION, offset: 'P5D'}],
+        })
+
+        const reminderNotification = getNotification('reminder')
+        const timeButton = within(reminderNotification).getByRole('button', {name: /8:00 am/i})
+        expect(within(reminderNotification).getByRole('spinbutton')).toHaveValue(5)
+
+        user.click(timeButton)
+        const dropdownTime = await screen.findByRole('option', {name: /3:15 pm/i})
+        await act(async () => {
+          await user.click(dropdownTime)
+        })
+        expect(dropdownTime).not.toBeInTheDocument()
+
+        expect(reminderNotification).not.toBeInTheDocument()
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenLastCalledWith(
+          {...multidaySession, notifications: [DEFAULT_NOTIFICATION, {...DEFAULT_NOTIFICATION, offset: 'P5DT7H15M'}]},
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('reminder')
+        expect(within(updatedNotification).getByRole('spinbutton')).toHaveValue(5)
+        expect(within(updatedNotification).getByRole('button', {name: /3:15 pm/i})).toBeInTheDocument()
+      })
+
+      test('should allow repeat reminder notification in multiday session', async () => {
+        const {user} = setUp({...multidaySession, notifications: [DEFAULT_NOTIFICATION, DEFAULT_NOTIFICATION]})
+
+        const reminderNotification = getNotification('reminder')
+        const repeatCheckbox = within(reminderNotification).getByRole('checkbox')
+
+        expect(repeatCheckbox).not.toHaveProperty('checked', true)
+
+        user.click(repeatCheckbox)
+
+        const intervalBox = await within(reminderNotification).findByLabelText('duration-box')
+        const intervalValue = within(intervalBox).getByRole('spinbutton')
+        const intervalUnits = within(within(intervalBox).getByLabelText(/repeat every/i)).getByRole('button')
+
+        expect(repeatCheckbox).toHaveProperty('checked', true)
+        expect(intervalValue).toHaveValue(null)
+
+        await act(async () => {
+          await user.clear(intervalValue)
+          await user.type(intervalValue, '4')
+          await user.keyboard('{TAB}') // to trigger onUpdateFn
+        })
+
+        expect(intervalValue).toHaveValue(4)
+        expect(intervalUnits).toHaveTextContent('minutes')
+
+        expect(onUpdateFn).toHaveBeenCalledTimes(1)
+        expect(onUpdateFn).toHaveBeenLastCalledWith(
+          {
+            ...multidaySession,
+            notifications: [DEFAULT_NOTIFICATION, {...DEFAULT_NOTIFICATION, interval: 'PT4M'}],
+          },
+          undefined,
+          undefined
+        )
+      })
+
+      test('should update repeat interval units of reminder notification in multiday session', async () => {
+        const {user} = setUp({
+          ...multidaySession,
+          notifications: [DEFAULT_NOTIFICATION, {...DEFAULT_NOTIFICATION, interval: 'PT3M'}],
+        })
+
+        const reminderNotification = getNotification('reminder')
+        expect(within(reminderNotification).getByRole('checkbox')).toHaveProperty('checked', true)
+
+        const intervalBox = await within(reminderNotification).findByLabelText('duration-box')
+        const intervalValue = within(intervalBox).getByRole('spinbutton')
+        const intervalUnits = within(within(intervalBox).getByLabelText(/repeat every/i)).getByRole('button')
+
+        expect(intervalValue).toHaveValue(3)
+        expect(intervalUnits).toHaveTextContent('minutes')
+
+        user.click(intervalUnits)
+        const dropdownUnits = await screen.findByRole('option', {name: /hours/i})
+        user.click(dropdownUnits)
+        await waitForElementToBeRemoved(dropdownUnits)
+
+        expect(intervalValue).toHaveValue(3)
+        expect(intervalUnits).toHaveTextContent('hours')
+
+        expect(onUpdateFn).toHaveBeenLastCalledWith(
+          {
+            ...multidaySession,
+            notifications: [DEFAULT_NOTIFICATION, {...DEFAULT_NOTIFICATION, interval: 'PT3H'}],
+          },
+          undefined,
+          undefined
+        )
+      })
+
+      test('should update multiday offset when session window start time is updated', async () => {
+        const {user} = setUp({
+          ...multidaySession,
+          notifications: [DEFAULT_NOTIFICATION, {...DEFAULT_NOTIFICATION, offset: 'P5DT7H'}],
+        })
+
+        const sessionWindow = screen.getByLabelText(/session-window-1/i)
+        const windowStartTimeButton = within(within(sessionWindow).getByLabelText(/start-time/i)).getByRole('button')
+        expect(windowStartTimeButton).toHaveTextContent('8:00 AM')
+
+        const reminderNotification = getNotification('reminder')
+        expect(within(reminderNotification).getByRole('spinbutton')).toHaveValue(5)
+        expect(within(reminderNotification).getByRole('button', {name: /3:00 pm/i})).toBeInTheDocument()
+
+        user.click(windowStartTimeButton)
+        const dropdownTime = await screen.findByRole('option', {name: /9:30 am/i})
+        await act(async () => {
+          await user.click(dropdownTime)
+        })
+        expect(dropdownTime).not.toBeInTheDocument()
+        expect(reminderNotification).not.toBeInTheDocument()
+
+        expect(sessionWindow).not.toBeInTheDocument()
+        const updatedSessionWindow = screen.getByLabelText(/session-window-1/i)
+        const updatedWindowStartTimeButton = within(
+          within(updatedSessionWindow).getByLabelText(/start-time/i)
+        ).getByRole('button')
+        expect(updatedWindowStartTimeButton).toHaveTextContent('9:30 AM')
+
+        const updatedReminderNotification = getNotification('reminder')
+        expect(within(updatedReminderNotification).getByRole('spinbutton')).toHaveValue(5)
+        expect(within(updatedReminderNotification).getByRole('button', {name: /3:00 pm/i})).toBeInTheDocument()
+
+        expect(onUpdateFn).toHaveBeenCalledTimes(2) // first - update session window, second - update offset
+        expect(onUpdateFn).toHaveBeenLastCalledWith(
+          {
+            ...multidaySession,
+            timeWindows: [{...multidaySession.timeWindows[0], startTime: '09:30'}],
+            notifications: [DEFAULT_NOTIFICATION, {...DEFAULT_NOTIFICATION, offset: 'P5DT5H30M'}],
+          },
+          undefined,
+          undefined
+        )
+      })
+
+      test('renders and changes reminder notification type', async () => {
+        const {user} = setUp(studySession)
+        const reminderNotification = getNotification('reminder')
+
+        const radioButton = within(reminderNotification!).getByRole('radio', {
+          name: /after start of window/i,
+        })
+
+        expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
+
+        await act(async () => {
+          await user.click(radioButton)
+        })
+
+        // notification key includes notifyAt, so will remove old notification and mount new instance
+        expect(reminderNotification).not.toBeInTheDocument()
+
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          expect.objectContaining({
+            // notifications: expect.anything(),
+            notifications: expect.arrayContaining([
+              expect.objectContaining({
+                notifyAt: 'after_window_start',
+                offset: 'PT15M',
+              }),
+            ]),
+          }),
+          undefined,
+          undefined
+        )
+
+        const updatedNotification = getNotification('reminder')
+        const updatedRadioButton = within(updatedNotification!).getByRole('radio', {
+          name: /after start of window/i,
+        })
+        expect(updatedRadioButton.parentElement).toHaveClass('Mui-checked')
+      })
+
+      test('renders and changes reminder notification interval', async () => {
+        const {user} = setUp(studySession)
+        const reminderNotification = getNotification('reminder')
+        const value = within(reminderNotification!).getByRole('spinbutton')
+
+        await act(async () => {
+          await user.clear(value)
+          await user.type(value, '47')
+        })
+
+        const radioButton = within(reminderNotification!).getByRole('radio', {
+          name: /window expires/i,
+        })
+
+        await act(async () => {
+          await user.click(radioButton)
+        })
+
+        expect(onUpdateFn).toHaveBeenCalledWith(
+          expect.objectContaining({
+            notifications: expect.arrayContaining([
+              expect.objectContaining({
+                notifyAt: 'before_window_end',
+                offset: 'PT47H',
+              }),
+            ]),
+          }),
+          undefined,
+          undefined
+        )
+      })
+    })
   })
-
-  expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
-
-  await act(async () => {
-    await user.click(radioButton)
-  })
-
-  // notification key includes notifyAt, so will remove old notification and mount new instance
-  expect(reminderNotification).not.toBeInTheDocument()
-
-  expect(onUpdateFn).toHaveBeenCalledWith(
-    expect.objectContaining({
-      // notifications: expect.anything(),
-      notifications: expect.arrayContaining([
-        expect.objectContaining({
-          notifyAt: 'after_window_start',
-          offset: 'PT15M',
-        }),
-      ]),
-    }),
-    undefined,
-    undefined
-  )
-
-  const updatedNotification = screen
-    .getByText(/Follow-up Notification/i)
-    .parentElement?.closest('div.MuiPaper-root') as HTMLElement
-  const updatedRadioButton = within(updatedNotification!).getByRole('radio', {
-    name: /after start of window/i,
-  })
-  expect(updatedRadioButton.parentElement).toHaveClass('Mui-checked')
-})
-
-test('renders and changes reminder notification interval', async () => {
-  const {user} = setUp(studySession)
-  const reminderNotification = screen
-    .getByText(/Follow-up Notification/i)
-    .parentElement?.closest('div.MuiPaper-root') as HTMLElement
-  const value = within(reminderNotification!).getByRole('spinbutton')
-
-  await act(async () => {
-    await user.clear(value)
-    await user.type(value, '47')
-  })
-
-  const radioButton = within(reminderNotification!).getByRole('radio', {
-    name: /window expires/i,
-  })
-
-  await act(async () => {
-    await user.click(radioButton)
-  })
-
-  expect(onUpdateFn).toHaveBeenCalledWith(
-    expect.objectContaining({
-      notifications: expect.arrayContaining([
-        expect.objectContaining({
-          notifyAt: 'before_window_end',
-          offset: 'PT47M',
-        }),
-      ]),
-    }),
-    undefined,
-    undefined
-  )
 })
