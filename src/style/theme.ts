@@ -150,6 +150,15 @@ const theme: Theme = createTheme({
           ...(ownerState.variant === 'text' && {
             padding: '0 20px',
           }),
+          ...(ownerState.color === 'error' &&
+            ownerState.variant === 'text' && {
+              color: '#FF4164',
+              '&:hover': {
+                backgroundColor: 'transparent',
+                textDecoration: 'underline',
+                color: '#FF4164',
+              },
+            }),
         }),
         contained: {
           borderRadius: '4px',
