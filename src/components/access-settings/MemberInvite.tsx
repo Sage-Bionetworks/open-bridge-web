@@ -1,8 +1,8 @@
-import {Box, TextField} from '@mui/material'
+import Utility from '@helpers/utility'
+import {Box, TextField, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import {latoFont, theme} from '@style/theme'
 import React, {FunctionComponent} from 'react'
-import Utility from '../../helpers/utility'
-import {latoFont, poppinsFont, theme} from '../../style/theme'
 import ErrorDisplay from '../widgets/ErrorDisplay'
 import AccessGrid, {Access} from './AccessGrid'
 
@@ -27,19 +27,16 @@ type MemberInviteProps = {
 }
 
 const MemberInvite: FunctionComponent<MemberInviteProps> = ({newOrgAccount, onUpdate}: MemberInviteProps) => {
-  const classes = useStyles()
   const [email, setEmail] = React.useState(newOrgAccount.email)
   const [access, setAccess] = React.useState(newOrgAccount.access)
 
   return (
     <Box width="100%">
-      <Box fontFamily={poppinsFont} fontSize="14px" mb={0.75}>
-        Email Address:
-      </Box>
+      <Typography sx={{fontWeight: 700, mb: 0.75}}>Email Address*</Typography>
       <TextField
         fullWidth
         variant="outlined"
-        sx={{marginBottom: theme.spacing(2)}}
+        sx={{marginBottom: theme.spacing(6)}}
         onChange={e => setEmail(e.target.value)}
         onBlur={e => onUpdate({...newOrgAccount, email: email})}
         value={email || ''}
