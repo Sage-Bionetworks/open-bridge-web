@@ -500,6 +500,7 @@ const theme: Theme = createTheme({
 
   typography: {
     fontSize: 12,
+    fontFamily: latoFont,
     body1: {
       fontFamily: latoFont,
       fontSize: '14px',
@@ -607,7 +608,7 @@ const theme: Theme = createTheme({
     },
 
     error: {
-      main: '#EE6070',
+      main: '#FF4164',
       light: '#FCD2D2',
     },
   },

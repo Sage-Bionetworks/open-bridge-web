@@ -12,7 +12,6 @@ import {
   TableRow,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import {latoFont} from '@style/theme'
 import {AdminRole} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 
@@ -247,24 +246,23 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
               Administrators have full access to a study. They can add/delete team members.
               <br />
               <br />
-              <strong>Principal Investigators</strong> are required to be part of the study as a Study Administrator in
-              order to launch a study.
+              <strong>Principal Investigators</strong> are required to be part of the study as an Administrator in order
+              to launch a study.
             </Box>
           )}
         </Box>
       )}
       {isThisMe && userHasCoadminAccess(access) && (
-        <Box maxWidth="512px" mb={3} fontFamily={latoFont} fontSize="16px">
-          As the Study Administrator of this study, you have full view and editing capability of the entire study and
-          its members.
-          <br />
+        <Box sx={{fontSize: '16px', lineHeight: '20px', mb: 3}}>
+          As the Administrator of this study, you have full view and editing capability of the entire study and its
+          members.
           <br />
           If you would like to transfer your responsibilities to another team member, add them to your study as a{' '}
-          <strong>Co-administrator.</strong>
+          <strong>Co-Administrator.</strong>
           <br />
           <br />
-          <strong>Principal Investigators</strong> are required to be part of the study as a Study Administrator in
-          order to launch a study.
+          <strong>Principal Investigators</strong> are required to be part of the study as an Administrator in order to
+          launch a study.
         </Box>
       )}
       <Paper elevation={2}>

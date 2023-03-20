@@ -8,7 +8,7 @@ import {Alert, Box, Button, CircularProgress, Theme, Typography} from '@mui/mate
 import makeStyles from '@mui/styles/makeStyles'
 import AccessService from '@services/access.service'
 import ParticipantService from '@services/participants.service'
-import {poppinsFont, theme} from '@style/theme'
+import {theme} from '@style/theme'
 import {LoggedInUserClientData, LoggedInUserData, Study} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent, useRef} from 'react'
@@ -44,10 +44,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: theme.spacing(3),
   },
 
-  studyInfoNameText: {
-    lineHeight: '27px',
-    fontSize: '18px',
-  },
   newOrgAccount: {
     position: 'relative',
     marginBottom: theme.spacing(2),
@@ -88,8 +84,9 @@ const NameDisplay: FunctionComponent<any> = ({member, index}): JSX.Element => {
     name = name + ' (You)'
   }
   admin = Utility.isInAdminRole(member.roles) ? (
-    <Typography sx={{fontWeight: 400, fontStyle: 'italic', marginTop: theme.spacing(0.5)}}>
-      Study Administrator
+    <Typography
+      sx={{fontWeight: 400, fontStyle: 'italic', marginTop: theme.spacing(0.5), color: theme.palette.grey[700]}}>
+      Administrator
     </Typography>
   ) : (
     <></>
@@ -107,20 +104,24 @@ const NameDisplay: FunctionComponent<any> = ({member, index}): JSX.Element => {
 
 const NameDisplayDetail: React.FunctionComponent<{member: LoggedInUserData; access: Access}> = ({member, access}) => {
   const classes = useStyles()
+  const adminText = (
+    <>
+      Administrator<span style={{color: '#EAECEE'}}>&nbsp;&#124;&nbsp;</span>
+    </>
+  )
 
   return (
-    <Box style={{margin: theme.spacing(3, 0, 2, 0)}}>
-      <Box display="flex" alignItems="center">
-        <Box className={classes.studyInfoNameText} fontWeight="bold">
-          {getNameDisplay(member)}
-        </Box>
-        {userHasCoadminAccess(access) && (
-          <Box className={classes.studyInfoNameText} fontWeight="normal">
-            &#8287;{'| Study Administrator'}
-          </Box>
-        )}
-      </Box>
-      <Box fontFamily={poppinsFont} fontSize="14px" mt={0.5}>
+    <Box style={{margin: theme.spacing(3, 0)}}>
+      <Typography variant="h3">{getNameDisplay(member)}</Typography>
+      <Box
+        sx={{
+          fontWeight: 400,
+          fontSize: '14px',
+          lineHeight: '18px',
+          color: '#4A5056',
+        }}>
+        {userHasCoadminAccess(access) && adminText}
+
         {member.email}
       </Box>
     </Box>
@@ -358,7 +359,12 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
                 <>
                   <Box textAlign="right">
                     <Button
-                      sx={{marginRight: 0, marginLeft: 'auto', marginBottom: theme.spacing(5)}}
+                      sx={{
+                        marginRight: 0,
+                        marginLeft: 'auto',
+                        marginBottom: theme.spacing(5),
+                        fontSize: '14px',
+                      }}
                       color="error"
                       variant="text"
                       aria-label="delete"
