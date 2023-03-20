@@ -4,7 +4,7 @@ import SideBarListItem from '@components/widgets/SideBarListItem'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import Delete from '@mui/icons-material/DeleteTwoTone'
-import {Alert, Box, Button, CircularProgress, Theme, Typography} from '@mui/material'
+import {Alert, Avatar, Box, Button, CircularProgress, Theme, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AccessService from '@services/access.service'
 import ParticipantService from '@services/participants.service'
@@ -364,6 +364,7 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
                         marginLeft: 'auto',
                         marginBottom: theme.spacing(5),
                         fontSize: '14px',
+                        fontWeight: 900,
                       }}
                       color="error"
                       variant="text"
@@ -372,7 +373,11 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
                         setUpdateError('')
                         setIsConfirmDeleteOpen(true)
                       }}
-                      startIcon={<Delete />}>
+                      startIcon={
+                        <Avatar sx={{background: 'rgba(255, 65, 100, 0.15)', width: '25px', height: '25px'}}>
+                          <Delete sx={{color: '#FF4164'}} />
+                        </Avatar>
+                      }>
                       Remove from study
                     </Button>
                   </Box>
