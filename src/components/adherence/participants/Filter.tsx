@@ -159,8 +159,6 @@ const Filter: FunctionComponent<FilterProps> = ({
   }
 
   const open = Boolean(anchorEl)
-  const id = open ? 'simple-popover' : undefined
-
   return (
     <div key={`next_activity`}>
       <Button

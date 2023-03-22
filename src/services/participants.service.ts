@@ -453,7 +453,7 @@ async function addParticipant(
       return Utility.callEndpoint<{identifier: string}>(endpoint, 'POST', data, token)
     })
 
-    const result = await Promise.all(updatePromises)
+    await Promise.all(updatePromises)
   }
   //prime adherence. We are not waiting -- just firing it up
   AdherenceService.getAdherenceForWeekForUsers(studyId, [userId], token)

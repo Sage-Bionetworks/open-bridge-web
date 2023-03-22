@@ -1,5 +1,3 @@
-import {TableCell, tableCellClasses} from '@mui/material'
-import {styled} from '@mui/styles'
 import makeStyles from '@mui/styles/makeStyles'
 import {useAssessmentsWithResources} from '@services/assessmentHooks'
 import {FunctionComponent, useState} from 'react'
@@ -20,40 +18,6 @@ type AssessmentLibraryOwnProps = {
 const useStyles = makeStyles(theme => ({
   cardLink: {
     textDecoration: 'none',
-  },
-}))
-
-const StyledTableCell = styled(TableCell)(({theme}) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.grey[200],
-    padding: theme.spacing(2, 2),
-    fontSize: '14px',
-    fontWeight: 'bold',
-    textAlign: 'left',
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-    textAlign: 'left',
-    padding: theme.spacing(1.75, 2),
-  },
-}))
-
-const StyledTableRow = styled(Link)(({theme}) => ({
-  display: 'table-row',
-  textDecoration: 'none',
-  '&:hover': {
-    border: `1px solid ${theme.palette.grey[700]}`,
-  },
-  '&:nth-of-type(odd)': {
-    backgroundColor: '#fff',
-  },
-  '&:nth-of-type(even)': {
-    backgroundColor: '#FBFBFC',
-  },
-
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
   },
 }))
 

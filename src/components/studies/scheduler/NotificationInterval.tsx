@@ -1,19 +1,8 @@
-import {Checkbox, FormControlLabel, Theme} from '@mui/material'
-import createStyles from '@mui/styles/createStyles'
-import makeStyles from '@mui/styles/makeStyles'
+import {Checkbox, FormControlLabel} from '@mui/material'
 import React from 'react'
 import {MHDsEnum} from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    smallRadio: {
-      padding: '2px 9px',
-      marginTop: '2px',
-    },
-  })
-)
 
 export interface NotificationIntervalProps {
   repeatInterval?: string

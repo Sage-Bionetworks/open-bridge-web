@@ -1,5 +1,4 @@
 import Alert_Icon from '@assets/alert_icon.svg'
-import {SxProps} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'

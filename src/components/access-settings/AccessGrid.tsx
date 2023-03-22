@@ -11,7 +11,6 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import {AdminRole} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 
@@ -41,16 +40,6 @@ const StyledTable = styled(Table, {label: 'StyledTable'})(({theme}) => ({
     '&:first-of-type': {
       width: '40%',
     },
-  },
-}))
-
-const useStyles = makeStyles(theme => ({
-  dot: {
-    width: '14px',
-    height: '14px',
-    borderRadius: '50%',
-    margin: 'auto',
-    backgroundColor: 'black',
   },
 }))
 
@@ -153,8 +142,6 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
 
   isAllowedAccess,
 }) => {
-  const classes = useStyles()
-
   const key = Object.keys(role_key)[0] as keyof Access
   let checkboxChecked = false
   if (!currentUserIsAdmin) {
@@ -208,8 +195,6 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
   isThisMe,
   currentUserIsAdmin,
 }: AccessGridProps) => {
-  const classes = useStyles()
-
   const isAllowedAccess = (restriction: string, role_key: AccessLabel): boolean => {
     const key = Object.keys(role_key)[0] as keyof Access
     return access[key] === restriction

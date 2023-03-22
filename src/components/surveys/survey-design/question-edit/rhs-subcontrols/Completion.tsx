@@ -4,30 +4,14 @@ import Alert from '@mui/icons-material/ReportProblemTwoTone'
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone'
 import {Box, Button, Divider, Typography} from '@mui/material'
 import {styled} from '@mui/material/styles'
-import {latoFont, theme} from '@style/theme'
+import {theme} from '@style/theme'
 import {BaseStep} from '@typedefs/surveys'
-import {useHistory, useParams} from 'react-router-dom'
+import {useParams} from 'react-router-dom'
 
 const StyledText = styled('div')(({theme}) => ({
   fontSize: '16px',
   fontWeight: 400,
   lineHeight: '21px',
-}))
-
-const BranchingButton = styled('div')(({theme}) => ({
-  display: 'flex',
-  border: '1px solid black',
-  backgroundColor: '#fff',
-  padding: '10px',
-  width: 'fit-content',
-  cursor: 'pointer',
-  '& a': {
-    textDecoration: 'none',
-    fontSize: '16px',
-    fontFamily: latoFont,
-    marginLeft: '6px',
-  },
-  marginBottom: '36px',
 }))
 
 const Completion: React.FunctionComponent<{
@@ -37,7 +21,7 @@ const Completion: React.FunctionComponent<{
   let {id: surveyGuid} = useParams<{
     id: string
   }>()
-  const history = useHistory()
+
   return (
     <Box sx={{padding: theme.spacing(6, 6, 4, 6)}}>
       <StyledText>

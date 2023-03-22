@@ -20,7 +20,7 @@ export function useGetPlotWidth(ref?: React.RefObject<HTMLDivElement>) {
       // remove resize listener
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+  }, [ref])
 
   return {width}
 }

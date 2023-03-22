@@ -41,10 +41,6 @@ afterAll(() => {
   cleanup()
 })
 
-const getButtons = () => {
-  return screen.getAllByRole('button')
-}
-
 // test the functionality of the button navigation for pagination
 test('should page forward and backward buttons function correctly', async () => {
   const user = userEvent.setup()

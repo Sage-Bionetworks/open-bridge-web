@@ -30,10 +30,7 @@ const StyledTable = styled(Table, {label: 'StyledTable'})(theme => ({
     },
   },
 }))
-const StyledTableHead = styled(TableHead, {label: 'StyledTableHead'})(theme => ({
-  // height: '50px',
-  //backgroundColor: '#F1F3F5',
-}))
+
 const data: AdherenceAssessmentLevelReportType = {
   participant: {
     identifier: 'peHyRQJ6k6TI4D6HFCTVC59U',

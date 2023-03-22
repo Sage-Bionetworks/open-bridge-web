@@ -1,8 +1,5 @@
-import {screen, within} from '@testing-library/react'
 import {YearQuestion} from '@typedefs/surveys'
-import {renderSurveyQuestionComponent} from '__test_utils/utils'
-import Year from './Year'
-
+/*
 //render the component
 const renderComponent = (step: YearQuestion) => {
   return renderSurveyQuestionComponent<YearQuestion>({step, Component: Year})
@@ -18,7 +15,7 @@ const getPastCheckbox = () => {
 const getFutureCheckbox = () => {
   const p = screen.getByText('Allow future years').parentElement
   return within(p!).getByRole('checkbox')
-}
+}*/
 
 const step: YearQuestion = {
   type: 'simpleQuestion',

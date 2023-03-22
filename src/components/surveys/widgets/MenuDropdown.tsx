@@ -55,9 +55,6 @@ export const MenuDesktop = <T extends unknown>({
   width,
 }: MenuDropdownProps<T> & {displayItem: (a: T, isSelected?: boolean) => React.ReactElement}) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const {width: fullWidth} = useGetPlotWidth()
-
-  const open = Boolean(anchorEl)
 
   return (
     <Box id="hight">

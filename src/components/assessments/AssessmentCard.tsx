@@ -77,8 +77,6 @@ type AssessmentCardOwnProps = {
 type AssessmentCardProps = AssessmentCardOwnProps
 
 const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({assessment, index}) => {
-  const classes = useStyles()
-
   return (
     <CardContainer>
       <AssessmentImage resources={assessment.resources} variant="normal" name={assessment.title}>

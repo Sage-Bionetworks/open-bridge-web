@@ -8,7 +8,7 @@ type LogoutProps = {
 export const Logout: React.FunctionComponent<LogoutProps> = ({element}: LogoutProps) => {
   const sessionUpdateFn = useUserSessionDataDispatch()
   const logout = () => {
-    var win = window.open('https://signin.synapse.org/logout', '_blank', 'left=100,top=100,width=420,height=160')
+    window.open('https://signin.synapse.org/logout', '_blank', 'left=100,top=100,width=420,height=160')
     sessionUpdateFn({type: 'LOGOUT'})
   }
 

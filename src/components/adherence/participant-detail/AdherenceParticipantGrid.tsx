@@ -137,7 +137,7 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                   padding: 0,
                   borderLeft: 'none',
                   textAlign: 'center',
-                  backgroundColor: weekIndex % 2 == 0 ? '#fff' : '#FBFBFC',
+                  backgroundColor: weekIndex % 2 === 0 ? '#fff' : '#FBFBFC',
                 }}>
                 <Table>
                   {week.rows.map((row, rowIndex) => (
@@ -174,7 +174,7 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                     adherenceReport.progression === 'in_progress' &&
                     classes.red
                 )}
-                sx={{backgroundColor: weekIndex % 2 == 0 ? '#fff' : '#FBFBFC'}}>
+                sx={{backgroundColor: weekIndex % 2 === 0 ? '#fff' : '#FBFBFC'}}>
                 {week.adherencePercent !== undefined && adherenceReport.progression !== 'unstarted'
                   ? `${week.adherencePercent}%`
                   : '-'}

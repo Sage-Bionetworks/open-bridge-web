@@ -51,7 +51,7 @@ export const useUpdateSchedule = () => {
       queryClient.cancelQueries(SCHEDULE_KEYS.detail(props.studyId))
       queryClient.cancelQueries(STUDY_KEYS.detail(props.studyId))
       // Snapshot the previous value
-      const {studyId, schedule, action} = props
+      const {studyId, schedule} = props
       const previousSchedule = queryClient.getQueryData<Schedule>(SCHEDULE_KEYS.detail(studyId))
 
       const newSchedule: Schedule = {

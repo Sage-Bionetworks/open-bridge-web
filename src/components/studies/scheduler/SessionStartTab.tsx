@@ -9,9 +9,7 @@ import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import LoadingComponent from '@components/widgets/Loader'
 import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
 
-import {Box, Button, FormControl, FormGroup, IconButton, styled, Theme, Typography} from '@mui/material'
-import createStyles from '@mui/styles/createStyles'
-import makeStyles from '@mui/styles/makeStyles'
+import {Box, Button, FormControl, FormGroup, IconButton, styled, Typography} from '@mui/material'
 import EventService from '@services/event.service'
 import {useUpdateStudyDetail} from '@services/studyHooks'
 import {theme} from '@style/theme'
@@ -60,18 +58,6 @@ const StyledDraggableEvent = styled(FormGroup, {label: 'StyledDraggableEvent'})(
   marginBottom: theme.spacing(2),
 }))
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    eventBox: {
-      marginBottom: theme.spacing(2),
-      justifyContent: 'flex-end',
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-  })
-)
-
 type SessionStartTabProps = {
   onNavigate: Function
   study: Study
@@ -111,8 +97,6 @@ const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTa
   {study, onNavigate, eventIdsInSchedule}: SessionStartTabProps,
   ref
 ) => {
-  const classes = useStyles()
-
   React.useImperativeHandle(ref, () => ({
     async save() {
       setSaveLoader(true)
