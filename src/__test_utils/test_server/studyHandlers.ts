@@ -1,6 +1,6 @@
 import constants from '@typedefs/constants'
-import { Study } from '@typedefs/types'
-import { rest } from 'msw'
+import {Study} from '@typedefs/types'
+import {rest} from 'msw'
 import * as studies from '../mocks/studies.json'
 
 export const handlers = [
@@ -9,7 +9,6 @@ export const handlers = [
   rest.get(`*${constants.endpoints.studies}`, async (req, res, ctx) => {
     // Check if the user is authenticated in this session
     //const isAuthenticated = sessionStorage.getItem('is-authenticated')
-    console.log('get studies handler')
 
     return res(
       ctx.status(200),
