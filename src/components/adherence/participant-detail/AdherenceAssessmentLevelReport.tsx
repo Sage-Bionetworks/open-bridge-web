@@ -1,7 +1,7 @@
 import {BorderedTableCell} from '@components/widgets/StyledComponents'
 import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone'
 import {styled, Table, TableBody, tableCellClasses, TableHead, TableRow} from '@mui/material'
-import {AdherenceAssessmentLevelReport as AdherenceAssessmentLevelReportType} from '@typedefs/types'
+import {AdherenceAssessmentLevelReport} from '@typedefs/types'
 import {FunctionComponent} from 'react'
 import AdherenceUtility from '../adherenceUtility'
 
@@ -30,7 +30,7 @@ const StyledTable = styled(Table, {label: 'StyledTable'})(theme => ({
     },
   },
 }))
-
+/*
 const data: AdherenceAssessmentLevelReportType = {
   participant: {
     identifier: 'peHyRQJ6k6TI4D6HFCTVC59U',
@@ -85,8 +85,8 @@ const data: AdherenceAssessmentLevelReportType = {
     },
   ],
 }
-
-const AdherenceAssessmentLevelReport: FunctionComponent<{}> = () => {
+*/
+const AdherenceAssessmentLvlReport: FunctionComponent<{data: AdherenceAssessmentLevelReport}> = ({data}) => {
   return (
     <>
       {data.sessionRecords.map(sr => (
@@ -133,4 +133,4 @@ const AdherenceAssessmentLevelReport: FunctionComponent<{}> = () => {
   )
 }
 
-export default AdherenceAssessmentLevelReport
+export default AdherenceAssessmentLvlReport

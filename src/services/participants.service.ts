@@ -456,7 +456,7 @@ async function addParticipant(
     await Promise.all(updatePromises)
   }
   //prime adherence. We are not waiting -- just firing it up
-  AdherenceService.getAdherenceForWeekForUsers(studyId, [userId], token)
+  AdherenceService.getAdherenceForWeekForParticipants(studyId, [userId], token)
   return userId
 }
 
@@ -556,7 +556,7 @@ async function updateParticipant(
     return result.map(item => item.updatedParticipants)
   })
   //we want to ping adherence to make sure data is refreshed
-  AdherenceService.getAdherenceForWeekForUsers(studyIdentifier, participantId, token)
+  AdherenceService.getAdherenceForWeekForParticipants(studyIdentifier, participantId, token)
   return result
 }
 

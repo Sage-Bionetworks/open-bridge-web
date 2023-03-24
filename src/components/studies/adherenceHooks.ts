@@ -3,7 +3,8 @@ import AdherenceService, {WeeklyAdherenceFilter} from '@services/adherence.servi
 import {
   AdherenceAlert,
   AdherenceAlertCategory,
-  AdherenceDetailReport,
+  AdherenceAssessmentLevelReport,
+  AdherenceParticipantReport,
   AdherenceStatistics,
   AdherenceWeeklyReport,
   ExtendedError,
@@ -47,12 +48,26 @@ export const ADHERENCE_KEYS = {
   ],
 }
 
-export const useAdherence = (studyId: string, userId: string | undefined) => {
+export const useAdherenceForParticipant = (studyId: string, userId: string | undefined) => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<AdherenceDetailReport, ExtendedError>(
+  return useQuery<
+    {adherenceReport: AdherenceParticipantReport; adherenceReportDetail: AdherenceAssessmentLevelReport},
+    ExtendedError
+  >(
     ADHERENCE_KEYS.detail(studyId, userId!),
-    () => AdherenceService.getAdherenceForParticipant(studyId, userId!, token!),
+    () => {
+      const participantReport = AdherenceService.getAdherenceForParticipant(studyId, userId!, token!)
+      const detailedParticipantReport = AdherenceService.getDetailedAdherenceReportForParticipant(
+        studyId,
+        userId!,
+        token!
+      )
+      return Promise.all([participantReport, detailedParticipantReport]).then(results => ({
+        adherenceReport: results[0],
+        adherenceReportDetail: results[1],
+      }))
+    },
     {
       enabled: !!studyId && !!userId && !!token,
       retry: false,

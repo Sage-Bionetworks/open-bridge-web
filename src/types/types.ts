@@ -392,7 +392,7 @@ export type EventStreamDay = AdherenceSessionInfo & {
 
 export type AdherenceByDayEntries = Record<string, EventStreamDay[]>
 
-export type AdherenceDetailReportWeek = {
+export type AdherenceParticipantReportWeek = {
   weekInStudy: number
 
   startDate: string
@@ -401,7 +401,7 @@ export type AdherenceDetailReportWeek = {
   byDayEntries: AdherenceByDayEntries
 }
 
-export type AdherenceDetailReport = {
+export type AdherenceParticipantReport = {
   participant: {identifier: string; externalId: string}
 
   testAccount?: boolean
@@ -414,7 +414,7 @@ export type AdherenceDetailReport = {
   adherencePercent: number
   clientTimeZone: string
   createdOn: string
-  weeks: AdherenceDetailReportWeek[]
+  weeks: AdherenceParticipantReportWeek[]
 
   nextActivity: AdherenceSessionInfo
   unsetEventIds: string[]
@@ -539,8 +539,8 @@ export type AdherenceAssessmentLevelReportAdhRecord = {
 
 export type AdherenceAssessmentLevelReportParticipant = {
   identifier: string
-  firstName: string
-  lastName: string
+  firstName?: string
+  lastName?: string
   email: string
 }
 

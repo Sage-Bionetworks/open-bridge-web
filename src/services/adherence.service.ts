@@ -1,7 +1,8 @@
 import {
   AdherenceAlert,
   AdherenceAlertCategory,
-  AdherenceDetailReport,
+  AdherenceAssessmentLevelReport,
+  AdherenceParticipantReport,
   AdherenceStatistics,
   AdherenceWeeklyReport,
   ProgressionStatus,
@@ -9,6 +10,7 @@ import {
 import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
+import * as report from './detailedAdherenceReport.json'
 
 export const COMPLIANCE_THRESHOLD = 60
 
@@ -22,13 +24,15 @@ export type WeeklyAdherenceFilter = {
 }
 
 // this function ony used internally for 'priming' adherence report after the event dates are changed, or user is modified
-async function getAdherenceForWeekForUsers(
+async function getAdherenceForWeekForParticipants(
   studyId: string,
   userIds: string[],
   token: string
 ): Promise<AdherenceWeeklyReport[]> {
   const weeklyPromises = userIds.map(userId => {
-    const endpoint = constants.endpoints.adherenceUserWeekly.replace(':studyId', studyId).replace(':userId', userId)
+    const endpoint = constants.endpoints.adherencePrimeParticipantWeekly
+      .replace(':studyId', studyId)
+      .replace(':userId', userId)
     return Utility.callEndpoint<any>(endpoint, 'GET', {}, token)
   })
 
@@ -64,7 +68,7 @@ async function getAdherenceForWeek(
 
  const ids = enr.items.map(p => p.participant.identifier)
   console.log('ds', ids)
-  const prime = await getAdherenceForWeekForUsers(studyId, ids, token)
+  const prime = await getAdherenceForWeekForParticipants(studyId, ids, token)
   console.log('starting all')*/
   /* end of priming */
 
@@ -101,13 +105,28 @@ async function getAdherenceForParticipant(
   studyId: string,
   userId: string,
   token: string
-): Promise<AdherenceDetailReport> {
-  const endpoint = constants.endpoints.adherenceDetail.replace(':studyId', studyId).replace(':userId', userId)
+): Promise<AdherenceParticipantReport> {
+  const endpoint = constants.endpoints.adherenceSingleParticipant
+    .replace(':studyId', studyId)
+    .replace(':userId', userId)
   const result = await Utility.callEndpoint<any>(endpoint, 'GET', {}, token)
   return result.data
 }
 
-//TODO: API for adherence alerts
+async function getDetailedAdherenceReportForParticipant(
+  studyId: string,
+  userId: string,
+  token: string
+): Promise<AdherenceAssessmentLevelReport> {
+  const endpoint = constants.endpoints.adherenceSingleParticipantDetail
+    .replace(':studyId', studyId)
+    .replace(':userId', userId)
+  const result = report as AdherenceAssessmentLevelReport
+
+  return Promise.resolve(result)
+}
+
+//API for adherence alerts
 /*
 https://developer.sagebridge.org/swagger-ui/index.html#/Studies/getAlerts
 https://developer.sagebridge.org/swagger-ui/index.html#/Studies/deleteAlerts
@@ -133,7 +152,7 @@ async function getAdherenceAlerts(
   token: string
 ) {
   const endpoint = constants.endpoints.adherenceAlerts.replace(':studyId', studyId)
-  const offset = currentPage * pageSize; 
+  const offset = currentPage * pageSize
   const result = await Utility.callEndpoint<{items: AdherenceAlert[]; total: number}>(
     `${endpoint}?pageSize=${pageSize}&offsetBy=${offset > 0 ? offset : 0}`,
     'POST',
@@ -150,12 +169,7 @@ async function updateAdherenceAlerts(
   token: string
 ): Promise<any> {
   const endpoint = `${constants.endpoints.adherenceAlerts.replace(':studyId', studyId)}/${action.toLowerCase()}`
-  const result = await Utility.callEndpoint(
-    endpoint,
-    'POST',
-    {alertIds: alertIds},
-    token
-  )
+  const result = await Utility.callEndpoint(endpoint, 'POST', {alertIds: alertIds}, token)
   return result
 }
 
@@ -164,7 +178,8 @@ const AdherenceService = {
   updateAdherenceAlerts,
   getAdherenceForParticipant,
   getAdherenceForWeek,
-  getAdherenceForWeekForUsers,
+  getAdherenceForWeekForParticipants,
+  getDetailedAdherenceReportForParticipant,
   getAdherenceStatsForWeek,
   COMPLIANCE_THRESHOLD,
 }

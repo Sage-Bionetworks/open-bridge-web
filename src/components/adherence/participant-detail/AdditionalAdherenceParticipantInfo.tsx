@@ -1,11 +1,6 @@
 import {Box, Button, Popover, styled} from '@mui/material'
 import {theme} from '@style/theme'
-import {
-  AdherenceDetailReport,
-  ParticipantAccountSummary,
-  ParticipantClientData,
-  ParticipantRequestInfo,
-} from '@typedefs/types'
+import {ParticipantAccountSummary, ParticipantClientData, ParticipantRequestInfo} from '@typedefs/types'
 import dayjs from 'dayjs'
 import React from 'react'
 import ClientDeviceMap from '../clientDevices'
@@ -31,7 +26,7 @@ const Separator = styled('div')(({theme}) => ({
 type AdditionalAdherenceParticipantInfoProps = {
   participantRequestInfo?: ParticipantRequestInfo
   participantClientData?: ParticipantClientData
-  adherenceReport: AdherenceDetailReport
+  adherenceReport: AdherenceParticipantReport
 
   enrollment: ParticipantAccountSummary
 }
@@ -60,7 +55,7 @@ const AdditionalAdherenceParticipantInfo: React.FunctionComponent<AdditionalAdhe
   const open = Boolean(anchorEl)
   const id = open ? 'simple-popover' : undefined
 
-  const getDisplayTimeInStudyTime = (adherenceReport?: AdherenceDetailReport) => {
+  const getDisplayTimeInStudyTime = (adherenceReport?: AdherenceParticipantReport) => {
     if (!adherenceReport?.dateRange) {
       return ''
     }
