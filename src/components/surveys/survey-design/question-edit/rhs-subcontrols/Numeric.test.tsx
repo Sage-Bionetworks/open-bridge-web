@@ -68,7 +68,7 @@ test('updates values', async () => {
       formatOptions: {minimumValue: 3, maximumValue: 8},
     },
   })
-  screen.debug()
+
   const min = getMinInput()
   const max = getMaxInput()
   await act(async () => await user.clear(min))

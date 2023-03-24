@@ -71,8 +71,6 @@ type SurveyDesignProps = SurveyDesignOwnProps & RouteComponentProps
 
 const ErrorBanner: React.FunctionComponent<{errors: (ExtendedError | null)[]}> = ({errors}) => {
   const [show, setShow] = React.useState<boolean>(false)
-
-  console.log(errors)
   React.useEffect(() => {
     setShow(errors.some(e => e !== null))
   }, [errors])
@@ -169,7 +167,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   React.useEffect(() => {
     if (_survey) {
       setSurvey(_survey)
-      console.log('survey refetched')
       setHasObjectChanged(false)
     }
   }, [_survey])

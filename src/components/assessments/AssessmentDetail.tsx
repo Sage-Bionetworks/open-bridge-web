@@ -1,12 +1,12 @@
 import {ReactComponent as MtbSymbol} from '@assets/logo_mtb_symbol.svg'
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import Loader from '@components/widgets/Loader'
-import ArticleTwoToneIcon from '@mui/icons-material/ArticleTwoTone'
-import CakeTwoToneIcon from '@mui/icons-material/CakeTwoTone'
-import ChatBubbleTwoToneIcon from '@mui/icons-material/ChatBubbleTwoTone'
-import FactCheckTwoToneIcon from '@mui/icons-material/FactCheckTwoTone'
-import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone'
-import StarsTwoToneIcon from '@mui/icons-material/StarsTwoTone'
+//import ArticleTwoToneIcon from '@mui/icons-material/ArticleTwoTone'
+//import CakeTwoToneIcon from '@mui/icons-material/CakeTwoTone'
+//import ChatBubbleTwoToneIcon from '@mui/icons-material/ChatBubbleTwoTone'
+//import FactCheckTwoToneIcon from '@mui/icons-material/FactCheckTwoTone'
+//import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone'
+//import StarsTwoToneIcon from '@mui/icons-material/StarsTwoTone'
 import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone'
 import VerifiedTwoToneIcon from '@mui/icons-material/VerifiedTwoTone'
 import {Box, Container, Divider, Grid, Hidden, styled, Typography} from '@mui/material'
@@ -164,7 +164,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                       text="Scientifically Validated"
                     />
 
-                    <SectionWithIcon icon={<CakeTwoToneIcon />} heading="Age" text="todo: age" />
+                    {/*  TODO: add when available     <SectionWithIcon icon={<CakeTwoToneIcon />} heading="Age" text="todo: age" />*/}
                   </Box>
                   <Box>
                     <SectionWithIcon
@@ -172,15 +172,15 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                       heading="Duration"
                       text={`${data.minutesToComplete} min`}
                     />
-                    <SectionWithIcon icon={<ChatBubbleTwoToneIcon />} heading="Language" text="todo:" />
+                    {/*   <SectionWithIcon icon={<ChatBubbleTwoToneIcon />} heading="Language" text="todo:" />*/}
                   </Box>
                 </Box>
-                <Box sx={{clear: 'left'}}>
+                {/*  TODO: add when available     <Box sx={{clear: 'left'}}>
                   <SectionWithIcon icon={<StarsTwoToneIcon />} heading="Score" text="todo: " />
                   <SectionWithIcon icon={<FactCheckTwoToneIcon />} heading="Reliability" text="todo: " />
                   <SectionWithIcon icon={<ArticleTwoToneIcon />} heading="Publications" text="todo: " />
                   <SectionWithIcon icon={<MenuBookTwoToneIcon />} heading="Technical Manual" text="" />
-                </Box>
+          </Box>*/}
               </Box>
             </Grid>
           </Grid>

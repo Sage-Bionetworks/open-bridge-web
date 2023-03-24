@@ -89,6 +89,7 @@ const data: AdherenceAssessmentLevelReportType = {
 const AdherenceAssessmentLvlReport: FunctionComponent<{data: AdherenceAssessmentLevelReport}> = ({data}) => {
   return (
     <>
+      THIS IS USING STATIC DATA
       {data.sessionRecords.map(sr => (
         <>
           <div>{sr.sessionName}</div>
