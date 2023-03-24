@@ -23,7 +23,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const ReadOnlySessionCreator: FunctionComponent<ReadOnlySessionCreatorProps> = ({sessions, children}) => {
-  const classes = useStyles()
   const sessionCreatorClasses = SharedSessionCreatorStyles()
   const sessionContainerClasses = SessionContainerStyles()
   if (sessions) {

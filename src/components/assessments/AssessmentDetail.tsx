@@ -10,10 +10,8 @@ import StarsTwoToneIcon from '@mui/icons-material/StarsTwoTone'
 import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone'
 import VerifiedTwoToneIcon from '@mui/icons-material/VerifiedTwoTone'
 import {Box, Container, Divider, Grid, Hidden, styled, Typography} from '@mui/material'
-import createStyles from '@mui/styles/createStyles'
-import makeStyles from '@mui/styles/makeStyles'
 import {useAssessmentWithResources} from '@services/assessmentHooks'
-import {latoFont, playfairDisplayFont, poppinsFont, theme} from '@style/theme'
+import {latoFont, theme} from '@style/theme'
 import React, {FunctionComponent, ReactElement} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
@@ -30,87 +28,6 @@ const StyledDivider = styled(Divider)(({theme}) => ({
   width: '100%',
   backgroundColor: '#EAECEE',
 }))
-
-const useStyles = makeStyles(theme =>
-  createStyles({
-    breadCrumbs: {
-      backgroundColor: '#F8F8F8',
-      padding: theme.spacing(5, 5, 8, 3),
-      boxShadow: '0 0 0 0',
-    },
-    container: {
-      padding: theme.spacing(6),
-    },
-    categories: {
-      fontFamily: playfairDisplayFont,
-      fontStyle: 'italic',
-      fontSize: '20px',
-      lineHeight: '20px',
-      marginBottom: theme.spacing(2),
-    },
-    informationText: {
-      fontSize: '14px',
-      lineHeight: '18px',
-      marginTop: theme.spacing(2.5),
-      marginBottom: theme.spacing(2.5),
-      fontFamily: poppinsFont,
-    },
-    titleText: {
-      fontFamily: 'Lato',
-      fontSize: '32px',
-      fontWeight: 'bold',
-      lineHeight: '27px',
-      marginBottom: theme.spacing(4),
-    },
-    row: {
-      display: 'flex',
-      flexDirection: 'row',
-    },
-    overallContainer: {
-      backgroundColor: '#F8F8F8',
-      minHeight: '100vh',
-    },
-    informationTextInContainer: {
-      fontSize: '14px',
-      lineHeight: '18px',
-      fontFamily: poppinsFont,
-    },
-    imageTextRow: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      //  marginLeft: theme.spacing(-3.5),
-      marginTop: theme.spacing(2.5),
-      marginBottom: theme.spacing(2.5),
-    },
-    icon: {
-      marginRight: theme.spacing(1),
-      width: '20px',
-      height: '20px',
-    },
-    divider: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2.5),
-      width: '100%',
-    },
-    informationBox: {
-      padding: theme.spacing(7.5),
-      borderRadius: '0px',
-    },
-    overallBackground: {
-      textAlign: 'center',
-      backgroundColor: '#F8F8F8',
-    },
-    validatedIcon: {
-      marginRight: theme.spacing(1),
-      width: '24px',
-      height: '24px',
-    },
-    imageTextRowValidatedIcon: {
-      //marginLeft: theme.spacing(-3.9),
-    },
-  })
-)
 
 type AssessmentDetailOwnProps = {}
 
@@ -137,8 +54,6 @@ const SectionWithIcon: FunctionComponent<{icon: ReactElement; heading: string; t
 }
 
 const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
-  const classes = useStyles()
-
   const [view] = React.useState(new URLSearchParams(useLocation().search).get('viewType'))
   let {id} = useParams<{id: string}>()
   const handleError = useErrorHandler()
@@ -151,8 +66,6 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
   if (isLoading || !data) {
     return <Loader reqStatusLoading={true} />
   }
-
-  const correctResource = data?.resources?.find(resource => resource.category === 'website')
 
   const Header = (
     <>

@@ -6,7 +6,7 @@ import {Box, Table, TableBody, TableRow, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
 import {latoFont} from '@style/theme'
-import {AdherenceDetailReport, EventStreamDay, ParticipantClientData, SessionDisplayInfo} from '@typedefs/types'
+import {AdherenceParticipantReport, EventStreamDay, ParticipantClientData, SessionDisplayInfo} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import AdherenceUtility from '../adherenceUtility'
@@ -57,7 +57,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type AdherenceParticipantGridProps = {
-  adherenceReport: AdherenceDetailReport
+  adherenceReport: AdherenceParticipantReport
   clientData: ParticipantClientData | undefined
   sessions: SessionDisplayInfo[]
 }
@@ -137,7 +137,7 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                   padding: 0,
                   borderLeft: 'none',
                   textAlign: 'center',
-                  backgroundColor: weekIndex % 2 == 0 ? '#fff' : '#FBFBFC',
+                  backgroundColor: weekIndex % 2 === 0 ? '#fff' : '#FBFBFC',
                 }}>
                 <Table>
                   {week.rows.map((row, rowIndex) => (
@@ -174,7 +174,7 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                     adherenceReport.progression === 'in_progress' &&
                     classes.red
                 )}
-                sx={{backgroundColor: weekIndex % 2 == 0 ? '#fff' : '#FBFBFC'}}>
+                sx={{backgroundColor: weekIndex % 2 === 0 ? '#fff' : '#FBFBFC'}}>
                 {week.adherencePercent !== undefined && adherenceReport.progression !== 'unstarted'
                   ? `${week.adherencePercent}%`
                   : '-'}

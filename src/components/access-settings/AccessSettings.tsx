@@ -103,7 +103,6 @@ const NameDisplay: FunctionComponent<any> = ({member, index}): JSX.Element => {
 }
 
 const NameDisplayDetail: React.FunctionComponent<{member: LoggedInUserData; access: Access}> = ({member, access}) => {
-  const classes = useStyles()
   const adminText = (
     <>
       Administrator<span style={{color: '#EAECEE'}}>&nbsp;&#124;&nbsp;</span>

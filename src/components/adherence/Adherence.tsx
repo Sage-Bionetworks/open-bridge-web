@@ -80,7 +80,7 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
 
   const classes = useStyles()
 
-  const {data: study, error: studyError, isLoading: isStudyLoading} = useStudy(studyId)
+  const {data: study, isLoading: isStudyLoading} = useStudy(studyId)
   if (!study) {
     return isStudyLoading ? (
       <Box mx="auto" my={5} textAlign="center">

@@ -1,14 +1,9 @@
 import Utility from '@helpers/utility'
 import {Box, TextField, Typography} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, theme} from '@style/theme'
 import React, {FunctionComponent} from 'react'
 import ErrorDisplay from '../widgets/ErrorDisplay'
 import AccessGrid, {Access} from './AccessGrid'
-
-const useStyles = makeStyles(theme => ({
-  root: {},
-}))
 
 export type NewOrgAccount = {
   id: string

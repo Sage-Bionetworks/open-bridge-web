@@ -1,14 +1,6 @@
 import {Checkbox, FormControlLabel, FormGroup} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import {ProgressionStatus} from '@typedefs/types'
-import React, {FunctionComponent} from 'react'
-import {useCommonStyles} from '../styles'
-
-const useStyles = makeStyles(theme => ({
-  mainContainer: {
-    padding: theme.spacing(4),
-  },
-}))
+import {FunctionComponent} from 'react'
 
 type CompletionFilterProps = {
   progressionStatus: ProgressionStatus[] | undefined
@@ -22,8 +14,6 @@ const COMPLETION_STATUS: {label: string; value: ProgressionStatus}[] = [
 ]
 
 const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({progressionStatus, onChange, counts}) => {
-  const classes = {...useCommonStyles(), ...useStyles()}
-
   const updateProgressionStatus = (value: ProgressionStatus, checked: boolean) => {
     let result
     let cStatus = progressionStatus

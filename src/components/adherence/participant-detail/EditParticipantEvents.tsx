@@ -22,7 +22,7 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
 }) => {
   const [participantEvents, setParticipantEvents] = React.useState<ParticipantEvent[]>([])
 
-  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
+  const {data: scheduleEvents = []} = useEvents(studyId)
   const {data: events} = useEventsForUser(studyId, participantId)
 
   React.useEffect(() => {
@@ -31,7 +31,7 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
     }
   }, [events])
 
-  const {isSuccess, isError, isIdle, error, mutate: updateEvents} = useUpdateEventsForUser()
+  const {isError, isIdle, error, mutate: updateEvents} = useUpdateEventsForUser()
 
   return (
     <Dialog open={true} maxWidth="sm" fullWidth scroll="body">
@@ -53,9 +53,7 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
         <DialogButtonPrimary
           disabled={!clientTimeZone}
           onClick={() => {
-            const previousEvents = events?.customEvents
             const updatedEvents = participantEvents
-
             //only update changes events
             const eventsToUpdate = updatedEvents.filter(ue => {
               const matchedEvent = events?.customEvents.find(e => e.eventId === ue.eventId)

@@ -116,9 +116,10 @@ const constants = {
 
   endpoints: {
     adherenceAlerts: '/v5/studies/:studyId/alerts',
-    adherenceDetail: '/v5/studies/:studyId/participants/:userId/adherence/study',
+    adherenceSingleParticipant: '/v5/studies/:studyId/participants/:userId/adherence/study',
+    adherenceSingleParticipantDetail: '/v5/studies/:studyId/participants/:userId/adherence/detail',
     adherenceStats: '/v5/studies/:studyId/adherence/stats',
-    adherenceUserWeekly: '/v5/studies/:studyId/participants/:userId/adherence/weekly',
+    adherencePrimeParticipantWeekly: '/v5/studies/:studyId/participants/:userId/adherence/weekly',
     adherenceWeekly: '/v5/studies/:studyId/adherence/weekly',
     assessment: '/v1/assessments/:id',
     assessmentShared: '/v1/sharedassessments/:id',

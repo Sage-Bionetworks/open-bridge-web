@@ -2,9 +2,8 @@ import BannerInfo from '@components/studies/BannerInfo'
 import AlertBanner from '@components/widgets/AlertBanner'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
-import Utility from '@helpers/utility'
-import UtilityObject from '@helpers/utility'
-import {Box, Button, CircularProgress, Dialog, styled} from '@mui/material'
+import {default as Utility, default as UtilityObject} from '@helpers/utility'
+import {Box, CircularProgress, Dialog, styled} from '@mui/material'
 import {
   useSurveyAssessment,
   useSurveyConfig,
@@ -90,7 +89,7 @@ const ErrorBanner: React.FunctionComponent<{errors: (ExtendedError | null)[]}> =
             }}
             isVisible={show}
             icon={BannerInfo.bannerMap.get('error')!.icon[0]}
-            isSelfClosing={e!.statusCode != 401}
+            isSelfClosing={e!.statusCode !== 401}
             displayBottomOfPage={false}
             displayText={e!.statusCode === 401 ? <Redirect to={Utility.getRedirectLinkToOneSage()} /> : e!.message}
           />
@@ -180,15 +179,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   }, [location])
 
   // fns used  to subcomponent callbacks
-  const saveIconResource = async () => {
-    if (assessment) {
-      const r = assessment.resources?.find(r => r.category === 'icon')
-      if (!r) {
-        throw new Error('no resource')
-      }
-      return mutateResource({assessment, resource: r})
-    }
-  }
 
   const saveAssessmentFromIntro = (asmnt: Assessment, survey: Survey, action: 'UPDATE' | 'CREATE') => {
     mutateAssessment(

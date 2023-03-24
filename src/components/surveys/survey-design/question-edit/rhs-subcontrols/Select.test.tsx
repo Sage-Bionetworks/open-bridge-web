@@ -112,7 +112,7 @@ test('updates the values for select type and data type', async () => {
   const dataTypeSelect = getDataTypeSelect()
   expect(questionTypeSelect).toHaveTextContent('Single Select')
   await act(async () => await user.click(questionTypeSelect))
-  await act(async () => await user.click(screen.getByRole('option', {name: /multi\-select/i})))
+  await act(async () => await user.click(screen.getByRole('option', {name: /multi-select/i})))
   expect(questionTypeSelect).toHaveTextContent('Multi-Select')
 
   expect(dataTypeSelect).toHaveTextContent('Integer')

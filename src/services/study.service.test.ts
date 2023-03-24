@@ -8,7 +8,6 @@ import mockSchedule from '../__test_utils/mocks/schedule.json'
 import mockStudy from '../__test_utils/mocks/study.json'
 
 export const getStudyResponse = rest.get(`*${constants.endpoints.study}`, async (req, res, ctx) => {
-  const {id} = req.params
   return res(ctx.status(200), ctx.json(mockStudy))
 })
 

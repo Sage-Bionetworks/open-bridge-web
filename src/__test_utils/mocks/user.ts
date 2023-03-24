@@ -6,6 +6,7 @@ export const loggedInSessionData: UserSessionData = {
   orgMembership: '123',
   roles: ['org_admin'],
   id: '123',
+  synapseUserId: '12345',
   appId: constants.constants.MTB_APP_ID,
 }
 
@@ -15,4 +16,5 @@ export const notLoggedInSessionData: UserSessionData = {
   roles: [],
   id: '123',
   appId: '123',
+  synapseUserId: undefined,
 }

@@ -152,7 +152,6 @@ const HasBurstsSC: React.FunctionComponent<{
   hasBursts: boolean
   setHasBursts: (hasBursts: boolean) => void
 }> = ({hasBursts, setHasBursts}) => {
-  const classes = useStyles()
   return (
     <>
       <Box display="flex" flexDirection="row" alignItems="center">
@@ -298,12 +297,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<SaveHandle, ConfigureBur
 ) => {
   const classes = useStyles()
 
-  const {
-    isSuccess: scheduleUpdateSuccess,
-    isError: scheduleUpdateError,
-    mutateAsync: mutateSchedule,
-    data,
-  } = useUpdateSchedule()
+  const {mutateAsync: mutateSchedule} = useUpdateSchedule()
   const [saveLoader, setSaveLoader] = React.useState(false)
   const [error, setError] = React.useState<string | undefined>()
   const [originEventId, setOriginEventId] = React.useState<string | undefined>()

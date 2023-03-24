@@ -1,10 +1,5 @@
 import AdherenceService from '@services/adherence.service'
-import {
-  AdherenceByDayEntries,
-  AdherenceDetailReportWeek,
-  AdherenceWeeklyReport,
-  SessionDisplayInfo,
-} from '@typedefs/types'
+import {AdherenceByDayEntries, AdherenceWeeklyReport, SessionDisplayInfo} from '@typedefs/types'
 import _ from 'lodash'
 
 import dayjs from 'dayjs'
@@ -16,7 +11,7 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advanced)
 
-function getMaxNumberOfTimeWindows(streams: (AdherenceDetailReportWeek | AdherenceWeeklyReport)[]): number {
+function getMaxNumberOfTimeWindows(streams: (AdherenceParticipantReportWeek | AdherenceWeeklyReport)[]): number {
   const maxNumberOfWindowsInStreams = streams.map(stream => {
     const dayEntires = _.flatten(Object.values(stream.byDayEntries))
     const maxWindowsInStream = Math.max(...dayEntires.map(entry => entry.timeWindows.length))
@@ -28,7 +23,7 @@ function getMaxNumberOfTimeWindows(streams: (AdherenceDetailReportWeek | Adheren
 /*
 // agendel: seems like this is retruned by the server
 function getLastSchedleDate(
-  streams: (AdherenceDetailReportWeek | AdherenceWeeklyReport)[]
+  streams: (AdherenceParticipantReportWeek | AdherenceWeeklyReport)[]
 ): string {
   const maxNumberOfWindowsInStreams = streams.map(stream => {
     const dayEntires = _.flatten(Object.values(stream.byDayEntries))
@@ -58,7 +53,9 @@ function getDisplayFromLabel(
   return isReturnArray ? returnLabel.split('/') : returnLabel
 }
 
-function getUniqueSessionsInfo(items: AdherenceWeeklyReport[] | AdherenceDetailReportWeek[]): SessionDisplayInfo[] {
+function getUniqueSessionsInfo(
+  items: AdherenceWeeklyReport[] | AdherenceParticipantReportWeek[]
+): SessionDisplayInfo[] {
   const labels = _.flatten(items.map(i => i.rows))
   const result: SessionDisplayInfo[] = labels
     .filter(label => !!label)

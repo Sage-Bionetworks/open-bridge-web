@@ -61,6 +61,7 @@ const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp}) => {
             !isARCApp && classes.mtbAppBackground
           )}>
           <img
+            alt="logo"
             style={{
               height: isARCApp ? '211px' : '160px',
               width: isARCApp ? '211px' : '95px',

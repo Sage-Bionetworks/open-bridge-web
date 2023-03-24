@@ -1,4 +1,4 @@
-import {useAdherence} from '@components/studies/adherenceHooks'
+import {useAdherenceForParticipant} from '@components/studies/adherenceHooks'
 import StudyBuilderHeader from '@components/studies/StudyBuilderHeader'
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import LoadingComponent from '@components/widgets/Loader'
@@ -58,7 +58,7 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
     userId: string
   }>()
 
-  const {data: adherenceReport, isLoading: isAdherenceLoading} = useAdherence(studyId, participantId)
+  const {data, isLoading: isAdherenceLoading} = useAdherenceForParticipant(studyId, participantId)
 
   const {data: participantRequestInfo} = useGetParticipantInfo(studyId, participantId)
 
@@ -77,12 +77,12 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
   const [participantSessions, setParticipantSessions] = React.useState<SessionDisplayInfo[]>([])
 
   React.useEffect(() => {
-    if (adherenceReport) {
+    if (data?.adherenceReport) {
       // debugger
 
-      setParticipantSessions(AdherenceUtility.getUniqueSessionsInfo(adherenceReport.weeks))
+      setParticipantSessions(AdherenceUtility.getUniqueSessionsInfo(data.adherenceReport.weeks))
     }
-  }, [adherenceReport])
+  }, [data?.adherenceReport])
 
   const classes = {...useCommonStyles(), ...useStyles()}
 
@@ -102,7 +102,7 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
         <StudyBuilderHeader study={study!} />
         <ParticipantAdherenceContentShell
           sx={
-            adherenceReport?.progression === 'done'
+            data?.adherenceReport?.progression === 'done'
               ? {background: 'linear-gradient(360deg, #F7FBF6 0%, #F7FBF6 85.05%)'}
               : {}
           }>
@@ -120,9 +120,13 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
                 {' '}
                 <PersonIcon sx={{fontSize: '32px', marginRight: theme.spacing(1), color: '#afb5bd'}} />
                 <Typography variant="h2">
-                  {ParticipantService.formatExternalId(studyId, adherenceReport?.participant?.externalId || '', true)}
+                  {ParticipantService.formatExternalId(
+                    studyId,
+                    data?.adherenceReport?.participant?.externalId || '',
+                    true
+                  )}
                 </Typography>
-                {adherenceReport?.progression === 'done' && (
+                {data?.adherenceReport?.progression === 'done' && (
                   <Tooltip title="Completed Study">
                     <CheckIcon sx={{color: '#63A650', marginLeft: theme.spacing(1)}} />
                   </Tooltip>
@@ -132,7 +136,7 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
               <AdditionalAdherenceParticipantInfo
                 participantRequestInfo={participantRequestInfo}
                 participantClientData={participant?.clientData}
-                adherenceReport={adherenceReport!}
+                adherenceReport={data?.adherenceReport!}
                 enrollment={enrollment!}
               />
             </Box>
@@ -153,13 +157,13 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
               />
             ))}
           </Box>
-          {
+          {data?.adherenceReport && (
             <AdherenceParticipantGrid
-              adherenceReport={adherenceReport!}
+              adherenceReport={data!.adherenceReport!}
               clientData={participant?.clientData}
               sessions={participantSessions}
             />
-          }
+          )}
           <Box display="flex">
             {events && events?.customEvents?.length > 0 && (
               <Button variant="text" onClick={() => setIsEditParticipant(true)} startIcon={<EditTwoToneIcon />}>
@@ -170,12 +174,16 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
               marginLeft="auto"
               className={clsx(
                 classes.cumulative,
-                !AdherenceUtility.isCompliant(adherenceReport?.adherencePercent) && classes.red
+                !AdherenceUtility.isCompliant(data?.adherenceReport?.adherencePercent) && classes.red
               )}>
               Cumulative: &nbsp; &nbsp; &nbsp;
               <span
-                className={!AdherenceUtility.isCompliant(adherenceReport?.adherencePercent) ? classes.red : ''}></span>
-              {adherenceReport?.progression === 'unstarted' ? '-' : `${adherenceReport?.adherencePercent} %`}
+                className={
+                  !AdherenceUtility.isCompliant(data?.adherenceReport?.adherencePercent) ? classes.red : ''
+                }></span>
+              {data?.adherenceReport?.progression === 'unstarted'
+                ? '-'
+                : `${data?.adherenceReport?.adherencePercent} %`}
             </Box>
           </Box>
 
@@ -183,12 +191,12 @@ const AdherenceParticipant: FunctionComponent<AdherenceParticipantProps & RouteC
             <EditParticipantEvents
               studyId={studyId}
               participantId={participantId}
-              clientTimeZone={adherenceReport?.clientTimeZone}
+              clientTimeZone={data?.adherenceReport?.clientTimeZone}
               onCloseDialog={() => setIsEditParticipant(false)}
             />
           )}
 
-          <AdherenceAssessmentLevelReport />
+          {data && <AdherenceAssessmentLevelReport data={data.adherenceReportDetail} />}
         </Paper>
       </LoadingComponent>
     </Box>
