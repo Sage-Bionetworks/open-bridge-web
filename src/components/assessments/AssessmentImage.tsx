@@ -15,7 +15,7 @@ const CardTop = styled(Box, {label: 'StyledCardMedia'})(({theme}) => ({
   '& img': {
     width: '150px',
     height: '150px',
-    // backgroundColor: 'pink',
+    backgroundColor: '#f6f6f6', //ALINA TODO PROD CHANGE - remove when images updated to new
   },
   '> div': {
     height: '150px',
@@ -25,7 +25,7 @@ const CardTop = styled(Box, {label: 'StyledCardMedia'})(({theme}) => ({
 }))
 
 const DetailImageContainer = styled(Box, {label: 'DetailImageContainer'})(({theme}) => ({
-  padding: theme.spacing(0),
+  padding: '9px 0px 16px 0px',
   backgroundImage: `url(${assDetailFrame})`,
   backgroundRepeat: 'no-repeat',
   height: '270px',
