@@ -10,4 +10,7 @@ module.exports = {
       '@style': path.resolve(__dirname, 'src/style/'),
     },
   },
+  eslint: {
+    enable: false
+  },
 }
