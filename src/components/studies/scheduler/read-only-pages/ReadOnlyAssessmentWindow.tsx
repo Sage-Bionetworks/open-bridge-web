@@ -29,7 +29,6 @@ const ReadOnlyAssessmentWindow: React.FunctionComponent<ReadOnlyAssessmentWindow
 
       <strong>Expire After:</strong>
       <br />
-      {expireAfter}
       {expireAfter ? getFormattedTimeDateFromPeriodString(expireAfter) : 'n/a'}
     </ReadOnlyWindowTemplate>
   )
