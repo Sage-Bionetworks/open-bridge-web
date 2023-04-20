@@ -10,7 +10,7 @@ import {
 import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
-import * as report from './detailedAdherenceReport.json'
+//import * as report from './detailedAdherenceReport.json'
 
 export const COMPLIANCE_THRESHOLD = 60
 
@@ -121,9 +121,9 @@ async function getDetailedAdherenceReportForParticipant(
   const endpoint = constants.endpoints.adherenceSingleParticipantDetail
     .replace(':studyId', studyId)
     .replace(':userId', userId)
-  const result = report as AdherenceAssessmentLevelReport
+  const result = await Utility.callEndpoint<any>(endpoint, 'GET', {}, token)
 
-  return Promise.resolve(result)
+  return result.data
 }
 
 //API for adherence alerts

@@ -1,6 +1,6 @@
 import {BorderedTableCell} from '@components/widgets/StyledComponents'
 import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone'
-import {styled, Table, TableBody, tableCellClasses, TableHead, TableRow} from '@mui/material'
+import {Box, Divider, styled, Table, TableBody, tableCellClasses, TableHead, TableRow, Typography} from '@mui/material'
 import {AdherenceAssessmentLevelReport} from '@typedefs/types'
 import {FunctionComponent} from 'react'
 import AdherenceUtility from '../adherenceUtility'
@@ -9,6 +9,12 @@ const COLORS: Record<string, string> = {
   declined: '#fff7f7',
   completed: '#f8fcf8',
 }
+
+const StyledDivider = styled(Divider, {label: 'StyledDivider'})(theme => ({
+  margin: '8px',
+  height: '10px',
+  borderColor: '#CCC',
+}))
 
 const StyledTable = styled(Table, {label: 'StyledTable'})(theme => ({
   border: '1px solid #EAECEE',
@@ -30,72 +36,37 @@ const StyledTable = styled(Table, {label: 'StyledTable'})(theme => ({
     },
   },
 }))
-/*
-const data: AdherenceAssessmentLevelReportType = {
-  participant: {
-    identifier: 'peHyRQJ6k6TI4D6HFCTVC59U',
-    firstName: 'Assess',
-    lastName: 'Person',
-    email: 'jack.nelson+assess@sagebase.org',
-  },
-  testAccount: true,
-  clientTimeZone: 'America/Los_Angeles',
-  sessionRecords: [
-    {
-      sessionName: 'Session #1',
-      sessionGuid: 'QhhM4MkrU72ApZ6Tlv2dyRgE',
-      sessionStart: '2023-02-21T16:05:00.000Z',
-      sessionCompleted: '2023-02-21T16:16:00.000Z',
-      assessmentRecords: [
-        {
-          assessmentName: 'Test assessment',
-          assessmentId: 'test-assessment-a',
-          assessmentGuid: '3WuLIOleJLJW_HbWlOZi9Y8D',
-          assessmentInstanceGuid: 'NU3t9un1mc32XXe5KBpYVg',
-          assessmentStatus: 'Completed',
-          assessmentStart: '2023-02-21T16:05:00.000Z',
-          assessmentCompleted: '2023-02-21T16:10:00.000Z',
-          uploadedOn: '2023-02-21T16:10:00.000Z',
-        },
-        {
-          assessmentName: 'adh_test_assess',
-          assessmentId: 'adh_test_assess',
-          assessmentGuid: '0pnaYdzuMmQzdKliFD8L5z8E',
-          assessmentInstanceGuid: 'vyhm8ueBQuvcInNexxM4wA',
-          assessmentStatus: 'Completed',
-          assessmentStart: '2023-02-21T16:15:00.000Z',
-          assessmentCompleted: '2023-02-21T16:16:00.000Z',
-        },
-      ],
-    },
-    {
-      sessionName: 'Session #1',
-      sessionGuid: 'QhhM4MkrU72ApZ6Tlv2dyRgE',
-      burstName: 'BurstAA',
-      burstId: '1',
-      assessmentRecords: [
-        {
-          assessmentName: 'Test assessment',
-          assessmentId: 'test-assessment-a',
-          assessmentGuid: '3WuLIOleJLJW_HbWlOZi9Y8D',
-          assessmentInstanceGuid: 'o5iJqTFYn01c-uowrjRVSA',
-          assessmentStatus: 'Declined',
-        },
-      ],
-    },
-  ],
-}
-*/
+
 const AdherenceAssessmentLvlReport: FunctionComponent<{data: AdherenceAssessmentLevelReport}> = ({data}) => {
   return (
     <>
-      THIS IS USING STATIC DATA
       {data.sessionRecords.map(sr => (
         <>
-          <div>{sr.sessionName}</div>
-          <div>
-            Session Start {sr.sessionStart} | Session End {sr.sessionCompleted} | Expiration Date TODO
-          </div>
+          <Typography variant="h5" sx={{fontWeight: 700}}>
+            {sr.sessionName}
+          </Typography>
+          <Box sx={{display: 'flex', height: '40px', alignItems: 'center'}}>
+            <Box>
+              <Typography variant="h4" component={'span'}>
+                Session Start&nbsp;&nbsp;
+              </Typography>{' '}
+              {AdherenceUtility.getDateTimeForDisplay(sr.sessionStart)}
+            </Box>
+            <StyledDivider orientation="vertical" />
+            <Box>
+              <Typography variant="h4" component={'span'}>
+                Session End&nbsp;&nbsp;
+              </Typography>{' '}
+              {AdherenceUtility.getDateTimeForDisplay(sr.sessionCompleted) || '-'}
+            </Box>
+            <StyledDivider orientation="vertical" />
+            <Box>
+              <Typography variant="h4" component={'span'}>
+                Expiration Date &nbsp;&nbsp;
+              </Typography>{' '}
+              {AdherenceUtility.getDateTimeForDisplay(sr.sessionExpiration)}
+            </Box>
+          </Box>
           <StyledTable>
             <TableHead>
               <TableRow>
@@ -109,6 +80,9 @@ const AdherenceAssessmentLvlReport: FunctionComponent<{data: AdherenceAssessment
                 <TableRow
                   sx={{
                     backgroundColor: COLORS[ar.assessmentStatus.toLowerCase()] || '#fffbf4',
+                    '& td': {
+                      textAlign: 'center',
+                    },
                   }}>
                   <BorderedTableCell>{ar.assessmentName}</BorderedTableCell>{' '}
                   <BorderedTableCell>{AdherenceUtility.getDateTimeForDisplay(ar.assessmentStart)}</BorderedTableCell>{' '}
@@ -117,11 +91,11 @@ const AdherenceAssessmentLvlReport: FunctionComponent<{data: AdherenceAssessment
                   </BorderedTableCell>
                   <BorderedTableCell>
                     <div>
-                      {ar.assessmentStatus === 'Completed' && (
+                      {ar.assessmentStatus === 'completed' && (
                         <CheckCircleTwoToneIcon sx={{color: '#63A650', marginRight: '4px'}} />
                       )}
 
-                      {ar.assessmentStatus}
+                      {ar.assessmentStatus === 'not_completed' ? 'not completed' : 'completed'}
                     </div>
                   </BorderedTableCell>
                 </TableRow>
