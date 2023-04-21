@@ -519,6 +519,7 @@ export type AdherenceAssessmentLevelReportSessionRecord = {
   sessionGuid: string
   sessionStart?: string
   sessionCompleted?: string
+  sessionExpiration?: string
   burstName?: string
   burstId?: string
   assessmentRecords: AdherenceAssessmentLevelReportAdhRecord[]
@@ -531,7 +532,7 @@ export type AdherenceAssessmentLevelReportAdhRecord = {
 
   assessmentGuid: string
   assessmentInstanceGuid: string
-  assessmentStatus: 'Completed' | 'Declined'
+  assessmentStatus: 'completed' | 'not_completed'
   assessmentStart?: string
   assessmentCompleted?: string
   uploadedOn?: string
