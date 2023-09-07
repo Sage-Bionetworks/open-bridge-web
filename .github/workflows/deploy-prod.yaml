@@ -12,5 +12,5 @@ jobs:
     with:
       branch: main
       destination_bucket: prod.studies.mobiletoolbox.org
-      distribution_id: someid
+      distribution_id: E1NB88XGDVLVG9
 
