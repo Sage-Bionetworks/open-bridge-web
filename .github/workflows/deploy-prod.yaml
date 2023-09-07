@@ -1,0 +1,16 @@
+name: deploy-prod
+
+on:
+  workflow_dispatch
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/build-and-deploy.yaml
+    with:
+      branch: main
+      destination_bucket: prod.studies.mobiletoolbox.org
+      distribution_id: someid
+

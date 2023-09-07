@@ -1,10 +1,23 @@
-name: deploy mtb to staging
+name: build and deploy mtb
 
 # on:
 #   push:
 #     branches: ["main", "feature"]
 on:
-  workflow_dispatch
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+        description: The branch to checkout
+      destination_bucket:
+        required: true
+        type: string
+        description: The bucket to deploy to
+      distribution_id:
+        required: true
+        type: string
+        description: The distribution to invalidate
 
 jobs:
   build:
@@ -19,8 +32,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
+          cache: yarn
       - name: checkout
         uses: actions/checkout@v3.0.0
+        with:
+          ref: ${{ inputs.branch }}
       - name: build
         run: |
           export DISABLE_ESLINT_PLUGIN=true
@@ -33,10 +49,10 @@ jobs:
       #     role-to-assume: arn:aws:iam::797640923903:role/sagebase-github-oidc-sage-bionetworks-mtb-sageit
       #     role-session-name: GitHubActions-${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ github.run_id }}
       #     role-duration-seconds: 1200
-      # - name: deploy
-      #   run: |
-      #     aws --region us-east-1 s3 sync ./build s3://staging.studies.mobiletoolbox.org --delete
-      #     aws --region us-east-1 cloudfront create-invalidation --distribution-id E2H7LCB4G4JGGA --paths "/*"
+      - name: deploy
+        run: |
+          echo aws --region us-east-1 s3 sync ./build s3://${{ inputs.destination_bucket }} --delete
+          echo aws --region us-east-1 cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }} --paths "/*"
 
 
             

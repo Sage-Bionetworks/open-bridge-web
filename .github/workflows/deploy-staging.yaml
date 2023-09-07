@@ -1,0 +1,17 @@
+name: deploy-staging
+
+on:
+  push:
+    branches: ["main", "feature"]
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/build-and-deploy.yaml
+    with:
+      branch: ${{ github.ref_name }}
+      destination_bucket: staging.studies.mobiletoolbox.org
+      distribution_id: E2H7LCB4G4JGGA
+    
