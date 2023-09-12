@@ -42,17 +42,17 @@ jobs:
           export DISABLE_ESLINT_PLUGIN=true
           yarn install --check-files
           yarn build
-      # - name: Assume AWS Role
-      #   uses: aws-actions/configure-aws-credentials@v2
-      #   with:
-      #     aws-region: us-east-1
-      #     role-to-assume: arn:aws:iam::797640923903:role/sagebase-github-oidc-sage-bionetworks-mtb-sageit
-      #     role-session-name: GitHubActions-${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ github.run_id }}
-      #     role-duration-seconds: 1200
+      - name: Assume AWS Role
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::797640923903:role/sagebase-github-oidc-sage-bionetworks-mtb-sageit
+          role-session-name: GitHubActions-${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ github.run_id }}
+          role-duration-seconds: 1200
       - name: deploy
         run: |
-          echo aws --region us-east-1 s3 sync ./build s3://${{ inputs.destination_bucket }} --delete
-          echo aws --region us-east-1 cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }} --paths "/*"
+          aws --region us-east-1 s3 sync ./build s3://${{ inputs.destination_bucket }} --delete --dryrun
+          aws --region us-east-1 cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }} --paths "/*"
 
 
             
