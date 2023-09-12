@@ -1,14 +1,18 @@
+const OPEN_BRIDGE_APP_ID = 'open-bridge'
 const MTB_APP_ID = 'mobile-toolbox'
 const ARC_APP_ID = 'arc'
 const INV_ARC_ID = 'inv-arc'
+const OPEN_BRIDGE_ONESAGE_APP_ID = 'SAGE'
 const MTB_ONESAGE_APP_ID = 'MTB'
 const ARC_ONESAGE_APP_ID = 'ARC'
 const INV_ARC_ONESAGE_APP_ID = 'INV-ARC'
 const constants = {
   constants: {
+    OPEN_BRIDGE_APP_ID: OPEN_BRIDGE_APP_ID,
     MTB_APP_ID: MTB_APP_ID,
     ARC_APP_ID: ARC_APP_ID,
     INV_ARC_APP_ID: INV_ARC_ID,
+    OPEN_BRIDGE_ONESAGE_APP_ID: OPEN_BRIDGE_ONESAGE_APP_ID,
     MTB_ONESAGE_APP_ID: MTB_ONESAGE_APP_ID,
     ARC_ONESAGE_APP_ID: ARC_ONESAGE_APP_ID,
     INV_ARC_ONESAGE_APP_ID: INV_ARC_ONESAGE_APP_ID,
@@ -42,6 +46,27 @@ const constants = {
   org_roles: ['org_admin', 'study_designer', 'study_coordinator'] as const,
 
   oauth: {
+    local_open_bridge: {
+      client: '100359',
+      vendor: 'open-bridge-local',
+      redirect: 'http://127.0.0.1:3003',
+      appId: OPEN_BRIDGE_APP_ID,
+      oneSageAppId: OPEN_BRIDGE_ONESAGE_APP_ID,
+    },
+    stage_open_bridge_studies: {
+      client: '100361',
+      vendor: 'open-bridge-staging',
+      redirect: 'https://staging.studies.bridgedigital.health',
+      appId: OPEN_BRIDGE_APP_ID,
+      oneSageAppId: OPEN_BRIDGE_ONESAGE_APP_ID,
+    },
+    prod_open_bridge_studies: {
+      client: '100360',
+      vendor: 'open-bridge-prod',
+      redirect: 'https://studies.bridgedigital.health',
+      appId: OPEN_BRIDGE_APP_ID,
+      oneSageAppId: OPEN_BRIDGE_ONESAGE_APP_ID,
+    },
     local_mtb: {
       client: '100062',
       vendor: 'mtb-dev',
