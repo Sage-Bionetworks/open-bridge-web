@@ -1,4 +1,4 @@
-import {ReactComponent as MtbSymbol} from '@assets/logo_mtb_symbol.svg'
+import {ReactComponent as MtbSymbol} from '@assets/logo_open_bridge_symbol.svg'
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import Loader from '@components/widgets/Loader'
 //import ArticleTwoToneIcon from '@mui/icons-material/ArticleTwoTone'
@@ -82,7 +82,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
         </Typography>
         <Box sx={{display: 'flex'}}>
           <MtbSymbol
-            title="official_mobile_toolbox_icon"
+            title="official_open_bridge_icon"
             style={{
               marginRight: '8px',
               width: '20px',
@@ -90,7 +90,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
             }}
           />
 
-          <Typography component="span">Official Mobile Toolbox version</Typography>
+          <Typography component="span">Official Open Bridge version</Typography>
         </Box>
       </Box>
       <Typography variant="h2" sx={{margin: {lg: theme.spacing(2, 0), md: theme.spacing(4, 0)}}}>

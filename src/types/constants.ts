@@ -17,7 +17,7 @@ const constants = {
     ARC_ONESAGE_APP_ID: ARC_ONESAGE_APP_ID,
     INV_ARC_ONESAGE_APP_ID: INV_ARC_ONESAGE_APP_ID,
 
-    SESSION_NAME: 'mtb-user-session',
+    SESSION_NAME: 'open-bridge-user-session',
     ENDPOINT: 'https://webservices.sagebridge.org',
     SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
     NEW_STUDY_NAME: 'Untitled Study',

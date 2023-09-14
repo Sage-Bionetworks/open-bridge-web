@@ -65,7 +65,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn}) => {
         <Box className={clsx(classes.text, !isArcSignIn && classes.mtbText)}>
           {isArcSignIn
             ? 'Please sign in to ARC using your Synapse account.'
-            : 'Please sign in to Mobile Toolbox using your Synapse account.'}
+            : 'Please sign in to Open Bridge using your Synapse account.'}
         </Box>
         <div className={classes.paper}>
           <Button variant="contained" href={Utility.getRedirectLinkToOneSage()} className={classes.arcSubmitbutton}>

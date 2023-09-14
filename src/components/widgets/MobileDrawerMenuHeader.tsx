@@ -1,4 +1,4 @@
-import Logo from '@assets/logo_mtb_small.svg'
+import Logo from '@assets/logo_open_bridge_small.svg'
 import ClearIcon from '@mui/icons-material/Clear'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'

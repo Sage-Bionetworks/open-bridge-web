@@ -223,7 +223,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
             ) : (
               <Container maxWidth="md" sx={{textAlign: 'left', marginBottom: theme.spacing(4)}}>
                 <Typography paragraph sx={{fontSize: '16px'}}>
-                  Mobile Toolbox lets you add optional contextual/sensor monitoring to your study. This can be used to
+                  Open Bridge lets you add optional contextual/sensor monitoring to your study. This can be used to
                   assess the impact of environmental factors on test performance.
                 </Typography>
                 <Typography sx={{fontSize: '16px'}} paragraph>

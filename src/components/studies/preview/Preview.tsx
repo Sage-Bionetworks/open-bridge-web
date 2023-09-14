@@ -256,7 +256,7 @@ const PreviewIdGenerated: React.FunctionComponent<{
         Your draft study has been generated.
       </Typography>
       <Typography variant="h5">
-        Please download and/or open the <strong>Mobile Toolbox App</strong> and login with the following credentials
+        Please download and/or open the <strong>Open Bridge App</strong> and login with the following credentials
         below.
       </Typography>
     </Box>
@@ -264,9 +264,9 @@ const PreviewIdGenerated: React.FunctionComponent<{
 
   const assessmentDemoIntro = (
     <>
-      <Typography variant="h3">Mobile Toolbox Assessment Demo</Typography>
+      <Typography variant="h3">Open Bridge Assessment Demo</Typography>
       <Typography variant="h5">
-        To try out our assessments from our library, please download the <strong>Mobile Toolbox App</strong> and enter
+        To try out our assessments from our library, please download the <strong>Open Bridge App</strong> and enter
         your personalized codes below to log in.
       </Typography>{' '}
     </>
@@ -398,9 +398,9 @@ const PreviewIntroScreen: React.FunctionComponent<{
   const {token} = useUserSessionDataState()
 
   const text = [
-    'Only use the Mobile Toolbox for authorized purposes.',
+    'Only use the Open Bridge for authorized purposes.',
     'Respect and protect data, participant’s privacy and data confidentiality.',
-    'Not attempt to use or represent the use of Mobile Toolbox for medical care.',
+    'Not attempt to use or represent the use of Open Bridge for medical care.',
   ]
 
   const icons = [AuthorizedIcon, ProtectionIcon, MedicalIcon]
