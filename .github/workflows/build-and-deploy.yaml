@@ -1,8 +1,5 @@
 name: build and deploy mtb
 
-# on:
-#   push:
-#     branches: ["main", "feature"]
 on:
   workflow_call:
     inputs:
@@ -39,7 +36,7 @@ jobs:
           cache: yarn
       - name: build
         run: |
-          export DISABLE_ESLINT_PLUGIN=true
+          export CI=false
           yarn install --check-files
           yarn build
       - name: Assume AWS Role

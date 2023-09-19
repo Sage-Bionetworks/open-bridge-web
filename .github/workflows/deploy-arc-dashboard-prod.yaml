@@ -1,4 +1,4 @@
-name: deploy-prod
+name: deploy-arc-prod
 
 on:
   workflow_dispatch
@@ -11,6 +11,6 @@ jobs:
     uses: ./.github/workflows/build-and-deploy.yaml
     with:
       branch: main
-      destination_bucket: prod.studies.mobiletoolbox.org
-      distribution_id: E1NB88XGDVLVG9
+      destination_bucket: prod-arcdashboard-sagebionetworks-o-websitebucket-1f1fae0cp8k4e
+      distribution_id: E4NMTZ3W9RYFH
 
