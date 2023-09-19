@@ -1,4 +1,4 @@
-import MTBLogoLarge from '@assets/logo_mtb_large.svg'
+import MTBLogoLarge from '@assets/logo_open_bridge_large.svg'
 import appStoreBtn from '@assets/preview/appStoreBtn.png'
 import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
 import QrCode from '@assets/qr_code.png'
@@ -43,7 +43,7 @@ const DownloadAppLandingPage: React.FunctionComponent = () => {
   const classes = useStyles()
   return (
     <Box className={classes.container}>
-      <img src={MTBLogoLarge} alt="large mtb logo" style={{width: '100px', height: '100px'}} />
+      <img src={MTBLogoLarge} alt="large logo" style={{width: '100px', height: '100px'}} />
       <Box className={classes.downloadText}>
         <strong>
           <i>App Download Instructions</i>
@@ -56,7 +56,7 @@ const DownloadAppLandingPage: React.FunctionComponent = () => {
         <br></br>
         <ol>
           <li>
-            To download the <strong>Mobile Toolbox App</strong>, search for "Mobile Toolbox App" in your phone's app
+            To download the <strong>Open Bridge App</strong>, search for "Open Bridge App" in your phone's app
             store or do one of the following:
             <ul>
               <li className={classes.listText}>

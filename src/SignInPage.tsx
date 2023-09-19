@@ -3,7 +3,7 @@ import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
 import ArcLogo from './assets/logo_arc_main.svg'
-import MtbFinalLogo from './assets/logo_mtb_large.svg'
+import MtbFinalLogo from './assets/logo_open_bridge_large.svg'
 import AccountLogin from './components/account/AccountLogin'
 
 const useStyles = makeStyles(theme => ({

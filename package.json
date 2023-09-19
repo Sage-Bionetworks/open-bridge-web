@@ -1,5 +1,5 @@
 {
-  "name": "mtb",
+  "name": "open-bridge",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -61,6 +61,7 @@
     "start": "craco start",
     "start:arc": "PORT=3001 craco start",
     "start:invarc": "PORT=3002 craco start",
+    "start:bridge": "PORT=3003 craco start",
     "build": "craco build",
     "test": "craco test --coverage --watch",
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",

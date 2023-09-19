@@ -1,6 +1,6 @@
 {
   "identifier": "rhhgfb",
-  "name": "Jazz HNRP Mobile Toolbox",
+  "name": "Jazz HNRP Open Bridge",
   "studyStartEventId": "timeline_retrieved",
   "deleted": false,
 
@@ -10,9 +10,9 @@
     "generateIds": false,
     "welcomeScreenData": {
       "welcomeScreenBody": "We are conducting this research study to examine how well this newly-developed battery of smartphone-based mobile cognitive tests works. \n\nYou are being asked to take these tests today, 3 times over the next week, then again at your follow-up visit.",
-      "welcomeScreenFromText": "HNRP Mobile Toolbox Study Team",
+      "welcomeScreenFromText": "HNRP Open Bridge Study Team",
       "welcomeScreenSalutation": "Thank you for your contribution,",
-      "welcomeScreenHeader": "Mobile Toolbox Study",
+      "welcomeScreenHeader": "Open Bridge Study",
       "useOptionalDisclaimer": true,
       "isUsingDefaultMessage": false
     },
@@ -29,8 +29,8 @@
   },
   "exporter3Enabled": true,
   "phase": "recruitment",
-  "details": "Welcome to the Mobile Toolbox!\n\nWe are conducting this research study to examine how well this newly-developed battery of smartphone-based mobile cognitive tests works.\n\nYou are being asked to take these tests first at your in-lab baseline visit, 3 times over the next week on your own, then one final time at your in-lab follow-up visit. \n\nIf you can, please complete all the tests in one sitting during your at-home testing days, which will take 20-30 minutes.",
-  "irbName": "Mobile Toolbox Clinical Validation Study in Persons With HIV",
+  "details": "Welcome to the Open Bridge!\n\nWe are conducting this research study to examine how well this newly-developed battery of smartphone-based mobile cognitive tests works.\n\nYou are being asked to take these tests first at your in-lab baseline visit, 3 times over the next week on your own, then one final time at your in-lab follow-up visit. \n\nIf you can, please complete all the tests in one sitting during your at-home testing days, which will take 20-30 minutes.",
+  "irbName": "Open Bridge Clinical Validation Study in Persons With HIV",
   "irbDecisionOn": "2021-08-25",
   "irbExpiresOn": "2022-08-24",
   "irbDecisionType": "approved",

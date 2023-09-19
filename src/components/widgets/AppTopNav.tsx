@@ -1,6 +1,6 @@
-import LogoLarge from '@assets/logo_mtb_large.svg'
-import Logo from '@assets/logo_mtb_small.svg'
-import LogoSymbol from '@assets/logo_mtb_symbol.svg'
+import LogoLarge from '@assets/logo_open_bridge_large.svg'
+import Logo from '@assets/logo_open_bridge_small.svg'
+import LogoSymbol from '@assets/logo_open_bridge_symbol.svg'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import Utility from '@helpers/utility'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -230,10 +230,10 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             }}>
             {sessionData?.token ? (
               <NavLink to="/studies">
-                <img src={LogoSymbol} key="Mobile Toolbox" alt="logo" />
+                <img src={LogoSymbol} key="Open Bridge" alt="logo" />
               </NavLink>
             ) : (
-              <img src={LogoSymbol} key="Mobile Toolbox" alt="logo" />
+              <img src={LogoSymbol} key="Open Bridge" alt="logo" />
             )}
             <IconButton
               color="inherit"
@@ -260,10 +260,10 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             }}>
             {sessionData?.token ? (
               <NavLink to="/studies">
-                <img src={hasSubNav ? Logo : LogoLarge} key="Mobile Toolbox" alt="logo" />
+                <img src={hasSubNav ? Logo : LogoLarge} key="Open Bridge" alt="logo" />
               </NavLink>
             ) : (
-              <img src={hasSubNav ? Logo : LogoLarge} key="Mobile Toolbox" alt="logo" />
+              <img src={hasSubNav ? Logo : LogoLarge} key="Open Bridge" alt="logo" />
             )}
 
             <Box sx={{display: 'flex'}}>
