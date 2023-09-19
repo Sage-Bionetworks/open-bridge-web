@@ -130,7 +130,7 @@ const ChoiceValueInputRow: React.FunctionComponent<{
 }
 
 function generateValue(choice: ChoiceQuestionChoice, setTo?: number) {
-  return SurveyUtils.isSpecialSelectChoice(choice) ? choice.value : setTo ?? choice.text.replaceAll(' ', '_')
+  return SurveyUtils.isSpecialSelectChoice(choice) ? choice.value : setTo ?? choice.text.replaceAll(' ', '_').replaceAll(',', '_')
 }
 
 const Select: React.FunctionComponent<{
@@ -148,12 +148,24 @@ const Select: React.FunctionComponent<{
 
     const isSwitchedToSingleSelect = !step.singleChoice && value === 'SINGLE_SELECT'
 
+    const updatedStep = {...step}
+    let choices = isSwitchedToSingleSelect
+    ? step.choices.filter(c => !SurveyUtils.isSpecialSelectChoice(c))
+    : step.choices
+    if (!isSwitchedToSingleSelect) {
+      //if changing to a multiple select -- remove 'other'
+      delete updatedStep.other
+      if (step.baseType === 'string') {
+        for (const [_i, v] of choices.entries()) {
+          v.value = generateValue(v)
+        }
+      }
+    } 
+
     onChange({
-      ...step,
+      ...updatedStep,
       singleChoice: value === 'SINGLE_SELECT',
-      choices: isSwitchedToSingleSelect
-        ? step.choices.filter(c => !SurveyUtils.isSpecialSelectChoice(c))
-        : step.choices,
+      choices: choices,
     })
   }
 
