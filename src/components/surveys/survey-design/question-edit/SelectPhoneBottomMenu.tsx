@@ -1,6 +1,6 @@
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import {Box, Typography} from '@mui/material'
+import {Box} from '@mui/material'
 
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone'
 import Button from '@mui/material/Button'
@@ -246,6 +246,21 @@ const SelectPhoneBottomMenu: FunctionComponent<{
     return Array.from(OPTIONS.keys()).filter(optionKey => isOptionSupported(optionKey) && !isOptionAlreadyAdded(optionKey))
   }
 
+  function addMenuItems() {
+    let options = getOptions()
+    return options.length === 0 ? <NoMenuItemOptions /> :
+    <>
+      {options.map(optionKey => (
+      <StyledMenuItem
+        key={optionKey}
+        disabled={isOptionAlreadyAdded(optionKey)}
+        onClick={() => addGenericResponse(optionKey)}>
+        {OPTIONS.get(optionKey)?.selectDisplayLabel}
+      </StyledMenuItem>
+    ))}
+    </>
+  }
+
   return (
     <PhoneBottom>
       <Button
@@ -291,15 +306,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
               padding: 0,
             },
           }}>
-          {getOptions().map(optionKey => (
-            <StyledMenuItem
-              key={optionKey}
-              disabled={isOptionAlreadyAdded(optionKey)}
-              onClick={() => addGenericResponse(optionKey)}>
-              {OPTIONS.get(optionKey)?.selectDisplayLabel}
-            </StyledMenuItem>
-          ))}
-          {getOptions().length == 0 && <NoMenuItemOptions /> }
+          {addMenuItems()}
         </StyledMenu>
       </SideMenu>
     </PhoneBottom>
