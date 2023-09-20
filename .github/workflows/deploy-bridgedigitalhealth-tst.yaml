@@ -1,0 +1,16 @@
+name: deploy-open-bridge-tst
+
+on:
+  push:
+    branches: ["staging"]
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/build-and-deploy.yaml
+    with:
+      branch: ${{ github.ref_name }}
+      destination_bucket: tst-bridgedigitalhealth-websitebucket-1fnzdxhja8yl4
+      distribution_id: E86GBF8L8W74U
