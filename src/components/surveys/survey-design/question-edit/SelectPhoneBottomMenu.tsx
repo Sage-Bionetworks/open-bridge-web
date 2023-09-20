@@ -246,18 +246,18 @@ const SelectPhoneBottomMenu: FunctionComponent<{
     return Array.from(OPTIONS.keys()).filter(optionKey => isOptionSupported(optionKey) && !isOptionAlreadyAdded(optionKey))
   }
 
-  function addMenuItems() {
+  const SpecialOptionsMenuItems: FunctionComponent = () => {
     let options = getOptions()
     return options.length === 0 ? <NoMenuItemOptions /> :
     <>
       {options.map(optionKey => (
-      <StyledMenuItem
-        key={optionKey}
-        disabled={isOptionAlreadyAdded(optionKey)}
-        onClick={() => addGenericResponse(optionKey)}>
-        {OPTIONS.get(optionKey)?.selectDisplayLabel}
-      </StyledMenuItem>
-    ))}
+        <StyledMenuItem
+          key={optionKey}
+          disabled={isOptionAlreadyAdded(optionKey)}
+          onClick={() => addGenericResponse(optionKey)}>
+          {OPTIONS.get(optionKey)?.selectDisplayLabel}
+        </StyledMenuItem>
+      ))}
     </>
   }
 
@@ -306,7 +306,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
               padding: 0,
             },
           }}>
-          {addMenuItems()}
+          <SpecialOptionsMenuItems />
         </StyledMenu>
       </SideMenu>
     </PhoneBottom>
