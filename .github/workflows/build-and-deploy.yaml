@@ -1,4 +1,4 @@
-name: build and deploy mtb
+name: build and deploy app
 
 on:
   workflow_call:

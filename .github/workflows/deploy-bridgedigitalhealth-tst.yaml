@@ -1,4 +1,4 @@
-name: deploy-arc-tst
+name: deploy-open-bridge-tst
 
 on:
   push:
