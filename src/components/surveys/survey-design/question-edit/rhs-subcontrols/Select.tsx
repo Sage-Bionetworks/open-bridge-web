@@ -153,7 +153,7 @@ const Select: React.FunctionComponent<{
     ? step.choices.filter(c => !SurveyUtils.isSpecialSelectChoice(c))
     : step.choices
     if (!isSwitchedToSingleSelect) {
-      //if changing to a multiple select -- remove 'other'
+      // if changing to a multiple select -- remove 'other'
       delete updatedStep.other
       if (step.baseType === 'string') {
         for (const [_i, v] of choices.entries()) {
