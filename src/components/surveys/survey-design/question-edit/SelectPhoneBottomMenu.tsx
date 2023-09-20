@@ -299,7 +299,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
               {OPTIONS.get(optionKey)?.selectDisplayLabel}
             </StyledMenuItem>
           ))}
-          {getOptions().length == 0 ? (<NoMenuItemOptions />) : (<></>) }
+          {getOptions().length == 0 && <NoMenuItemOptions /> }
         </StyledMenu>
       </SideMenu>
     </PhoneBottom>
