@@ -48,7 +48,7 @@ jobs:
           role-duration-seconds: 1200
       - name: deploy
         run: |
-          aws --region us-east-1 s3 sync ./build s3://${{ inputs.destination_bucket }} --delete --dryrun
+          aws --region us-east-1 s3 sync ./build s3://${{ inputs.destination_bucket }} --delete
           aws --region us-east-1 cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }} --paths "/*"
 
 
