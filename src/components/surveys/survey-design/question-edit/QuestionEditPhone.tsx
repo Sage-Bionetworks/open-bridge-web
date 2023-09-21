@@ -223,7 +223,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
       return <StyledStartButton>Start</StyledStartButton>
     }
     if (step.type === 'completion') {
-      return <StyledStartButton>Exit Study</StyledStartButton>
+      return <StyledStartButton>Exit</StyledStartButton>
     }
   }
 
