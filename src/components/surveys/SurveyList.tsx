@@ -218,6 +218,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
             <StyledSurveysContainer key="container">
               {surveys?.map((survey, index) => (
                 <Link
+                  component="button"
                   style={{textDecoration: 'none'}}
                   key={survey.guid}
                   variant="body2"
