@@ -1,6 +1,6 @@
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import {Box, Typography} from '@mui/material'
+import {Box} from '@mui/material'
 
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone'
 import Button from '@mui/material/Button'
@@ -106,7 +106,7 @@ const OPTIONS = new Map<
   {
     selectDisplayLabel: string
     defaultText: string
-    selectorType: ChoiceSelectorType
+    selectorType?: ChoiceSelectorType
   }
 >([
   [
@@ -125,18 +125,23 @@ const OPTIONS = new Map<
       selectorType: 'exclusive',
     },
   ],
+  [
+    'OTHER',
+    {
+      selectDisplayLabel: '+ Add "Other"',
+      defaultText: 'Other',
+    },
+  ],
 ])
 
-// 'other' option is disabled when the question type is integer
-const DisabledOtherMenuItem: FunctionComponent = () => {
+const NoMenuItemOptions: FunctionComponent = () => {
   return (
-    <StyledMenuItem height="120px" key={'OTHER'} nohover={true} onClick={void 0} disabled={true}>
-      <Box height="100px" marginTop="16px">
-        <Typography sx={{opacity: 0.3, color: '#fff'}}> +Add "Other"</Typography>
+    <StyledMenuItem height="80px" key={'OTHER'} nohover={true} onClick={void 0} disabled={true}>
+      <Box height="60px" >
         <Box
           sx={{
             fontFamily: latoFont,
-            marginTop: '16px',
+            marginTop: '0px',
             fontSize: '16px',
             fontStyle: 'italic',
             fontWeight: '400',
@@ -144,9 +149,9 @@ const DisabledOtherMenuItem: FunctionComponent = () => {
             letterSpacing: '0em',
             textAlign: 'left',
             whiteSpace: 'normal',
-            width: '170px',
+            width: '220px',
           }}>
-          Other is only available when Reponse Value Pairing is set to String
+          There are no additional options for this combination of Question Type and Response Value.
         </Box>
       </Box>
     </StyledMenuItem>
@@ -213,7 +218,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
     setAnchorEl(null)
   }
 
-  const isDisabled = (optionKey: string): boolean => {
+  const isOptionAlreadyAdded = (optionKey: SelectorOptionType): boolean => {
     switch (optionKey) {
       case 'ALL':
         return step.choices?.find(q => q.selectorType === 'all') !== undefined
@@ -227,15 +232,33 @@ const SelectPhoneBottomMenu: FunctionComponent<{
     }
   }
 
-  const getOptions = (): SelectorOptionType[] => {
-    const keyArray = Array.from(OPTIONS.keys())
-    //for single choice only add other. If it's an integer value 'other' is disabled
-    if (step.singleChoice) {
-      const result = keyArray.filter(optionKey => optionKey === 'OTHER')
-
-      return result
+  const isOptionSupported = (optionKey: SelectorOptionType): boolean => {
+    if (step.singleChoice ?? true) {
+      // If this is a single choice step then *only* other is supported 
+      return optionKey === 'OTHER' && step.baseType === 'string'
+    } else {
+      // If this is multiple answer then everything *but* Other is supported
+      return optionKey !== 'OTHER'
     }
-    return keyArray
+  }
+
+  const getOptions = (): SelectorOptionType[] => {
+    return Array.from(OPTIONS.keys()).filter(optionKey => isOptionSupported(optionKey) && !isOptionAlreadyAdded(optionKey))
+  }
+
+  const SpecialOptionsMenuItems: FunctionComponent = () => {
+    let options = getOptions()
+    return options.length === 0 ? <NoMenuItemOptions /> :
+    <>
+      {options.map(optionKey => (
+        <StyledMenuItem
+          key={optionKey}
+          disabled={isOptionAlreadyAdded(optionKey)}
+          onClick={() => addGenericResponse(optionKey)}>
+          {OPTIONS.get(optionKey)?.selectDisplayLabel}
+        </StyledMenuItem>
+      ))}
+    </>
   }
 
   return (
@@ -283,21 +306,7 @@ const SelectPhoneBottomMenu: FunctionComponent<{
               padding: 0,
             },
           }}>
-          {getOptions().map(optionKey => (
-            <StyledMenuItem
-              key={optionKey}
-              disabled={isDisabled(optionKey)}
-              onClick={() => addGenericResponse(optionKey)}>
-              {OPTIONS.get(optionKey)?.selectDisplayLabel}
-            </StyledMenuItem>
-          ))}
-          {step.baseType === 'string' ? (
-            <StyledMenuItem key="OTHER" disabled={isDisabled('OTHER')} onClick={() => addGenericResponse('OTHER')}>
-              + Add "Other"
-            </StyledMenuItem>
-          ) : (
-            <DisabledOtherMenuItem />
-          )}
+          <SpecialOptionsMenuItems />
         </StyledMenu>
       </SideMenu>
     </PhoneBottom>
