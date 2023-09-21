@@ -1,8 +1,17 @@
-import React, {useEffect, useRef} from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import {useUserSessionDataDispatch, useUserSessionDataState} from './helpers/AuthContext'
 import Utility from './helpers/utility'
 import UserService from './services/user.service'
-import {ExtendedError, LoggedInUserData} from './types/types'
+import {ExtendedError, LoggedInUserData, LoginMethod} from './types/types'
+
+export type UseLoginReturn = {
+  id: string
+  redirect: string | undefined
+  isLoadingLoginWithOauth: boolean
+  isLoadingLoginWithUsernameAndPassword: boolean
+  errorMessageLoginWithUsernameAndPassword: string | undefined
+  submitUsernameAndPassword: (username: string, password: string) => void
+}
 
 const getCode = (): string | null => {
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
@@ -24,13 +33,52 @@ const attemptLogin = async (code: string): Promise<LoggedInUserData> => {
   }
 }
 
-function useLogin() {
+function useLogin(): UseLoginReturn {
   const firstUpdate = useRef(true)
   const sessionData = useUserSessionDataState()
   const sessionUpdateFn = useUserSessionDataDispatch()
   const [redirect, setRedirect] = React.useState<string | undefined>()
   const [token, setToken] = React.useState(sessionData.token)
   const code = getCode()
+
+  const [isLoadingLoginWithUsernameAndPassword, setIsLoadingLoginWithUsernameAndPassword] =
+    React.useState<boolean>(false)
+  const [errorMessageLoginWithUsernameAndPassword, setErrorMessageLoginWithUsernameAndPassword] = React.useState<
+    string | undefined
+  >()
+
+  const finishLogin = useCallback(
+    async (loginResponse: LoggedInUserData, loginMethod: LoginMethod) => {
+      sessionUpdateFn({
+        type: 'LOGIN',
+        payload: {
+          synapseUserId: loginResponse.synapseUserId,
+          token: loginResponse.sessionToken,
+          firstName: loginResponse.firstName,
+          lastName: loginResponse.lastName,
+          username: loginResponse.username,
+          orgMembership: loginResponse.orgMembership,
+          dataGroups: loginResponse.dataGroups,
+          roles: loginResponse.roles,
+          id: loginResponse.id,
+          appId: Utility.getAppId(),
+          demoExternalId: loginResponse.clientData?.demoExternalId,
+          isVerified: loginResponse.isVerified,
+          lastLoginMethod: loginMethod,
+        },
+      })
+      setToken(loginResponse.sessionToken)
+      const savedLocation = sessionStorage.getItem('location')
+      if (savedLocation) {
+        sessionStorage.removeItem('location')
+        setRedirect(savedLocation)
+      } else {
+        setRedirect('/studies')
+      }
+    },
+    [sessionUpdateFn]
+  )
+
   useEffect(() => {
     let isSubscribed = true
     //the whole point of this is to log out the user if their session ha expired on the servier
@@ -58,42 +106,37 @@ function useLogin() {
       firstUpdate.current = false
 
       attemptLogin(code).then(
-        result => {
-          sessionUpdateFn({
-            type: 'LOGIN',
-            payload: {
-              synapseUserId: result.synapseUserId,
-              token: result.sessionToken,
-              firstName: result.firstName,
-              lastName: result.lastName,
-              username: result.username,
-              orgMembership: result.orgMembership,
-              dataGroups: result.dataGroups,
-              roles: result.roles,
-              id: result.id,
-              appId: Utility.getAppId(),
-              demoExternalId: result.clientData?.demoExternalId,
-              isVerified: result.isVerified,
-            },
-          })
-          setToken(result.sessionToken)
-          const savedLocation = sessionStorage.getItem('location')
-          console.log('redirecting', savedLocation)
-          if (savedLocation) {
-            sessionStorage.removeItem('location')
-            setRedirect(savedLocation)
-          } else {
-            setRedirect('/studies')
-          }
+        async result => {
+          await finishLogin(result, 'OAUTH_SYNAPSE')
         },
         e => {
           alert(e.message)
         }
       )
     }
-  }, [sessionData.token, code, sessionUpdateFn])
+  }, [sessionData.token, code, finishLogin])
 
-  return {id: sessionData.id, redirect, isLoading: !sessionData.id && code !== null}
+  const submitUsernameAndPassword: UseLoginReturn['submitUsernameAndPassword'] = async (username, password) => {
+    try {
+      setIsLoadingLoginWithUsernameAndPassword(true)
+      setErrorMessageLoginWithUsernameAndPassword(undefined)
+      const response = await UserService.loginUsernamePassword(username, password)
+      await finishLogin(response, 'USERNAME_PASSWORD')
+    } catch (e) {
+      setErrorMessageLoginWithUsernameAndPassword(e.message)
+    } finally {
+      setIsLoadingLoginWithUsernameAndPassword(false)
+    }
+  }
+
+  return {
+    id: sessionData.id,
+    redirect,
+    isLoadingLoginWithOauth: !sessionData.id && code !== null,
+    isLoadingLoginWithUsernameAndPassword: isLoadingLoginWithUsernameAndPassword,
+    errorMessageLoginWithUsernameAndPassword: errorMessageLoginWithUsernameAndPassword,
+    submitUsernameAndPassword: submitUsernameAndPassword,
+  }
 }
 
 export default useLogin

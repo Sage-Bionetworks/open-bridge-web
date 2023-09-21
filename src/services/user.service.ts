@@ -18,6 +18,23 @@ const loginOauth = async (authToken: string, callbackUrl: string, vendorId: stri
   return {...result.data, isVerified: resultFromSynapse.data.isVerified}
 }
 
+const loginUsernamePassword = async (email: string, password: string): Promise<LoggedInUserData> => {
+  const postData = {
+    appId: Utility.getAppId(),
+    email,
+    password,
+  }
+  const result = await Utility.callEndpoint<LoggedInUserData>(constants.endpoints.signIn, 'POST', postData)
+
+  let isVerified = false
+  if (result.data.synapseUserId) {
+    const resultFromSynapse = await getUserInfoFromSynapse(result.data.synapseUserId)
+    isVerified = resultFromSynapse.data.isVerified
+  }
+
+  return {...result.data, isVerified: isVerified}
+}
+
 async function getUserInfo(token: string): Promise<Response<LoggedInUserData>> {
   const result = await Utility.callEndpoint<LoggedInUserData>(constants.endpoints.selfInfo, 'GET', {}, token)
   return result
@@ -37,6 +54,7 @@ async function getUserInfoFromSynapse(synapseUserId: string): Promise<Response<a
 
 const UserService = {
   loginOauth,
+  loginUsernamePassword,
   getUserInfo,
   getUserInfoFromSynapse,
 }

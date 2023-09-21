@@ -25,7 +25,14 @@ declare module '@mui/styles/defaultTheme' {
 const queryClient = new QueryClient()
 
 function App() {
-  const {id, isLoading, redirect} = useLogin()
+  const {
+    id,
+    isLoadingLoginWithOauth,
+    isLoadingLoginWithUsernameAndPassword,
+    redirect,
+    submitUsernameAndPassword,
+    errorMessageLoginWithUsernameAndPassword,
+  } = useLogin()
   useTracking('G-2FM7R03YJC')
 
   //dynamically set favicon and app depending on domain
@@ -51,7 +58,7 @@ function App() {
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
         {redirect && <Redirect to={redirect}></Redirect>}
         {/*  <React.StrictMode>*/}
-        <FeatureToggleProvider featureToggles={{'SURVEY BUILDER': true}}>
+        <FeatureToggleProvider featureToggles={{'SURVEY BUILDER': true, 'USERNAME PASSWORD LOGIN': false}}>
           <Container
             id="outer"
             maxWidth="xl"
@@ -59,8 +66,13 @@ function App() {
             {id ? (
               <AuthenticatedApp />
             ) : (
-              <Loader reqStatusLoading={isLoading}>
-                <UnauthenticatedApp appId={Utility.getAppId()} />
+              <Loader reqStatusLoading={isLoadingLoginWithOauth}>
+                <UnauthenticatedApp
+                  appId={Utility.getAppId()}
+                  isLoadingLoginWithUsernameAndPassword={isLoadingLoginWithUsernameAndPassword}
+                  submitUsernameAndPassword={submitUsernameAndPassword}
+                  errorMessageLoginWithUsernameAndPassword={errorMessageLoginWithUsernameAndPassword}
+                />
               </Loader>
             )}
           </Container>

@@ -2,7 +2,7 @@ import {StudySection} from '@components/studies/sections'
 import StudyTopNav from '@components/studies/StudyTopNav'
 import SurveyTopNav from '@components/surveys/SurveyTopNav'
 import TopNav from '@components/widgets/AppTopNav'
-import {useUserSessionDataState} from '@helpers/AuthContext'
+import {useUserSessionDataDispatch, useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import {useSurveyAssessment} from '@services/assessmentHooks'
 import {useStudy} from '@services/studyHooks'
@@ -59,13 +59,18 @@ const Wrapper: FunctionComponent<RouteComponentProps & {sessionData: UserSession
 
 const AuthenticatedApp: FunctionComponent<RouteComponentProps> = ({location, match}) => {
   const sessionData = useUserSessionDataState()
+  const sessionUpdateFn = useUserSessionDataDispatch()
 
   if (!sessionData.token) {
-    //save location and redirect
-    if (location.pathname !== '/') {
-      sessionStorage.setItem('location', `${location.pathname}${location.search}`)
+    if (sessionData.lastLoginMethod === 'OAUTH_SYNAPSE') {
+      //save location and redirect
+      if (location.pathname !== '/') {
+        sessionStorage.setItem('location', `${location.pathname}${location.search}`)
+      }
+      Utility.redirectToSynapseLogin()
+    } else {
+      sessionUpdateFn({type: 'LOGOUT'})
     }
-    Utility.redirectToSynapseLogin()
   }
   return (
     <>

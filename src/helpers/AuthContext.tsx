@@ -8,7 +8,7 @@ type Action = {type: ActionType; payload?: UserSessionData}
 type Dispatch = (action: Action) => void
 type UserSessionDataProviderProps = {children: React.ReactNode}
 
-const initialState = {
+const initialState: UserSessionData = {
   token: undefined,
   synapseUserId: undefined,
   orgMembership: undefined,
@@ -18,6 +18,7 @@ const initialState = {
   appId: UtilityObject.getAppId(),
   demoExternalId: '',
   isVerified: false,
+  lastLoginMethod: undefined,
 }
 
 const UserSessionDataStateContext = React.createContext<UserSessionData | undefined>(undefined)
@@ -26,7 +27,7 @@ const UserSessionDataDispatchContext = React.createContext<Dispatch | undefined>
 function userReducer(state: UserSessionData, action: Action): UserSessionData {
   switch (action.type) {
     case 'SET_ALERT': {
-      const newState = {
+      const newState: UserSessionData = {
         ...state,
         alert: action.payload!.alert!,
       }
@@ -35,7 +36,7 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
     }
 
     case 'CLEAR_ALERT': {
-      const newState = {
+      const newState: UserSessionData = {
         ...state,
         alert: undefined,
       }
@@ -44,20 +45,21 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
     }
 
     case 'LOGIN':
-      const newState = {
+      const newState: UserSessionData = {
         ...state,
         token: action.payload!.token,
         orgMembership: action.payload!.orgMembership,
         appId: action.payload!.appId,
         firstName: action.payload!.firstName,
         lastName: action.payload!.lastName,
-        userName: action.payload!.username,
+        username: action.payload!.username,
         dataGroups: action.payload!.dataGroups,
         roles: action.payload!.roles,
         id: action.payload!.id,
         synapseUserId: action.payload!.synapseUserId,
         isVerified: action.payload!.isVerified,
         demoExternalId: action.payload?.demoExternalId,
+        lastLoginMethod: action.payload?.lastLoginMethod,
       }
 
       Utility.setSession({...newState, token: undefined})

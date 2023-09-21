@@ -211,6 +211,11 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     route => route.name !== 'APP STORE' && route.name !== 'SIGN IN' && (!route.toggle || toggle[route.toggle!] === true)
   )
 
+  const redirectToLoginPage = () => {
+    sessionStorage.setItem('location', `${location.pathname}${location.search}`)
+    window.location.replace(`${window.location.origin}/sign-in`)
+  }
+
   const isLoginButtonDisabled = React.useMemo(() => {
     return location.pathname.endsWith('/sign-in')
   }, [location])
@@ -288,7 +293,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                           disabled={isLoginButtonDisabled}
                           variant="text"
                           sx={{fontSize: '15px', lineHeight: '18px', color: '#393434'}}
-                          href={Utility.getRedirectLinkToOneSage()}>
+                          onClick={() => redirectToLoginPage()}>
                           LOG IN
                         </Button>
                       </div>
@@ -352,7 +357,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                 variant="text"
                 disabled={/*isLoginButtonDisabled*/ false}
                 sx={{marginLeft: theme.spacing(1)}}
-                href={Utility.getRedirectLinkToOneSage()}>
+                onClick={() => redirectToLoginPage()}>
                 Log in
               </Button>
             </Box>
