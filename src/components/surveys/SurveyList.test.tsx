@@ -40,7 +40,7 @@ afterEach(() => {
 test('should display the list of surveys', async () => {
   const container = renderControl()
   await waitFor(() => {
-    expect(container.queryAllByRole('link')).toHaveLength(1)
+    expect(container.getAllByRole('button', {name: /last edited/i})).toHaveLength(1)
     expect(container.getByText(LocalAssessmentsMTB[0].title)).toBeInTheDocument()
   })
 })
