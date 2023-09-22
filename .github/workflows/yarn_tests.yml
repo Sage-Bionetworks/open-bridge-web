@@ -1,0 +1,22 @@
+name: Test Package
+
+on:
+  pull_request:
+    branches: [ staging ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3.0.0
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: yarn
+      - name: run tests
+        run: |
+          export CI=false
+          yarn install --check-files
+          yarn test
