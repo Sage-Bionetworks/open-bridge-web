@@ -100,7 +100,7 @@ const Label = styled('label')({
     "text" : "None of the above",
     "selectorType" : "exclusive"
   }*/
-type SelectorOptionType = 'ALL' | 'NONE' | 'OTHER'
+type SelectorOptionType = 'ALL' | 'NONE' | 'OTHER' | 'NO_OPTIONS'
 const OPTIONS = new Map<
   SelectorOptionType,
   {
@@ -136,7 +136,7 @@ const OPTIONS = new Map<
 
 const NoMenuItemOptions: FunctionComponent = () => {
   return (
-    <StyledMenuItem height="80px" key={'OTHER'} nohover={true} onClick={void 0} disabled={true}>
+    <StyledMenuItem height="80px" key={'NO_OPTIONS'} nohover={true} onClick={void 0} disabled={true}>
       <Box height="60px" >
         <Box
           sx={{
