@@ -74,8 +74,11 @@ function Factory(args: {step: Step; onChange: (step: Step) => void; q_type: Ques
       return <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
     case 'COMPLETION':
       return <Completion step={args.step as BaseStep} onChange={args.onChange} />
+    case 'INSTRUCTION': {
+      return <></>
+    }
     default:
-      return <>nothing</>
+      return <>TODO: {args.q_type} not supported</>
   }
 }
 /* 
