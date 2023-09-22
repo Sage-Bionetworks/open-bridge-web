@@ -91,10 +91,9 @@ test('additional options for integer multiselect', async () => {
 
   await user.click(btnDots)
 
-  expect(screen.getByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).toHaveClass('Mui-disabled')
+  expect(screen.queryByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', {name: /other/i})).not.toBeInTheDocument()
 })
 
 test('additional options for string multiselect', async () => {
@@ -103,10 +102,9 @@ test('additional options for string multiselect', async () => {
 
   await user.click(btnDots)
 
-  expect(screen.getByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).not.toHaveClass('Mui-disabled')
+  expect(screen.queryByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', {name: /other/i})).not.toBeInTheDocument()
 })
 
 test('additional options for integer single select', async () => {
@@ -117,8 +115,7 @@ test('additional options for integer single select', async () => {
 
   expect(screen.queryByRole('menuitem', {name: /all of the above/i})).not.toBeInTheDocument()
   expect(screen.queryByRole('menuitem', {name: /none of the above/i})).not.toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).toHaveClass('Mui-disabled')
+  expect(screen.queryByRole('menuitem', {name: /other/i})).not.toBeInTheDocument()
 })
 
 test('additional options for string single select', async () => {
@@ -129,6 +126,5 @@ test('additional options for string single select', async () => {
 
   expect(screen.queryByRole('menuitem', {name: /all of the above/i})).not.toBeInTheDocument()
   expect(screen.queryByRole('menuitem', {name: /none of the above/i})).not.toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).toBeInTheDocument()
-  expect(screen.getByRole('menuitem', {name: /other/i})).not.toHaveClass('Mui-disabled')
+  expect(screen.queryByRole('menuitem', {name: /other/i})).toBeInTheDocument()
 })
