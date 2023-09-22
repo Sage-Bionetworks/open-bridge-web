@@ -4,13 +4,17 @@ import Utility from './helpers/utility'
 import UserService from './services/user.service'
 import {ExtendedError, LoggedInUserData, LoginMethod} from './types/types'
 
+export type UsernameAndPasswordLogin = {
+  isLoading: boolean
+  errorMessage: string | undefined
+  onSubmit: (username: string, password: string) => void
+}
+
 export type UseLoginReturn = {
   id: string
   redirect: string | undefined
   isLoadingLoginWithOauth: boolean
-  isLoadingLoginWithUsernameAndPassword: boolean
-  errorMessageLoginWithUsernameAndPassword: string | undefined
-  submitUsernameAndPassword: (username: string, password: string) => void
+  usernameAndPasswordLogin: UsernameAndPasswordLogin
 }
 
 const getCode = (): string | null => {
@@ -116,7 +120,7 @@ function useLogin(): UseLoginReturn {
     }
   }, [sessionData.token, code, finishLogin])
 
-  const submitUsernameAndPassword: UseLoginReturn['submitUsernameAndPassword'] = async (username, password) => {
+  const submitUsernameAndPassword: UsernameAndPasswordLogin['onSubmit'] = async (username, password) => {
     try {
       setIsLoadingLoginWithUsernameAndPassword(true)
       setErrorMessageLoginWithUsernameAndPassword(undefined)
@@ -133,9 +137,11 @@ function useLogin(): UseLoginReturn {
     id: sessionData.id,
     redirect,
     isLoadingLoginWithOauth: !sessionData.id && code !== null,
-    isLoadingLoginWithUsernameAndPassword: isLoadingLoginWithUsernameAndPassword,
-    errorMessageLoginWithUsernameAndPassword: errorMessageLoginWithUsernameAndPassword,
-    submitUsernameAndPassword: submitUsernameAndPassword,
+    usernameAndPasswordLogin: {
+      isLoading: isLoadingLoginWithUsernameAndPassword,
+      errorMessage: errorMessageLoginWithUsernameAndPassword,
+      onSubmit: submitUsernameAndPassword,
+    },
   }
 }
 

@@ -62,6 +62,8 @@ const AuthenticatedApp: FunctionComponent<RouteComponentProps> = ({location, mat
   const sessionUpdateFn = useUserSessionDataDispatch()
 
   if (!sessionData.token) {
+    // TODO (Hallie Swan, Sep 22 2023): re-authenticate users that didn't use Synapse OAuth
+    // https://sagebionetworks.jira.com/browse/DHP-1057
     if (sessionData.lastLoginMethod === 'OAUTH_SYNAPSE') {
       //save location and redirect
       if (location.pathname !== '/') {

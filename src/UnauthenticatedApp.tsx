@@ -9,29 +9,15 @@ import SignInPage from './SignInPage'
 const UnauthenticatedApp: FunctionComponent<
   RouteComponentProps & {
     appId: string
-    isLoadingLoginWithUsernameAndPassword: UseLoginReturn['isLoadingLoginWithUsernameAndPassword']
-    submitUsernameAndPassword: UseLoginReturn['submitUsernameAndPassword']
-    errorMessageLoginWithUsernameAndPassword: UseLoginReturn['errorMessageLoginWithUsernameAndPassword']
+    usernameAndPasswordLogin: UseLoginReturn['usernameAndPasswordLogin']
   }
-> = ({
-  appId,
-  isLoadingLoginWithUsernameAndPassword,
-  submitUsernameAndPassword,
-  errorMessageLoginWithUsernameAndPassword,
-}) => {
+> = ({appId, usernameAndPasswordLogin}) => {
   Utility.setBodyClass()
   const loc = useLocation()
   const route = PublicRoutes.find(r => r.path === loc.pathname)
 
   if (UtilityObject.isArcApp(appId)) {
-    return (
-      <SignInPage
-        isARCApp={true}
-        isLoadingLoginWithUsernameAndPassword={isLoadingLoginWithUsernameAndPassword}
-        submitUsernameAndPassword={submitUsernameAndPassword}
-        errorMessageLoginWithUsernameAndPassword={errorMessageLoginWithUsernameAndPassword}
-      />
-    )
+    return <SignInPage isARCApp={true} usernameAndPasswordLogin={usernameAndPasswordLogin} />
   }
   return (
     <>
@@ -43,13 +29,7 @@ const UnauthenticatedApp: FunctionComponent<
               exact
               path={path}
               key={key}
-              render={props => (
-                <Component
-                  isLoadingLoginWithUsernameAndPassword={isLoadingLoginWithUsernameAndPassword}
-                  submitUsernameAndPassword={submitUsernameAndPassword}
-                  errorMessageLoginWithUsernameAndPassword={errorMessageLoginWithUsernameAndPassword}
-                  {...props}></Component>
-              )}
+              render={props => <Component usernameAndPasswordLogin={usernameAndPasswordLogin} {...props}></Component>}
             />
           ))}
         </Switch>

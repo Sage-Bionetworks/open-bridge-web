@@ -25,6 +25,8 @@ export const sourceAppConfig: Record<string, SourceAppConfig> = {
   },
 }
 
+// TODO (Hallie Swan, Sep 22, 2023): use this hook to remove hard-coded app text
+// https://sagebionetworks.jira.com/browse/DHP-1011
 export const useSourceApp = () => {
   const sessionData = useUserSessionDataState()
   const appId = sessionData.appId

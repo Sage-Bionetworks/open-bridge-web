@@ -12,9 +12,7 @@ import UsernamePasswordForm from './UsernamePasswordForm'
 
 type AccountLoginOwnProps = {
   callbackFn: Function
-  submitUsernameAndPassword: UseLoginReturn['submitUsernameAndPassword']
-  isLoadingLoginWithUsernameAndPassword: UseLoginReturn['isLoadingLoginWithUsernameAndPassword']
-  errorMessageLoginWithUsernameAndPassword: UseLoginReturn['errorMessageLoginWithUsernameAndPassword']
+  usernameAndPasswordLogin: UseLoginReturn['usernameAndPasswordLogin']
   isArcSignIn?: boolean
 }
 
@@ -60,12 +58,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const AccountLogin: FunctionComponent<AccountLoginProps> = ({
-  isArcSignIn,
-  submitUsernameAndPassword,
-  isLoadingLoginWithUsernameAndPassword,
-  errorMessageLoginWithUsernameAndPassword,
-}) => {
+const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn, usernameAndPasswordLogin}) => {
   //const [alertMsg, setAlertMsg] = useState<{msg: string; type: AlertProps['severity']} | undefined>()
   const sourceApp = useSourceApp()
   const classes = useStyles()
@@ -91,11 +84,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({
         {featureToggles['USERNAME PASSWORD LOGIN'] && (
           <>
             {createSignInTextBox('or with your Bridge credentials:', {mt: 4})}
-            <UsernamePasswordForm
-              onSubmit={submitUsernameAndPassword}
-              isLoading={isLoadingLoginWithUsernameAndPassword}
-              errorMessage={errorMessageLoginWithUsernameAndPassword}
-            />
+            <UsernamePasswordForm {...usernameAndPasswordLogin} />
           </>
         )}
       </Container>

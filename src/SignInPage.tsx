@@ -47,18 +47,11 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type SignInPageProps = {
-  isLoadingLoginWithUsernameAndPassword: UseLoginReturn['isLoadingLoginWithUsernameAndPassword']
-  submitUsernameAndPassword: UseLoginReturn['submitUsernameAndPassword']
-  errorMessageLoginWithUsernameAndPassword: UseLoginReturn['errorMessageLoginWithUsernameAndPassword']
+  usernameAndPasswordLogin: UseLoginReturn['usernameAndPasswordLogin']
   isARCApp?: boolean
 }
 
-const SignInPage: React.FunctionComponent<SignInPageProps> = ({
-  isARCApp,
-  isLoadingLoginWithUsernameAndPassword,
-  submitUsernameAndPassword,
-  errorMessageLoginWithUsernameAndPassword,
-}) => {
+const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp, usernameAndPasswordLogin}) => {
   const classes = useStyles()
   return (
     <Box className={clsx(classes.container, !isARCApp && classes.mtbContainer)}>
@@ -82,9 +75,7 @@ const SignInPage: React.FunctionComponent<SignInPageProps> = ({
         <AccountLogin
           callbackFn={() => {}}
           isArcSignIn={isARCApp}
-          submitUsernameAndPassword={submitUsernameAndPassword}
-          isLoadingLoginWithUsernameAndPassword={isLoadingLoginWithUsernameAndPassword}
-          errorMessageLoginWithUsernameAndPassword={errorMessageLoginWithUsernameAndPassword}
+          usernameAndPasswordLogin={usernameAndPasswordLogin}
         />
       </Box>
     </Box>

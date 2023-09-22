@@ -1,7 +1,7 @@
 import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
 import {Alert, Button, FormControl, TextFieldProps} from '@mui/material'
 import {ChangeEvent, FunctionComponent, useState} from 'react'
-import {UseLoginReturn} from 'useLogin'
+import {UsernameAndPasswordLogin} from 'useLogin'
 
 type InputFieldProps = {
   id: string
@@ -43,10 +43,10 @@ const InputField: FunctionComponent<InputFieldProps> = ({
   )
 }
 
-type UsernamePasswordFormProps = {
-  onSubmit: UseLoginReturn['submitUsernameAndPassword']
-  errorMessage: UseLoginReturn['errorMessageLoginWithUsernameAndPassword']
-  isLoading: UseLoginReturn['isLoadingLoginWithUsernameAndPassword']
+export type UsernamePasswordFormProps = {
+  onSubmit: UsernameAndPasswordLogin['onSubmit']
+  errorMessage: UsernameAndPasswordLogin['errorMessage']
+  isLoading: UsernameAndPasswordLogin['isLoading']
 }
 
 const UsernamePasswordForm: FunctionComponent<UsernamePasswordFormProps> = ({onSubmit, errorMessage, isLoading}) => {
