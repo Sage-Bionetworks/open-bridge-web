@@ -1,4 +1,4 @@
-name: deploy-open-bridge-tst
+name: deploy-open-bridge-staging
 
 on:
   push:
@@ -12,5 +12,5 @@ jobs:
     uses: ./.github/workflows/build-and-deploy.yaml
     with:
       branch: ${{ github.ref_name }}
-      destination_bucket: tst-bridgedigitalhealth-websitebucket-1fnzdxhja8yl4
-      distribution_id: E86GBF8L8W74U
+      destination_bucket: staging-studies-bridgedigital-healt-websitebucket-llv54doyeqrl
+      distribution_id: E3S5F61K1105VI
