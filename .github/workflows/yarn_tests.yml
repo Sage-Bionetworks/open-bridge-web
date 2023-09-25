@@ -1,11 +1,12 @@
-name: Test Package
+name: build and test
 
 on:
   pull_request:
-    branches: [ staging ]
+    branches: [production, staging]
 
 jobs:
-  test:
+  build:
+    name: build-test
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -15,8 +16,11 @@ jobs:
         with:
           node-version: '18.x'
           cache: yarn
-      - name: run tests
+      - name: build
         run: |
-          export CI=false
+          export CI=true
           yarn install --check-files
-          yarn test
+          yarn build
+      - name: test
+        run: |
+          yarn test --watchAll
