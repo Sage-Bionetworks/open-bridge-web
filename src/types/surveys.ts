@@ -144,7 +144,7 @@ export interface BaseStep {
   type:
     | 'overview'
     | 'completion'
-    | 'unkonwn'
+    | 'unknown'
     | 'instruction'
     | 'simpleQuestion'
     //| 'multipleInputQuestion'
