@@ -1,14 +1,18 @@
 import {ReactComponent as SynapseLogo} from '@assets/synapse_logo_blue.svg'
+import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import Utility from '@helpers/utility'
-import {Box, Button, Container} from '@mui/material'
+import {Box, BoxProps, Button, Container} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {poppinsFont} from '@style/theme'
+import {useSourceApp} from '@typedefs/sourceAppConfig'
 import clsx from 'clsx'
 import {FunctionComponent} from 'react'
+import {UseLoginReturn} from 'useLogin'
+import UsernamePasswordForm from './UsernamePasswordForm'
 
 type AccountLoginOwnProps = {
   callbackFn: Function
-
+  usernameAndPasswordLogin: UseLoginReturn['usernameAndPasswordLogin']
   isArcSignIn?: boolean
 }
 
@@ -54,24 +58,35 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn}) => {
+const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn, usernameAndPasswordLogin}) => {
   //const [alertMsg, setAlertMsg] = useState<{msg: string; type: AlertProps['severity']} | undefined>()
-
+  const sourceApp = useSourceApp()
   const classes = useStyles()
+
+  const featureToggles = useFeatureToggles<FeatureToggles>()
+  const createSignInTextBox = (text: string, sx?: BoxProps['sx']) => {
+    return (
+      <Box className={clsx(classes.text, !isArcSignIn && classes.mtbText)} sx={sx}>
+        {text}
+      </Box>
+    )
+  }
 
   return (
     <>
       <Container component="main" maxWidth="xs" className={classes.buttonContainer}>
-        <Box className={clsx(classes.text, !isArcSignIn && classes.mtbText)}>
-          {isArcSignIn
-            ? 'Please sign in to ARC using your Synapse account.'
-            : 'Please sign in to Open Bridge using your Synapse account.'}
-        </Box>
+        {createSignInTextBox(`Please sign in to ${sourceApp.longName} with your Synapse account: `)}
         <div className={classes.paper}>
           <Button variant="contained" href={Utility.getRedirectLinkToOneSage()} className={classes.arcSubmitbutton}>
             <SynapseLogo />
           </Button>
         </div>
+        {featureToggles['USERNAME PASSWORD LOGIN'] && (
+          <>
+            {createSignInTextBox('or with your Bridge credentials:', {mt: 4})}
+            <UsernamePasswordForm {...usernameAndPasswordLogin} />
+          </>
+        )}
       </Container>
     </>
   )

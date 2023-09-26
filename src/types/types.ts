@@ -89,11 +89,12 @@ export interface LoggedInUserData extends UserData {
   clientData?: LoggedInUserClientData
 }
 
+export type LoginMethod = 'USERNAME_PASSWORD' | 'OAUTH_SYNAPSE'
 export interface UserSessionData extends UserData {
   token: string | undefined
   alert?: string
   appId: string
-
+  lastLoginMethod?: LoginMethod
   demoExternalId?: string
 }
 

@@ -2,6 +2,7 @@ import {FeatureToggleProvider} from '@helpers/FeatureToggle'
 import {Container, CssBaseline, StyledEngineProvider, ThemeProvider, Typography} from '@mui/material'
 import {createTheme, Theme} from '@mui/material/styles'
 import {deepmerge} from '@mui/utils'
+import {isDevelopment} from 'index'
 import {useEffect} from 'react'
 import {ErrorBoundary} from 'react-error-boundary'
 import {QueryClient, QueryClientProvider} from 'react-query'
@@ -25,7 +26,7 @@ declare module '@mui/styles/defaultTheme' {
 const queryClient = new QueryClient()
 
 function App() {
-  const {id, isLoading, redirect} = useLogin()
+  const {id, isLoadingLoginWithOauth, redirect, usernameAndPasswordLogin} = useLogin()
   useTracking('G-2FM7R03YJC')
 
   //dynamically set favicon and app depending on domain
@@ -51,7 +52,7 @@ function App() {
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
         {redirect && <Redirect to={redirect}></Redirect>}
         {/*  <React.StrictMode>*/}
-        <FeatureToggleProvider featureToggles={{'SURVEY BUILDER': true}}>
+        <FeatureToggleProvider featureToggles={{'SURVEY BUILDER': true, 'USERNAME PASSWORD LOGIN': isDevelopment()}}>
           <Container
             id="outer"
             maxWidth="xl"
@@ -59,8 +60,8 @@ function App() {
             {id ? (
               <AuthenticatedApp />
             ) : (
-              <Loader reqStatusLoading={isLoading}>
-                <UnauthenticatedApp appId={Utility.getAppId()} />
+              <Loader reqStatusLoading={isLoadingLoginWithOauth}>
+                <UnauthenticatedApp appId={Utility.getAppId()} usernameAndPasswordLogin={usernameAndPasswordLogin} />
               </Loader>
             )}
           </Container>

@@ -2,6 +2,7 @@ import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
+import {UseLoginReturn} from 'useLogin'
 import ArcLogo from './assets/logo_arc_main.svg'
 import MtbFinalLogo from './assets/logo_open_bridge_large.svg'
 import AccountLogin from './components/account/AccountLogin'
@@ -46,10 +47,11 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type SignInPageProps = {
+  usernameAndPasswordLogin: UseLoginReturn['usernameAndPasswordLogin']
   isARCApp?: boolean
 }
 
-const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp}) => {
+const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp, usernameAndPasswordLogin}) => {
   const classes = useStyles()
   return (
     <Box className={clsx(classes.container, !isARCApp && classes.mtbContainer)}>
@@ -70,7 +72,11 @@ const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp}) => {
         </Box>
       )}
       <Box className={classes.rightContainer} sx={{width: isARCApp ? '50%' : '100%'}}>
-        <AccountLogin callbackFn={() => {}} isArcSignIn={isARCApp}></AccountLogin>
+        <AccountLogin
+          callbackFn={() => {}}
+          isArcSignIn={isARCApp}
+          usernameAndPasswordLogin={usernameAndPasswordLogin}
+        />
       </Box>
     </Box>
   )
