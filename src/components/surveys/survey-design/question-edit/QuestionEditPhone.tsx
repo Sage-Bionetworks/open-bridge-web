@@ -8,6 +8,7 @@ import {
   ChoiceQuestion,
   ChoiceQuestionChoice,
   NumericQuestion,
+  Question,
   ScaleQuestion,
   Step,
   WebUISkipOptions,
@@ -151,7 +152,7 @@ function Factory(args: {
             fontWeight: '400',
             textAlign: 'left',
           }}>
-          (Maximum 250 characters)
+          {(args.step as Question).inputItem?.placeholder}
         </Box>
       ) // Mobile devices do not support more than 250 characters of free text.
     case 'COMPLETION': {

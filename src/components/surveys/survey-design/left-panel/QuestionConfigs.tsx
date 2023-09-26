@@ -77,6 +77,7 @@ const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: stri
         title: 'New Question',
         inputItem: {
           type: 'string',
+          placeholder: '(Maximum 250 characters)',
         },
       },
     },

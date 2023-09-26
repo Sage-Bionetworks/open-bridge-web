@@ -523,7 +523,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                     Study Starts On:
                   </Typography>
 
-                  {study.studyStartEventId ? EventService.formatEventIdForDisplay(study.studyStartEventId) : 'unkonwn'}
+                  {study.studyStartEventId ? EventService.formatEventIdForDisplay(study.studyStartEventId) : 'unknown'}
                 </div>
               </Box>
             )}
