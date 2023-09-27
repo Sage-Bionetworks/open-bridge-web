@@ -58,7 +58,8 @@
     }
   },
   "scripts": {
-    "start": "craco start",
+    "start": "PORT=3003 craco start",
+    "start:mtb": "PORT=3000 craco start",
     "start:arc": "PORT=3001 craco start",
     "start:invarc": "PORT=3002 craco start",
     "start:bridge": "PORT=3003 craco start",

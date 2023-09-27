@@ -1,6 +1,6 @@
 import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
-import {DisappearingInput, FakeInput} from '@components/surveys/widgets/SharedStyled'
+import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
 import {Box, styled, Typography, TypographyProps} from '@mui/material'
 import {latoFont, theme} from '@style/theme'
 import {
@@ -8,6 +8,7 @@ import {
   ChoiceQuestion,
   ChoiceQuestionChoice,
   NumericQuestion,
+  Question,
   ScaleQuestion,
   Step,
   WebUISkipOptions,
@@ -44,7 +45,7 @@ const SkipQuestion = styled((props: TypographyProps) => <Typography {...props}>S
 
 const PhoneTop = styled('div', {label: 'PhoneTop'})(() => ({
   display: 'flex',
-  margin: '0 0px 54px -6px',
+  margin: '0 0px 18px -6px',
   justifyContent: 'space-between',
 }))
 
@@ -143,25 +144,28 @@ function Factory(args: {
 
     case 'FREE_TEXT':
       return (
-        <FakeInput
-          width={200}
-          height={20}
+        <Box
           sx={{
-            borderRight: 'none',
-            borderTop: 'none',
-            borderBottom: 'none',
-            background: 'transparent',
-          }}
-        />
-      ) //<FreeText step={args.step} onChange={args.onChange} />
+            fontFamily: latoFont,
+            fontSize: '14px',
+            fontStyle: 'italic',
+            fontWeight: '400',
+            textAlign: 'left',
+          }}>
+          {(args.step as Question).inputItem?.placeholder}
+        </Box>
+      ) // Mobile devices do not support more than 250 characters of free text.
     case 'COMPLETION': {
       return <Completion step={args.step as BaseStep} onChange={args.onChange} />
     }
     case 'OVERVIEW': {
       return <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
     }
+    case 'INSTRUCTION': {
+      return <></> // Instructions do not have any fields in addition to title, subtitle, and detail.
+    }
     default:
-      return <>nothing</>
+      return <>TODO: {args.q_type} not supported</>
   }
 }
 
@@ -223,7 +227,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
       return <StyledStartButton>Start</StyledStartButton>
     }
     if (step.type === 'completion') {
-      return <StyledStartButton>Exit Study</StyledStartButton>
+      return <StyledStartButton>Exit</StyledStartButton>
     }
   }
 
@@ -253,36 +257,37 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                     <PauseIcon />
                     {shouldShowSkipButton() && <SkipQuestion />}
                   </PhoneTop>
-
-                  <StyledP2
-                    area-label="subtitle"
-                    id="subtitle"
-                    value={step.subtitle || ''}
-                    placeholder="Subtitle"
-                    onChange={e => onChange({...step, subtitle: e.target.value})}
-                  />
-
-                  <StyledH1
-                    area-label="title"
-                    id="title"
-                    value={step.title || ''}
-                    placeholder="Title"
-                    onChange={e => onChange({...step, title: e.target.value})}
-                  />
                 </>
               )}
-              <ScrollableArea height={isDynamic ? 330 : 400}>
+              <ScrollableArea height={isDynamic ? 410 : 400} >
                 {isDynamic && (
-                  <StyledP2
-                    area-label="detail"
-                    id="detail"
-                    maxRows={4}
-                    multiline={true}
-                    value={step.detail || ''}
-                    placeholder="Description"
-                    sx={{marginBottom: theme.spacing(2.5), fontSize: '16px', fontWeight: 400}}
-                    onChange={e => onChange({...step, detail: e.target.value})}
-                  />
+                  <>    
+                    <StyledP2
+                      area-label="subtitle"
+                      id="subtitle"
+                      multiline={true}
+                      value={step.subtitle || ''}
+                      placeholder="Subtitle"
+                      onChange={e => onChange({...step, subtitle: e.target.value})}
+                    />
+                    <StyledH1
+                      area-label="title"
+                      id="title"
+                      multiline={true}
+                      value={step.title || ''}
+                      placeholder="Title"
+                      onChange={e => onChange({...step, title: e.target.value})}
+                    />
+                    <StyledP2
+                      area-label="detail"
+                      id="detail"
+                      multiline={true}
+                      value={step.detail || ''}
+                      placeholder="Description"
+                      sx={{marginBottom: theme.spacing(2.5), fontSize: '16px', fontWeight: 400}}
+                      onChange={e => onChange({...step, detail: e.target.value})}
+                    />
+                  </>
                 )}
 
                 {
