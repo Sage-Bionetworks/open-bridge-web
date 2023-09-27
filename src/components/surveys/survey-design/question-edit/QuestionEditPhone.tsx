@@ -25,6 +25,7 @@ import TimeDuration from './phone-subcontrols/TimeDuration'
 import PhoneDisplay from './PhoneDisplay'
 import RequiredToggle from './RequiredToggle'
 import SelectPhoneBottomMenu from './SelectPhoneBottomMenu'
+import FreeText from './phone-subcontrols/FreeText'
 
 const OuterContainer = styled('div', {label: 'PhoneOuterContainer'})(({theme}) => ({
   //backgroundColor: '#F8F8F8',
@@ -141,20 +142,8 @@ function Factory(args: {
       return <TimeDuration type="TIME" />
     case 'YEAR':
       return <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
-
     case 'FREE_TEXT':
-      return (
-        <Box
-          sx={{
-            fontFamily: latoFont,
-            fontSize: '14px',
-            fontStyle: 'italic',
-            fontWeight: '400',
-            textAlign: 'left',
-          }}>
-          {(args.step as Question).inputItem?.placeholder}
-        </Box>
-      ) // Mobile devices do not support more than 250 characters of free text.
+      return <FreeText step={args.step as Question} />
     case 'COMPLETION': {
       return <Completion step={args.step as BaseStep} onChange={args.onChange} />
     }
