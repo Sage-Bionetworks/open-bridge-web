@@ -37,6 +37,8 @@ const SECTIONS: {
   isHiddenLive?: boolean
   isHiddenDraft?: boolean
   buttonName?: string
+  hiddenByDefault?: boolean
+  showApps?: string[]   // list of apps to show when hidden by default
 }[] = [
   {
     name: 'Study Details',
@@ -68,8 +70,9 @@ const SECTIONS: {
   {
     name: 'Optional Monitoring',
     path: 'passive-features',
-    hideApps: [CONSTANTS.constants.ARC_APP_ID, CONSTANTS.constants.INV_ARC_APP_ID],
     navIcon: <MicTwoToneIcon />,
+    hiddenByDefault: true,
+    showApps: [],   
   },
   {
     name: 'Preview Study',
@@ -99,8 +102,8 @@ const appId = Utility.getAppId()
 
 export const getStudyBuilderSections = (isStudyInDraft: boolean) => {
   return isStudyInDraft
-    ? SECTIONS.filter(section => !section.hideApps?.includes(appId) && !section.isHiddenDraft)
-    : SECTIONS.filter(section => !section.hideApps?.includes(appId) && !section.isHiddenLive)
+    ? SECTIONS.filter(section => !section.hideApps?.includes(appId) && !section.isHiddenDraft && (!section.hiddenByDefault || section.showApps?.includes(appId)))
+    : SECTIONS.filter(section => !section.hideApps?.includes(appId) && !section.isHiddenLive && (!section.hiddenByDefault || section.showApps?.includes(appId)))
 }
 
 export const isSectionEditableWhenLive = (sectionPath: StudySection): boolean | undefined => {
