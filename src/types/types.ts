@@ -118,7 +118,10 @@ export type AssessmentResource = {
 }
 export type Assessment = {
   appId?: string
-  labels?: string[]
+  labels: {
+    lang: Language
+    value: string
+  }[]
   identifier: string
   revision: number
   osName?: 'Android' | 'iPhone OS' | 'Both' | 'Universal' //iPhone OS"

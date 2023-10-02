@@ -12,7 +12,7 @@ import {
   useUpdateSurveyResource,
 } from '@services/assessmentHooks'
 import {ChoiceQuestion, Question, Step, Survey} from '@typedefs/surveys'
-import {Assessment, AssessmentImageResource, ExtendedError} from '@typedefs/types'
+import {Assessment, ExtendedError} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useIsFetching, useIsMutating} from 'react-query'
 import {Redirect, Route, RouteComponentProps, Switch, useHistory, useLocation, useParams} from 'react-router-dom'
@@ -228,9 +228,13 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
         throw new Error('no assessment')
       }
       if (isOverviewStep) {
+        
+        var updatedAssessment = assessment
+        var hasAssessmentChanges = false
+
         const {image} = step
         if (image) {
-          const imageResource: AssessmentImageResource = {
+          updatedAssessment.imageResource = {
             name: image.imageName,
             module: 'sage_survey',
             labels: [
@@ -241,11 +245,22 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
             ],
             type: 'ImageResource',
           }
+          hasAssessmentChanges = true
+        }
 
-          const updatedAssessment = {
-            ...assessment,
-            imageResource: imageResource,
-          }
+        // TODO: syoung 10/02/2023 FIXME!!! Replace this with localized replacement
+        let currentLabel = assessment.labels.find(label => label.lang === 'en')
+        if (currentLabel?.value !== step.title) {
+          updatedAssessment.labels = [...assessment.labels.filter(label => label.lang !== 'en'),
+            {
+              lang: 'en',
+              value: step.title,
+            },
+          ]
+          hasAssessmentChanges = true
+        }
+
+        if (hasAssessmentChanges) {
           setAssessment(updatedAssessment)
           mutateAssessment(
             {assessment: updatedAssessment, action: 'UPDATE'},
