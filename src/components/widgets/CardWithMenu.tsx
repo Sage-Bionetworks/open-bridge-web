@@ -114,6 +114,7 @@ const CardTop: FunctionComponent<
 }
 
 type CardWithMenuProps = {
+  identifierLabel: string
   name: string
   identifier: string
   onSetAnchor: Function
@@ -131,6 +132,7 @@ type CardWithMenuProps = {
 
 const CardWithMenu: FunctionComponent<CardWithMenuProps> = ({
   //  study,
+  identifierLabel,
   name,
   identifier,
   leftBottomChild,
@@ -203,7 +205,7 @@ const CardWithMenu: FunctionComponent<CardWithMenuProps> = ({
               color: '#878E95',
               fontSize: '14px',
             }}>
-            Study ID: {Utility.formatStudyId(identifier)}
+            {identifierLabel}: {Utility.formatStudyId(identifier)}
           </Typography>
         </CardContent>
         <StyledCardBottom>

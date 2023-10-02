@@ -73,6 +73,7 @@ const SurveyCard: FunctionComponent<SurveyCardProps> = ({
   const statusColor = getColorForStudyPhase('WITHDRAWN')
   return (
     <CardWithMenu
+      identifierLabel='Survey ID'
       name={survey.title}
       identifier={survey.identifier}
       onSetAnchor={onSetAnchor}

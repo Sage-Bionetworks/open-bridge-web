@@ -85,6 +85,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   const statusColor = getColorForStudyPhase(displayStatus)
   return (
     <CardWithMenu
+      identifierLabel='Study ID'
       name={study.name}
       identifier={study.identifier}
       onSetAnchor={onSetAnchor}
