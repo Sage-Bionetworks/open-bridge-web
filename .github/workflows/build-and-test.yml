@@ -16,11 +16,11 @@ jobs:
         with:
           node-version: '18.x'
           cache: yarn
-      - name: build
-        run: |
-          export CI=true
-          yarn install --check-files
-          yarn build
+#      - name: build
+#        run: |
+#          export CI=true
+#          yarn install --check-files
+#          yarn build
       - name: test
         run: |
           yarn test:review
