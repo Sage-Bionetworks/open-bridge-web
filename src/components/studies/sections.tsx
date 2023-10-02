@@ -101,9 +101,10 @@ const SECTIONS: {
 const appId = Utility.getAppId()
 
 export const getStudyBuilderSections = (isStudyInDraft: boolean) => {
-  return isStudyInDraft
-    ? SECTIONS.filter(section => !section.hideApps?.includes(appId) && !section.isHiddenDraft && (!section.hiddenByDefault || section.showApps?.includes(appId)))
-    : SECTIONS.filter(section => !section.hideApps?.includes(appId) && !section.isHiddenLive && (!section.hiddenByDefault || section.showApps?.includes(appId)))
+  return SECTIONS.filter(section => 
+    !section.hideApps?.includes(appId) && 
+    (isStudyInDraft ? !section.isHiddenDraft : !section.isHiddenLive) && 
+    (!section.hiddenByDefault || section.showApps?.includes(appId)))
 }
 
 export const isSectionEditableWhenLive = (sectionPath: StudySection): boolean | undefined => {
