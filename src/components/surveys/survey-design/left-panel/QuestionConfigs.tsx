@@ -250,14 +250,8 @@ const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: stri
       default: {
         type: 'completion',
         identifier: 'completion',
-        title: 'Well Done!',
-        detail: 'Thank you for being part of our survey',
-        actions: {
-          goForward: {
-            buttonTitle: 'Exit Survey',
-            type: 'default',
-          },
-        },
+        title: 'Well done!',
+        detail: 'Thank you for being part of our study.',
       },
     },
   ],

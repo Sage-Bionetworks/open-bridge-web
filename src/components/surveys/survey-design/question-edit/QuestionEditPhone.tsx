@@ -213,10 +213,10 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
       return <SelectPhoneBottomMenu step={step as ChoiceQuestion} onChange={s => onChange(s)} />
     }
     if (step.type === 'overview') {
-      return <StyledStartButton>Start</StyledStartButton>
+      return <></>
     }
     if (step.type === 'completion') {
-      return <StyledStartButton>Exit</StyledStartButton>
+      return <></>
     }
   }
 
