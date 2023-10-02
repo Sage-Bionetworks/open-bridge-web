@@ -65,6 +65,7 @@
     "start:bridge": "PORT=3003 craco start",
     "build": "craco build",
     "test": "craco test --coverage --watch",
+    "test:review": "CI=true react-scripts test --env=jsdom",
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "eject": "react-scripts eject",
     "prettier": "prettier --config .prettierrc --write '**/*.{ts,scss,html,tsx,json}'",

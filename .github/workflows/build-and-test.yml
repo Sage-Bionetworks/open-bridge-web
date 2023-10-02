@@ -23,4 +23,4 @@ jobs:
           yarn build
       - name: test
         run: |
-          yarn test --watchAll
+          yarn test:review
