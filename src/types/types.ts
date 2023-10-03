@@ -99,7 +99,7 @@ export interface UserSessionData extends UserData {
 }
 
 /* *** Assessment ********************************/
-export type AssessmentsType = 'SURVEY' | 'OTHER'
+export type AssessmentsType = 'SURVEY' | 'SHARED'
 export type ResourceFormat = 'image/png'
 export type AssessmentCategory = 'screenshot' | 'icon' | 'website'
 export type AssessmentResource = {

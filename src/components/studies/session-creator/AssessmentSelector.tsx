@@ -95,7 +95,7 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
 }: AssessmentSelectorProps) => {
   const surveyToggle = useFeatureToggles<FeatureToggles>()
   const [filteredAssessments, setFilteredAssessments] = useState<Assessment[] | undefined>(undefined)
-  const [assessmentsType, setAssessmentsType] = React.useState<AssessmentsType>('OTHER')
+  const [assessmentsType, setAssessmentsType] = React.useState<AssessmentsType>('SHARED')
   const {data, isLoading, status} = useAssessmentsWithResources(false, false)
   const [viewMode, setViewMode] = React.useState<ViewType>('GRID')
   const {data: surveys} = useAssessmentsWithResources(false, true)
@@ -107,10 +107,10 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   const isAssessmentInSession = (session: StudySession, assessmentId: string): boolean =>
     session.assessments?.find(item => item.originGuid === assessmentId) !== undefined
   const getAssessments = () => {
-    if ((assessmentsType === 'OTHER' && !data) || (assessmentsType === 'SURVEY' && !surveys)) {
+    if ((assessmentsType === 'SHARED' && !data) || (assessmentsType === 'SURVEY' && !surveys)) {
       return []
     }
-    if (assessmentsType === 'OTHER') {
+    if (assessmentsType === 'SHARED') {
       return filteredAssessments || data!.assessments
     } else {
       return filteredAssessments || surveys!.assessments

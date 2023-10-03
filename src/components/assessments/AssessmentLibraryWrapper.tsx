@@ -103,7 +103,7 @@ const AssessmentTypeToggle: FunctionComponent<{
           sendUpdate(_val)
         }}
         aria-label="allow skipping question">
-        <StyledToggle value={'OTHER'} aria-label="make required">
+        <StyledToggle value={'SHARED'} aria-label="make required">
           &nbsp; Assessments
         </StyledToggle>
 
@@ -118,7 +118,7 @@ const AssessmentTypeToggle: FunctionComponent<{
 const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> = ({
   children,
   isAssessmentLibrary = true,
-  assessmentsType = 'OTHER',
+  assessmentsType = 'SHARED',
   onChangeViewMode,
   viewMode = 'GRID',
   tags,
@@ -137,29 +137,26 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
         assessments={assessments}
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
       /> */}
-      <Box
-        sx={{
-          background: 'linear-gradient(360deg, #EDEEF2 22.68%, #FAFAFB 85.05%)',
-          padding: theme.spacing(5.5, 5, 4.5, 5),
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}>
-        <Box>
-          <Typography variant="h2" sx={{marginBottom: theme.spacing(3)}}>
-            Assessments
-          </Typography>
-          <Typography component={'p'} sx={{fontSize: '16px'}}>
-            Need some text here
-          </Typography>
-        </Box>
-        {isAssessmentLibrary && token && (
+      {isAssessmentLibrary && token && (
+        <Box
+          sx={{
+            background: 'linear-gradient(360deg, #EDEEF2 22.68%, #FAFAFB 85.05%)',
+            padding: theme.spacing(5.5, 5, 4.5, 5),
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}>
+          <Box>
+            <Typography variant="h2">
+              Assessments
+            </Typography>
+          </Box>    
           <NavLink to={'assessments/preview'} style={{textDecoration: 'none'}}>
             <Button variant="outlined">Demo All Assessments</Button>
           </NavLink>
+        </Box>
         )}
-      </Box>
       <StyledAssessmentContainer maxWidth="xl">
-        {surveyToggle['SURVEY BUILDER'] && false && (
+        {!isAssessmentLibrary && (
           <AssessmentTypeToggle assessmentType={assessmentsType} onChange={t => onChangeAssessmentsType(t)} />
         )}
 

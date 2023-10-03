@@ -216,7 +216,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                   {!studySession.assessments ||
                     (studySession.assessments.length === 0 && (
                       <Box marginTop={7} padding={2}>
-                        Add assessments to this session by clicking on the "+" below.{' '}
+                        Add assessments and surveys to this session by clicking on the "+" below.{' '}
                       </Box>
                     ))}
                   {studySession.assessments?.map((assessment, index) => (
