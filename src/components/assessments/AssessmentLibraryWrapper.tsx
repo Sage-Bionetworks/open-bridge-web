@@ -102,12 +102,12 @@ const AssessmentTypeToggle: FunctionComponent<{
         onChange={(e, _val) => {
           sendUpdate(_val)
         }}
-        aria-label="allow skipping question">
-        <StyledToggle value={'SHARED'} aria-label="make required">
+        aria-label="choose your assessment category">
+        <StyledToggle value={'SHARED'} aria-label="shared assessments">
           &nbsp; Assessments
         </StyledToggle>
 
-        <StyledToggle value={'SURVEY'} aria-label="allow skip">
+        <StyledToggle value={'SURVEY'} aria-label="surveys">
           &nbsp; Surveys
         </StyledToggle>
       </StyledToggleButtonGroup>
