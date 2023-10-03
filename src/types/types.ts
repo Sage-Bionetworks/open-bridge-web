@@ -116,7 +116,7 @@ export type AssessmentResource = {
   url: string
   version?: number
 }
-export type Assessment = {
+export type AssessmentBase = {
   appId?: string
   labels?: string[]
   identifier: string
@@ -142,6 +142,12 @@ export type Assessment = {
   resources?: AssessmentResource[]
   originGuid?: string
   imageResource?: AssessmentImageResource
+}
+
+export type Assessment = AssessmentBase & {
+
+  // Not part of the object JSON returned by the service
+  isLocal: boolean
 }
 
 export type AssessmentConfig = {

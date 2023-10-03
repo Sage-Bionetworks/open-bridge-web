@@ -5,17 +5,17 @@ import {Assessment, AssessmentResource, ExtendedError} from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
 
 export const ASSESSMENT_KEYS = {
-  assessments: ['assessments'],
-  all: (appId: string) => [...ASSESSMENT_KEYS.assessments, appId] as const,
+  assessments: (isLocal: boolean) => ['assessments', isLocal],
+  all: (appId: string, isLocal: boolean) => [...ASSESSMENT_KEYS.assessments(isLocal), appId] as const,
   list: (appId: string, isLocal: boolean, isSurvey: boolean) =>
-    [...ASSESSMENT_KEYS.all(appId), 'list', isLocal, isSurvey] as const,
-  assessment: (guid: string) => [...ASSESSMENT_KEYS.assessments, 'assessment', guid] as const,
-  assessmentConfig: (guid: string) => [...ASSESSMENT_KEYS.assessments, 'assessmentConfig', guid] as const,
-  detailWithResources: (appId: string, guid: string) =>
-    [...ASSESSMENT_KEYS.all(appId), 'detail_resources', guid] as const,
+    [...ASSESSMENT_KEYS.all(appId, isLocal), 'list', isSurvey] as const,
+  assessment: (guid: string, isLocal: boolean) => [...ASSESSMENT_KEYS.assessments(isLocal), 'assessment', guid] as const,
+  assessmentConfig: (guid: string, isLocal: boolean) => [...ASSESSMENT_KEYS.assessments(isLocal), 'assessmentConfig', guid] as const,
+  detailWithResources: (appId: string, guid: string, isLocal: boolean) =>
+    [...ASSESSMENT_KEYS.all(appId, isLocal), 'detail_resources', guid] as const,
   listWithResources: (appId: string, isLocal: boolean, isSurvey: boolean) =>
     [...ASSESSMENT_KEYS.list(appId, isLocal, isSurvey), 'list_resources'] as const,
-  resource: (appId: string, guid: string) => [...ASSESSMENT_KEYS.all(appId), 'resource', guid] as const,
+  resource: (appId: string, guid: string, isLocal: boolean) => [...ASSESSMENT_KEYS.all(appId, isLocal), 'resource', guid] as const,
 }
 
 export const useAssessments = (options?: {isLocal: boolean; isSurvey: boolean}) => {
@@ -35,14 +35,15 @@ export const useAssessments = (options?: {isLocal: boolean; isSurvey: boolean}) 
   )
 }
 
-export const useAssessmentWithResources = (guid: string) => {
+export const useAssessmentWithResources = (guid: string, isLocal: boolean) => {
   const {token, appId} = useUserSessionDataState()
 
   return useQuery<Assessment, ExtendedError>(
-    ASSESSMENT_KEYS.detailWithResources(appId, guid),
+    ASSESSMENT_KEYS.detailWithResources(appId, guid, isLocal),
     () =>
       AssessmentService.getAssessmentsWithResources(appId, token!, {
         guid: guid,
+        isLocal: isLocal,
       }).then(result => {
         if (result.assessments.length === 0) {
           throw new Error('no assessment found')
@@ -69,7 +70,7 @@ export const useAssessmentResource = (assessment: Assessment) => {
   const {token, appId} = useUserSessionDataState()
 
   return useQuery<Assessment, ExtendedError>(
-    ASSESSMENT_KEYS.resource(appId, assessment.identifier),
+    ASSESSMENT_KEYS.resource(appId, assessment.identifier, assessment.isLocal ?? false),
     () => AssessmentService.getResource(assessment, token!),
     {retry: 1}
   )
@@ -80,11 +81,11 @@ export const useSurveyAssessment = (isLocal: boolean, guid?: string) => {
   const options = {isSurvey: true, isLocal}
 
   return useQuery<Assessment | undefined, ExtendedError>(
-    ASSESSMENT_KEYS.assessment(guid || ''),
+    ASSESSMENT_KEYS.assessment(guid || '', true),
     () =>
       guid
         ? AssessmentService.getAssessment(guid, token!, options).then(assessment =>
-            AssessmentService.getResource(assessment, token!, true)
+            AssessmentService.getResource(assessment, token!)
           )
         : Promise.resolve(undefined),
     {
@@ -99,7 +100,7 @@ export const useSurveyConfig = (guid?: string) => {
   const {token} = useUserSessionDataState()
 
   return useQuery<Survey | undefined, ExtendedError>(
-    ASSESSMENT_KEYS.assessmentConfig(guid || ''),
+    ASSESSMENT_KEYS.assessmentConfig(guid || '', true),
     () => {
       return guid ? AssessmentService.getSurveyAssessmentConfig(guid, token!) : Promise.resolve(undefined)
     },
@@ -123,13 +124,13 @@ export const useUpdateSurveyConfig = () => {
 
   const mutation = useMutation<Survey, Error, any, any>(update, {
     onMutate: async props => {
-      queryClient.cancelQueries(ASSESSMENT_KEYS.assessmentConfig(props.guid))
+      queryClient.cancelQueries(ASSESSMENT_KEYS.assessmentConfig(props.guid, true))
     },
 
     onSettled: async (data, error, props) => {
-      queryClient.invalidateQueries(ASSESSMENT_KEYS.all(appId))
-      queryClient.invalidateQueries(ASSESSMENT_KEYS.assessmentConfig(props.guid || ''))
-      queryClient.invalidateQueries(ASSESSMENT_KEYS.detailWithResources(appId, props.guid || ''))
+      queryClient.invalidateQueries(ASSESSMENT_KEYS.all(appId, true))
+      queryClient.invalidateQueries(ASSESSMENT_KEYS.assessmentConfig(props.guid || '', true))
+      queryClient.invalidateQueries(ASSESSMENT_KEYS.detailWithResources(appId, props.guid || '', true))
     },
   })
 
@@ -148,13 +149,13 @@ export const useUpdateSurveyResource = () => {
 
   const mutation = useMutation<AssessmentResource, Error, any, any>(update, {
     onMutate: async props => {
-      queryClient.cancelQueries(ASSESSMENT_KEYS.assessment(props.assessment.guid!))
+      queryClient.cancelQueries(ASSESSMENT_KEYS.assessment(props.assessment.guid!, true))
     },
 
     onSettled: async (data, error, props) => {
-      queryClient.invalidateQueries(ASSESSMENT_KEYS.all(appId))
-      queryClient.invalidateQueries(ASSESSMENT_KEYS.assessmentConfig(props.assessment.guid!))
-      queryClient.invalidateQueries(ASSESSMENT_KEYS.detailWithResources(appId, props.assessment.guid!))
+      queryClient.invalidateQueries(ASSESSMENT_KEYS.all(appId, true))
+      queryClient.invalidateQueries(ASSESSMENT_KEYS.assessmentConfig(props.assessment.guid!, true))
+      queryClient.invalidateQueries(ASSESSMENT_KEYS.detailWithResources(appId, props.assessment.guid!, true))
     },
   })
 
@@ -193,7 +194,7 @@ export const useUpdateSurveyAssessment = () => {
 
   const mutation = useMutation<Assessment, Error, any, any>(update, {
     onMutate: async props => {
-      queryClient.cancelQueries(ASSESSMENT_KEYS.all(appId))
+      queryClient.cancelQueries(ASSESSMENT_KEYS.all(appId, true))
 
       //Snapshot the old value
       const previousState = queryClient.getQueryData<Assessment[]>(ASSESSMENT_KEYS.list(appId, true, true))
@@ -228,9 +229,9 @@ export const useUpdateSurveyAssessment = () => {
         queryClient.setQueryData(ASSESSMENT_KEYS.list(appId, true, true), context?.previousState)
       }
       queryClient.invalidateQueries(ASSESSMENT_KEYS.list(appId, true, true))
-      queryClient.invalidateQueries(ASSESSMENT_KEYS.assessment(props.assessment.guid || ''))
-      queryClient.invalidateQueries(ASSESSMENT_KEYS.assessmentConfig(props.assessment.guid || ''))
-      queryClient.invalidateQueries(ASSESSMENT_KEYS.detailWithResources(appId, props.assessment.guid || ''))
+      queryClient.invalidateQueries(ASSESSMENT_KEYS.assessment(props.assessment.guid || '', true))
+      queryClient.invalidateQueries(ASSESSMENT_KEYS.assessmentConfig(props.assessment.guid || '', true))
+      queryClient.invalidateQueries(ASSESSMENT_KEYS.detailWithResources(appId, props.assessment.guid || '', true))
     },
   })
 
