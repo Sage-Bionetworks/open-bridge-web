@@ -98,7 +98,7 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   const [assessmentsType, setAssessmentsType] = React.useState<AssessmentsType>('SHARED')
   const {data, isLoading, status} = useAssessmentsWithResources(false, false)
   const [viewMode, setViewMode] = React.useState<ViewType>('GRID')
-  const {data: surveys} = useAssessmentsWithResources(false, true)
+  const {data: surveys} = useAssessmentsWithResources(true, true)
 
   if ((!data?.assessments || !data?.tags) && status === 'success') {
     return <>No Data </>
