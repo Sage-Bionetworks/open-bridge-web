@@ -127,9 +127,7 @@ const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: stri
       default: {
         type: 'choiceQuestion',
         identifier: 'multiChoiceQ',
-        subtitle: 'Subtitle',
         title: 'New Question',
-        detail: 'Detail',
         baseType: 'string',
         singleChoice: false,
         choices: [
@@ -148,7 +146,7 @@ const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: stri
       default: {
         type: 'simpleQuestion',
         identifier: 'numericQ',
-        title: 'How many times did you wake up for 5 minutes or longer?',
+        title: 'New Question',
         uiHint: 'textfield',
         inputItem: {
           type: 'integer',
@@ -165,9 +163,7 @@ const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: stri
       default: {
         type: 'choiceQuestion',
         identifier: 'singleChoiceQ',
-        subtitle: 'Subtitle',
         title: 'New Question',
-        detail: 'Detail',
         baseType: 'integer',
         singleChoice: true,
         choices: [
