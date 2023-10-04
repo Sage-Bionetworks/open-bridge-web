@@ -89,22 +89,6 @@ const ScrollableArea = styled('div', {
   flexDirection: 'column',
 }))
 
-const StyledStartButton = styled('div')(({theme}) => ({
-  height: '50px',
-  lineHeight: '50px',
-  cursor: 'default',
-  backgroundColor: '#EAECEE',
-  borderRadius: '5px',
-  textAlign: 'center',
-  fontFamily: latoFont,
-  fontWeight: 900,
-  fontSize: '16px',
-
-  position: 'absolute',
-  bottom: '30px',
-  width: '230px',
-}))
-
 type QuestionEditProps = {
   isDynamic: boolean
   step?: Step
@@ -206,18 +190,9 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   }
 
   const getPhoneBottom = () => {
-    if (!step) {
-      return <></>
-    }
-    if (isSelectQuestion(questionId)) {
-      return <SelectPhoneBottomMenu step={step as ChoiceQuestion} onChange={s => onChange(s)} />
-    }
-    if (step.type === 'overview') {
-      return <></>
-    }
-    if (step.type === 'completion') {
-      return <></>
-    }
+    return (step && isSelectQuestion(questionId)) 
+    ? <SelectPhoneBottomMenu step={step as ChoiceQuestion} onChange={s => onChange(s)} />
+    : <></>
   }
 
   return (
