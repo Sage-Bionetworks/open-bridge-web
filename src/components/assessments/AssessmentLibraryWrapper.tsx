@@ -1,3 +1,4 @@
+import CollapsableMenu from '@components/surveys/widgets/MenuDropdown'
 import {StyledToggleButton, StyledToggleButtonGroup} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
@@ -82,6 +83,19 @@ const StyledToggle = styled(StyledToggleButton, {label: 'StyleToggle1'})<{width?
   },
 }))
 
+const sections = [
+  {
+    assessmentType: 'SHARED' as AssessmentsType,
+    title: 'All Assessments',
+    filterTitle: 'Assessments',
+  },
+  {
+    assessmentType: 'SURVEY' as AssessmentsType,
+    title: 'All Surveys',
+    filterTitle: 'Surveys',
+  },
+]
+
 const AssessmentTypeToggle: FunctionComponent<{
   assessmentType: AssessmentsType
   onChange: (a: AssessmentsType) => void
@@ -94,24 +108,24 @@ const AssessmentTypeToggle: FunctionComponent<{
     onChange(value)
   }
   return (
-    <Box mb={3} mt={1}>
-      <StyledToggleButtonGroup
-        width={190}
-        value={assessmentType}
-        exclusive
-        onChange={(e, _val) => {
-          sendUpdate(_val)
-        }}
-        aria-label="choose your assessment category">
-        <StyledToggle value={'SHARED'} aria-label="shared assessments">
-          &nbsp; Assessments
-        </StyledToggle>
-
-        <StyledToggle value={'SURVEY'} aria-label="surveys">
-          &nbsp; Surveys
-        </StyledToggle>
-      </StyledToggleButtonGroup>
-    </Box>
+    <Box
+    aria-label="choose your assessment category"
+    id="menucontainer"
+    sx={{
+      position: 'relative',
+      height: '120px',
+      borderBottom: '1px solid #DFE2E6',
+      padding: theme.spacing(0, 4),
+      paddingTop: [theme.spacing(0), theme.spacing(4), theme.spacing(4), theme.spacing(6.75)],
+    }}>
+    <CollapsableMenu
+      items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
+      selectedFn={section => assessmentType === section.assessmentType }
+      displayMobileItem={(section, isSelected) => <>{section.filterTitle}</>}
+      displayDesktopItem={(section, isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
+      onClick={section => sendUpdate(section.assessmentType)}
+    />
+  </Box>
   )
 }
 
@@ -127,7 +141,6 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
   onChangeAssessmentsType,
 }: AssessmentLibraryWrapperProps) => {
   const {token} = useUserSessionDataState()
-  const surveyToggle = useFeatureToggles<FeatureToggles>()
 
   return (
     <StyledOuterContainer isBlue={!token && false /* TODO are they different?*/}>
