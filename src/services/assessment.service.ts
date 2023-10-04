@@ -23,6 +23,16 @@ const TAGS_TO_HIDE = [...Object.values(SURVEY_APP_TAG), ...Object.values(ASSESSM
 
 const DEFAULT_ASSESSMENT_RETR_OPTIONS = {isLocal: false, isSurvey: false}
 
+function convertAssessment(input: AssessmentBase, shouldKeepAllTags = false) : Assessment {
+  return {
+    ...input,
+    tags: shouldKeepAllTags
+      ? input.tags
+      : input.tags.filter(tag => !TAGS_TO_HIDE.includes(tag)),
+    isLocal: input.appId !== 'shared'
+  }
+}
+
 /* gets a shared assessment */
 async function getAssessment(
   guid: string,
@@ -38,15 +48,7 @@ async function getAssessment(
     token
   )
   // should keep all tags if set 'true' will return assessment. Otherwise it'll fiter the tags
-  const assessment: Assessment = {
-    ...assessmentResponse.data,
-    tags: options.shouldKeepAllTags
-      ? assessmentResponse.data.tags
-      : assessmentResponse.data.tags.filter(tag => !TAGS_TO_HIDE.includes(tag)),
-    isLocal: options.isLocal
-  }
-
-  return assessment
+  return convertAssessment(assessmentResponse.data, options.shouldKeepAllTags)
 }
 
 /* gets the list of shared assessments OR local (surveys)*/
@@ -65,13 +67,8 @@ async function getAssessments(
 
   const filterTag = _options?.isSurvey ? SURVEY_APP_TAG[appId] : ASSESSMENT_APP_TAG[appId]
   const returnResult: Assessment[] = result.data.items
-
     .filter(item => item.tags && item.tags.includes(filterTag))
-    .map(item => ({
-      ...item,
-      tags: item.tags?.filter(tag => !TAGS_TO_HIDE.includes(tag)),
-      isLocal: _options.isLocal,
-    }))
+    .map(item => convertAssessment(item))
 
   return returnResult
 }
