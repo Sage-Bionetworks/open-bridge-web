@@ -80,7 +80,7 @@ const LikertLine = styled('div', {label: 'LikertLine'})<{width?: number}>(() => 
 const SliderLine = styled('div', {label: 'LikertLine'})<{width?: number}>(() => ({
   height: '4px',
   top: '11px',
-  width: `100%`,
+  width: `90%`,
   position: 'absolute',
   background: '#D3D3DB',
   boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.25)',
