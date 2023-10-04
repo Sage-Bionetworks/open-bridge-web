@@ -229,8 +229,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       }
       if (isOverviewStep) {
         
-        var updatedAssessment = assessment
-        var hasAssessmentChanges = false
+        let updatedAssessment = assessment
+        let hasAssessmentChanges = false
 
         const {image} = step
         if (image) {
