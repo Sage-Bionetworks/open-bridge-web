@@ -102,6 +102,7 @@ export interface UserSessionData extends UserData {
 export type AssessmentsType = 'SURVEY' | 'SHARED'
 export type ResourceFormat = 'image/png'
 export type AssessmentCategory = 'screenshot' | 'icon' | 'website'
+export type AssessmentEditPhase = 'draft' | 'review' | 'published'
 export type AssessmentResource = {
   category: AssessmentCategory
   deleted?: boolean
@@ -145,6 +146,7 @@ export type AssessmentBase = {
   resources?: AssessmentResource[]
   originGuid?: string
   imageResource?: AssessmentImageResource
+  phase?: string
 }
 
 export type Assessment = AssessmentBase & {
