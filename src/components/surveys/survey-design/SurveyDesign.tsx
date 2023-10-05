@@ -260,6 +260,11 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           hasAssessmentChanges = true
         }
 
+        // TODO: syoung 10/04/2023 FIXME!!! Replace this with a summary field on the settings page.
+        if (step.detail && assessment.summary !== step.detail) {
+          updatedAssessment.summary = step.detail
+        }
+
         if (hasAssessmentChanges) {
           setAssessment(updatedAssessment)
           mutateAssessment(
