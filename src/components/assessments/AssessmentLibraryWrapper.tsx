@@ -1,3 +1,4 @@
+import CollapsableMenu from '@components/surveys/widgets/MenuDropdown'
 import {StyledToggleButton, StyledToggleButtonGroup} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
@@ -82,6 +83,19 @@ const StyledToggle = styled(StyledToggleButton, {label: 'StyleToggle1'})<{width?
   },
 }))
 
+const sections = [
+  {
+    assessmentType: 'SHARED' as AssessmentsType,
+    title: 'All Assessments',
+    filterTitle: 'Assessments',
+  },
+  {
+    assessmentType: 'SURVEY' as AssessmentsType,
+    title: 'All Surveys',
+    filterTitle: 'Surveys',
+  },
+]
+
 const AssessmentTypeToggle: FunctionComponent<{
   assessmentType: AssessmentsType
   onChange: (a: AssessmentsType) => void
@@ -94,31 +108,31 @@ const AssessmentTypeToggle: FunctionComponent<{
     onChange(value)
   }
   return (
-    <Box mb={3} mt={1}>
-      <StyledToggleButtonGroup
-        width={190}
-        value={assessmentType}
-        exclusive
-        onChange={(e, _val) => {
-          sendUpdate(_val)
-        }}
-        aria-label="allow skipping question">
-        <StyledToggle value={'OTHER'} aria-label="make required">
-          &nbsp; Assessments
-        </StyledToggle>
-
-        <StyledToggle value={'SURVEY'} aria-label="allow skip">
-          &nbsp; Surveys
-        </StyledToggle>
-      </StyledToggleButtonGroup>
-    </Box>
+    <Box
+    aria-label="choose your assessment category"
+    id="menucontainer"
+    sx={{
+      position: 'relative',
+      height: '120px',
+      borderBottom: '1px solid #DFE2E6',
+      padding: theme.spacing(0, 4),
+      paddingTop: [theme.spacing(0), theme.spacing(4), theme.spacing(4), theme.spacing(6.75)],
+    }}>
+    <CollapsableMenu
+      items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
+      selectedFn={section => assessmentType === section.assessmentType }
+      displayMobileItem={(section, isSelected) => <>{section.filterTitle}</>}
+      displayDesktopItem={(section, isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
+      onClick={section => sendUpdate(section.assessmentType)}
+    />
+  </Box>
   )
 }
 
 const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> = ({
   children,
   isAssessmentLibrary = true,
-  assessmentsType = 'OTHER',
+  assessmentsType = 'SHARED',
   onChangeViewMode,
   viewMode = 'GRID',
   tags,
@@ -127,7 +141,6 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
   onChangeAssessmentsType,
 }: AssessmentLibraryWrapperProps) => {
   const {token} = useUserSessionDataState()
-  const surveyToggle = useFeatureToggles<FeatureToggles>()
 
   return (
     <StyledOuterContainer isBlue={!token && false /* TODO are they different?*/}>
@@ -137,29 +150,26 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
         assessments={assessments}
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
       /> */}
-      <Box
-        sx={{
-          background: 'linear-gradient(360deg, #EDEEF2 22.68%, #FAFAFB 85.05%)',
-          padding: theme.spacing(5.5, 5, 4.5, 5),
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}>
-        <Box>
-          <Typography variant="h2" sx={{marginBottom: theme.spacing(3)}}>
-            Assessments
-          </Typography>
-          <Typography component={'p'} sx={{fontSize: '16px'}}>
-            Need some text here
-          </Typography>
-        </Box>
-        {isAssessmentLibrary && token && (
+      {isAssessmentLibrary && token && (
+        <Box
+          sx={{
+            background: 'linear-gradient(360deg, #EDEEF2 22.68%, #FAFAFB 85.05%)',
+            padding: theme.spacing(5.5, 5, 4.5, 5),
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}>
+          <Box>
+            <Typography variant="h2">
+              Assessments
+            </Typography>
+          </Box>    
           <NavLink to={'assessments/preview'} style={{textDecoration: 'none'}}>
             <Button variant="outlined">Demo All Assessments</Button>
           </NavLink>
+        </Box>
         )}
-      </Box>
       <StyledAssessmentContainer maxWidth="xl">
-        {surveyToggle['SURVEY BUILDER'] && false && (
+        {!isAssessmentLibrary && (
           <AssessmentTypeToggle assessmentType={assessmentsType} onChange={t => onChangeAssessmentsType(t)} />
         )}
 

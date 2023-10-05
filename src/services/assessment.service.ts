@@ -1,7 +1,7 @@
 import Utility from '@helpers/utility'
 import constants from '@typedefs/constants'
 import {Survey} from '@typedefs/surveys'
-import {Assessment, AssessmentResource, ExtendedError} from '@typedefs/types'
+import {Assessment, AssessmentBase, AssessmentResource, ExtendedError} from '@typedefs/types'
 
 /* AG: BOTH survey and assessments would include arb/mtb tag, but surveys would include survey tag while other assessments won't*/
 const ASSESSMENT_APP_TAG = {
@@ -23,6 +23,16 @@ const TAGS_TO_HIDE = [...Object.values(SURVEY_APP_TAG), ...Object.values(ASSESSM
 
 const DEFAULT_ASSESSMENT_RETR_OPTIONS = {isLocal: false, isSurvey: false}
 
+function convertAssessment(input: AssessmentBase, shouldKeepAllTags = false) : Assessment {
+  return {
+    ...input,
+    tags: shouldKeepAllTags
+      ? input.tags
+      : input.tags.filter(tag => !TAGS_TO_HIDE.includes(tag)),
+    isLocal: input.appId !== 'shared'
+  }
+}
+
 /* gets a shared assessment */
 async function getAssessment(
   guid: string,
@@ -31,21 +41,14 @@ async function getAssessment(
   options: {isLocal: boolean; shouldKeepAllTags?: boolean}
 ): Promise<Assessment> {
   let endPoint = options.isLocal ? constants.endpoints.assessment : constants.endpoints.assessmentShared
-  const assessmentResponse = await Utility.callEndpoint<Assessment>(
+  const assessmentResponse = await Utility.callEndpoint<AssessmentBase>(
     `${endPoint.replace(':id', guid)}`,
     'GET',
     {},
     token
   )
   // should keep all tags if set 'true' will return assessment. Otherwise it'll fiter the tags
-  const assessment = {
-    ...assessmentResponse.data,
-    tags: options.shouldKeepAllTags
-      ? assessmentResponse.data.tags
-      : assessmentResponse.data.tags.filter(tag => !TAGS_TO_HIDE.includes(tag)),
-  }
-
-  return assessment
+  return convertAssessment(assessmentResponse.data, options.shouldKeepAllTags)
 }
 
 /* gets the list of shared assessments OR local (surveys)*/
@@ -53,31 +56,26 @@ async function getAssessments(
   appId: string,
   token: string,
   options: {isLocal?: boolean; isSurvey?: boolean} = {}
-  //  isLocal = false
 ): Promise<Assessment[]> {
   const _options = {...DEFAULT_ASSESSMENT_RETR_OPTIONS, ...options}
-  const result = await Utility.callEndpoint<{items: Assessment[]}>(
-    _options?.isLocal ? constants.endpoints.assessments : constants.endpoints.assessmentsShared,
+  const result = await Utility.callEndpoint<{items: AssessmentBase[]}>(
+    _options.isLocal ? constants.endpoints.assessments : constants.endpoints.assessmentsShared,
     'GET',
     {},
     token
   )
 
   const filterTag = _options?.isSurvey ? SURVEY_APP_TAG[appId] : ASSESSMENT_APP_TAG[appId]
-  const returnResult = result.data.items
-
+  const returnResult: Assessment[] = result.data.items
     .filter(item => item.tags && item.tags.includes(filterTag))
-    .map(item => ({
-      ...item,
-      tags: item.tags?.filter(tag => !TAGS_TO_HIDE.includes(tag)),
-    }))
+    .map(item => convertAssessment(item))
 
   return returnResult
 }
 
 /*gets resources for an assessment (shared) or survey (local) */
-async function getResource(assessment: Assessment, token: string, isLocal = false): Promise<Assessment> {
-  const endPoint = isLocal ? constants.endpoints.assessmentResources : constants.endpoints.assessmentSharedResources
+async function getResource(assessment: Assessment, token: string): Promise<Assessment> {
+  const endPoint = assessment.isLocal ? constants.endpoints.assessmentResources : constants.endpoints.assessmentSharedResources
   const response = await Utility.callEndpoint<{items: any[]}>(
     endPoint.replace(':identifier', assessment.identifier),
     'GET',
