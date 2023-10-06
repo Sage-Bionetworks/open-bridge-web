@@ -13,12 +13,12 @@ import {Redirect, useHistory} from 'react-router-dom'
 import SurveyCard from './SurveyCard'
 import CollapsableMenu from './widgets/MenuDropdown'
 
-const studyCardWidth = '357'
+const cardWidth = '357'
 
 const StyledSurveysContainer = styled(Box, {label: 'StyledStudyListGrid'})(({theme}) => ({
   display: 'grid',
   padding: theme.spacing(0),
-  gridTemplateColumns: `repeat(auto-fill,${studyCardWidth}px)`,
+  gridTemplateColumns: `repeat(auto-fill,${cardWidth}px)`,
   gridColumnGap: theme.spacing(2),
   gridRowGap: theme.spacing(2),
   justifyContent: 'center',
