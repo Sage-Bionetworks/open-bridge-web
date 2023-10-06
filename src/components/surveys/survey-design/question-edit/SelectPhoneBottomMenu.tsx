@@ -69,14 +69,14 @@ const StyledMenu = styled(Menu, {label: 'StyledMenu'})(({theme}) => ({
 
 const StyledMenuItem = styled(MenuItem, {label: 'StyledMenuItem'})<{
   height?: string
-  nohover?: boolean
-}>(({theme, height = '48px', nohover = false}) => ({
+  nohover?: string
+}>(({height = '48px', nohover = undefined}) => ({
   height: height,
   backgroundColor: '#9499C7',
   color: '#fff',
   '&:hover': {
-    backgroundColor: nohover ? '#9499C7' : '#848484',
-    cursor: nohover ? 'default' : 'pointer',
+    backgroundColor: (nohover == "true") ? '#9499C7' : '#848484',
+    cursor: (nohover == "true") ? 'default' : 'pointer',
   },
   '&.Mui-disabled': {
     opacity: 1,
@@ -136,7 +136,7 @@ const OPTIONS = new Map<
 
 const NoMenuItemOptions: FunctionComponent = () => {
   return (
-    <StyledMenuItem height="80px" key={'NO_OPTIONS'} nohover={true} onClick={void 0} disabled={true}>
+    <StyledMenuItem height="80px" key={'NO_OPTIONS'} nohover={'true'} onClick={void 0} disabled={true}>
       <Box height="60px" >
         <Box
           sx={{
