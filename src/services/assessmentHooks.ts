@@ -184,6 +184,7 @@ export const useUpdateSurveyAssessment = () => {
       case 'UPDATE':
         console.log('updating', assessment)
         return AssessmentService.updateSurveyAssessment(appId, assessment, token!)
+        
       case 'CREATE':
         return AssessmentService.createSurveyAssessment(appId, assessment, token!)
 
