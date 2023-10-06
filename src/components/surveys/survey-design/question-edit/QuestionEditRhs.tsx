@@ -133,7 +133,8 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, 
               step: {...step},
               onChange: onChange,
               q_type: getQuestionId(step),
-            }}></Factory>
+            }}
+            key={step.identifier}></Factory>
         </Box>
       </div>
       {children}
