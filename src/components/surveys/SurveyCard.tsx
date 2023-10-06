@@ -61,7 +61,6 @@ const SurveyCard: FunctionComponent<SurveyCardProps> = ({
   isRename,
   onRename,
   shouldHighlight,
-
   isMenuOpen,
 }) => {
   const date = new Date(survey.modifiedOn ? survey.modifiedOn! : survey.createdOn!)
