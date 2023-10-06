@@ -47,7 +47,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: A
       {data && (
         <AssessmentLibraryWrapper
           assessments={data.assessments}
-          assessmentsType="OTHER"
+          assessmentsType='SHARED'
           viewMode={viewMode}
           onChangeViewMode={setViewMode}
           onChangeAssessmentsType={() => {}}
