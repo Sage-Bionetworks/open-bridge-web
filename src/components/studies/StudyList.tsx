@@ -319,14 +319,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     handleMenuClose()
     switch (type) {
       case 'RENAME':
-        await mutate({action: 'RENAME', study: {...study, name: study.name}})
+        mutate({action: 'RENAME', study: {...study, name: study.name}})
         setRenameStudyId('')
 
         return
       case 'WITHDRAW':
       case 'CLOSE':
       case 'DELETE':
-        await mutate({action: type, study})
+        mutate({action: type, study})
         return
 
       case 'DUPLICATE':
