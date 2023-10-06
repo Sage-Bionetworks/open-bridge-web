@@ -1,78 +1,36 @@
-import {StyledFormControl} from '@components/surveys/widgets/SharedStyled'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
-import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
-import {Box, Checkbox, FormControlLabel, Typography} from '@mui/material'
-import {theme} from '@style/theme'
+import {Box} from '@mui/material'
 import {FormatOptionsYear, YearQuestion} from '@typedefs/surveys'
-import React, {ChangeEvent} from 'react'
+import _ from 'lodash'
+import React from 'react'
+import YearRadioGroup, {YearFormatType} from './YearRadioGroup'
 
-const GeneralAllowCheckbox: React.FunctionComponent<{
-  value: boolean
-  type: 'PAST' | 'FUTURE'
-  onChange: (checked: boolean) => void
-}> = ({type, value, onChange}) => {
-  const CONFIG = {
-    PAST: {
-      label: 'Allow past years',
-      labelId: 'pastValueLbl',
-    },
-    FUTURE: {
-      label: 'Allow future years',
-      labelId: 'futureValueLbl',
-    },
-  }
+export const DEFAULT_MIN_YEAR = 1900
+export const DEFAULT_MAX_YEAR = new Date().getFullYear()
 
+const yearFormatToAllowValueMap: Record<YearFormatType, boolean | undefined> = {
+  SET: undefined,
+  ANY: true,
+  CURRENT: false,
+}
+
+function yearFormatToAllowValue(yearFormat: YearFormatType) {
+  return yearFormatToAllowValueMap[yearFormat]
+}
+
+function allowValueToYearFormat(allowValue: boolean | undefined): YearFormatType {
   return (
-    <FormControlLabel
-      htmlFor={CONFIG[type].labelId}
-      sx={{mt: theme.spacing(1.5)}}
-      control={<Checkbox checked={value !== false} onChange={e => onChange(e.target.checked)} />}
-      label={<Typography sx={{fontWeight: '14px'}}>{CONFIG[type].label}</Typography>}
-    />
+    (Object.keys(yearFormatToAllowValueMap) as YearFormatType[]).find(
+      key => yearFormatToAllowValueMap[key] === allowValue
+    ) || 'ANY'
   )
 }
 
-const ValueSelector: React.FunctionComponent<{
-  value?: number
-
-  hasError?: boolean
-  type: 'MIN' | 'MAX'
-
-  onChange: (value: number) => void
-}> = ({value, type, hasError, onChange}) => {
-  const CONFIG = {
-    MIN: {
-      label: 'Min Year',
-      labelId: 'minValueLbl',
-    },
-    MAX: {
-      label: 'Max Year',
-      labelId: 'maxValueLbl',
-    },
-  }
-
-  return (
-    <>
-      <StyledFormControl sx={{marginRight: theme.spacing(2)}} mb={1}>
-        <SimpleTextLabel htmlFor={CONFIG[type].labelId}>{CONFIG[type].label}</SimpleTextLabel>
-
-        <SimpleTextInput
-          sx={{width: '80px'}}
-          id={CONFIG[type].labelId}
-          error={hasError}
-          value={value ?? ''}
-          type="number"
-          //@ts-ignore
-          onChange={(e: ChangeEvent<any>) => {
-            onChange(parseInt(e.target.value))
-          }}
-        />
-      </StyledFormControl>
-    </>
-  )
+function setYearValue(yearFormat: YearFormatType, yearValue: number | undefined) {
+  return yearFormat === 'SET' ? yearValue : undefined
 }
 
-const ErrorMessages = {
+export const ErrorMessages = {
   RANGE: 'Max value must be greater than min value',
   NO_PAST_YEARS: 'No past years allowed',
   NO_FUTURE_YEARS: 'No future years allowed',
@@ -82,23 +40,21 @@ const Year: React.FunctionComponent<{
   step: YearQuestion
   onChange: (step: YearQuestion) => void
 }> = ({step, onChange}) => {
-  const [range, setRange] = React.useState<{min?: number; max?: number} | undefined>({
-    min: step.inputItem.formatOptions?.minimumYear,
-    max: step.inputItem.formatOptions?.maximumYear,
+  const [allowPast, setAllowPast] = React.useState<boolean | undefined>(step.inputItem.formatOptions?.allowPast)
+  const [allowFuture, setAllowFuture] = React.useState<boolean | undefined>(step.inputItem.formatOptions?.allowFuture)
+  const [range, setRange] = React.useState<{min?: number; max?: number}>({
+    min: step.inputItem.formatOptions?.minimumYear || setYearValue(allowValueToYearFormat(allowPast), DEFAULT_MIN_YEAR),
+    max:
+      step.inputItem.formatOptions?.maximumYear || setYearValue(allowValueToYearFormat(allowFuture), DEFAULT_MAX_YEAR),
   })
-  const [allowFuture, setAllowFuture] = React.useState(step.inputItem.formatOptions?.allowFuture !== false)
-  const [allowPast, setAllowPast] = React.useState(step.inputItem.formatOptions?.allowPast !== false)
-  const [error, setError] = React.useState<keyof typeof ErrorMessages | null>(null)
-
-  const onUpdateFormat = (fm?: FormatOptionsYear) => {
-    const inputItem = {...step.inputItem, formatOptions: fm}
-    onChange({...step, inputItem})
-  }
+  const [prevFormatOptions, setPrevFormatOptions] = React.useState<FormatOptionsYear | undefined>(
+    step.inputItem.formatOptions
+  )
 
   const validate = (
     range: {min?: number; max?: number},
-    allowPast: boolean,
-    allowFuture: boolean
+    allowPast?: boolean,
+    allowFuture?: boolean
   ): keyof typeof ErrorMessages | null => {
     const currYear = new Date().getFullYear()
     const gtCurrent = (range.min && range.min > currYear) || (range.max && range.max > currYear)
@@ -110,54 +66,56 @@ const Year: React.FunctionComponent<{
     if (range.max && range.min && range.max < range.min) {
       return 'RANGE'
     }
-    if (gtCurrent && !allowFuture) {
+    if (gtCurrent && allowFuture !== undefined && !allowFuture) {
       return 'NO_FUTURE_YEARS'
     }
-    if (ltCurrent && !allowPast) {
+    if (ltCurrent && allowPast !== undefined && !allowPast) {
       return 'NO_PAST_YEARS'
     }
 
     return null
   }
 
-  React.useEffect(() => {
-    const error = validate(range || {}, allowPast, allowFuture)
+  const error: keyof typeof ErrorMessages | null = validate(range, allowPast, allowFuture)
 
-    setError(error)
+  React.useEffect(() => {
     if (!error) {
-      onUpdateFormat({
-        ...step.inputItem.formatOptions,
+      const formatOptions = {
         minimumYear: range?.min,
         maximumYear: range?.max,
-        allowFuture,
-        allowPast,
-      })
+        allowFuture: allowFuture,
+        allowPast: allowPast,
+      }
+      // only call onChange if the formatOptions have actually changed
+      if (!_.isEqual(formatOptions, prevFormatOptions)) {
+        setPrevFormatOptions(formatOptions)
+        const inputItem = {...step.inputItem, formatOptions: formatOptions}
+        onChange({...step, inputItem})
+      }
     }
-  }, [range, allowPast, allowFuture, onUpdateFormat, step.inputItem])
+  }, [range, allowFuture, allowPast, prevFormatOptions, error, onChange, step])
 
   return (
     <>
-      <GeneralAllowCheckbox type="PAST" value={allowPast} onChange={setAllowPast} />
-      <GeneralAllowCheckbox type="FUTURE" value={allowFuture} onChange={setAllowFuture} />
-
-      <Box
-        sx={{
-          display: 'flex',
-        }}>
-        <ValueSelector
-          type="MIN"
-          value={range?.min}
+      <Box>
+        <YearRadioGroup
+          type="min"
+          yearFormat={allowValueToYearFormat(allowPast)}
+          yearValue={range?.min}
           hasError={error === 'RANGE' || error === 'NO_PAST_YEARS'}
-          onChange={num => {
-            setRange(prev => ({...(prev || {}), min: num}))
+          onChange={(yearFormat, yearValue) => {
+            setRange(prev => ({...(prev || {}), min: setYearValue(yearFormat, yearValue || DEFAULT_MIN_YEAR)}))
+            setAllowPast(yearFormatToAllowValue(yearFormat))
           }}
         />
-        <ValueSelector
-          type="MAX"
-          value={range?.max}
+        <YearRadioGroup
+          type="max"
+          yearFormat={allowValueToYearFormat(allowFuture)}
+          yearValue={range?.max}
           hasError={error === 'RANGE' || error === 'NO_FUTURE_YEARS'}
-          onChange={num => {
-            setRange(prev => ({...(prev || {}), max: num}))
+          onChange={(yearFormat, yearValue) => {
+            setRange(prev => ({...(prev || {}), max: setYearValue(yearFormat, yearValue || DEFAULT_MAX_YEAR)}))
+            setAllowFuture(yearFormatToAllowValue(yearFormat))
           }}
         />
       </Box>

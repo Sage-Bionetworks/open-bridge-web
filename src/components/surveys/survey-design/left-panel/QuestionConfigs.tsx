@@ -13,6 +13,7 @@ import MultiSelect from '@mui/icons-material/DnsTwoTone'
 import SingleSelect from '@mui/icons-material/ToggleOffTwoTone'
 import {ChoiceQuestion, Question, Step} from '@typedefs/surveys'
 import React from 'react'
+import {DEFAULT_MIN_YEAR} from '../question-edit/rhs-subcontrols/Year'
 
 export type QuestionTypeKey =
   | 'DURATION'
@@ -229,7 +230,7 @@ const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: stri
           type: 'year',
           placeholder: 'YYYY',
           formatOptions: {
-            minimumYear: 1900,
+            minimumYear: DEFAULT_MIN_YEAR,
             allowFuture: false,
           },
         },
