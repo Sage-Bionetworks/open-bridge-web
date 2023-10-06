@@ -374,8 +374,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           <CollapsableMenu
             items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
             selectedFn={section => isSelectedFilter(section)}
-            displayMobileItem={(section, isSelected) => <>{section.filterTitle}</>}
-            displayDesktopItem={(section, isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
+            displayMobileItem={(section, _isSelected) => <>{section.filterTitle}</>}
+            displayDesktopItem={(section, _isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
             onClick={section => (section.sectionStatus ? setStatusFilter(section.sectionStatus) : resetStatusFilters())}
           />
 
