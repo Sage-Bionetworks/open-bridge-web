@@ -150,16 +150,16 @@ const CardWithMenu: FunctionComponent<CardWithMenuProps> = ({
 
   const handleKeyDown = (event: React.KeyboardEvent, newName: string | undefined) => {
     if (!onRename) {
+      // exit early if not renaming the survey or study
       return
     }
     const {key} = event
-
-    const enterKey = 'Enter'
-
     if (key === 'Escape') {
+      // cancel rename by setting the name to the current name
       onRename(name)
-    }
-    if (key === 'Tab' || key === enterKey) {
+    } 
+    else if (key === 'Tab' || key === 'Enter') {
+      // rename the object to the new name
       onRename(newName)
     }
   }
