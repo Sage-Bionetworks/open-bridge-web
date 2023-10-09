@@ -119,7 +119,7 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, 
             <StyledLabel14 htmlFor="q_id">Question Identifier</StyledLabel14>
             <StyledSimpleTextInput
               sx={{display: 'block', width: '200px'}}
-              disabled={true}
+              $readOnly={true}
               id="q_id"
               value={step?.identifier}></StyledSimpleTextInput>
             <StyledButton variant="text" onClick={matchIdentifier} startIcon={<GenerateId />}>
