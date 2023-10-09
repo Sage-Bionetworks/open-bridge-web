@@ -1,7 +1,8 @@
 import {screen, waitFor, within} from '@testing-library/react'
 import {FormatOptionsYear, YearQuestion} from '@typedefs/surveys'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
-import Year, {DEFAULT_MAX_YEAR, DEFAULT_MIN_YEAR, ErrorMessages} from './Year'
+import Year, {ErrorMessages} from './Year'
+import {DEFAULT_MAX_YEAR, DEFAULT_MIN_YEAR} from './YearRadioGroup'
 
 //render the component
 const renderComponent = (step: YearQuestion) => {
