@@ -6,7 +6,7 @@ import {latoFont, theme} from '@style/theme'
 import {BaseStep, ChoiceQuestion, ScaleQuestion, Step, TimeQuestion, YearQuestion} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {StyledLabel14} from '../../widgets/SharedStyled'
-import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
+import {QuestionTypeKey, getQuestionId} from '../left-panel/QuestionConfigs'
 import Completion from './rhs-subcontrols/Completion'
 import Numeric from './rhs-subcontrols/Numeric'
 import Scale from './rhs-subcontrols/Scale'
@@ -119,7 +119,7 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, 
             <StyledLabel14 htmlFor="q_id">Question Identifier</StyledLabel14>
             <StyledSimpleTextInput
               sx={{display: 'block', width: '200px'}}
-              onChange={e => onChange({...step, identifier: e.target.value})}
+              $readOnly={true}
               id="q_id"
               value={step?.identifier}></StyledSimpleTextInput>
             <StyledButton variant="text" onClick={matchIdentifier} startIcon={<GenerateId />}>
