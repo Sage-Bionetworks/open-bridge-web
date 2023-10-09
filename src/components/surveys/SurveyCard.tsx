@@ -1,6 +1,7 @@
 import CardWithMenu, {StatusColor} from '@components/widgets/CardWithMenu'
+import Utility from '@helpers/utility'
 import {Box, styled} from '@mui/material'
-import {Assessment, DisplayStudyPhase} from '@typedefs/types'
+import {Assessment, AssessmentEditPhase, DisplayStudyPhase} from '@typedefs/types'
 import dayjs from 'dayjs'
 import {FunctionComponent} from 'react'
 
@@ -29,16 +30,28 @@ type SurveyCardProps = {
 
   isMenuOpen: boolean
 }
-export const getColorForStudyPhase = (status: DisplayStudyPhase): StatusColor => {
+export const getColorForSurveyPhase = (status?: AssessmentEditPhase): StatusColor => {
   switch (status) {
-    case 'COMPLETED':
+    case 'published':
       return '#47A4DD'
-    case 'DRAFT':
+    case 'draft':
       return '#C22E49'
-    case 'LIVE':
+    case 'review':
       return '#63A650'
     default:
       return '#4f527d'
+  }
+}
+export const getTitleForSurveyPhase = (status?: AssessmentEditPhase): string => {
+  switch (status) {
+    case 'published':
+      return 'Published'
+    case 'draft':
+      return 'Draft'
+    case 'review':
+      return 'Preview'
+    default:
+      return 'Unknown'
   }
 }
 
@@ -48,7 +61,6 @@ const SurveyCard: FunctionComponent<SurveyCardProps> = ({
   isRename,
   onRename,
   shouldHighlight,
-
   isMenuOpen,
 }) => {
   const date = new Date(survey.modifiedOn ? survey.modifiedOn! : survey.createdOn!)
@@ -63,14 +75,12 @@ const SurveyCard: FunctionComponent<SurveyCardProps> = ({
 
   const rightBottomChild = (
     <ParticipantsIconContainer>
-      <strong>Created by</strong>
+      <strong>Created by&nbsp;</strong>
       {survey.ownerId}
     </ParticipantsIconContainer>
   )
 
-  const displayStatus = 'Unknown'
   const shouldHaveSpaceAfterName = false
-  const statusColor = getColorForStudyPhase('WITHDRAWN')
   return (
     <CardWithMenu
       identifierLabel='Survey ID'
@@ -81,8 +91,8 @@ const SurveyCard: FunctionComponent<SurveyCardProps> = ({
       onRename={onRename}
       isRename={isRename}
       shouldHighlight={shouldHighlight}
-      topStatus={displayStatus}
-      statusColor={statusColor}
+      topStatus={Utility.capitalize(survey.phase ?? 'unknown')}
+      statusColor={getColorForSurveyPhase(survey.phase as AssessmentEditPhase)}
       shouldHaveSpaceAfterName={shouldHaveSpaceAfterName}
       leftBottomChild={leftBottomChild}
       rightBottomChild={rightBottomChild}

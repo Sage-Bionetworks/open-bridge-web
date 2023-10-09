@@ -319,14 +319,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     handleMenuClose()
     switch (type) {
       case 'RENAME':
-        await mutate({action: 'RENAME', study: {...study, name: study.name}})
+        mutate({action: 'RENAME', study: {...study, name: study.name}})
         setRenameStudyId('')
 
         return
       case 'WITHDRAW':
       case 'CLOSE':
       case 'DELETE':
-        await mutate({action: type, study})
+        mutate({action: type, study})
         return
 
       case 'DUPLICATE':
@@ -374,8 +374,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           <CollapsableMenu
             items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
             selectedFn={section => isSelectedFilter(section)}
-            displayMobileItem={(section, isSelected) => <>{section.filterTitle}</>}
-            displayDesktopItem={(section, isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
+            displayMobileItem={(section, _isSelected) => <>{section.filterTitle}</>}
+            displayDesktopItem={(section, _isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
             onClick={section => (section.sectionStatus ? setStatusFilter(section.sectionStatus) : resetStatusFilters())}
           />
 

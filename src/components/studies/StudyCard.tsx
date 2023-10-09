@@ -53,7 +53,6 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   isRename,
   onRename,
   isNewlyAddedStudy,
-
   isMenuOpen,
 }) => {
   const date = new Date(study.phase === 'design' ? study.modifiedOn! : study.createdOn!)

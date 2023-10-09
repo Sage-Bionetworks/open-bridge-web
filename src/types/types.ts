@@ -102,6 +102,7 @@ export interface UserSessionData extends UserData {
 export type AssessmentsType = 'SURVEY' | 'SHARED'
 export type ResourceFormat = 'image/png'
 export type AssessmentCategory = 'screenshot' | 'icon' | 'website'
+export type AssessmentEditPhase = 'draft' | 'review' | 'published'
 export type AssessmentResource = {
   category: AssessmentCategory
   deleted?: boolean
@@ -116,6 +117,10 @@ export type AssessmentResource = {
   url: string
   version?: number
 }
+
+/** 
+ * The `Assessment` object returned by services.
+*/
 export type AssessmentBase = {
   appId?: string
   labels: {
@@ -145,12 +150,20 @@ export type AssessmentBase = {
   resources?: AssessmentResource[]
   originGuid?: string
   imageResource?: AssessmentImageResource
+  phase?: string
 }
 
+/**
+ * The `Assessment` object used throughout this app that includes additional fields
+ * needed to support determining which endpoint to call, as well as editing state.
+ * 
+ * These properties are not part of the object JSON returned by services.
+ * This mutation is hardcoded into a function in the code file: `assessment.services.ts`
+ * syoung 10/06/2023
+ */
 export type Assessment = AssessmentBase & {
-
-  // Not part of the object JSON returned by the service
   isLocal: boolean
+  isReadOnly: boolean
 }
 
 export type AssessmentConfig = {

@@ -1,7 +1,7 @@
 import Utility from '@helpers/utility'
 import constants from '@typedefs/constants'
 import {Survey} from '@typedefs/surveys'
-import {Assessment, AssessmentBase, AssessmentResource, ExtendedError} from '@typedefs/types'
+import {Assessment, AssessmentBase, AssessmentEditPhase, AssessmentResource, ExtendedError} from '@typedefs/types'
 
 /* AG: BOTH survey and assessments would include arb/mtb tag, but surveys would include survey tag while other assessments won't*/
 const ASSESSMENT_APP_TAG = {
@@ -24,12 +24,18 @@ const TAGS_TO_HIDE = [...Object.values(SURVEY_APP_TAG), ...Object.values(ASSESSM
 const DEFAULT_ASSESSMENT_RETR_OPTIONS = {isLocal: false, isSurvey: false}
 
 function convertAssessment(input: AssessmentBase, shouldKeepAllTags = false) : Assessment {
+  const isLocal = input.appId !== 'shared'
+  const phase = (isLocal ? input.phase as AssessmentEditPhase ?? 'draft' : 'published')
+  const isReadOnly = (phase !== 'draft' || !isLocal)
+  // TODO: syoung 10/06/2023 Revisit these rules for defining default phase and readonly to allow administrators permission to edit shared assessments.
   return {
     ...input,
     tags: shouldKeepAllTags
       ? input.tags
       : input.tags.filter(tag => !TAGS_TO_HIDE.includes(tag)),
-    isLocal: input.appId !== 'shared'
+    phase: phase,
+    isLocal: isLocal,
+    isReadOnly: isReadOnly
   }
 }
 

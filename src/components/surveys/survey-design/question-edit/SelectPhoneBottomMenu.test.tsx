@@ -89,7 +89,7 @@ test('additional options for integer multiselect', async () => {
   const {user} = setUp(step)
   const btnDots = screen.getByRole('button', {name: /more/i})
 
-  await user.click(btnDots)
+  await act(async () => user.click(btnDots))
 
   expect(screen.queryByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
   expect(screen.queryByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
@@ -100,7 +100,7 @@ test('additional options for string multiselect', async () => {
   const {user} = setUp({...step, baseType: 'string'})
   const btnDots = screen.getByRole('button', {name: /more/i})
 
-  await user.click(btnDots)
+  await act(async () => user.click(btnDots))
 
   expect(screen.queryByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
   expect(screen.queryByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
@@ -111,7 +111,7 @@ test('additional options for integer single select', async () => {
   const {user} = setUp({...step, baseType: 'integer', singleChoice: true})
   const btnDots = screen.getByRole('button', {name: /more/i})
 
-  await user.click(btnDots)
+  await act(async () => user.click(btnDots))
 
   expect(screen.queryByRole('menuitem', {name: /all of the above/i})).not.toBeInTheDocument()
   expect(screen.queryByRole('menuitem', {name: /none of the above/i})).not.toBeInTheDocument()
@@ -122,7 +122,7 @@ test('additional options for string single select', async () => {
   const {user} = setUp({...step, baseType: 'string', singleChoice: true})
   const btnDots = screen.getByRole('button', {name: /more/i})
 
-  await user.click(btnDots)
+  await act(async () => user.click(btnDots))
 
   expect(screen.queryByRole('menuitem', {name: /all of the above/i})).not.toBeInTheDocument()
   expect(screen.queryByRole('menuitem', {name: /none of the above/i})).not.toBeInTheDocument()
