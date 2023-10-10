@@ -134,6 +134,9 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, 
               onChange: onChange,
               q_type: getQuestionId(step),
             }}
+            // TODO: Year and Time are partially controlled, so use a key to
+            // re-render the entire component when the step is changed.
+            // Consider making these components fully controlled instead.
             key={step.identifier}></Factory>
         </Box>
       </div>

@@ -1,7 +1,6 @@
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
 import {Box} from '@mui/material'
-import {FormatOptionsYear, YearQuestion} from '@typedefs/surveys'
-import _ from 'lodash'
+import {YearQuestion} from '@typedefs/surveys'
 import React from 'react'
 import YearRadioGroup from './YearRadioGroup'
 
@@ -14,30 +13,33 @@ export const ErrorMessages = {
 const Year: React.FunctionComponent<{
   step: YearQuestion
   onChange: (step: YearQuestion) => void
-}> = ({step, onChange}) => {
-  const [range, setRange] = React.useState<{min?: number; max?: number}>({
-    min: step.inputItem.formatOptions?.minimumYear,
-    max: step.inputItem.formatOptions?.maximumYear,
-  })
-  const [allowFuture, setAllowFuture] = React.useState<boolean | undefined>(step.inputItem.formatOptions?.allowFuture)
-  const [allowPast, setAllowPast] = React.useState<boolean | undefined>(step.inputItem.formatOptions?.allowPast)
-  const [prevFormatOptions, setPrevFormatOptions] = React.useState<FormatOptionsYear | undefined>(
-    step.inputItem.formatOptions
+}> = ({step: initialStep, onChange: onValidChange}) => {
+  const [minimumYear, setMinimumYear] = React.useState<number | undefined>(
+    initialStep.inputItem.formatOptions?.minimumYear
   )
+  const [maximumYear, setMaximumYear] = React.useState<number | undefined>(
+    initialStep.inputItem.formatOptions?.maximumYear
+  )
+  const [allowFuture, setAllowFuture] = React.useState<boolean | undefined>(
+    initialStep.inputItem.formatOptions?.allowFuture
+  )
+  const [allowPast, setAllowPast] = React.useState<boolean | undefined>(initialStep.inputItem.formatOptions?.allowPast)
+  const [error, setError] = React.useState<keyof typeof ErrorMessages | null>(null)
 
   const validate = (
-    range: {min?: number; max?: number},
+    minimumYear?: number,
+    maximumYear?: number,
     allowPast?: boolean,
     allowFuture?: boolean
   ): keyof typeof ErrorMessages | null => {
     const currYear = new Date().getFullYear()
-    const gtCurrent = (range.min && range.min > currYear) || (range.max && range.max > currYear)
-    const ltCurrent = (range.min && range.min < currYear) || (range.max && range.max < currYear)
+    const gtCurrent = (minimumYear && minimumYear > currYear) || (maximumYear && maximumYear > currYear)
+    const ltCurrent = (minimumYear && minimumYear < currYear) || (maximumYear && maximumYear < currYear)
 
-    if (range.min === undefined && range.max === undefined) {
+    if (minimumYear === undefined && maximumYear === undefined) {
       return null
     }
-    if (range.max && range.min && range.max < range.min) {
+    if (maximumYear && minimumYear && maximumYear < minimumYear) {
       return 'RANGE'
     }
     if (gtCurrent && allowFuture !== undefined && !allowFuture) {
@@ -50,24 +52,26 @@ const Year: React.FunctionComponent<{
     return null
   }
 
-  const error: keyof typeof ErrorMessages | null = validate(range, allowPast, allowFuture)
+  const updateParentIfValid = (
+    minimumYear?: number,
+    maximumYear?: number,
+    allowPast?: boolean,
+    allowFuture?: boolean
+  ) => {
+    const error = validate(minimumYear, maximumYear, allowPast, allowFuture)
+    setError(error)
 
-  React.useEffect(() => {
     if (!error) {
       const formatOptions = {
-        minimumYear: range?.min,
-        maximumYear: range?.max,
+        minimumYear: minimumYear,
+        maximumYear: maximumYear,
         allowFuture: allowFuture,
         allowPast: allowPast,
       }
-      // only call onChange if the formatOptions have actually changed
-      if (!_.isEqual(formatOptions, prevFormatOptions)) {
-        setPrevFormatOptions(formatOptions)
-        const inputItem = {...step.inputItem, formatOptions: formatOptions}
-        onChange({...step, inputItem})
-      }
+      const inputItem = {...initialStep.inputItem, formatOptions: formatOptions}
+      onValidChange({...initialStep, inputItem})
     }
-  }, [range, allowPast, allowFuture, prevFormatOptions, error, onChange, step])
+  }
 
   return (
     <>
@@ -75,21 +79,23 @@ const Year: React.FunctionComponent<{
         <YearRadioGroup
           type="min"
           allowValue={allowPast}
-          yearValue={range?.min}
+          yearValue={minimumYear}
           hasError={error === 'RANGE' || error === 'NO_PAST_YEARS'}
-          onChange={(allowValue, yearValue) => {
-            setRange(prev => ({...(prev || {}), min: yearValue}))
-            setAllowPast(allowValue)
+          onChange={(allowPast, minimumYear) => {
+            setMinimumYear(minimumYear)
+            setAllowPast(allowPast)
+            updateParentIfValid(minimumYear, maximumYear, allowPast, allowFuture)
           }}
         />
         <YearRadioGroup
           type="max"
           allowValue={allowFuture}
-          yearValue={range?.max}
+          yearValue={maximumYear}
           hasError={error === 'RANGE' || error === 'NO_FUTURE_YEARS'}
-          onChange={(allowValue, yearValue) => {
-            setRange(prev => ({...(prev || {}), max: yearValue}))
-            setAllowFuture(allowValue)
+          onChange={(allowFuture, maximumYear) => {
+            setMaximumYear(maximumYear)
+            setAllowFuture(allowFuture)
+            updateParentIfValid(minimumYear, maximumYear, allowPast, allowFuture)
           }}
         />
       </Box>
