@@ -1,18 +1,18 @@
-import {screen, waitFor, within} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import {FormatOptionsYear, YearQuestion} from '@typedefs/surveys'
-import {renderSurveyQuestionComponent} from '__test_utils/utils'
+import {createWrapper, renderSurveyQuestionComponent} from '__test_utils/utils'
 import Year, {ErrorMessages} from './Year'
 import {DEFAULT_MAX_YEAR, DEFAULT_MIN_YEAR} from './YearRadioGroup'
+
+const CURRENT_YEAR = new Date().getFullYear()
 
 //render the component
 const renderComponent = (step: YearQuestion) => {
   return renderSurveyQuestionComponent<YearQuestion>({step, Component: Year})
 }
 
-// render component and return controls
-function setUp(step: YearQuestion) {
-  const {user, element: component} = renderComponent(step)
-
+const getYearElements = () => {
   const minYearFormatGroup = screen.getByRole('radiogroup', {name: 'Minimum Year'})
   const minYear = {
     buttons: {
@@ -32,8 +32,26 @@ function setUp(step: YearQuestion) {
     },
     value: document.getElementById('maxYearValue'),
   }
+  return {minYear, maxYear}
+}
+
+// render component and return controls
+function setUp(step: YearQuestion) {
+  const {user, element: component} = renderComponent(step)
+
+  const {minYear, maxYear} = getYearElements()
 
   return {component, user, minYear, maxYear}
+}
+
+const setUpWithChangeMock = (step: YearQuestion) => {
+  const onChangeMock = jest.fn()
+  const user = userEvent.setup()
+  const component = render(<Year step={step} onChange={onChangeMock} />, {
+    wrapper: createWrapper(),
+  })
+  const {minYear, maxYear} = getYearElements()
+  return {user, component, minYear, maxYear, onChangeMock}
 }
 
 // default props
@@ -179,10 +197,9 @@ describe('Year', () => {
   })
 
   test('error is shown when allowPast is false and maximumYear is less than current year', async () => {
-    const currentYear = new Date().getFullYear()
-    const errorYear = currentYear - 1
+    const errorYear = CURRENT_YEAR - 1
 
-    const {user, maxYear} = setUp(createStepProps({allowPast: false, maximumYear: currentYear}))
+    const {user, maxYear} = setUp(createStepProps({allowPast: false, maximumYear: CURRENT_YEAR}))
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 
     await waitFor(async () => {
@@ -196,10 +213,9 @@ describe('Year', () => {
   })
 
   test('error is shown when allowFuture is false and minimumYear is greater than current year', async () => {
-    const currentYear = new Date().getFullYear()
-    const errorYear = currentYear + 1
+    const errorYear = CURRENT_YEAR + 1
 
-    const {user, minYear} = setUp(createStepProps({allowFuture: false, minimumYear: currentYear}))
+    const {user, minYear} = setUp(createStepProps({allowFuture: false, minimumYear: CURRENT_YEAR}))
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 
     await waitFor(async () => {
@@ -248,5 +264,103 @@ describe('Year', () => {
     const alert = screen.queryByRole('alert')
     expect(alert).toBeInTheDocument()
     expect(alert).toHaveTextContent(ErrorMessages['RANGE'])
+  })
+
+  describe('onChange', () => {
+    test('is called when updating minYear inputs', async () => {
+      const {user, minYear, onChangeMock} = setUpWithChangeMock(createStepProps({allowFuture: true, allowPast: true}))
+      expect(onChangeMock).toHaveBeenCalledTimes(0)
+
+      await waitFor(() => user.click(minYear.buttons.CURRENT))
+      expect(onChangeMock).toHaveBeenCalledTimes(1)
+      expect(onChangeMock).toHaveBeenLastCalledWith(
+        createStepProps({minimumYear: undefined, allowPast: false, maximumYear: undefined, allowFuture: true})
+      )
+
+      await waitFor(() => user.click(minYear.buttons.SET))
+      expect(onChangeMock).toHaveBeenCalledTimes(2)
+      expect(onChangeMock).toHaveBeenLastCalledWith(
+        createStepProps({
+          minimumYear: DEFAULT_MIN_YEAR,
+          allowPast: undefined,
+          maximumYear: undefined,
+          allowFuture: true,
+        })
+      )
+
+      await waitFor(() => user.click(minYear.buttons.ANY))
+      expect(onChangeMock).toHaveBeenCalledTimes(3)
+      expect(onChangeMock).toHaveBeenLastCalledWith(
+        createStepProps({minimumYear: undefined, allowPast: true, maximumYear: undefined, allowFuture: true})
+      )
+    })
+
+    test('is called when updating maxYear inputs', async () => {
+      const {user, maxYear, onChangeMock} = setUpWithChangeMock(createStepProps({allowFuture: true, allowPast: true}))
+      expect(onChangeMock).toHaveBeenCalledTimes(0)
+
+      await waitFor(() => user.click(maxYear.buttons.CURRENT))
+      expect(onChangeMock).toHaveBeenCalledTimes(1)
+      expect(onChangeMock).toHaveBeenLastCalledWith(
+        createStepProps({minimumYear: undefined, allowPast: true, maximumYear: undefined, allowFuture: false})
+      )
+
+      await waitFor(() => user.click(maxYear.buttons.SET))
+      expect(onChangeMock).toHaveBeenCalledTimes(2)
+      expect(onChangeMock).toHaveBeenLastCalledWith(
+        createStepProps({
+          minimumYear: undefined,
+          allowPast: true,
+          maximumYear: DEFAULT_MAX_YEAR,
+          allowFuture: undefined,
+        })
+      )
+
+      await waitFor(() => user.click(maxYear.buttons.ANY))
+      expect(onChangeMock).toHaveBeenCalledTimes(3)
+      expect(onChangeMock).toHaveBeenLastCalledWith(
+        createStepProps({minimumYear: undefined, allowPast: true, maximumYear: undefined, allowFuture: true})
+      )
+    })
+
+    test('is not called for invalid state: allowPast is false and maximumYear < current year', async () => {
+      const {maxYear, onChangeMock} = setUpWithChangeMock(
+        createStepProps({maximumYear: CURRENT_YEAR, allowPast: false})
+      )
+      expect(onChangeMock).toHaveBeenCalledTimes(0)
+
+      fireEvent.change(maxYear.value!, {target: {value: CURRENT_YEAR - 1}})
+      expect(onChangeMock).toHaveBeenCalledTimes(0)
+    })
+
+    test('is not called for invalid state: allowFuture is false and minimumYear > current year', async () => {
+      const {minYear, onChangeMock} = setUpWithChangeMock(
+        createStepProps({minimumYear: CURRENT_YEAR, allowFuture: false})
+      )
+      expect(onChangeMock).toHaveBeenCalledTimes(0)
+
+      fireEvent.change(minYear.value!, {target: {value: CURRENT_YEAR + 1}})
+      expect(onChangeMock).toHaveBeenCalledTimes(0)
+    })
+
+    test('is not called for invalid state: maximumYear < minimumYear', async () => {
+      const {maxYear, onChangeMock} = setUpWithChangeMock(
+        createStepProps({minimumYear: CURRENT_YEAR, maximumYear: CURRENT_YEAR})
+      )
+      expect(onChangeMock).toHaveBeenCalledTimes(0)
+
+      fireEvent.change(maxYear.value!, {target: {value: CURRENT_YEAR - 1}})
+      expect(onChangeMock).toHaveBeenCalledTimes(0)
+    })
+
+    test('onChange is not called for invalid state: minimumYear > maximumYear', async () => {
+      const {minYear, onChangeMock} = setUpWithChangeMock(
+        createStepProps({minimumYear: CURRENT_YEAR, maximumYear: CURRENT_YEAR})
+      )
+      expect(onChangeMock).toHaveBeenCalledTimes(0)
+
+      fireEvent.change(minYear.value!, {target: {value: CURRENT_YEAR + 1}})
+      expect(onChangeMock).toHaveBeenCalledTimes(0)
+    })
   })
 })
