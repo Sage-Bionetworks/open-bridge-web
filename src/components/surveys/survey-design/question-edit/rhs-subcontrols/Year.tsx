@@ -1,163 +1,104 @@
-import {StyledFormControl} from '@components/surveys/widgets/SharedStyled'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
-import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
-import {Box, Checkbox, FormControlLabel, Typography} from '@mui/material'
-import {theme} from '@style/theme'
-import {FormatOptionsYear, YearQuestion} from '@typedefs/surveys'
-import React, {ChangeEvent} from 'react'
+import {Box} from '@mui/material'
+import {YearQuestion} from '@typedefs/surveys'
+import React from 'react'
+import YearRadioGroup from './YearRadioGroup'
 
-const GeneralAllowCheckbox: React.FunctionComponent<{
-  value: boolean
-  type: 'PAST' | 'FUTURE'
-  onChange: (checked: boolean) => void
-}> = ({type, value, onChange}) => {
-  const CONFIG = {
-    PAST: {
-      label: 'Allow past years',
-      labelId: 'pastValueLbl',
-    },
-    FUTURE: {
-      label: 'Allow future years',
-      labelId: 'futureValueLbl',
-    },
-  }
-
-  return (
-    <FormControlLabel
-      htmlFor={CONFIG[type].labelId}
-      sx={{mt: theme.spacing(1.5)}}
-      control={<Checkbox checked={value !== false} onChange={e => onChange(e.target.checked)} />}
-      label={<Typography sx={{fontWeight: '14px'}}>{CONFIG[type].label}</Typography>}
-    />
-  )
-}
-
-const ValueSelector: React.FunctionComponent<{
-  value?: number
-
-  hasError?: boolean
-  type: 'MIN' | 'MAX'
-
-  onChange: (value: number) => void
-}> = ({value, type, hasError, onChange}) => {
-  const CONFIG = {
-    MIN: {
-      label: 'Min Year',
-      labelId: 'minValueLbl',
-    },
-    MAX: {
-      label: 'Max Year',
-      labelId: 'maxValueLbl',
-    },
-  }
-
-  return (
-    <>
-      <StyledFormControl sx={{marginRight: theme.spacing(2)}} mb={1}>
-        <SimpleTextLabel htmlFor={CONFIG[type].labelId}>{CONFIG[type].label}</SimpleTextLabel>
-
-        <SimpleTextInput
-          sx={{width: '80px'}}
-          id={CONFIG[type].labelId}
-          error={hasError}
-          value={value ?? ''}
-          type="number"
-          //@ts-ignore
-          onChange={(e: ChangeEvent<any>) => {
-            onChange(parseInt(e.target.value))
-          }}
-        />
-      </StyledFormControl>
-    </>
-  )
-}
-
-const ErrorMessages = {
+export const ErrorMessages = {
   RANGE: 'Max value must be greater than min value',
   NO_PAST_YEARS: 'No past years allowed',
   NO_FUTURE_YEARS: 'No future years allowed',
 }
 
+// TODO: Year is partially controlled, so parent (QuestionEditRhs) uses a key
+// to re-render the entire component when the step is changed.
+// Consider making this components fully controlled instead.
 const Year: React.FunctionComponent<{
   step: YearQuestion
   onChange: (step: YearQuestion) => void
-}> = ({step, onChange}) => {
-  const [range, setRange] = React.useState<{min?: number; max?: number} | undefined>({
-    min: step.inputItem.formatOptions?.minimumYear,
-    max: step.inputItem.formatOptions?.maximumYear,
-  })
-  const [allowFuture, setAllowFuture] = React.useState(step.inputItem.formatOptions?.allowFuture !== false)
-  const [allowPast, setAllowPast] = React.useState(step.inputItem.formatOptions?.allowPast !== false)
+}> = ({step: initialStep, onChange: onValidChange}) => {
+  const [minimumYear, setMinimumYear] = React.useState<number | undefined>(
+    initialStep.inputItem.formatOptions?.minimumYear
+  )
+  const [maximumYear, setMaximumYear] = React.useState<number | undefined>(
+    initialStep.inputItem.formatOptions?.maximumYear
+  )
+  const [allowFuture, setAllowFuture] = React.useState<boolean | undefined>(
+    initialStep.inputItem.formatOptions?.allowFuture
+  )
+  const [allowPast, setAllowPast] = React.useState<boolean | undefined>(initialStep.inputItem.formatOptions?.allowPast)
   const [error, setError] = React.useState<keyof typeof ErrorMessages | null>(null)
 
-  const onUpdateFormat = (fm?: FormatOptionsYear) => {
-    const inputItem = {...step.inputItem, formatOptions: fm}
-    onChange({...step, inputItem})
-  }
-
   const validate = (
-    range: {min?: number; max?: number},
-    allowPast: boolean,
-    allowFuture: boolean
+    minimumYear?: number,
+    maximumYear?: number,
+    allowPast?: boolean,
+    allowFuture?: boolean
   ): keyof typeof ErrorMessages | null => {
     const currYear = new Date().getFullYear()
-    const gtCurrent = (range.min && range.min > currYear) || (range.max && range.max > currYear)
-    const ltCurrent = (range.min && range.min < currYear) || (range.max && range.max < currYear)
+    const gtCurrent = (minimumYear && minimumYear > currYear) || (maximumYear && maximumYear > currYear)
+    const ltCurrent = (minimumYear && minimumYear < currYear) || (maximumYear && maximumYear < currYear)
 
-    if (range.min === undefined && range.max === undefined) {
+    if (minimumYear === undefined && maximumYear === undefined) {
       return null
     }
-    if (range.max && range.min && range.max < range.min) {
+    if (maximumYear && minimumYear && maximumYear < minimumYear) {
       return 'RANGE'
     }
-    if (gtCurrent && !allowFuture) {
+    if (gtCurrent && allowFuture !== undefined && !allowFuture) {
       return 'NO_FUTURE_YEARS'
     }
-    if (ltCurrent && !allowPast) {
+    if (ltCurrent && allowPast !== undefined && !allowPast) {
       return 'NO_PAST_YEARS'
     }
 
     return null
   }
 
-  React.useEffect(() => {
-    const error = validate(range || {}, allowPast, allowFuture)
-
+  const updateParentIfValid = (
+    minimumYear?: number,
+    maximumYear?: number,
+    allowPast?: boolean,
+    allowFuture?: boolean
+  ) => {
+    const error = validate(minimumYear, maximumYear, allowPast, allowFuture)
     setError(error)
+
     if (!error) {
-      onUpdateFormat({
-        ...step.inputItem.formatOptions,
-        minimumYear: range?.min,
-        maximumYear: range?.max,
-        allowFuture,
-        allowPast,
-      })
+      const formatOptions = {
+        minimumYear: minimumYear,
+        maximumYear: maximumYear,
+        allowFuture: allowFuture,
+        allowPast: allowPast,
+      }
+      const inputItem = {...initialStep.inputItem, formatOptions: formatOptions}
+      onValidChange({...initialStep, inputItem})
     }
-  }, [range, allowPast, allowFuture, onUpdateFormat, step.inputItem])
+  }
 
   return (
     <>
-      <GeneralAllowCheckbox type="PAST" value={allowPast} onChange={setAllowPast} />
-      <GeneralAllowCheckbox type="FUTURE" value={allowFuture} onChange={setAllowFuture} />
-
-      <Box
-        sx={{
-          display: 'flex',
-        }}>
-        <ValueSelector
-          type="MIN"
-          value={range?.min}
+      <Box>
+        <YearRadioGroup
+          type="min"
+          allowValue={allowPast}
+          yearValue={minimumYear}
           hasError={error === 'RANGE' || error === 'NO_PAST_YEARS'}
-          onChange={num => {
-            setRange(prev => ({...(prev || {}), min: num}))
+          onChange={(allowPast, minimumYear) => {
+            setMinimumYear(minimumYear)
+            setAllowPast(allowPast)
+            updateParentIfValid(minimumYear, maximumYear, allowPast, allowFuture)
           }}
         />
-        <ValueSelector
-          type="MAX"
-          value={range?.max}
+        <YearRadioGroup
+          type="max"
+          allowValue={allowFuture}
+          yearValue={maximumYear}
           hasError={error === 'RANGE' || error === 'NO_FUTURE_YEARS'}
-          onChange={num => {
-            setRange(prev => ({...(prev || {}), max: num}))
+          onChange={(allowFuture, maximumYear) => {
+            setMaximumYear(maximumYear)
+            setAllowFuture(allowFuture)
+            updateParentIfValid(minimumYear, maximumYear, allowPast, allowFuture)
           }}
         />
       </Box>

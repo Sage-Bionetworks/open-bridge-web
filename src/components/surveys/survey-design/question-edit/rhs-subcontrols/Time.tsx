@@ -91,6 +91,9 @@ function getLimit(fo?: FormatOptionsTime): LimitType {
   return 'NONE'
 }
 
+// TODO: Time is partially controlled, so parent (QuestionEditRhs) uses a key
+// to re-render the entire component when the step is changed.
+// Consider making this components fully controlled instead.
 const Time: React.FunctionComponent<{
   step: TimeQuestion
   onChange: (step: TimeQuestion) => void
