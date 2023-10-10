@@ -10,6 +10,9 @@ export const ErrorMessages = {
   NO_FUTURE_YEARS: 'No future years allowed',
 }
 
+// TODO: Year is partially controlled, so parent (QuestionEditRhs) uses a key
+// to re-render the entire component when the step is changed.
+// Consider making this components fully controlled instead.
 const Year: React.FunctionComponent<{
   step: YearQuestion
   onChange: (step: YearQuestion) => void
