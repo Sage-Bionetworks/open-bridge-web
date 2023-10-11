@@ -6,12 +6,11 @@ import {DisplayStudyPhase, Study} from '@typedefs/types'
 import AccessSettings from '@components/access-settings/AccessSettings'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import Utility from '@helpers/utility'
-import ErrorTwoToneIcon from '@mui/icons-material/ErrorTwoTone'
 import {styled} from '@mui/material'
 import StudyService from '@services/study.service'
-import {theme} from '@style/theme'
 import React from 'react'
 import {useHistory} from 'react-router-dom'
+import ReadOnlyBanner from '@components/widgets/ReadOnlyBanner'
 
 const BG_COLOR: Record<DisplayStudyPhase, string> = {
   DRAFT: 'rgba(194, 46, 73, .1)',
@@ -52,20 +51,7 @@ const StudyBuilderHeader: React.FunctionComponent<{study: Study; isReadOnly?: bo
           </Button>
         )}
       </StyledStudyHeader>
-      {isReadOnly && (
-        <Box
-          sx={{
-            backgroundColor: 'rgba(255, 168, 37, 0.15)',
-            textAlign: 'left',
-            fontSize: '16px',
-
-            display: 'flex',
-            padding: theme.spacing(1, 8),
-          }}>
-          <ErrorTwoToneIcon sx={{color: '#FFA825'}}></ErrorTwoToneIcon>&nbsp;&nbsp;This study is in read-only mode and
-          can not be edited.
-        </Box>
-      )}
+      {isReadOnly && <ReadOnlyBanner label='study' /> }
       <Dialog open={isOpenAS} fullWidth={true} maxWidth="lg" scroll="body">
         <DialogTitleWithClose onCancel={() => setIsOpenAS(false)} title={'    Access Settings'} />
         <AccessSettings study={study} />
