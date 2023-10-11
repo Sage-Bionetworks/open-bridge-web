@@ -229,10 +229,12 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
   }, [_surveyAssessment, survey])
 
   const updateState = (callback: Function) => {
+    if (basicInfo.isReadOnly) return
     setHasObjectChanged(true)
     callback()
   }
   const updateInterruptonHandling = (key: keyof InterruptionHandlingType, value: boolean) => {
+    if (basicInfo.isReadOnly) return
     setHasObjectChanged(true)
     if (key !== 'reviewIdentifier') {
       setInterruptionHandling(prev => ({...prev, [key]: value}))
@@ -450,6 +452,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
           id="survey tags"
           options={[]}
           freeSolo
+          disabled={basicInfo.isReadOnly}
           onChange={(e, v) => updateState(() => setBasicInfo(prev => ({...prev, tags: v})))}
           value={[...basicInfo.tags]}
           renderTags={(value: string[], getTagProps) =>
@@ -463,7 +466,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
         />
       </StyledFormControl>
 
-      <SaveButton assessment={basicInfo} onClick={() => triggerUpdate()} />
+      { !basicInfo.isReadOnly && <SaveButton assessment={basicInfo} onClick={() => triggerUpdate()} />}
     </IntroContainer>
   )
 }
