@@ -168,12 +168,16 @@ const getDefaultSurvey = (newSurveyId: string): Survey => ({
 })
 const getDefaultAssessment = (newSurveyId: string, orgMembership: string): Assessment => ({
   title: '',
+  labels: [],
   tags: [],
   version: 0,
   revision: 1,
   osName: 'Both',
   identifier: newSurveyId,
   ownerId: orgMembership,
+  phase: 'draft',
+  isLocal: true,
+  isReadOnly: false,
 })
 
 const InterruptionHandlingDefault: InterruptionHandlingType = {
