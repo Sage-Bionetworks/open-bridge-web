@@ -10,12 +10,13 @@ import {
   OutlinedInput,
   Radio,
   RadioGroup,
-  styled,
+  SelectChangeEvent,
   Typography,
+  styled,
 } from '@mui/material'
 import {theme} from '@style/theme'
 import {FormatOptionsTime, TimeQuestion} from '@typedefs/surveys'
-import React, {ChangeEvent} from 'react'
+import React from 'react'
 
 const Labels = styled('div', {label: 'labels'})(({theme}) => ({
   backgroundColor: '#fff',
@@ -57,12 +58,11 @@ const ValueSelector: React.FunctionComponent<{
 
       <StyledDropDown
         labelId={CONFIG[type].labelId}
-        value={value}
+        value={value || ''}
         height="42px"
         width="92px"
         disabled={isDisabled}
-        //@ts-ignore
-        onChange={(e: ChangeEvent<any>) => onChange(e.target.value)}
+        onChange={(e: SelectChangeEvent<unknown>) => onChange(e.target.value as string)}
         input={<OutlinedInput />}>
         {Object.keys(getDropdownTimeItems()).map(opt => (
           <MenuItem value={opt} key={opt}>
@@ -129,7 +129,11 @@ const Time: React.FunctionComponent<{
     if (val) {
       setRange(undefined)
       setError('')
-      //onUpdateFormat(undefined)
+      onUpdateFormat({
+        ...step.inputItem.formatOptions,
+        maximumValue: undefined,
+        minimumValue: undefined,
+      })
     }
   }
   return (

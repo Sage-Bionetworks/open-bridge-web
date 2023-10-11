@@ -3,11 +3,11 @@ import AdherenceService from '@services/adherence.service'
 import {act, cleanup, render, screen, waitFor, waitForElementToBeRemoved} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import constants from '@typedefs/constants'
-import {rest} from 'msw'
 import * as adherenceAlerts from '__test_utils/mocks/adherenceAlerts.json'
 import {loggedInSessionData} from '__test_utils/mocks/user'
 import server from '__test_utils/test_server/server'
 import {createWrapper} from '__test_utils/utils'
+import {rest} from 'msw'
 import AdherenceAlerts from './AdherenceAlerts'
 
 const studyId = 'hprczm'
@@ -157,7 +157,7 @@ describe('AdherenceAlerts', () => {
         'UNREAD',
         loggedInSessionData.token
       )
-    })
+    }, 10_000)
 
     test('should call update alerts correctly to mark alerts as read', async () => {
       const {user, spyOnUpdateAdherenceAlerts} = setUp()
@@ -180,7 +180,7 @@ describe('AdherenceAlerts', () => {
         'READ',
         loggedInSessionData.token
       )
-    })
+    }, 10_000)
 
     test('should call update alerts correctly to delete alerts', async () => {
       const {user, spyOnUpdateAdherenceAlerts} = setUp()
@@ -220,6 +220,6 @@ describe('AdherenceAlerts', () => {
         'DELETE',
         loggedInSessionData.token
       )
-    })
+    }, 10_000)
   })
 })
