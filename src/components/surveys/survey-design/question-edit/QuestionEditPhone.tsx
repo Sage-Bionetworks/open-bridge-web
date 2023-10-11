@@ -231,6 +231,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                     <StyledP2
                       aria-label="subtitle"
                       id="subtitle"
+                      readOnly={isReadOnly}
                       multiline={true}
                       value={step.subtitle || ''}
                       placeholder="Subtitle"
@@ -239,6 +240,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                     <StyledH1
                       aria-label="title"
                       id="title"
+                      readOnly={isReadOnly}
                       multiline={true}
                       value={step.title || ''}
                       placeholder="Title"
@@ -247,6 +249,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                     <StyledP2
                       aria-label="detail"
                       id="detail"
+                      readOnly={isReadOnly}
                       multiline={true}
                       value={step.detail || ''}
                       placeholder="Description"

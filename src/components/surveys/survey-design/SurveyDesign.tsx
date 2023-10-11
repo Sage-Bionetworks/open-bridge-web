@@ -209,7 +209,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   }
 
   const updateCurrentStep = (step: Step, stepIndex?: number) => {
-    if (!survey) {
+    if (!survey || assessment?.isReadOnly) {
       return
     }
 
