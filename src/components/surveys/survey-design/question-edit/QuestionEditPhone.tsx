@@ -119,34 +119,34 @@ function Factory(args: {
   readonly_flag?: ReadOnlyFlag
 }) {
   switch (args.q_type) {
-    case 'SINGLE_SELECT': {
-      return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
-    }
-
+    case 'SINGLE_SELECT':
     case 'MULTI_SELECT':
-      return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
+      return <Select step={args.step as ChoiceQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
+
     case 'SLIDER':
     case 'LIKERT':
       return <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
+
     case 'NUMERIC':
-      return <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
-    case 'DURATION':
-      return <TimeDuration />
-    case 'TIME':
-      return <TimeDuration type="TIME" />
     case 'YEAR':
-      return <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
+      return <Numeric step={args.step as NumericQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
+
+    case 'DURATION':
+    case 'TIME':
+      return <TimeDuration type={args.q_type} />
+
     case 'FREE_TEXT':
       return <FreeText step={args.step as Question} />
-    case 'COMPLETION': {
+
+    case 'COMPLETION': 
       return <Completion step={args.step as BaseStep} onChange={args.onChange} />
-    }
-    case 'OVERVIEW': {
+
+    case 'OVERVIEW': 
       return <SurveyTitle step={args.step as BaseStep} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
-    }
-    case 'INSTRUCTION': {
+
+    case 'INSTRUCTION': 
       return <></> // Instructions do not have any fields in addition to title, subtitle, and detail.
-    }
+      
     default:
       return <>TODO: {args.q_type} not supported</>
   }
@@ -208,7 +208,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
 
   return (
     <OuterContainer>
-      {isSelectQuestion(questionId) && (
+      {isSelectQuestion(questionId) && !isReadOnly && (
         <SelectExtraActions
           onSort={dir => {
             const opts = sortSelectChoices(step as ChoiceQuestion, dir)

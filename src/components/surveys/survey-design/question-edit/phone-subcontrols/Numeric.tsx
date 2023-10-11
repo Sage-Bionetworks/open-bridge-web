@@ -35,8 +35,9 @@ const StyledLabel = styled(DisappearingInput, {
 
 const Numeric: React.FunctionComponent<{
   step: NumericQuestion | YearQuestion
+  isReadOnly?: boolean
   onChange: (step: NumericQuestion | YearQuestion) => void
-}> = ({step, onChange}) => {
+}> = ({step, isReadOnly, onChange}) => {
   const updateStep = (inputItem: InputItem) => {
     inputItem.type = step.inputItem.type
     // @ts-ignore
@@ -50,12 +51,13 @@ const Numeric: React.FunctionComponent<{
         id="fieldLabel"
         value={step.inputItem.fieldLabel}
         placeholder="Field Label"
+        readOnly={isReadOnly}
         onChange={e => updateStep({...step.inputItem, fieldLabel: e.target.value})}
       />
       <SimpleTextInput
         sx={{width: '80px'}}
         aria-label="min"
-        disabled={step.inputItem.type === 'integer'}
+        disabled={step.inputItem.type === 'integer' || isReadOnly}
         placeholder={step.inputItem.placeholder}
         onChange={e => updateStep({...step.inputItem, placeholder: e.target.value})}></SimpleTextInput>
     </StyledContainer>
