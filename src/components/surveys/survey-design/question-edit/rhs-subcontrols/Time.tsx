@@ -18,19 +18,20 @@ import {theme} from '@style/theme'
 import {FormatOptionsTime, TimeQuestion} from '@typedefs/surveys'
 import React from 'react'
 
-const Labels = styled('div', {label: 'labels'})(({theme}) => ({
-  backgroundColor: '#fff',
-  padding: theme.spacing(2, 1.5),
-  marginTop: theme.spacing(2),
+// TODO: syoung 10/11/2023 Revisit this design later - it doesn't really make sense to allow time questions to constrain to future/past.
+// const Labels = styled('div', {label: 'labels'})(({theme}) => ({
+//   backgroundColor: '#fff',
+//   padding: theme.spacing(2, 1.5),
+//   marginTop: theme.spacing(2),
 
-  '& > label': {
-    marginBottom: theme.spacing(0.5),
-    '& span': {
-      width: '130px',
-      display: 'inline-block',
-    },
-  },
-}))
+//   '& > label': {
+//     marginBottom: theme.spacing(0.5),
+//     '& span': {
+//       width: '130px',
+//       display: 'inline-block',
+//     },
+//   },
+// }))
 
 const ValueSelector: React.FunctionComponent<{
   value: string | undefined
@@ -179,7 +180,7 @@ const Time: React.FunctionComponent<{
         />
       </Box>
       {error && <AlertWithTextWrapper text={error}></AlertWithTextWrapper>}
-      <Labels>
+      {/* <Labels>
         <RadioGroup
           id="exclude"
           value={exclude}
@@ -210,7 +211,7 @@ const Time: React.FunctionComponent<{
             label={'Allow only time in the past'}
           />
         </RadioGroup>
-      </Labels>
+      </Labels> */}
       <Typography variant="body1" margin={(theme.spacing(3), 'auto', 'auto', theme.spacing(3))}>
         *The actual UI for this question will default to the system's OS interface.{' '}
       </Typography>
