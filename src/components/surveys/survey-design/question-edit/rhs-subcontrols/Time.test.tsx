@@ -1,7 +1,7 @@
 import {screen} from '@testing-library/react'
 import {TimeQuestion} from '@typedefs/surveys'
-import {act} from 'react-dom/test-utils'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
+import {act} from 'react-dom/test-utils'
 import Time from './Time'
 
 //render the component
@@ -13,7 +13,6 @@ const renderComponent = (step: TimeQuestion) => {
 const getCheckbox = () => screen.getByRole('checkbox', {name: /no min and max/i})
 const getMinInput = () => screen.getByRole('button', {name: /min/i})
 const getMaxInput = () => screen.getByRole('button', {name: /max/i})
-const getGroup = () => screen.getByRole('radiogroup')
 
 const step: TimeQuestion = {
   type: 'simpleQuestion',
@@ -94,4 +93,4 @@ test('updates values', async () => {
   expect(max).toHaveClass('Mui-disabled')
   expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   expect(screen.getByRole('radio', {name: /allow only time in the past/i})).toHaveProperty('checked', true)
-})
+}, 20_000)

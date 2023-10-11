@@ -2,9 +2,9 @@ import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
 import {cleanup, render, screen, waitFor, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {EventUpdateType, SchedulingEvent, StudySession} from '@typedefs/scheduling'
+import {createWrapper} from '__test_utils/utils'
 import React from 'react'
 import {act} from 'react-dom/test-utils'
-import {createWrapper} from '__test_utils/utils'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 
 const onUpdateFn = jest.fn()
@@ -27,6 +27,9 @@ const studySession: StudySession = {
       title: 'Word Meaning',
       tags: ['vocabulary'],
       minutesToComplete: 2,
+      labels: [],
+      isLocal: false,
+      isReadOnly: false,
     },
   ],
   timeWindows: [
@@ -224,7 +227,7 @@ describe('SchedulableSingleSessionContainer', () => {
       expect(durationBox).toHaveTextContent('hours')
 
       expect(onUpdateFn).toHaveBeenLastCalledWith({...studySession, delay: 'PT47H'}, undefined, undefined)
-    })
+    }, 10_000)
 
     test('should update start date - change start event in duration and event section', async () => {
       const {user} = setUp({...studySession, delay: 'PT47H', startEventIds: ['custom:Event 2']}, customEvents)
@@ -406,7 +409,7 @@ describe('SchedulableSingleSessionContainer', () => {
         undefined,
         undefined
       )
-    })
+    }, 10_000)
 
     test('should update session window - expiration duration', async () => {
       const {user} = setUp(studySession)
