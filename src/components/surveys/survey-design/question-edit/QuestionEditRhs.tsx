@@ -37,6 +37,19 @@ const StyledSimpleTextInput = styled(SimpleTextInput)(({theme}) => ({
   '& input': {width: '100%'},
 }))
 
+function ReadOnlyFactory(args: {step: Step; q_type: QuestionTypeKey}) {
+  switch (args.q_type) {
+    case 'INSTRUCTION':
+    case 'COMPLETION':
+    case 'OVERVIEW':
+      return <></>  // instruction steps (of which completion and overview are subclasses) do not return any "score"
+
+    default:
+      // TODO: syoung 10/11/2023 Add read-only view for all questions (DHP-1095)
+      return <>TODO: {args.q_type} read-only view not implemented</>
+  }
+}
+
 function Factory(args: {step: Step; onChange: (step: Step) => void; q_type: QuestionTypeKey}) {
   switch (args.q_type) {
     case 'SINGLE_SELECT': {
@@ -131,16 +144,23 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, 
           </Box>
         )}
         <Box sx={{padding: isDynamic ? theme.spacing(3) : 0}}>
-          <Factory
-            {...{
-              step: {...step},
-              onChange: onChange,
-              q_type: getQuestionId(step),
-            }}
-            // TODO: Year and Time are partially controlled, so use a key to
-            // re-render the entire component when the step is changed.
-            // Consider making these components fully controlled instead.
-            key={step.identifier}></Factory>
+          { isReadOnly 
+            ? (<ReadOnlyFactory 
+              {...{
+                step: {...step},
+                q_type: getQuestionId(step),
+              }} key={step.identifier}></ReadOnlyFactory>)
+            : (<Factory
+              {...{
+                step: {...step},
+                onChange: onChange,
+                q_type: getQuestionId(step),
+              }}
+              // TODO: hallieswan 10/11/2023 Year and Time are partially controlled, so use a key to
+              // re-render the entire component when the step is changed. Consider making these 
+              // components fully controlled instead.
+              key={step.identifier}></Factory>)
+          }
         </Box>
       </div>
       {children}

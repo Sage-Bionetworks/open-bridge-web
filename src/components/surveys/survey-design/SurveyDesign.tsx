@@ -442,7 +442,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                     dependentQuestions={findDependentQuestions()}
                     step={getCurrentStep()!}
                     onChange={(step: Step) => updateCurrentStep(step)}>
-                    {getCurrentStep()?.type !== 'completion' && (
+                    {getCurrentStep()?.type !== 'completion' && !assessment?.isReadOnly && (
                       <QuestionEditToolbar
                         isDynamic={isDynamicStep()}
                         dependentQuestions={findDependentQuestions()}
