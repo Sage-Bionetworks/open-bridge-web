@@ -135,7 +135,7 @@ const MinMaxLabel: React.FunctionComponent<{
 
   return (
     <StyledMinMaxLabel
-      area-label={CONFIG[type].label}
+      aria-label={CONFIG[type].label}
       sx={{fontWeight: 'bold'}}
       id={CONFIG[type].label}
       value={value}

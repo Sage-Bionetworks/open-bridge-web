@@ -227,7 +227,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                 {isDynamic && (
                   <>    
                     <StyledP2
-                      area-label="subtitle"
+                      aria-label="subtitle"
                       id="subtitle"
                       multiline={true}
                       value={step.subtitle || ''}
@@ -235,7 +235,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                       onChange={e => onChange({...step, subtitle: e.target.value})}
                     />
                     <StyledH1
-                      area-label="title"
+                      aria-label="title"
                       id="title"
                       multiline={true}
                       value={step.title || ''}
@@ -243,7 +243,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                       onChange={e => onChange({...step, title: e.target.value})}
                     />
                     <StyledP2
-                      area-label="detail"
+                      aria-label="detail"
                       id="detail"
                       multiline={true}
                       value={step.detail || ''}

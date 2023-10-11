@@ -49,7 +49,7 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({step, onChange}
       </TitleIcon>
       <FormControl variant="standard" fullWidth sx={{mb: 0}}>
         <DisappearingInput
-          area-label="title"
+          aria-label="title"
           sx={{fontWeight: 'bold'}}
           id="title"
           value={step.title}
@@ -60,7 +60,7 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({step, onChange}
       <FormControl variant="standard" fullWidth>
         <DisappearingInput
           id="summary"
-          area-label="summary"
+          aria-label="summary"
           multiline={true}
           minRows={4}
           sx={{fontSize: '12px'}}

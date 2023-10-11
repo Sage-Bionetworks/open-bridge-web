@@ -45,7 +45,7 @@ const Numeric: React.FunctionComponent<{
   return (
     <StyledContainer>
       <StyledLabel
-        area-label="fieldLabel"
+        aria-label="fieldLabel"
         sx={{fontWeight: 'bold'}}
         id="fieldLabel"
         value={step.inputItem.fieldLabel}
@@ -54,7 +54,7 @@ const Numeric: React.FunctionComponent<{
       />
       <SimpleTextInput
         sx={{width: '80px'}}
-        area-label="min"
+        aria-label="min"
         disabled={step.inputItem.type === 'integer'}
         placeholder={step.inputItem.placeholder}
         onChange={e => updateStep({...step.inputItem, placeholder: e.target.value})}></SimpleTextInput>
