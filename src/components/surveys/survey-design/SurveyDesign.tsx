@@ -405,6 +405,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           currentStepIndex={currentStepIndex}
           guid={surveyGuid}
           surveyConfig={survey?.config}
+          isReadOnly={assessment?.isReadOnly ?? true}
           onReorderSteps={(steps: Step[]) => updateAllStepsAndSave(steps)}>
               { assessment?.isReadOnly ? 
               <ReadOnlyBanner label='survey' /> :
