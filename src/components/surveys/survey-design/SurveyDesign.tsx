@@ -27,6 +27,7 @@ import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
 import QuestionEditPhone from './question-edit/QuestionEditPhone'
 import QuestionEditRhs from './question-edit/QuestionEditRhs'
 import QuestionEditToolbar from './question-edit/QuestionEditToolbar'
+import ReadOnlyBanner from '@components/widgets/ReadOnlyBanner'
 
 const SurveyDesignContainerBox = styled(Box, {
   label: 'SurveyDesignContainerBox',
@@ -405,9 +406,12 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           guid={surveyGuid}
           surveyConfig={survey?.config}
           onReorderSteps={(steps: Step[]) => updateAllStepsAndSave(steps)}>
-          <AddQuestion>
-            <AddQuestionMenu onSelectQuestion={qType => addStepWithDefaultConfig(qType)} />
-          </AddQuestion>
+              { assessment?.isReadOnly ? 
+              <ReadOnlyBanner label='survey' /> :
+              <AddQuestion>
+                <AddQuestionMenu onSelectQuestion={qType => addStepWithDefaultConfig(qType)} />
+              </AddQuestion>
+              }
         </LeftPanel>
         {/* CEDNTRAL PHONE AREA*/}
 
