@@ -90,6 +90,7 @@ const ScrollableArea = styled('div', {
 }))
 
 type QuestionEditProps = {
+  isReadOnly: boolean
   isDynamic: boolean
   step?: Step
   globalSkipConfiguration: WebUISkipOptions
@@ -170,6 +171,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   globalSkipConfiguration,
   completionProgress,
   isDynamic,
+  isReadOnly,
   onChange,
 }) => {
   const questionId = step ? getQuestionId(step) : 0

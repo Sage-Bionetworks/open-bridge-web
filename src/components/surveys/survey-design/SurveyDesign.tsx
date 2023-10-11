@@ -422,6 +422,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 <SaveIndicator numOfMutations={numOfMutations + numOfFecheds} hasObjectChanged={hasObjectChanged} />
                 {survey && (
                   <QuestionEditPhone
+                    isReadOnly={assessment?.isReadOnly ?? true}
                     isDynamic={isDynamicStep()}
                     globalSkipConfiguration={survey!.config.webConfig?.skipOption || 'CUSTOMIZE'}
                     onChange={(step: Step) => {
@@ -435,6 +436,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
               <RightContainer>
                 {survey && (
                   <QuestionEditRhs
+                    isReadOnly={assessment?.isReadOnly ?? true}
                     isDynamic={isDynamicStep()}
                     dependentQuestions={findDependentQuestions()}
                     step={getCurrentStep()!}

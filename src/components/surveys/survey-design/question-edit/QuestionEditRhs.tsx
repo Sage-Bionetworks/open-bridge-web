@@ -93,9 +93,10 @@ type QuestionEditProps = {
   dependentQuestions: number[] | undefined
   onChange: (step: Step) => void
   isDynamic: boolean
+  isReadOnly: boolean
 }
 
-const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, children, isDynamic}) => {
+const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, children, isDynamic, isReadOnly}) => {
   const matchIdentifier = () => {
     const newId = `${step?.title
       .replaceAll(' ', '_')
