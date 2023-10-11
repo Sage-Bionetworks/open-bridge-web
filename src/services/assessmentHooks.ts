@@ -183,6 +183,9 @@ export const useUpdateSurveyAssessment = () => {
 
       case 'UPDATE':
         console.log('updating', assessment)
+        if (assessment.isReadOnly) {
+          throw Error('Cannot update a published assessment')
+        }
         return AssessmentService.updateSurveyAssessment(appId, assessment, token!)
         
       case 'CREATE':
