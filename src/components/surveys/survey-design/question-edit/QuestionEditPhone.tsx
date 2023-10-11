@@ -214,7 +214,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
 
       {step && (
         <>
-          <PhoneDisplay sx={{marginBottom: theme.spacing(4), textAlign: 'left'}} phoneBottom={getPhoneBottom()}>
+          <PhoneDisplay sx={{marginBottom: theme.spacing(4), textAlign: 'left'}} phoneBottom={!isReadOnly && getPhoneBottom()}>
             <Box>
               {isDynamic && (
                 <>
@@ -271,7 +271,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
             </Box>
           </PhoneDisplay>
 
-          {globalSkipConfiguration === 'CUSTOMIZE' && isDynamic && (
+          {globalSkipConfiguration === 'CUSTOMIZE' && isDynamic && !isReadOnly && (
             <RequiredToggle
               shouldHideActionsArray={step.shouldHideActions || []}
               onChange={shouldHideActions =>
