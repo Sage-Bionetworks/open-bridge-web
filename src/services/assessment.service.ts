@@ -168,6 +168,7 @@ async function duplicateAssessment(
     modifiedOn: undefined,
     deleted: undefined,
     version: 0,
+    phase: 'draft',
   }
   const configCopy = {config: {...sourceConfig.config, identifier}}
 
