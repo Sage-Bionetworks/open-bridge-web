@@ -103,11 +103,20 @@ function isSelectQuestion(questionType: QuestionTypeKey | 0): boolean {
   return questionType === 'MULTI_SELECT' || questionType === 'SINGLE_SELECT'
 }
 
+type ReadOnlyFlag =
+  | 'true'
+  | 'false'
+
+const getReadOnlyFlag = (isReadOnly: boolean): ReadOnlyFlag => {
+  return isReadOnly ? 'true' : 'false'
+}
+
 function Factory(args: {
   step: Step
   onChange: (step: Step) => void
 
   q_type: QuestionTypeKey
+  readonly_flag?: ReadOnlyFlag
 }) {
   switch (args.q_type) {
     case 'SINGLE_SELECT': {
@@ -133,7 +142,7 @@ function Factory(args: {
       return <Completion step={args.step as BaseStep} onChange={args.onChange} />
     }
     case 'OVERVIEW': {
-      return <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
+      return <SurveyTitle step={args.step as BaseStep} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
     }
     case 'INSTRUCTION': {
       return <></> // Instructions do not have any fields in addition to title, subtitle, and detail.
@@ -265,6 +274,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                       step: {...step},
                       onChange: onChange,
                       q_type: getQuestionId(step),
+                      readonly_flag: getReadOnlyFlag(isReadOnly),
                     }}></Factory>
                 }
               </ScrollableArea>
