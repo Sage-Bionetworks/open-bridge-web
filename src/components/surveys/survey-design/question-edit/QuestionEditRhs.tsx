@@ -123,9 +123,11 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, 
               $readOnly={true}
               id="q_id"
               value={step?.identifier}></StyledSimpleTextInput>
-            <StyledButton variant="text" onClick={matchIdentifier} startIcon={<GenerateId />}>
-              Match Identifier to Question
-            </StyledButton>
+            {!isReadOnly && 
+              <StyledButton variant="text" onClick={matchIdentifier} startIcon={<GenerateId />}>
+                Match Identifier to Question
+              </StyledButton>
+            }
           </Box>
         )}
         <Box sx={{padding: isDynamic ? theme.spacing(3) : 0}}>
