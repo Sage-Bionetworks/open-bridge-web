@@ -14,6 +14,7 @@ import Select from './rhs-subcontrols/Select'
 import SurveyTitle from './rhs-subcontrols/SurveyTitle'
 import Time from './rhs-subcontrols/Time'
 import Year from './rhs-subcontrols/Year'
+import { ReadOnlyFlag, getReadOnlyFlag } from './QuestionEditPhone'
 
 const StyledContainer = styled('div')(({theme}) => ({
   width: '516px',
@@ -37,35 +38,25 @@ const StyledSimpleTextInput = styled(SimpleTextInput)(({theme}) => ({
   '& input': {width: '100%'},
 }))
 
-function ReadOnlyFactory(args: {step: Step; q_type: QuestionTypeKey}) {
+function Factory(args: {
+  step: Step
+  onChange: (step: Step) => void
+
+  q_type: QuestionTypeKey
+  readonly_flag?: ReadOnlyFlag
+}) {
   switch (args.q_type) {
-    case 'INSTRUCTION':
-    case 'COMPLETION':
-    case 'OVERVIEW':
-      return <></>  // instruction steps (of which completion and overview are subclasses) do not return any "score"
-
-    default:
-      // TODO: syoung 10/11/2023 Add read-only view for all questions (DHP-1095)
-      return <>TODO: {args.q_type} read-only view not implemented</>
-  }
-}
-
-function Factory(args: {step: Step; onChange: (step: Step) => void; q_type: QuestionTypeKey}) {
-  switch (args.q_type) {
-    case 'SINGLE_SELECT': {
-      return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
-    }
-
+    case 'SINGLE_SELECT':
     case 'MULTI_SELECT':
       return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
 
-    case 'FREE_TEXT':
-      return <></>
     case 'SLIDER':
     case 'LIKERT':
       return <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
+
     case 'NUMERIC':
       return <Numeric step={args.step as ScaleQuestion} onChange={args.onChange} />
+
     case 'DURATION':
       return (
         <Box
@@ -79,17 +70,35 @@ function Factory(args: {step: Step; onChange: (step: Step) => void; q_type: Ques
           *Hours and Minutes will be converted into seconds (SI unit) in the results data.{' '}
         </Box>
       )
+
     case 'TIME':
       return <Time step={args.step as TimeQuestion} onChange={args.onChange} />
+
     case 'YEAR':
       return <Year step={args.step as YearQuestion} onChange={args.onChange} />
-    case 'OVERVIEW':
-      return <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
-    case 'COMPLETION':
-      return <Completion step={args.step as BaseStep} onChange={args.onChange} />
-    case 'INSTRUCTION': {
+
+    case 'FREE_TEXT':
       return <></>
+      
+    case 'OVERVIEW': {
+      if (args.readonly_flag === 'true') {
+        return <></>
+      } else {
+        return <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
+      }
     }
+
+    case 'COMPLETION': {
+      if (args.readonly_flag === 'true') {
+        return <></>
+      } else {
+        return <Completion step={args.step as BaseStep} onChange={args.onChange} />
+      }
+    }
+
+    case 'INSTRUCTION':     
+      return <></>
+    
     default:
       return <>TODO: {args.q_type} not supported</>
   }
@@ -144,23 +153,17 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, 
           </Box>
         )}
         <Box sx={{padding: isDynamic ? theme.spacing(3) : 0}}>
-          { isReadOnly 
-            ? (<ReadOnlyFactory 
-              {...{
-                step: {...step},
-                q_type: getQuestionId(step),
-              }} key={step.identifier}></ReadOnlyFactory>)
-            : (<Factory
-              {...{
-                step: {...step},
-                onChange: onChange,
-                q_type: getQuestionId(step),
-              }}
-              // TODO: hallieswan 10/11/2023 Year and Time are partially controlled, so use a key to
-              // re-render the entire component when the step is changed. Consider making these 
-              // components fully controlled instead.
-              key={step.identifier}></Factory>)
-          }
+          <Factory
+            {...{
+              step: {...step},
+              onChange: onChange,
+              q_type: getQuestionId(step),
+              readonly_flag: getReadOnlyFlag(isReadOnly)
+            }}
+            // TODO: hallieswan 10/11/2023 Year and Time are partially controlled, so use a key to
+            // re-render the entire component when the step is changed. Consider making these 
+            // components fully controlled instead.
+            key={step.identifier}></Factory>
         </Box>
       </div>
       {children}

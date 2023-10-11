@@ -103,11 +103,11 @@ function isSelectQuestion(questionType: QuestionTypeKey | 0): boolean {
   return questionType === 'MULTI_SELECT' || questionType === 'SINGLE_SELECT'
 }
 
-type ReadOnlyFlag =
+export type ReadOnlyFlag =
   | 'true'
   | 'false'
 
-const getReadOnlyFlag = (isReadOnly: boolean): ReadOnlyFlag => {
+export const getReadOnlyFlag = (isReadOnly: boolean): ReadOnlyFlag => {
   return isReadOnly ? 'true' : 'false'
 }
 
