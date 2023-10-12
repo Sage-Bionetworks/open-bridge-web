@@ -9,11 +9,12 @@ import React, {ChangeEvent} from 'react'
 const ValueSelector: React.FunctionComponent<{
   value?: number
   isDisabled?: boolean
+  isReadOnly?: boolean
   hasError?: boolean
   type: 'MIN' | 'MAX'
 
   onChange: (value: number) => void
-}> = ({value, type, isDisabled, hasError, onChange}) => {
+}> = ({value, type, isDisabled, isReadOnly, hasError, onChange}) => {
   const CONFIG = {
     MIN: {
       label: 'Min Value',
@@ -39,6 +40,7 @@ const ValueSelector: React.FunctionComponent<{
           disabled={isDisabled}
           //@ts-ignore
           onChange={(e: ChangeEvent<any>) => {
+            if (isReadOnly) return
             onChange(parseInt(e.target.value))
           }}
         />
@@ -49,8 +51,9 @@ const ValueSelector: React.FunctionComponent<{
 
 const Numeric: React.FunctionComponent<{
   step: NumericQuestion
+  isReadOnly?: boolean
   onChange: (step: NumericQuestion) => void
-}> = ({step, onChange}) => {
+}> = ({step, isReadOnly, onChange}) => {
   const [rangeDisabled, setRangeDisabled] = React.useState(
     step.inputItem.formatOptions?.minimumValue === undefined && step.inputItem.formatOptions?.maximumValue === undefined
   )
@@ -77,6 +80,7 @@ const Numeric: React.FunctionComponent<{
   }, [range])
 
   const changeRangeDisabled = (val: boolean) => {
+    if (isReadOnly) return
     setRangeDisabled(val)
     if (val) {
       setRange(undefined)
@@ -101,6 +105,7 @@ const Numeric: React.FunctionComponent<{
         <ValueSelector
           type="MIN"
           isDisabled={rangeDisabled}
+          isReadOnly={isReadOnly}
           value={range?.min}
           hasError={!!error}
           onChange={num => {
@@ -117,6 +122,7 @@ const Numeric: React.FunctionComponent<{
         <ValueSelector
           type="MAX"
           isDisabled={rangeDisabled}
+          isReadOnly={isReadOnly}
           value={range?.max}
           onChange={num => {
             const isValid = validate({min: range?.min, max: num})
