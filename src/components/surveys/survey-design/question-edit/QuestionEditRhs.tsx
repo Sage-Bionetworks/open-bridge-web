@@ -14,7 +14,6 @@ import Select from './rhs-subcontrols/Select'
 import SurveyTitle from './rhs-subcontrols/SurveyTitle'
 import Time from './rhs-subcontrols/Time'
 import Year from './rhs-subcontrols/Year'
-import { ReadOnlyFlag, getReadOnlyFlag } from './QuestionEditPhone'
 
 const StyledContainer = styled('div')(({theme}) => ({
   width: '516px',
@@ -43,19 +42,19 @@ function Factory(args: {
   onChange: (step: Step) => void
 
   q_type: QuestionTypeKey
-  readonly_flag?: ReadOnlyFlag
+  isReadOnly: boolean
 }) {
   switch (args.q_type) {
     case 'SINGLE_SELECT':
     case 'MULTI_SELECT':
-      return <Select step={args.step as ChoiceQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
+      return <Select step={args.step as ChoiceQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
 
     case 'SLIDER':
     case 'LIKERT':
-      return <Scale step={args.step as ScaleQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
+      return <Scale step={args.step as ScaleQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
 
     case 'NUMERIC':
-      return <Numeric step={args.step as ScaleQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
+      return <Numeric step={args.step as ScaleQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
 
     case 'DURATION':
       return (
@@ -72,16 +71,16 @@ function Factory(args: {
       )
 
     case 'TIME':
-      return <Time step={args.step as TimeQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
+      return <Time step={args.step as TimeQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
 
     case 'YEAR':
-      return <Year step={args.step as YearQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
+      return <Year step={args.step as YearQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
 
     case 'FREE_TEXT':
       return <></>
       
     case 'OVERVIEW': {
-      if (args.readonly_flag === 'true') {
+      if (args.isReadOnly) {
         return <></>
       } else {
         return <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
@@ -89,7 +88,7 @@ function Factory(args: {
     }
 
     case 'COMPLETION': {
-      if (args.readonly_flag === 'true') {
+      if (args.isReadOnly) {
         return <></>
       } else {
         return <Completion step={args.step as BaseStep} onChange={args.onChange} />
@@ -158,7 +157,7 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, 
               step: {...step},
               onChange: onChange,
               q_type: getQuestionId(step),
-              readonly_flag: getReadOnlyFlag(isReadOnly)
+              isReadOnly: isReadOnly,
             }}
             // TODO: hallieswan 10/11/2023 Year and Time are partially controlled, so use a key to
             // re-render the entire component when the step is changed. Consider making these 
