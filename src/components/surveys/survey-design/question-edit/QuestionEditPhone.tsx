@@ -229,6 +229,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
               <ScrollableArea height={isDynamic ? 410 : 400} >
                 {isDynamic && (
                   <>    
+                    {(!isReadOnly || step.subtitle) && (
                     <StyledP2
                       aria-label="subtitle"
                       id="subtitle"
@@ -238,6 +239,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                       placeholder="Subtitle"
                       onChange={e => onChange({...step, subtitle: e.target.value})}
                     />
+                    )}
                     <StyledH1
                       aria-label="title"
                       id="title"
@@ -247,6 +249,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                       placeholder="Title"
                       onChange={e => onChange({...step, title: e.target.value})}
                     />
+                    {(!isReadOnly || step.detail) && (
                     <StyledP2
                       aria-label="detail"
                       id="detail"
@@ -257,6 +260,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                       sx={{marginBottom: theme.spacing(2.5), fontSize: '16px', fontWeight: 400}}
                       onChange={e => onChange({...step, detail: e.target.value})}
                     />
+                    )}
                   </>
                 )}
 
