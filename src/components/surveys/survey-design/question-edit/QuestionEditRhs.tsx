@@ -48,7 +48,7 @@ function Factory(args: {
   switch (args.q_type) {
     case 'SINGLE_SELECT':
     case 'MULTI_SELECT':
-      return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
+      return <Select step={args.step as ChoiceQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
 
     case 'SLIDER':
     case 'LIKERT':
