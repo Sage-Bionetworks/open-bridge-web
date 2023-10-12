@@ -25,8 +25,9 @@ const ValueSelector: React.FunctionComponent<{
   scaleType: 'likert' | 'slider'
   type: 'MIN' | 'MAX'
   gtValue?: number
+  isReadOnly?: boolean
   onChange: (value: number) => void
-}> = ({value, scaleType, type, gtValue = -1, onChange}) => {
+}> = ({value, scaleType, type, gtValue = -1, isReadOnly, onChange}) => {
   const CONFIG = {
     MIN: {
       label: 'Min Value',
@@ -46,6 +47,7 @@ const ValueSelector: React.FunctionComponent<{
         {CONFIG[type].label}
       </StyledLabel14>
       <StyledDropDown
+        readOnly={isReadOnly}
         labelId={CONFIG[type].labelId}
         value={value}
         height="42px"
@@ -70,9 +72,11 @@ const ValueSelector: React.FunctionComponent<{
 
 const Scale: React.FunctionComponent<{
   step: ScaleQuestion
+  isReadOnly?: boolean
   onChange: (step: Step) => void
-}> = ({step, onChange}) => {
+}> = ({step, isReadOnly, onChange}) => {
   const onUpdateFormat = (fm: FormatOptionsInteger) => {
+    if (isReadOnly) return
     const inputItem = {...step.inputItem, formatOptions: fm}
     onChange({...step, inputItem})
   }
@@ -83,6 +87,7 @@ const Scale: React.FunctionComponent<{
           display: 'flex',
         }}>
         <ValueSelector
+          isReadOnly={isReadOnly}
           type="MIN"
           scaleType={step.uiHint}
           value={step.inputItem.formatOptions.minimumValue || 0}
@@ -94,6 +99,7 @@ const Scale: React.FunctionComponent<{
           }
         />
         <ValueSelector
+          isReadOnly={isReadOnly}
           type="MAX"
           scaleType={step.uiHint}
           gtValue={1}

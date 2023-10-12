@@ -52,7 +52,7 @@ function Factory(args: {
 
     case 'SLIDER':
     case 'LIKERT':
-      return <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
+      return <Scale step={args.step as ScaleQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
 
     case 'NUMERIC':
       return <Numeric step={args.step as ScaleQuestion} onChange={args.onChange} />
