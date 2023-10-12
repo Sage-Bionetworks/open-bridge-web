@@ -15,8 +15,9 @@ export const ErrorMessages = {
 // Consider making this components fully controlled instead.
 const Year: React.FunctionComponent<{
   step: YearQuestion
+  isReadOnly?: boolean
   onChange: (step: YearQuestion) => void
-}> = ({step: initialStep, onChange: onValidChange}) => {
+}> = ({step: initialStep, isReadOnly, onChange: onValidChange}) => {
   const [minimumYear, setMinimumYear] = React.useState<number | undefined>(
     initialStep.inputItem.formatOptions?.minimumYear
   )
@@ -61,6 +62,7 @@ const Year: React.FunctionComponent<{
     allowPast?: boolean,
     allowFuture?: boolean
   ) => {
+    if (isReadOnly) return
     const error = validate(minimumYear, maximumYear, allowPast, allowFuture)
     setError(error)
 
@@ -84,6 +86,7 @@ const Year: React.FunctionComponent<{
           allowValue={allowPast}
           yearValue={minimumYear}
           hasError={error === 'RANGE' || error === 'NO_PAST_YEARS'}
+          isReadOnly={isReadOnly}
           onChange={(allowPast, minimumYear) => {
             setMinimumYear(minimumYear)
             setAllowPast(allowPast)
@@ -95,6 +98,7 @@ const Year: React.FunctionComponent<{
           allowValue={allowFuture}
           yearValue={maximumYear}
           hasError={error === 'RANGE' || error === 'NO_FUTURE_YEARS'}
+          isReadOnly={isReadOnly}
           onChange={(allowFuture, maximumYear) => {
             setMaximumYear(maximumYear)
             setAllowFuture(allowFuture)

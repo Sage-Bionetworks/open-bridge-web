@@ -75,7 +75,7 @@ function Factory(args: {
       return <Time step={args.step as TimeQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
 
     case 'YEAR':
-      return <Year step={args.step as YearQuestion} onChange={args.onChange} />
+      return <Year step={args.step as YearQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
 
     case 'FREE_TEXT':
       return <></>
