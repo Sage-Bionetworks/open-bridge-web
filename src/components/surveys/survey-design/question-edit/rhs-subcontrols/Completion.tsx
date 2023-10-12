@@ -24,12 +24,18 @@ const Completion: React.FunctionComponent<{
 
   return (
     <Box sx={{padding: theme.spacing(6, 6, 4, 6)}}>
-      <StyledText>
+      {/* <Button color="primary" variant="contained" onClick={() => onAction('save')}>
+          Save Completion Screen
+        </Button>
+        <Divider sx={{color: '#DFE2E6', margin: theme.spacing(4, -6, 4, -6)}} /> */}
+
+      {/* <StyledText>
         Customize the Completion Screen that participants will see after they've submitted their responses. <br />
         <br />
         Surveys will be submitted on the screen prior to this Completion Screen.
-      </StyledText>{' '}
-      <Divider sx={{color: '#DFE2E6', margin: theme.spacing(4, -6, 4, -6)}} />
+      </StyledText>{' '}*/}
+
+      {/*   */}
       {/* TODO: syoung 10/11/2023 Figure out the copy for survey access settings and that this means to design.
       <Typography sx={{fontSize: '20px'}}>Invite Others to Your Survey </Typography>
       <StyledText>Some content about inviting others to your survey to review it. </StyledText>
@@ -40,8 +46,8 @@ const Completion: React.FunctionComponent<{
         {' '}
         Survey Access Settings
       </Button> */}
-      <Typography sx={{fontSize: '20px', margin: theme.spacing(0, 0, 1, 0)}}> Ready to launch?</Typography>
-      <StyledText> Before launching, please review any branching logic used by your questions. </StyledText>
+      <Typography sx={{fontSize: '20px', margin: theme.spacing(0, 0, 1, 0)}}> Ready to use?</Typography>
+      <StyledText> Before adding your survey to a study under design, please review any branching logic used by your questions. </StyledText>
       <Button
         color="primary"
         variant="contained"
@@ -57,11 +63,10 @@ const Completion: React.FunctionComponent<{
         Please note that once a survey is published, it cannot be edited or deleted.
       </Typography>
       <StyledText> 
-        A survey is published automatically the first time a study that includes the survey launches.
-        <br />
-        <br />
-        Before launching your study, preview the study - including all surveys - on a mobile device.
+        A survey is published when it is used in a live study. 
+        Once published, it is locked and cannot be changed.
       </StyledText>
+
     </Box>
   )
 }
