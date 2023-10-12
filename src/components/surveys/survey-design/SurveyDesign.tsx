@@ -135,11 +135,12 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   }>()
 
   const isNewSurvey = () => surveyGuid === ':id'
-
+  
   const history = useHistory()
   const location = useLocation()
   const [assessment, setAssessment] = React.useState<Assessment | undefined>()
   const [survey, setSurvey] = React.useState<Survey | undefined>()
+  const isReadOnly = assessment?.isReadOnly ?? false
 
   const [currentStepIndex, setCurrentStepIndex] = React.useState<number | undefined>(
     getQuestionIndexFromSearchString(location.search)
@@ -209,7 +210,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   }
 
   const updateCurrentStep = (step: Step, stepIndex?: number) => {
-    if (!survey || assessment?.isReadOnly) {
+    if (!survey || isReadOnly) {
       return
     }
 
@@ -386,6 +387,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     return dependentSteps
   }
 
+  
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <NavigationPrompt when={hasObjectChanged && !numOfMutations} key="nav_prompt">
@@ -405,9 +407,9 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           currentStepIndex={currentStepIndex}
           guid={surveyGuid}
           surveyConfig={survey?.config}
-          isReadOnly={assessment?.isReadOnly ?? true}
+          isReadOnly={isReadOnly}
           onReorderSteps={(steps: Step[]) => updateAllStepsAndSave(steps)}>
-              { assessment?.isReadOnly ? 
+              { isReadOnly ? 
               <ReadOnlyBanner label='survey' /> :
               <AddQuestion>
                 <AddQuestionMenu onSelectQuestion={qType => addStepWithDefaultConfig(qType)} />
@@ -423,7 +425,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 <SaveIndicator numOfMutations={numOfMutations + numOfFecheds} hasObjectChanged={hasObjectChanged} />
                 {survey && (
                   <QuestionEditPhone
-                    isReadOnly={assessment?.isReadOnly ?? true}
+                    isReadOnly={isReadOnly}
                     isDynamic={isDynamicStep()}
                     globalSkipConfiguration={survey!.config.webConfig?.skipOption || 'CUSTOMIZE'}
                     onChange={(step: Step) => {
@@ -437,12 +439,12 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
               <RightContainer>
                 {survey && (
                   <QuestionEditRhs
-                    isReadOnly={assessment?.isReadOnly ?? true}
+                    isReadOnly={isReadOnly}
                     isDynamic={isDynamicStep()}
                     dependentQuestions={findDependentQuestions()}
                     step={getCurrentStep()!}
                     onChange={(step: Step) => updateCurrentStep(step)}>
-                    {getCurrentStep()?.type !== 'completion' && !assessment?.isReadOnly && (
+                    {getCurrentStep()?.type !== 'completion' && !isReadOnly && (
                       <QuestionEditToolbar
                         isDynamic={isDynamicStep()}
                         dependentQuestions={findDependentQuestions()}
