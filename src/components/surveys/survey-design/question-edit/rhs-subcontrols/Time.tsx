@@ -36,10 +36,11 @@ import React from 'react'
 const ValueSelector: React.FunctionComponent<{
   value: string | undefined
   isDisabled: boolean
+  isReadOnly?: boolean
   type: 'MIN' | 'MAX'
 
   onChange: (value: string) => void
-}> = ({value, type, isDisabled, onChange}) => {
+}> = ({value, type, isDisabled, isReadOnly, onChange}) => {
   const CONFIG = {
     MIN: {
       label: 'Min Value',
@@ -58,6 +59,7 @@ const ValueSelector: React.FunctionComponent<{
       </StyledLabel14>
 
       <StyledDropDown
+        readOnly={isReadOnly}
         labelId={CONFIG[type].labelId}
         value={value || ''}
         height="42px"
@@ -97,8 +99,9 @@ function getLimit(fo?: FormatOptionsTime): LimitType {
 // Consider making this components fully controlled instead.
 const Time: React.FunctionComponent<{
   step: TimeQuestion
+  isReadOnly?: boolean
   onChange: (step: TimeQuestion) => void
-}> = ({step, onChange}) => {
+}> = ({step, isReadOnly, onChange}) => {
   const [rangeDisabled, setRangeDisabled] = React.useState(
     step.inputItem.formatOptions?.minimumValue === undefined && step.inputItem.formatOptions?.maximumValue === undefined
   )
@@ -126,6 +129,7 @@ const Time: React.FunctionComponent<{
   }, [range])
 
   const changeRangeDisabled = (val: boolean) => {
+    if (isReadOnly) return
     setRangeDisabled(val)
     if (val) {
       setRange(undefined)
@@ -151,6 +155,7 @@ const Time: React.FunctionComponent<{
         <ValueSelector
           type="MIN"
           isDisabled={rangeDisabled}
+          isReadOnly={isReadOnly}
           value={range?.min}
           onChange={num => {
             const isValid = validate({min: num, max: range?.min})
@@ -166,6 +171,7 @@ const Time: React.FunctionComponent<{
         <ValueSelector
           type="MAX"
           isDisabled={rangeDisabled}
+          isReadOnly={isReadOnly}
           value={range?.max}
           onChange={num => {
             const isValid = validate({min: range?.min, max: num})

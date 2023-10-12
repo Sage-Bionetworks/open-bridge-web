@@ -72,7 +72,7 @@ function Factory(args: {
       )
 
     case 'TIME':
-      return <Time step={args.step as TimeQuestion} onChange={args.onChange} />
+      return <Time step={args.step as TimeQuestion} isReadOnly={args.readonly_flag === 'true'} onChange={args.onChange} />
 
     case 'YEAR':
       return <Year step={args.step as YearQuestion} onChange={args.onChange} />
