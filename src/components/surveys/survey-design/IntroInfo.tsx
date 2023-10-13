@@ -125,7 +125,7 @@ const StyledBottomRadio = styled('div', {label: 'StyledBottomRadio'})(({theme}) 
   },
 }))
 
-const SaveButton: React.FunctionComponent<{
+export const SaveButton: React.FunctionComponent<{
   assessment?: Assessment
   onClick: () => void
 }> = ({assessment, onClick}) => {

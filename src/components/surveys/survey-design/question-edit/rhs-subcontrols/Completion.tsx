@@ -24,12 +24,7 @@ const Completion: React.FunctionComponent<{
 
   return (
     <Box sx={{padding: theme.spacing(6, 6, 4, 6)}}>
-      <StyledText>
-        Customize the Completion Screen that participants will see after they've submitted their responses. <br />
-        <br />
-        Surveys will be submitted on the screen prior to this Completion screen.
-      </StyledText>{' '}
-      <Divider sx={{color: '#DFE2E6', margin: theme.spacing(4, -6, 4, -6)}} />
+      {/* TODO: syoung 10/11/2023 Figure out the copy for survey access settings and that this means to design.
       <Typography sx={{fontSize: '20px'}}>Invite Others to Your Survey </Typography>
       <StyledText>Some content about inviting others to your survey to review it. </StyledText>
       <Button
@@ -38,9 +33,9 @@ const Completion: React.FunctionComponent<{
         sx={{padding: theme.spacing(1, 2.5), margin: theme.spacing(1.5, 0, 5, 0)}}>
         {' '}
         Survey Access Settings
-      </Button>
-      <Typography sx={{fontSize: '20px'}}> Ready to launch?</Typography>
-      <StyledText> Before launching, please review any branching logic to your questions. </StyledText>
+      </Button> */}
+      <Typography sx={{fontSize: '20px', mb: 1}}> Ready to use?</Typography>
+      <StyledText> Before adding your survey to a study under design, please review any branching logic used by your questions. </StyledText>
       <Button
         color="primary"
         variant="contained"
@@ -49,21 +44,17 @@ const Completion: React.FunctionComponent<{
         sx={{padding: theme.spacing(1, 2.5), margin: theme.spacing(1.5, 0, 5, 0)}}>
         Preview Branching Logic
       </Button>
-      <Typography sx={{fontSize: '20px'}}>Publish Survey</Typography>
+      <Typography sx={{fontSize: '20px', mb: 1}}>Publish Survey</Typography>
       <Typography
-        sx={{fontStyle: 'italic', fontWeight: 400, fontSize: '14px', display: 'flex', marginTop: theme.spacing(2)}}>
-        <Alert sx={{color: '#ff4163'}} />
-        Please note that once a survey is published, it cannot be deleted if it is used in any study on the platform.
+        sx={{fontStyle: 'italic', fontWeight: 400, fontSize: '14px', display: 'flex', marginTop: theme.spacing(2), marginBottom: theme.spacing(1)}}>
+        <Alert sx={{color: '#ff4163', margin: theme.spacing(0, 1, 0, 0)}} />
+        Please note that once a survey is published, it cannot be edited or deleted.
       </Typography>
-      <Button
-        color="primary"
-        variant="contained"
-        startIcon={<FileUploadTwoToneIcon />}
-        onClick={() => alert('TODO')}
-        sx={{padding: theme.spacing(1, 2.5), margin: theme.spacing(1.5, 0, 5, 0)}}>
-        Publish Survey
-      </Button>
-      <Button> </Button>
+      <StyledText> 
+        A survey is published when it is used in a live study. 
+        Once published, it is locked and cannot be changed.
+      </StyledText>
+
     </Box>
   )
 }
