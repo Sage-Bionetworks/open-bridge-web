@@ -1,6 +1,6 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {Box, styled} from '@mui/material'
-import {useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
+import {useSurveyAssessment, useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
 import {latoFont} from '@style/theme'
 import {ChoiceQuestion, Step, Survey} from '@typedefs/surveys'
 import dagre from 'dagre'
@@ -22,6 +22,9 @@ import NavigationPrompt from 'react-router-navigation-prompt'
 import BranchingConfig from './BranchingConfig'
 import getNodes from './GetNodesToPlot'
 import {useGetPlotWidth} from './UseGetPlotWidth'
+import { Assessment } from '@typedefs/types'
+import { isJSDocReadonlyTag } from 'typescript'
+import ReadOnlyBanner from '@components/widgets/ReadOnlyBanner'
 
 /*const edgeTypes = {
   smart: SmartStepEdge,
@@ -116,11 +119,12 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   const ref = React.useRef<HTMLDivElement>(null)
   const {width} = useGetPlotWidth(ref)
   const [survey, setSurvey] = React.useState<Survey | undefined>()
+  const [assessment, setAssessment] = React.useState<Assessment | undefined>()
   const [error, setError] = React.useState('')
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [currentStepIndex, setCurrentStepIndex] = React.useState<number | undefined>(-1)
   const [isHideInput, setIsHideInput] = React.useState(true)
-
+  const isReadOnly = assessment?.isReadOnly ?? false
   const [nodes, setNodes] = React.useState<Node[]>([])
   const [edges, setEdges] = React.useState<Edge[]>([])
 
@@ -134,6 +138,9 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   )
 
   const {data: _survey} = useSurveyConfig(surveyGuid)
+  const {data: _assessment} = useSurveyAssessment(true, surveyGuid)
+  
+  useSurveyConfig(surveyGuid)
 
   const {mutateAsync: mutateSurvey} = useUpdateSurveyConfig()
 
@@ -142,6 +149,12 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
       setSurvey(_survey)
     }
   }, [_survey])
+
+  React.useEffect(() => {
+    if (_assessment) {
+      setAssessment(_assessment)
+    }
+  }, [_assessment])
 
   React.useEffect(() => {
     if (survey) {
@@ -215,6 +228,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
 
       <SurveyBranchingContainerBox>
         {error && <span>{error.toString()}</span>}
+        {isReadOnly && <ReadOnlyBanner label='survey' />}
         <Box ref={ref}>
           <div
             style={{
@@ -245,6 +259,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
             error={error}
             onSave={() => saveSurvey()}
             isOpen={!isHideInput}
+            isReadOnly={isReadOnly}
             invalidTargetStepIds={getInvalidTargetStepIds()}
             onChange={steps => changeBranching(steps)}
             questions={survey!.config.steps as ChoiceQuestion[]}

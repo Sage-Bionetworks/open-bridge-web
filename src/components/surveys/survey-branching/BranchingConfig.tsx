@@ -71,11 +71,13 @@ const NextQuestionDropdown: FunctionComponent<{
   questions: Step[]
   excludeIds: string[]
   selectedIdentifier?: string
+  isReadOnly: boolean
 
   onChangeSelected: (qIs: string) => void
-}> = ({questions, selectedIdentifier, excludeIds, onChangeSelected}) => {
+}> = ({questions, selectedIdentifier, excludeIds, isReadOnly, onChangeSelected}) => {
   return (
     <StyledDropDown
+      readOnly={isReadOnly}
       value={selectedIdentifier || ''}
       width="112px"
       height="48px"
@@ -153,7 +155,8 @@ const BranchingConfig: FunctionComponent<{
   onSave: () => void
   onChange: (step: Step[]) => void
   isOpen: boolean
-}> = ({error, step, questions, invalidTargetStepIds, onChange, onCancel, isOpen, onSave}) => {
+  isReadOnly: boolean
+}> = ({error, step, questions, invalidTargetStepIds, onChange, onCancel, isOpen, isReadOnly, onSave}) => {
   const [cycleErrQNum, setCycleErrQNum] = React.useState<number | undefined>(undefined)
   const [hasUnreachableState, setHasUnreachableState] = React.useState(false)
   const extendedStepInfo = useQuestionInfo(step, questions)
@@ -202,6 +205,7 @@ const BranchingConfig: FunctionComponent<{
   }
   //radio button change
   const onChangeNextOption = (hasNextDefined: string) => {
+    if (isReadOnly) return
     let newSteps: Step[]
     const stepIndex = SurveyUtils.getSequentialQuestionIndex(step.identifier, questions).index
     if (hasNextDefined === 'false') {
@@ -224,6 +228,8 @@ const BranchingConfig: FunctionComponent<{
   }
 
   const changeRuleMapping = (optionValue: string | number | boolean | undefined, nextStepId: string) => {
+    if (isReadOnly) return 
+
     //make a copy of the rules
     let rules = [...((step as ChoiceQuestion).surveyRules || [])]
     const ruleIndexToUpdate = rules?.findIndex(r => r.matchingAnswer === optionValue)
@@ -323,6 +329,7 @@ const BranchingConfig: FunctionComponent<{
                     questions={questions}
                     excludeIds={invalidTargetStepIds}
                     selectedIdentifier={step.nextStepIdentifier || ''}
+                    isReadOnly={isReadOnly}
                     onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
                   />
                 </div>
@@ -364,6 +371,7 @@ const BranchingConfig: FunctionComponent<{
                             (step as ChoiceQuestion).surveyRules?.find(rule => rule.matchingAnswer === c.value)
                               ?.skipToIdentifier || ''
                           }
+                          isReadOnly={isReadOnly}
                           onChangeSelected={nextStepId => changeRuleMapping(c.value, nextStepId)}
                         />
                       </td>
@@ -376,12 +384,14 @@ const BranchingConfig: FunctionComponent<{
           )}
         </Box>
       </DialogContent>
+      {!isReadOnly && (
       <DialogActions>
         <DialogButtonSecondary onClick={closeModal}>Cancel</DialogButtonSecondary>
         <DialogButtonPrimary onClick={onSave} disabled={isSaveDisabled()}>
           Save Changes
         </DialogButtonPrimary>
       </DialogActions>
+      )}
     </Dialog>
   )
 }
