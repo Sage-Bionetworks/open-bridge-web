@@ -16,7 +16,7 @@ const getYearElements = () => {
   const minYearFormatGroup = screen.getByRole('radiogroup', {name: 'Minimum Year'})
   const minYear = {
     buttons: {
-      ANY: within(minYearFormatGroup).getByRole('radio', {name: /allow anytime in the past/i}),
+      ANY: within(minYearFormatGroup).getByRole('radio', {name: /allow any year in the past/i}),
       CURRENT: within(minYearFormatGroup).getByRole('radio', {name: /current year/i}),
       SET: within(minYearFormatGroup).getByRole('radio', {name: /set min value/i}),
     },
@@ -26,7 +26,7 @@ const getYearElements = () => {
   const maxYearFormatGroup = screen.getByRole('radiogroup', {name: 'Maximum Year'})
   const maxYear = {
     buttons: {
-      ANY: within(maxYearFormatGroup).getByRole('radio', {name: /allow anytime in the future/i}),
+      ANY: within(maxYearFormatGroup).getByRole('radio', {name: /allow any year in the future/i}),
       CURRENT: within(maxYearFormatGroup).getByRole('radio', {name: /current year/i}),
       SET: within(maxYearFormatGroup).getByRole('radio', {name: /set max value/i}),
     },
@@ -76,7 +76,7 @@ function createStepProps(formatOptions: FormatOptionsYear) {
 }
 
 describe('Year', () => {
-  test('correctly renders inputs for anytime in the past or future', async () => {
+  test('correctly renders inputs for any year in the past or future', async () => {
     const {minYear, maxYear} = setUp(createStepProps({allowPast: true, allowFuture: true}))
 
     expect(minYear.buttons.ANY).toBeChecked()

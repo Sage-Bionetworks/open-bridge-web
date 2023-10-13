@@ -99,7 +99,7 @@ const YearRadioGroup: React.FunctionComponent<YearRadioGroupProps> = ({
             value="ANY"
             sx={{mt: theme.spacing(1.5), alignItems: 'center'}}
             control={<Radio />}
-            label={`Allow anytime in the ${CONFIG[type].tense}`}
+            label={`Allow any year in the ${CONFIG[type].tense}`}
           />
           <FormControlLabel value="CURRENT" sx={{alignItems: 'center'}} control={<Radio />} label={'Current Year'} />
           <FormControlLabel value="SET" sx={{alignItems: 'center'}} control={<Radio />} label={inlineInput} />
