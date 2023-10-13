@@ -63,7 +63,7 @@ const Completion: React.FunctionComponent<{
 
         <FormControl variant="standard" fullWidth sx={{mb: 1}}>
           <StyledH1
-            area-label="title"
+            aria-label="title"
             id="title"
             data-testid="title"
             value={step.title}
@@ -74,7 +74,7 @@ const Completion: React.FunctionComponent<{
         <FormControl variant="standard" fullWidth>
           <StyledP2
             id="summary"
-            area-label="summary"
+            aria-label="summary"
             multiline={true}
             minRows={2}
             data-testid="summary"

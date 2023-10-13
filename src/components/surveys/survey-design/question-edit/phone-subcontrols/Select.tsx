@@ -69,10 +69,11 @@ const SelectOption: FunctionComponent<{
     isStatic?: boolean
     isSingleChoice?: boolean
     isOther?: boolean
+    isReadOnly?: boolean
   }
 }> = ({choice, onDelete, onRename, options}) => {
   const [title, setTitle] = React.useState(choice.text)
-  const {provided, isStatic, isSingleChoice} = options
+  const {provided, isStatic, isSingleChoice, isReadOnly} = options
   return (
     <Option
       {...provided?.draggableProps}
@@ -80,10 +81,11 @@ const SelectOption: FunctionComponent<{
       ref={provided?.innerRef}
       isSingleChoice={isSingleChoice}>
       <div />
-      {isStatic ? (
+      {isStatic || isReadOnly ? (
         <Typography sx={{padding: theme.spacing(0.5, 0.5)}}>{title}</Typography>
       ) : (
         <DisappearingInput
+          readOnly={isReadOnly}
           sx={{'& input': {padding: theme.spacing(0.25, 0.5), backgroundColor: '#fff'}}}
           value={title}
           onChange={e => setTitle(e.target.value)}
@@ -92,10 +94,12 @@ const SelectOption: FunctionComponent<{
       )}
 
       <div>
-        {provided !== undefined && <DraggableIcon />}
+        {provided !== undefined && !isReadOnly && <DraggableIcon />}
+        {!isReadOnly && (
         <IconButton onClick={() => onDelete(title)} sx={{padding: 0, marginLeft: '4px'}} title="delete">
           <ClearIcon fontSize="small" />
-        </IconButton>
+        </IconButton> 
+        )}
       </div>
     </Option>
   )
@@ -103,9 +107,9 @@ const SelectOption: FunctionComponent<{
 
 const Select: React.FunctionComponent<{
   step: ChoiceQuestion
-
+  isReadOnly?: boolean
   onChange: (step: ChoiceQuestion) => void
-}> = ({step: stepData, onChange}) => {
+}> = ({step: stepData, isReadOnly, onChange}) => {
   // const stepData = step as ChoiceQuestion
   const onDragEnd = (result: DropResult) => {
     if (!stepData.choices) {
@@ -206,7 +210,7 @@ const Select: React.FunctionComponent<{
               {[...stepData.choices!].slice(0, getIndexOfTheLastRealQuestion() + 1).map((choice, index) => (
                 <Draggable
                   draggableId={choice.value?.toString() || ''}
-                  isDragDisabled={false}
+                  isDragDisabled={isReadOnly}
                   index={index}
                   key={choice.value?.toString()}>
                   {provided => (
@@ -214,6 +218,7 @@ const Select: React.FunctionComponent<{
                       options={{
                         isSingleChoice: stepData.singleChoice,
                         provided,
+                        isReadOnly: isReadOnly,
                       }}
                       onRename={qText => renameOption(qText, index)}
                       choice={choice}

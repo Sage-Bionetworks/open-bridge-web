@@ -39,6 +39,7 @@ type YearRadioGroupProps = {
   allowValue: boolean | undefined
   yearValue: number | undefined
   hasError: boolean
+  isReadOnly?: boolean
   onChange: (allowValue: boolean | undefined, yearValue: number | undefined) => void
 }
 
@@ -47,6 +48,7 @@ const YearRadioGroup: React.FunctionComponent<YearRadioGroupProps> = ({
   allowValue,
   yearValue,
   hasError,
+  isReadOnly,
   onChange,
 }) => {
   const id = `${type}YearGroup`
@@ -74,6 +76,7 @@ const YearRadioGroup: React.FunctionComponent<YearRadioGroupProps> = ({
         type="number"
         disabled={yearValue === undefined}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+          if (isReadOnly) return
           onChange(
             yearFormatToAllowValue(yearFormat),
             setYearValue(yearFormat, parseInt(e.target.value) || defaultYearValue)
@@ -92,6 +95,7 @@ const YearRadioGroup: React.FunctionComponent<YearRadioGroupProps> = ({
           id={`${type}YearFormat`}
           value={yearFormat}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            if (isReadOnly) return
             const newYearFormat = e.target.value as YearFormatType
             onChange(yearFormatToAllowValue(newYearFormat), setYearValue(newYearFormat, yearValue || defaultYearValue))
           }}>

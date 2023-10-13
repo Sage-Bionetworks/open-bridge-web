@@ -27,6 +27,7 @@ import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
 import QuestionEditPhone from './question-edit/QuestionEditPhone'
 import QuestionEditRhs from './question-edit/QuestionEditRhs'
 import QuestionEditToolbar from './question-edit/QuestionEditToolbar'
+import ReadOnlyBanner from '@components/widgets/ReadOnlyBanner'
 
 const SurveyDesignContainerBox = styled(Box, {
   label: 'SurveyDesignContainerBox',
@@ -134,11 +135,12 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   }>()
 
   const isNewSurvey = () => surveyGuid === ':id'
-
+  
   const history = useHistory()
   const location = useLocation()
   const [assessment, setAssessment] = React.useState<Assessment | undefined>()
   const [survey, setSurvey] = React.useState<Survey | undefined>()
+  const isReadOnly = assessment?.isReadOnly ?? false
 
   const [currentStepIndex, setCurrentStepIndex] = React.useState<number | undefined>(
     getQuestionIndexFromSearchString(location.search)
@@ -208,7 +210,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   }
 
   const updateCurrentStep = (step: Step, stepIndex?: number) => {
-    if (!survey) {
+    if (!survey || isReadOnly) {
       return
     }
 
@@ -385,6 +387,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     return dependentSteps
   }
 
+  
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <NavigationPrompt when={hasObjectChanged && !numOfMutations} key="nav_prompt">
@@ -404,10 +407,14 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           currentStepIndex={currentStepIndex}
           guid={surveyGuid}
           surveyConfig={survey?.config}
+          isReadOnly={isReadOnly}
           onReorderSteps={(steps: Step[]) => updateAllStepsAndSave(steps)}>
-          <AddQuestion>
-            <AddQuestionMenu onSelectQuestion={qType => addStepWithDefaultConfig(qType)} />
-          </AddQuestion>
+              { isReadOnly ? 
+              <ReadOnlyBanner label='survey' /> :
+              <AddQuestion>
+                <AddQuestionMenu onSelectQuestion={qType => addStepWithDefaultConfig(qType)} />
+              </AddQuestion>
+              }
         </LeftPanel>
         {/* CEDNTRAL PHONE AREA*/}
 
@@ -418,6 +425,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 <SaveIndicator numOfMutations={numOfMutations + numOfFecheds} hasObjectChanged={hasObjectChanged} />
                 {survey && (
                   <QuestionEditPhone
+                    isReadOnly={isReadOnly}
                     isDynamic={isDynamicStep()}
                     globalSkipConfiguration={survey!.config.webConfig?.skipOption || 'CUSTOMIZE'}
                     onChange={(step: Step) => {
@@ -431,11 +439,12 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
               <RightContainer>
                 {survey && (
                   <QuestionEditRhs
+                    isReadOnly={isReadOnly}
                     isDynamic={isDynamicStep()}
                     dependentQuestions={findDependentQuestions()}
                     step={getCurrentStep()!}
                     onChange={(step: Step) => updateCurrentStep(step)}>
-                    {getCurrentStep()?.type !== 'completion' && (
+                    {getCurrentStep()?.type !== 'completion' && !isReadOnly && (
                       <QuestionEditToolbar
                         isDynamic={isDynamicStep()}
                         dependentQuestions={findDependentQuestions()}

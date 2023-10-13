@@ -135,8 +135,9 @@ function generateValue(choice: ChoiceQuestionChoice, setTo?: number) {
 
 const Select: React.FunctionComponent<{
   step: ChoiceQuestion
+  isReadOnly?: boolean
   onChange: (step: ChoiceQuestion) => void
-}> = ({step, onChange}) => {
+}> = ({step, isReadOnly, onChange}) => {
   const selectTypeOptions: QuestionTypeKey[] = ['MULTI_SELECT', 'SINGLE_SELECT']
   const [isTypeConversionWarning, setIsTypeConversionWarning] = React.useState(false)
   const answerDataTypeOptions: QuestionDataType[] = ['integer', 'string']
@@ -201,6 +202,7 @@ const Select: React.FunctionComponent<{
         <StyledLabel14 mb={0.5}>Question Type:</StyledLabel14>
 
         <StyledDropDown
+          readOnly={isReadOnly}
           value={step.singleChoice ? 'SINGLE_SELECT' : 'MULTI_SELECT'}
           width="200px"
           height="40px"
@@ -223,6 +225,7 @@ const Select: React.FunctionComponent<{
         <StyledLabel14 mb={0.5}>Set Response Value Pairing:</StyledLabel14>
 
         <StyledDropDown
+          readOnly={isReadOnly}
           value={step.baseType}
           height="48px"
           width="130px"
@@ -243,7 +246,7 @@ const Select: React.FunctionComponent<{
       <PairingTableHeading answerDataType={step.baseType} isSingleChoice={step.singleChoice} />
 
       <Box sx={{backgroundColor: '#fff', padding: theme.spacing(2, 1.5)}}>
-        {step.baseType === 'string' && (
+        {step.baseType === 'string' && !isReadOnly && (
           <Button
             variant="text"
             startIcon={<GenerateId />}

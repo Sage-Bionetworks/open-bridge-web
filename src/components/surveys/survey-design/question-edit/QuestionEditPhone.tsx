@@ -90,6 +90,7 @@ const ScrollableArea = styled('div', {
 }))
 
 type QuestionEditProps = {
+  isReadOnly: boolean
   isDynamic: boolean
   step?: Step
   globalSkipConfiguration: WebUISkipOptions
@@ -107,36 +108,37 @@ function Factory(args: {
   onChange: (step: Step) => void
 
   q_type: QuestionTypeKey
+  isReadOnly: boolean
 }) {
   switch (args.q_type) {
-    case 'SINGLE_SELECT': {
-      return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
-    }
-
+    case 'SINGLE_SELECT':
     case 'MULTI_SELECT':
-      return <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
+      return <Select step={args.step as ChoiceQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
+
     case 'SLIDER':
     case 'LIKERT':
       return <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
+
     case 'NUMERIC':
-      return <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
-    case 'DURATION':
-      return <TimeDuration />
-    case 'TIME':
-      return <TimeDuration type="TIME" />
     case 'YEAR':
-      return <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
+      return <Numeric step={args.step as NumericQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
+
+    case 'DURATION':
+    case 'TIME':
+      return <TimeDuration type={args.q_type} />
+
     case 'FREE_TEXT':
       return <FreeText step={args.step as Question} />
-    case 'COMPLETION': {
+
+    case 'COMPLETION': 
       return <Completion step={args.step as BaseStep} onChange={args.onChange} />
-    }
-    case 'OVERVIEW': {
-      return <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
-    }
-    case 'INSTRUCTION': {
+
+    case 'OVERVIEW': 
+      return <SurveyTitle step={args.step as BaseStep} isReadOnly={args.isReadOnly} onChange={args.onChange} />
+
+    case 'INSTRUCTION': 
       return <></> // Instructions do not have any fields in addition to title, subtitle, and detail.
-    }
+      
     default:
       return <>TODO: {args.q_type} not supported</>
   }
@@ -170,6 +172,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   globalSkipConfiguration,
   completionProgress,
   isDynamic,
+  isReadOnly,
   onChange,
 }) => {
   const questionId = step ? getQuestionId(step) : 0
@@ -197,7 +200,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
 
   return (
     <OuterContainer>
-      {isSelectQuestion(questionId) && (
+      {isSelectQuestion(questionId) && !isReadOnly && (
         <SelectExtraActions
           onSort={dir => {
             const opts = sortSelectChoices(step as ChoiceQuestion, dir)
@@ -212,7 +215,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
 
       {step && (
         <>
-          <PhoneDisplay sx={{marginBottom: theme.spacing(4), textAlign: 'left'}} phoneBottom={getPhoneBottom()}>
+          <PhoneDisplay sx={{marginBottom: theme.spacing(4), textAlign: 'left'}} phoneBottom={!isReadOnly && getPhoneBottom()}>
             <Box>
               {isDynamic && (
                 <>
@@ -226,31 +229,38 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
               <ScrollableArea height={isDynamic ? 410 : 400} >
                 {isDynamic && (
                   <>    
+                    {(!isReadOnly || step.subtitle) && (
                     <StyledP2
-                      area-label="subtitle"
+                      aria-label="subtitle"
                       id="subtitle"
+                      readOnly={isReadOnly}
                       multiline={true}
                       value={step.subtitle || ''}
                       placeholder="Subtitle"
                       onChange={e => onChange({...step, subtitle: e.target.value})}
                     />
+                    )}
                     <StyledH1
-                      area-label="title"
+                      aria-label="title"
                       id="title"
+                      readOnly={isReadOnly}
                       multiline={true}
                       value={step.title || ''}
                       placeholder="Title"
                       onChange={e => onChange({...step, title: e.target.value})}
                     />
+                    {(!isReadOnly || step.detail) && (
                     <StyledP2
-                      area-label="detail"
+                      aria-label="detail"
                       id="detail"
+                      readOnly={isReadOnly}
                       multiline={true}
                       value={step.detail || ''}
                       placeholder="Description"
                       sx={{marginBottom: theme.spacing(2.5), fontSize: '16px', fontWeight: 400}}
                       onChange={e => onChange({...step, detail: e.target.value})}
                     />
+                    )}
                   </>
                 )}
 
@@ -260,13 +270,14 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                       step: {...step},
                       onChange: onChange,
                       q_type: getQuestionId(step),
+                      isReadOnly: isReadOnly,
                     }}></Factory>
                 }
               </ScrollableArea>
             </Box>
           </PhoneDisplay>
 
-          {globalSkipConfiguration === 'CUSTOMIZE' && isDynamic && (
+          {globalSkipConfiguration === 'CUSTOMIZE' && isDynamic && !isReadOnly && (
             <RequiredToggle
               shouldHideActionsArray={step.shouldHideActions || []}
               onChange={shouldHideActions =>

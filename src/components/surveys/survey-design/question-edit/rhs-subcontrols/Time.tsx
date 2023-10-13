@@ -18,27 +18,29 @@ import {theme} from '@style/theme'
 import {FormatOptionsTime, TimeQuestion} from '@typedefs/surveys'
 import React from 'react'
 
-const Labels = styled('div', {label: 'labels'})(({theme}) => ({
-  backgroundColor: '#fff',
-  padding: theme.spacing(2, 1.5),
-  marginTop: theme.spacing(2),
+// TODO: syoung 10/11/2023 Revisit this design later - it doesn't really make sense to allow time questions to constrain to future/past.
+// const Labels = styled('div', {label: 'labels'})(({theme}) => ({
+//   backgroundColor: '#fff',
+//   padding: theme.spacing(2, 1.5),
+//   marginTop: theme.spacing(2),
 
-  '& > label': {
-    marginBottom: theme.spacing(0.5),
-    '& span': {
-      width: '130px',
-      display: 'inline-block',
-    },
-  },
-}))
+//   '& > label': {
+//     marginBottom: theme.spacing(0.5),
+//     '& span': {
+//       width: '130px',
+//       display: 'inline-block',
+//     },
+//   },
+// }))
 
 const ValueSelector: React.FunctionComponent<{
   value: string | undefined
   isDisabled: boolean
+  isReadOnly?: boolean
   type: 'MIN' | 'MAX'
 
   onChange: (value: string) => void
-}> = ({value, type, isDisabled, onChange}) => {
+}> = ({value, type, isDisabled, isReadOnly, onChange}) => {
   const CONFIG = {
     MIN: {
       label: 'Min Value',
@@ -57,6 +59,7 @@ const ValueSelector: React.FunctionComponent<{
       </StyledLabel14>
 
       <StyledDropDown
+        readOnly={isReadOnly}
         labelId={CONFIG[type].labelId}
         value={value || ''}
         height="42px"
@@ -96,8 +99,9 @@ function getLimit(fo?: FormatOptionsTime): LimitType {
 // Consider making this components fully controlled instead.
 const Time: React.FunctionComponent<{
   step: TimeQuestion
+  isReadOnly?: boolean
   onChange: (step: TimeQuestion) => void
-}> = ({step, onChange}) => {
+}> = ({step, isReadOnly, onChange}) => {
   const [rangeDisabled, setRangeDisabled] = React.useState(
     step.inputItem.formatOptions?.minimumValue === undefined && step.inputItem.formatOptions?.maximumValue === undefined
   )
@@ -125,6 +129,7 @@ const Time: React.FunctionComponent<{
   }, [range])
 
   const changeRangeDisabled = (val: boolean) => {
+    if (isReadOnly) return
     setRangeDisabled(val)
     if (val) {
       setRange(undefined)
@@ -150,6 +155,7 @@ const Time: React.FunctionComponent<{
         <ValueSelector
           type="MIN"
           isDisabled={rangeDisabled}
+          isReadOnly={isReadOnly}
           value={range?.min}
           onChange={num => {
             const isValid = validate({min: num, max: range?.min})
@@ -165,6 +171,7 @@ const Time: React.FunctionComponent<{
         <ValueSelector
           type="MAX"
           isDisabled={rangeDisabled}
+          isReadOnly={isReadOnly}
           value={range?.max}
           onChange={num => {
             const isValid = validate({min: range?.min, max: num})
@@ -179,7 +186,7 @@ const Time: React.FunctionComponent<{
         />
       </Box>
       {error && <AlertWithTextWrapper text={error}></AlertWithTextWrapper>}
-      <Labels>
+      {/* <Labels>
         <RadioGroup
           id="exclude"
           value={exclude}
@@ -210,7 +217,7 @@ const Time: React.FunctionComponent<{
             label={'Allow only time in the past'}
           />
         </RadioGroup>
-      </Labels>
+      </Labels> */}
       <Typography variant="body1" margin={(theme.spacing(3), 'auto', 'auto', theme.spacing(3))}>
         *The actual UI for this question will default to the system's OS interface.{' '}
       </Typography>

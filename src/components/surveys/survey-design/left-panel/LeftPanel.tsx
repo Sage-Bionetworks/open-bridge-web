@@ -109,15 +109,20 @@ const TitleRow: React.FunctionComponent<{
   )
 }
 
+function canDrag(isReadOnly: boolean, size: number, index: number) {
+  return !isReadOnly && size > 3 && index > 0 && index < size - 1
+}
+
 const StepLink: React.FunctionComponent<{
   //guid: string
   index: number
   step: Step
   size: number
   isCurrentStep: boolean
+  isReadOnly: boolean
   provided: DraggableProvided
   onClick: () => void
-}> = ({index, step, size, isCurrentStep, provided, onClick}) => {
+}> = ({index, step, size, isCurrentStep, isReadOnly, provided, onClick}) => {
   let title = `${index < 9 ? '0' : ''}${index}. ${step.title}`
   if (index === size - 1) {
     title = 'Completion Screen'
@@ -145,7 +150,7 @@ const StepLink: React.FunctionComponent<{
             {QUESTIONS.get(getQuestionId(step))?.img}
             <StyledQuestionText>{title}</StyledQuestionText>
           </DivContainer>
-          {size > 3 && index > 0 && index < size - 1 && <DraggableIcon sx={{color: '#DFE2E6'}} />}
+          {canDrag(isReadOnly, size, index) && <DraggableIcon sx={{color: '#DFE2E6'}} />}
         </DivContainer>
       </StyledNavAnchor>
     </Row>
@@ -157,9 +162,10 @@ const LeftPanel: React.FunctionComponent<{
   surveyId?: string
   surveyConfig?: SurveyConfig
   currentStepIndex?: number
+  isReadOnly: boolean
   onReorderSteps: (s: Step[]) => void
   onNavigateStep: (id: number) => void
-}> = ({guid, surveyConfig, children, surveyId, currentStepIndex, onNavigateStep, onReorderSteps}) => {
+}> = ({guid, surveyConfig, children, surveyId, currentStepIndex, isReadOnly, onNavigateStep, onReorderSteps}) => {
   const onDragEnd = (result: DropResult) => {
     if (!surveyConfig?.steps) {
       return
@@ -196,13 +202,12 @@ const LeftPanel: React.FunctionComponent<{
                       {surveyConfig!.steps!.map((step, index) => (
                         <Draggable
                           draggableId={step.identifier}
-                          isDragDisabled={
-                            surveyConfig?.steps!.length < 3 || step.type === 'overview' || step.type === 'completion'
-                          }
+                          isDragDisabled={!canDrag(isReadOnly, surveyConfig?.steps!.length, index)}
                           index={index}
                           key={step.identifier}>
                           {provided => (
                             <StepLink
+                              isReadOnly={isReadOnly}
                               provided={provided}
                               isCurrentStep={currentStepIndex === index}
                               //  guid={guid}
