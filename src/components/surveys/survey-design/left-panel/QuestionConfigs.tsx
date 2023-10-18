@@ -79,6 +79,7 @@ const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: stri
         inputItem: {
           type: 'string',
           placeholder: '(Maximum 250 characters)',
+          characterLimit: 250,
         },
       },
     },
@@ -209,9 +210,6 @@ const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: stri
         title: 'New Question',
         inputItem: {
           type: 'time',
-          formatOptions: {
-            allowFuture: false,
-          },
         },
       },
     },
