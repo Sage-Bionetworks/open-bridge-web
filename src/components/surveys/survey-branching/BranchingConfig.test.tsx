@@ -16,6 +16,7 @@ export const renderComponent = (step: any) => {
       <BranchingConfig
         step={step}
         isOpen={true}
+        isReadOnly={false}
         questions={SurveyQuestions}
         invalidTargetStepIds={[]}
         onCancel={() => onMock('cancel')}
