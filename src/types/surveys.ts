@@ -96,11 +96,13 @@ export interface ChoiceQuestion extends Question {
     fieldLabel?: string // no column
   }
 }
+
 export interface MultipleInputQuestion extends Question {
   optional: boolean
   inputItems: InputItem[]
   skipCheckbox?: Skip
 }
+
 export interface ScaleQuestion extends Question {
   uiHint: 'likert' | 'slider'
   inputItem: InputItem & {
@@ -108,6 +110,7 @@ export interface ScaleQuestion extends Question {
     formatOptions: FormatOptionsInteger
   }
 }
+
 export interface DurationQuestion extends Question {
   inputItem: InputItem & {
     type: 'duration'
@@ -130,6 +133,13 @@ export interface NumericQuestion extends Question {
   }
 }
 
+export interface FreeTextQuestion extends Question {
+  inputItem: InputItem & {
+    type: 'string'
+    characterLimit?: number
+  }
+}
+
 export interface YearQuestion extends Question {
   inputItem: InputItem & {
     type: 'year'
@@ -147,9 +157,7 @@ export interface BaseStep {
     | 'unknown'
     | 'instruction'
     | 'simpleQuestion'
-    //| 'multipleInputQuestion'
     | 'choiceQuestion'
-  //   | 'comboBoxQuestion' //otherInputItem
   title: string //Instruction Step 1',
   subtitle?: string
   detail?: string //Here are the details for this instruction.',
