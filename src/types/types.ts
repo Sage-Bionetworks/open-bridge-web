@@ -164,6 +164,8 @@ export type AssessmentBase = {
 export type Assessment = AssessmentBase & {
   isLocal: boolean
   isReadOnly: boolean
+  defaultLanguage?: Language
+  defaultLabel?: string
 }
 
 export type AssessmentConfig = {

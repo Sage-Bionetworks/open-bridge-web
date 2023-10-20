@@ -147,6 +147,7 @@ export interface IntroInfoProps {
   surveyAssessment?: Assessment
   survey?: Survey
   children?: React.ReactNode
+  onHasChanged: (value: boolean) => void
   onUpdate: (a: Assessment, s: Survey, act: 'UPDATE' | 'CREATE') => void
 }
 const getDefaultSurvey = (newSurveyId: string): Survey => ({
@@ -191,6 +192,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
   surveyAssessment: _surveyAssessment,
   survey,
   children,
+  onHasChanged,
   onUpdate,
 }: IntroInfoProps) => {
   const newSurveyId = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
@@ -230,9 +232,11 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
 
   const updateState = (callback: Function) => {
     if (basicInfo.isReadOnly) return
+    onHasChanged(true)
     setHasObjectChanged(true)
     callback()
   }
+  
   const updateInterruptonHandling = (key: keyof InterruptionHandlingType, value: boolean) => {
     if (basicInfo.isReadOnly) return
     setHasObjectChanged(true)
@@ -293,6 +297,22 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
           />
           <div>
             <HelpText>This will be used to reference the survey in Survey Library.</HelpText>
+          </div>
+        </Box>
+      </StyledFormControl>
+
+      <StyledFormControl variant="standard">
+        <StyledInputLabel htmlFor="survey_label">Participant-Facing Title</StyledInputLabel>
+        <Box display="flex" alignItems="center">
+          <StyledInput
+            className="compact"
+            id="survey_label"
+            sx={{'& input': {width: '250px'}}}
+            value={basicInfo?.defaultLabel}
+            onChange={e => updateState(() => setBasicInfo(prev => ({...prev, defaultLabel: e.target.value})))}
+          />
+          <div>
+            <HelpText>This will be shown to participants as the title in their timeline.</HelpText>
           </div>
         </Box>
       </StyledFormControl>
