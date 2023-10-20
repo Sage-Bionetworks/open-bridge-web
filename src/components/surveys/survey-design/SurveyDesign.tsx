@@ -399,6 +399,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
       <ErrorBanner errors={[errorAssessmentUpdate, errorSurveyUpdate, errorResourceUpdate]} />
 
+      { isReadOnly && <ReadOnlyBanner label='survey' /> }
       <SurveyDesignContainerBox>
         {/* LEFT PANEL*/}
         <LeftPanel
@@ -409,14 +410,13 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           surveyConfig={survey?.config}
           isReadOnly={isReadOnly}
           onReorderSteps={(steps: Step[]) => updateAllStepsAndSave(steps)}>
-              { isReadOnly ? 
-              <ReadOnlyBanner label='survey' /> :
+              { !isReadOnly &&
               <AddQuestion>
                 <AddQuestionMenu onSelectQuestion={qType => addStepWithDefaultConfig(qType)} />
               </AddQuestion>
               }
         </LeftPanel>
-        {/* CEDNTRAL PHONE AREA*/}
+        {/* CENTRAL PHONE AREA*/}
 
         <Box display="flex" flexGrow={1} justifyContent="space-between">
           <Switch>
