@@ -13,7 +13,7 @@ import {
 } from '@services/assessmentHooks'
 import {ChoiceQuestion, Question, Step, Survey} from '@typedefs/surveys'
 import {Assessment, ExtendedError} from '@typedefs/types'
-import React, {FunctionComponent, ReactNode} from 'react'
+import React, {FunctionComponent} from 'react'
 import {useIsFetching, useIsMutating} from 'react-query'
 import {Redirect, Route, RouteComponentProps, Switch, useHistory, useLocation, useParams} from 'react-router-dom'
 // default styling
@@ -387,16 +387,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     return dependentSteps
   }
 
-  const MainBox: React.FunctionComponent<{children: ReactNode}> = ({children}) => {
-    return (
-      <Box display="flex" flexDirection={'column'} flexGrow={2}>
-        {isReadOnly && <ReadOnlyBanner label='survey' />}
-        <Box display="flex" flexGrow={1} justifyContent="space-between">
-          {children}
-        </Box>
-      </Box>
-    )
-  }
   
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
@@ -419,15 +409,16 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           surveyConfig={survey?.config}
           isReadOnly={isReadOnly}
           onReorderSteps={(steps: Step[]) => updateAllStepsAndSave(steps)}>
-              { !isReadOnly && (
-                <AddQuestion>
-                  <AddQuestionMenu onSelectQuestion={qType => addStepWithDefaultConfig(qType)} />
-                </AddQuestion>
-              )}
+              { isReadOnly ? 
+              <ReadOnlyBanner label='survey' /> :
+              <AddQuestion>
+                <AddQuestionMenu onSelectQuestion={qType => addStepWithDefaultConfig(qType)} />
+              </AddQuestion>
+              }
         </LeftPanel>
         {/* CEDNTRAL PHONE AREA*/}
 
-        <MainBox>
+        <Box display="flex" flexGrow={1} justifyContent="space-between">
           <Switch>
             <Route path={`/surveys/:id/design/question`}>
               <CentralContainer>
@@ -484,7 +475,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
               <Redirect to={`/surveys/${surveyGuid}/design/intro`}></Redirect>
             </Route>
           </Switch>
-        </MainBox>
+        </Box>
       </SurveyDesignContainerBox>
       <Dialog open={debugOpen} onClose={() => setDebugOpen(false)}>
         <pre>{JSON.stringify(survey?.config, null, 2)}</pre>
