@@ -22,6 +22,7 @@ import {
 } from '@mui/material'
 import Button from '@mui/material/Button'
 import {latoFont, shouldForwardProp, theme} from '@style/theme'
+import constants from '@typedefs/constants'
 import {NavRouteType, UserSessionData} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useLocation} from 'react-router'
@@ -213,11 +214,11 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
 
   const redirectToLoginPage = () => {
     sessionStorage.setItem('location', `${location.pathname}${location.search}`)
-    window.location.replace(`${window.location.origin}/sign-in`)
+    window.location.replace(`${window.location.origin}${constants.publicPaths.SIGN_IN}`)
   }
 
   const isLoginButtonDisabled = React.useMemo(() => {
-    return location.pathname.endsWith('/sign-in')
+    return location.pathname.endsWith(constants.publicPaths.SIGN_IN)
   }, [location])
 
   return (
@@ -347,7 +348,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             </Box>
           </Box>
 
-          {window.location.pathname !== '/' && window.location.pathname !== '/sign-in' && (
+          {window.location.pathname !== '/' && window.location.pathname !== constants.publicPaths.SIGN_IN && (
             <Box sx={{display: 'flex', alignItems: 'center', cursor: 'pointer', marginTop: theme.spacing(14)}}>
               <UserAvatar
                 sessionData={sessionData}

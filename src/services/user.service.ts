@@ -52,11 +52,25 @@ async function getUserInfoFromSynapse(synapseUserId: string): Promise<Response<a
   return profile
 }
 
+type MessageResponse = {
+  message: string
+  type: string
+}
+
+async function requestResetPassword(email: string) {
+  const postData = {
+    appId: Utility.getAppId(),
+    email,
+  }
+  return await Utility.callEndpoint<MessageResponse>(constants.endpoints.requestResetPassword, 'POST', postData)
+}
+
 const UserService = {
   loginOauth,
   loginUsernamePassword,
   getUserInfo,
   getUserInfoFromSynapse,
+  requestResetPassword,
 }
 
 export default UserService
