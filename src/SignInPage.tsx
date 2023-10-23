@@ -1,7 +1,11 @@
+import {ResetPassword} from '@components/account/ResetPassword'
+import useFeatureToggles, {FeatureToggles, features} from '@helpers/FeatureToggle'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import constants from '@typedefs/constants'
 import clsx from 'clsx'
 import React from 'react'
+import {useLocation} from 'react-router-dom'
 import {UseLoginReturn} from 'useLogin'
 import ArcLogo from './assets/logo_arc_main.svg'
 import MtbFinalLogo from './assets/logo_open_bridge_large.svg'
@@ -53,6 +57,9 @@ type SignInPageProps = {
 
 const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp, usernameAndPasswordLogin}) => {
   const classes = useStyles()
+  const location = useLocation()
+  const featureToggles = useFeatureToggles<FeatureToggles>()
+
   return (
     <Box className={clsx(classes.container, !isARCApp && classes.mtbContainer)}>
       {isARCApp && (
@@ -72,11 +79,15 @@ const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp, usernam
         </Box>
       )}
       <Box className={classes.rightContainer} sx={{width: isARCApp ? '50%' : '100%'}}>
-        <AccountLogin
-          callbackFn={() => {}}
-          isArcSignIn={isARCApp}
-          usernameAndPasswordLogin={usernameAndPasswordLogin}
-        />
+        {(location.pathname === constants.publicPaths.SIGN_IN || location.pathname === '/') && (
+          <AccountLogin
+            callbackFn={() => {}}
+            isArcSignIn={isARCApp}
+            usernameAndPasswordLogin={usernameAndPasswordLogin}
+          />
+        )}
+        {featureToggles[features.USERNAME_PASSWORD_LOGIN] &&
+          location.pathname === constants.publicPaths.RESET_PASSWORD && <ResetPassword />}
       </Box>
     </Box>
   )

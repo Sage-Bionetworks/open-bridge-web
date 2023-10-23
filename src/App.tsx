@@ -1,4 +1,4 @@
-import {FeatureToggleProvider} from '@helpers/FeatureToggle'
+import {FeatureToggleProvider, features} from '@helpers/FeatureToggle'
 import {Container, CssBaseline, StyledEngineProvider, ThemeProvider, Typography} from '@mui/material'
 import {createTheme, Theme} from '@mui/material/styles'
 import {deepmerge} from '@mui/utils'
@@ -52,7 +52,8 @@ function App() {
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
         {redirect && <Redirect to={redirect}></Redirect>}
         {/*  <React.StrictMode>*/}
-        <FeatureToggleProvider featureToggles={{'SURVEY BUILDER': true, 'USERNAME PASSWORD LOGIN': isDevelopment()}}>
+        <FeatureToggleProvider
+          featureToggles={{[features.SURVEY_BUILDER]: true, [features.USERNAME_PASSWORD_LOGIN]: isDevelopment()}}>
           <Container
             id="outer"
             maxWidth="xl"

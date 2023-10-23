@@ -1,3 +1,4 @@
+import constants from '@typedefs/constants'
 import * as React from 'react'
 import {UserSessionData} from '../types/types'
 import {default as Utility, default as UtilityObject} from './utility'
@@ -67,7 +68,7 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
 
     case 'LOGOUT':
       Utility.clearSession()
-      window.location.href = '/sign-in'
+      window.location.href = constants.publicPaths.SIGN_IN
       return {
         ...initialState,
       }

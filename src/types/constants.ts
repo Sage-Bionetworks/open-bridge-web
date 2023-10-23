@@ -27,6 +27,11 @@ const constants = {
     ASSESSMENT_DEMO_STUDY_ID: 'demo',
   },
 
+  publicPaths: {
+    SIGN_IN: '/sign-in',
+    RESET_PASSWORD: '/reset-password',
+  },
+
   restrictedPaths: {
     ACCESS_SETTINGS: '/studies/:id/access-settings',
     STUDY_BUILDER: '/studies/builder/:id',
