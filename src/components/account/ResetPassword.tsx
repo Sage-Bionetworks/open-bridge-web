@@ -12,10 +12,10 @@ export const ResetPassword: React.FunctionComponent<ResetPasswordProps> = () => 
 
   const emailInputId = 'email'
 
-  const handleRequestResetPassword = async (e: React.SyntheticEvent) => {
+  const handleRequestResetPassword = (e: React.SyntheticEvent) => {
     e.preventDefault()
 
-    await UserService.requestResetPassword(email)
+    UserService.requestResetPassword(email)
       .then(result => {
         setMessage(result.data.message)
       })

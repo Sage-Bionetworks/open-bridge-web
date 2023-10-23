@@ -1,6 +1,12 @@
 import React, {useEffect, useState} from 'react'
 
-export type ToggleKey = 'SURVEY BUILDER' | 'USERNAME PASSWORD LOGIN' | 'SHARED'
+export const features = {
+  SURVEY_BUILDER: 'SURVEY BUILDER',
+  USERNAME_PASSWORD_LOGIN: 'USERNAME PASSWORD LOGIN',
+  SHARED: 'SHARED',
+} as const
+
+export type ToggleKey = typeof features[keyof typeof features]
 
 export type FeatureToggles = Partial<Record<ToggleKey, undefined | boolean>>
 

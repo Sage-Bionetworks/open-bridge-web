@@ -1,5 +1,5 @@
 import {ResetPassword} from '@components/account/ResetPassword'
-import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
+import useFeatureToggles, {FeatureToggles, features} from '@helpers/FeatureToggle'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import constants from '@typedefs/constants'
@@ -86,9 +86,8 @@ const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp, usernam
             usernameAndPasswordLogin={usernameAndPasswordLogin}
           />
         )}
-        {featureToggles['USERNAME PASSWORD LOGIN'] && location.pathname === constants.publicPaths.RESET_PASSWORD && (
-          <ResetPassword />
-        )}
+        {featureToggles[features.USERNAME_PASSWORD_LOGIN] &&
+          location.pathname === constants.publicPaths.RESET_PASSWORD && <ResetPassword />}
       </Box>
     </Box>
   )

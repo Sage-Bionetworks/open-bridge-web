@@ -21,7 +21,7 @@ afterEach(() => {
   cleanup()
 })
 
-describe.only('ResetPassword', () => {
+describe('ResetPassword', () => {
   test('should not be able to request password reset when email is empty', async () => {
     const {emailField, submitButton, spyOnRequestResetPassword} = setUp()
     expect(emailField).toHaveTextContent('')
@@ -33,16 +33,19 @@ describe.only('ResetPassword', () => {
     const {user, emailField, submitButton, spyOnRequestResetPassword} = setUp()
     const testEmail = 'test@fake.com'
 
-    await waitFor(async () => {
-      await user.type(emailField, testEmail)
-      await user.click(submitButton)
+    user.type(emailField, testEmail)
+    await waitFor(() => {
+      expect(emailField).toHaveValue(testEmail)
     })
 
-    expect(spyOnRequestResetPassword).toHaveBeenCalledTimes(1)
-    expect(spyOnRequestResetPassword).toHaveBeenLastCalledWith(testEmail)
+    expect(submitButton).not.toBeDisabled()
+    user.click(submitButton)
 
     const alert = await screen.findByRole('alert')
     expect(alert).toBeInTheDocument()
     expect(alert).toHaveTextContent(REQUEST_RESET_PASSWORD_MESSAGE)
+
+    expect(spyOnRequestResetPassword).toHaveBeenCalledTimes(1)
+    expect(spyOnRequestResetPassword).toHaveBeenLastCalledWith(testEmail)
   })
 })

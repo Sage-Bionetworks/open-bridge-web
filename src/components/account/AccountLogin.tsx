@@ -1,5 +1,5 @@
 import {ReactComponent as SynapseLogo} from '@assets/synapse_logo_blue.svg'
-import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
+import useFeatureToggles, {FeatureToggles, features} from '@helpers/FeatureToggle'
 import Utility from '@helpers/utility'
 import {Box, BoxProps, Button, Container} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
@@ -81,7 +81,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn, userna
             <SynapseLogo />
           </Button>
         </div>
-        {featureToggles['USERNAME PASSWORD LOGIN'] && (
+        {featureToggles[features.USERNAME_PASSWORD_LOGIN] && (
           <>
             {createSignInTextBox('or with your Bridge credentials:', {mt: 4})}
             <UsernamePasswordForm {...usernameAndPasswordLogin} />
