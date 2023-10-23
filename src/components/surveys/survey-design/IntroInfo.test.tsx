@@ -50,6 +50,7 @@ function renderComponent(survey: SurveyConfig | undefined, isNew?: boolean) {
         <IntroInfo
           survey={surv}
           surveyAssessment={isNew ? undefined : SurveyAssessment}
+          onHasChanged={() => {}} // TODO: syoung 10/23/2023 Figure out how to add a test for marking assessment as "changed"
           onUpdate={(asmnt, survey, action) => onUpdateFn(asmnt, survey, action)}></IntroInfo>
       </ProvideTheme>
     </MemoryRouter>

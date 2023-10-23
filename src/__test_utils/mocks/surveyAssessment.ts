@@ -16,6 +16,8 @@ const SurveyAssessment: Assessment = {
   modifiedOn: '2022-05-23T16:54:56.074Z',
   deleted: false,
   version: 250,
+  isReadOnly: false,
+  isLocal: true,
 }
 
 export default SurveyAssessment

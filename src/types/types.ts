@@ -123,7 +123,7 @@ export type AssessmentResource = {
 */
 export type AssessmentBase = {
   appId?: string
-  labels: {
+  labels?: {
     lang: Language
     value: string
   }[]

@@ -17,6 +17,8 @@ export const surveyList: Assessment[] = [
     // modifiedOn: '2022-06-14T21:14:01.656Z',
     deleted: false,
     version: 2,
+    isReadOnly: false,
+    isLocal: true,
   },
   {
     appId: 'mobile-toolbox',
@@ -34,6 +36,8 @@ export const surveyList: Assessment[] = [
     // modifiedOn: '2022-05-31T02:02:45.702Z',
     deleted: false,
     version: 33,
+    isReadOnly: false,
+    isLocal: true,
   },
   {
     appId: 'mobile-toolbox',
@@ -51,5 +55,7 @@ export const surveyList: Assessment[] = [
     //  modifiedOn: '2022-05-30T02:49:43.506Z',
     deleted: false,
     version: 4,
+    isReadOnly: false,
+    isLocal: true,
   },
 ]

@@ -27,8 +27,8 @@ function convertAssessment(input: AssessmentBase, shouldKeepAllTags = false) : A
   const isLocal = input.appId !== 'shared'
   const phase = (isLocal ? input.phase as AssessmentEditPhase ?? 'draft' : 'published')
   const isReadOnly = (phase !== 'draft' || !isLocal)
-  const defaultLanguage = input.labels.length === 1 ? input.labels[0].lang : undefined
-  const defaultLabel = input.labels.length === 1 ? input.labels[0].value : undefined
+  const defaultLanguage = input.labels?.length === 1 ? input.labels[0].lang : undefined
+  const defaultLabel = input.labels?.length === 1 ? input.labels[0].value : undefined
   // TODO: syoung 10/06/2023 Revisit these rules for defining default phase and readonly to allow administrators permission to edit shared assessments.
   return {
     ...input,
@@ -184,9 +184,10 @@ async function duplicateAssessment(
 async function updateSurveyAssessment(appId: string, assessment: Assessment, token: string): Promise<Assessment> {
   const endpoint = constants.endpoints.assessment.replace(':id', assessment.guid!)
   const tags = Array.from(new Set([...assessment.tags, SURVEY_APP_TAG[appId]]))
-  const labels = [...assessment.labels.filter(label => label.lang !== 'en'),
+  const lang = assessment.defaultLanguage ?? 'en'
+  const labels = [...(assessment.labels?.filter(label => label.lang !== lang) ?? []),
       {
-        lang: assessment.defaultLanguage ?? 'en',
+        lang: lang,
         value: (assessment.defaultLabel && assessment.defaultLabel.trim() !== "") ? assessment.defaultLabel : assessment.title,
       },
     ]
