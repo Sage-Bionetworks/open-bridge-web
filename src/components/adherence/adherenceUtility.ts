@@ -1,5 +1,5 @@
 import AdherenceService from '@services/adherence.service'
-import {AdherenceByDayEntries, AdherenceWeeklyReport, SessionDisplayInfo} from '@typedefs/types'
+import {AdherenceByDayEntries, AdherenceParticipantReportWeek, AdherenceWeeklyReport, SessionDisplayInfo} from '@typedefs/types'
 import _ from 'lodash'
 
 import dayjs from 'dayjs'

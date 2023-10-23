@@ -123,7 +123,7 @@ export type AssessmentResource = {
 */
 export type AssessmentBase = {
   appId?: string
-  labels: {
+  labels?: {
     lang: Language
     value: string
   }[]
@@ -164,6 +164,8 @@ export type AssessmentBase = {
 export type Assessment = AssessmentBase & {
   isLocal: boolean
   isReadOnly: boolean
+  defaultLanguage?: Language
+  defaultLabel?: string
 }
 
 export type AssessmentConfig = {
