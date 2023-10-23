@@ -71,7 +71,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   const rightBottomChild =
     study.phase !== 'design' ? (
       <ParticipantsIconContainer>
-        <ParticipantsIcon title="Number of Participants" />
+        <ParticipantsIcon title="Number of Active Participants" />
         {adherenceWeeklyInProcessCount?.total.toString() || '--'}
       </ParticipantsIconContainer>
     ) : (
