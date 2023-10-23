@@ -186,6 +186,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
               </TableBody>
             </StyledTable>
 
+            {/* TODO: syoung 10/23/2023 Revisit whether or not we ever need/want to support using a phone number to enroll participants.
             <StyledTable
               sx={{
                 marginRight: theme.spacing(2),
@@ -221,7 +222,8 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
                   </TableRow>
                 ))}
               </TableBody>
-            </StyledTable>
+            </StyledTable> 
+            */}
 
             <StyledTable
               onClick={() => updateStudy(['external_id_password'])}
