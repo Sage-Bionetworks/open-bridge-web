@@ -145,7 +145,7 @@ const Select: React.FunctionComponent<{
     newValue?: number | string | boolean | undefined
   }
 
-  const mapTypeCheckedValue = (value: number | string | boolean | undefined, baseType?: typeof step.baseType) => {
+  const mapTypeCheckedValue = (value: string | undefined, baseType?: typeof step.baseType) => {
     const trimmedValue = value?.toString().trim()
     switch (baseType ?? step.baseType) {
       case 'number': {
@@ -164,7 +164,7 @@ const Select: React.FunctionComponent<{
   }
 
   function generateValue(choice: ChoiceQuestionChoice, setTo?: number, baseType?: typeof step.baseType) {
-    return SurveyUtils.isSpecialSelectChoice(choice) ? choice.value : mapTypeCheckedValue(setTo ?? choice.text, baseType)
+    return SurveyUtils.isSpecialSelectChoice(choice) ? choice.value : (setTo ?? mapTypeCheckedValue(choice.text, baseType))
   }
 
   const findNewValue = (changes: ChangeValue[], index: number, choice: ChoiceQuestionChoice) => {
