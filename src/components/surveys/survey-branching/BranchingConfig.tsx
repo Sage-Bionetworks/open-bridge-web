@@ -19,7 +19,7 @@ import {
   styled,
 } from '@mui/material'
 import {theme} from '@style/theme'
-import {ChoiceQuestion, Step, SurveyRuleOperator} from '@typedefs/surveys'
+import {ChoiceQuestion, ChoiceQuestionChoice, Step, SurveyRule, SurveyRuleOperator} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
 import Draggable from 'react-draggable'
 import useQuestionInfo from '../hooks/useQuestionInfo'
@@ -227,14 +227,15 @@ const BranchingConfig: FunctionComponent<{
     validateAndSave(newSteps, questions[stepIndex + 1]?.identifier)
   }
 
-  const changeRuleMapping = (optionValue: string | number | boolean | undefined, nextStepId: string) => {
+  const changeRuleMapping = (option: ChoiceQuestionChoice, nextStepId: string) => {
     if (isReadOnly) return 
 
     //make a copy of the rules
     let rules = [...((step as ChoiceQuestion).surveyRules || [])]
-    const ruleIndexToUpdate = rules?.findIndex(r => r.matchingAnswer === optionValue)
-    const rule = {
-      matchingAnswer: optionValue,
+    const ruleIndexToUpdate = rules?.findIndex(r => r.choiceGuid === option.guid) ?? rules?.findIndex(r => r.matchingAnswer === option.value)
+    const rule: SurveyRule = {
+      choiceGuid: option.guid,
+      matchingAnswer: option.value,
       ruleOperator: 'eq' as SurveyRuleOperator,
       skipToIdentifier: nextStepId,
     }
@@ -372,7 +373,7 @@ const BranchingConfig: FunctionComponent<{
                               ?.skipToIdentifier || ''
                           }
                           isReadOnly={isReadOnly}
-                          onChangeSelected={nextStepId => changeRuleMapping(c.value, nextStepId)}
+                          onChangeSelected={nextStepId => changeRuleMapping(c, nextStepId)}
                         />
                       </td>
                     </tr>

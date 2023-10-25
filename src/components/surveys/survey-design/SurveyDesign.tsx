@@ -23,11 +23,12 @@ import {SURVEY_ICONS} from '../widgets/SurveyIcon'
 import IntroInfo from './IntroInfo'
 import AddQuestionMenu from './left-panel/AddQuestionMenu'
 import LeftPanel from './left-panel/LeftPanel'
-import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
+import QUESTIONS, {QuestionTypeKey, getQuestionId} from './left-panel/QuestionConfigs'
 import QuestionEditPhone from './question-edit/QuestionEditPhone'
 import QuestionEditRhs from './question-edit/QuestionEditRhs'
 import QuestionEditToolbar from './question-edit/QuestionEditToolbar'
 import ReadOnlyBanner from '@components/widgets/ReadOnlyBanner'
+import { ConnectWithoutContactOutlined } from '@mui/icons-material'
 
 const SurveyDesignContainerBox = styled(Box, {
   label: 'SurveyDesignContainerBox',
@@ -269,7 +270,27 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
   }
 
-  const getCurrentStep = () => (currentStepIndex !== undefined ? survey?.config.steps[currentStepIndex] : undefined)
+  const getCurrentStep = () => {
+    const step = (currentStepIndex !== undefined) ? survey?.config.steps[currentStepIndex] : undefined
+    if (step && step.type === 'choiceQuestion') {
+      // If this is a choice question, then since both the text and the value can be independantly 
+      // modified, we need to ensure that there is a "key" that is unique. If the step was created
+      // without one (because the mobile devices do not require a guid) then add one.
+      const choiceStep = step as ChoiceQuestion
+      const choices = choiceStep.choices.map(choice => ({
+        ...choice,
+        guid: choice.guid ?? UtilityObject.generateNonambiguousCode(6, 'CONSONANTS'),
+      }))
+      const surveyRules = choiceStep.surveyRules?.map(rule => ({
+        ...rule,
+        choiceGuid: rule.choiceGuid ?? choices.find(choice => choice.value === rule.matchingAnswer)?.guid,
+      })) 
+      return {...step, choices, surveyRules}
+    } 
+    else {
+      return step
+    }
+  }
 
   const updateAllStepsAndSave = (steps: Step[], fn?: () => void) => {
     const updatedSurvey = {

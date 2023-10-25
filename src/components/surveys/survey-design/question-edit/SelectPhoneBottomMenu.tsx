@@ -11,6 +11,7 @@ import {styled} from '@mui/material/styles'
 import {latoFont, theme} from '@style/theme'
 import {ChoiceQuestion, ChoiceQuestionChoice, ChoiceSelectorType} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
+import {default as UtilityObject} from '@helpers/utility'
 
 const PhoneBottom = styled('div', {label: 'phoneBottom'})({
   position: 'absolute',
@@ -75,8 +76,8 @@ const StyledMenuItem = styled(MenuItem, {label: 'StyledMenuItem'})<{
   backgroundColor: '#9499C7',
   color: '#fff',
   '&:hover': {
-    backgroundColor: (nohover == "true") ? '#9499C7' : '#848484',
-    cursor: (nohover == "true") ? 'default' : 'pointer',
+    backgroundColor: (nohover === "true") ? '#9499C7' : '#848484',
+    cursor: (nohover === "true") ? 'default' : 'pointer',
   },
   '&.Mui-disabled': {
     opacity: 1,
@@ -202,10 +203,11 @@ const SelectPhoneBottomMenu: FunctionComponent<{
     const numberOfChoices = SurveyUtils.getNumberOfRegularSelectChoices(step.choices)
 
     const nextLetter = String.fromCharCode(numberOfChoices + 65)
-    const text = `Choice ${nextLetter.toUpperCase()}`
+    const text = `Choice_${nextLetter.toUpperCase()}`
 
-    const newChoice = {
-      text,
+    const newChoice: ChoiceQuestionChoice = {
+      guid: UtilityObject.generateNonambiguousCode(6, 'CONSONANTS'),
+      text: text,
       value: step.baseType === 'string' ? text : numberOfChoices,
     }
 

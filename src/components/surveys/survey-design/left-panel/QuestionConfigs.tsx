@@ -14,6 +14,7 @@ import SingleSelect from '@mui/icons-material/ToggleOffTwoTone'
 import {ChoiceQuestion, Question, Step} from '@typedefs/surveys'
 import React from 'react'
 import {DEFAULT_MIN_YEAR} from '../question-edit/rhs-subcontrols/YearRadioGroup'
+import {default as UtilityObject} from '@helpers/utility'
 
 export type QuestionTypeKey =
   | 'DURATION'
@@ -133,8 +134,8 @@ const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: stri
         baseType: 'string',
         singleChoice: false,
         choices: [
-          {value: 'Choice A', text: 'Choice A'},
-          {value: 'Choice B', text: 'Choice B'},
+          {value: 'Choice_A', text: 'Choice A', guid: UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')},
+          {value: 'Choice_B', text: 'Choice B', guid: UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')},
         ],
       },
     },
@@ -169,8 +170,8 @@ const QUESTIONS = new Map<QuestionTypeKey, {img: React.ReactElement; title: stri
         baseType: 'integer',
         singleChoice: true,
         choices: [
-          {value: 0, text: 'Choice A'},
-          {value: 1, text: 'Choice B'},
+          {value: 0, text: 'Choice A', guid: UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')},
+          {value: 1, text: 'Choice B', guid: UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')},
         ],
       },
     },
