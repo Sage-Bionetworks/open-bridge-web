@@ -1,4 +1,4 @@
-import {act, screen} from '@testing-library/react'
+import {screen} from '@testing-library/react'
 import {NumericQuestion, YearQuestion} from '@typedefs/surveys'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
 import Numeric from './Numeric'
@@ -44,7 +44,7 @@ test('renders the component with label', () => {
 test('the title can be edited', async () => {
   const {user} = renderComponent(step)
   const labelField = screen.getByPlaceholderText('Field Label')
-  await act(async () => await user.clear(labelField))
-  await act(async () => await user.type(labelField, 'New Label'))
+  await user.clear(labelField)
+  await user.type(labelField, 'New Label')
   expect(labelField).toHaveValue('New Label')
 })

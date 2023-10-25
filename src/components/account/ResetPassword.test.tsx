@@ -33,19 +33,14 @@ describe('ResetPassword', () => {
     const {user, emailField, submitButton, spyOnRequestResetPassword} = setUp()
     const testEmail = 'test@fake.com'
 
-    await waitFor(() => {
-      user.clear(emailField)
-      user.type(emailField, testEmail)
-    })
+    await user.type(emailField, testEmail)
+
     await waitFor(() => {
       expect(emailField).toHaveValue(testEmail)
       expect(submitButton).not.toBeDisabled()
     })
 
-    // click must be wrapped in a waitFor to prevent an act warning
-    await waitFor(() => {
-      user.click(submitButton)
-    })
+    await user.click(submitButton)
 
     const alert = await screen.findByRole('alert')
     expect(alert).toBeInTheDocument()

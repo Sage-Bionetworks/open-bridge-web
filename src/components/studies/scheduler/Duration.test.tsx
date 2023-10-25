@@ -1,4 +1,4 @@
-import {act, cleanup, fireEvent, render, screen, waitForElementToBeRemoved} from '@testing-library/react'
+import {cleanup, fireEvent, render, screen, waitForElementToBeRemoved} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {DWsEnum} from '@typedefs/scheduling'
 import {createWrapper} from '__test_utils/utils'
@@ -42,29 +42,25 @@ describe('<Duration />', () => {
 
     expect(value).toHaveValue(20)
 
-    await act(async () => {
-      await user.clear(value)
-      await user.type(value, '123')
-    })
+    await user.clear(value)
+    await user.type(value, '123')
+
     expect(value).toHaveValue(123)
 
     fireEvent.blur(value)
     expect(onChangeFn).toHaveBeenCalledTimes(1)
     expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P123D'}})
 
-    await act(async () => {
-      await user.type(value, '456')
-    })
+    await user.type(value, '456')
+
     expect(value).toHaveValue(123)
 
     fireEvent.blur(value)
     expect(onChangeFn).toHaveBeenCalledTimes(2)
     expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P123D'}})
 
-    await act(async () => {
-      await user.clear(value)
-      await user.type(value, '5678')
-    })
+    await user.clear(value)
+    await user.type(value, '5678')
     expect(value).toHaveValue(567)
 
     fireEvent.blur(value)
@@ -75,9 +71,9 @@ describe('<Duration />', () => {
   test('should use maxDurationDays to restrict value entered in days', async () => {
     const {user, value, unitButton} = setUp({...durationProps, maxDurationDays: 1825})
 
-    user.click(unitButton)
+    await user.click(unitButton)
     const dropdown = await screen.findByRole('option', {name: /days/i})
-    user.click(dropdown)
+    await user.click(dropdown)
     await waitForElementToBeRemoved(dropdown)
 
     expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: undefined}})
@@ -85,19 +81,17 @@ describe('<Duration />', () => {
     expect(value).toHaveValue(null)
     expect(unitButton).toHaveTextContent('days')
 
-    await act(async () => {
-      await user.type(value, '1825')
-    })
+    await user.type(value, '1825')
+
     expect(value).toHaveValue(1825)
     expect(unitButton).toHaveTextContent('days')
 
     fireEvent.blur(value)
     expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P1825D'}})
 
-    await act(async () => {
-      await user.clear(value)
-      await user.type(value, '1826')
-    })
+    await user.clear(value)
+    await user.type(value, '1826')
+
     expect(value).toHaveValue(182)
     expect(unitButton).toHaveTextContent('days')
 
@@ -108,9 +102,9 @@ describe('<Duration />', () => {
   test('should use maxDurationDays to restrict value entered in weeks', async () => {
     const {user, value, unitButton} = setUp({...durationProps, maxDurationDays: 1825})
 
-    user.click(unitButton)
+    await user.click(unitButton)
     const dropdown = await screen.findByRole('option', {name: /weeks/i})
-    user.click(dropdown)
+    await user.click(dropdown)
     await waitForElementToBeRemoved(dropdown)
 
     expect(value).toHaveValue(null)
@@ -119,19 +113,17 @@ describe('<Duration />', () => {
     fireEvent.blur(value)
     expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: undefined}})
 
-    await act(async () => {
-      await user.type(value, '260')
-    })
+    await user.type(value, '260')
+
     expect(value).toHaveValue(260)
     expect(unitButton).toHaveTextContent('weeks')
 
     fireEvent.blur(value)
     expect(onChangeFn).toHaveBeenLastCalledWith({target: {value: 'P260W'}})
 
-    await act(async () => {
-      await user.clear(value)
-      await user.type(value, '261')
-    })
+    await user.clear(value)
+    await user.type(value, '261')
+
     expect(value).toHaveValue(26)
     expect(unitButton).toHaveTextContent('weeks')
 
@@ -145,9 +137,9 @@ describe('<Duration />', () => {
     expect(value).toHaveValue(1825)
     expect(unitButton).toHaveTextContent('days')
 
-    user.click(unitButton)
+    await user.click(unitButton)
     const dropdown = await screen.findByRole('option', {name: /weeks/i})
-    user.click(dropdown)
+    await user.click(dropdown)
     await waitForElementToBeRemoved(dropdown)
 
     expect(unitButton).toHaveTextContent('days')
@@ -164,9 +156,9 @@ describe('<Duration />', () => {
     expect(onChangeFn).toHaveBeenCalledTimes(1)
     expect(onChangeFn).toHaveBeenCalledWith({target: {value: 'P123456789D'}})
 
-    user.click(unitButton)
+    await user.click(unitButton)
     const dropdown = await screen.findByRole('option', {name: /weeks/i})
-    user.click(dropdown)
+    await user.click(dropdown)
     await waitForElementToBeRemoved(dropdown)
 
     expect(value).toHaveValue(123456789)

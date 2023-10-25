@@ -1,6 +1,5 @@
 import {screen} from '@testing-library/react'
 import {NumericQuestion} from '@typedefs/surveys'
-import {act} from 'react-dom/test-utils'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
 import Numeric from './Numeric'
 
@@ -71,13 +70,13 @@ test('updates values', async () => {
 
   const min = getMinInput()
   const max = getMaxInput()
-  await act(async () => await user.clear(min))
-  await act(async () => await user.clear(max))
-  await act(async () => await user.type(min, '5'))
-  await act(async () => await user.type(max, '15'))
+  await user.clear(min)
+  await user.clear(max)
+  await user.type(min, '5')
+  await user.type(max, '15')
   expect(min).toHaveValue(5)
   expect(max).toHaveValue(15)
-  await act(async () => await user.click(getCheckbox()))
+  await user.click(getCheckbox())
   expect(getCheckbox()).toHaveProperty('checked', true)
   expect(min).toBeDisabled()
   expect(max).toBeDisabled()
@@ -96,10 +95,10 @@ test('displays error if min  > max', async () => {
 
   const min = getMinInput()
   const max = getMaxInput()
-  await act(async () => await user.clear(min))
-  await act(async () => await user.clear(max))
-  await act(async () => await user.type(min, '15'))
-  await act(async () => await user.type(max, '5'))
+  await user.clear(min)
+  await user.clear(max)
+  await user.type(min, '15')
+  await user.type(max, '5')
   expect(min).toHaveValue(15)
   expect(max).toHaveValue(5)
   expect(screen.queryByRole('alert')).toBeInTheDocument()

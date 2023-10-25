@@ -1,7 +1,6 @@
 import {screen} from '@testing-library/react'
 import {TimeQuestion} from '@typedefs/surveys'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
-import {act} from 'react-dom/test-utils'
 import Time from './Time'
 
 //render the component
@@ -75,16 +74,16 @@ test('updates values', async () => {
 
   const min = getMinInput()
   const max = getMaxInput()
-  await act(async () => await user.click(min))
+  await user.click(min)
   const minItem = screen.getByRole('option', {name: /05:00/i})
-  await act(async () => await user.click(minItem))
-  await act(async () => await user.click(max))
+  await user.click(minItem)
+  await user.click(max)
   const maxItem = screen.getByRole('option', {name: /15:00/i})
-  await act(async () => await user.click(maxItem))
+  await user.click(maxItem)
 
   expect(min).toHaveTextContent('05:00')
   expect(max).toHaveTextContent('15:00')
-  await act(async () => await user.click(getCheckbox()))
+  await user.click(getCheckbox())
   expect(getCheckbox()).toHaveProperty('checked', true)
   expect(min).toHaveClass('Mui-disabled')
   expect(max).toHaveClass('Mui-disabled')

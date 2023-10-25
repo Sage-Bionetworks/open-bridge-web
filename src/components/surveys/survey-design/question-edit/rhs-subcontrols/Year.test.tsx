@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import {cleanup, fireEvent, render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {FormatOptionsYear, YearQuestion} from '@typedefs/surveys'
 import {createWrapper, renderSurveyQuestionComponent} from '__test_utils/utils'
@@ -46,7 +46,7 @@ function setUp(step: YearQuestion) {
 
 const setUpWithChangeMock = (step: YearQuestion) => {
   const onChangeMock = jest.fn()
-  const user = userEvent.setup()
+  const user = userEvent.setup({advanceTimers: jest.advanceTimersByTime})
   const component = render(<Year step={step} onChange={onChangeMock} />, {
     wrapper: createWrapper(),
   })
@@ -76,6 +76,11 @@ function createStepProps(formatOptions: FormatOptionsYear) {
 }
 
 describe('Year', () => {
+  afterEach(() => {
+    jest.restoreAllMocks()
+    cleanup()
+  })
+
   test('correctly renders inputs for any year in the past or future', async () => {
     const {minYear, maxYear} = setUp(createStepProps({allowPast: true, allowFuture: true}))
 
@@ -126,19 +131,19 @@ describe('Year', () => {
     expect(minYear.buttons.SET).not.toBeChecked()
     expect(minYear.value).toHaveValue(null)
 
-    await waitFor(() => user.click(minYear.buttons.CURRENT))
+    await user.click(minYear.buttons.CURRENT)
     expect(minYear.buttons.ANY).not.toBeChecked()
     expect(minYear.buttons.CURRENT).toBeChecked()
     expect(minYear.buttons.SET).not.toBeChecked()
     expect(minYear.value).toHaveValue(null)
 
-    await waitFor(() => user.click(minYear.buttons.SET))
+    await user.click(minYear.buttons.SET)
     expect(minYear.buttons.ANY).not.toBeChecked()
     expect(minYear.buttons.CURRENT).not.toBeChecked()
     expect(minYear.buttons.SET).toBeChecked()
     expect(minYear.value).toHaveValue(DEFAULT_MIN_YEAR)
 
-    await waitFor(() => user.click(minYear.buttons.ANY))
+    await user.click(minYear.buttons.ANY)
     expect(minYear.buttons.ANY).toBeChecked()
     expect(minYear.buttons.CURRENT).not.toBeChecked()
     expect(minYear.buttons.SET).not.toBeChecked()
@@ -153,19 +158,19 @@ describe('Year', () => {
     expect(maxYear.buttons.SET).not.toBeChecked()
     expect(maxYear.value).toHaveValue(null)
 
-    await waitFor(() => user.click(maxYear.buttons.CURRENT))
+    await user.click(maxYear.buttons.CURRENT)
     expect(maxYear.buttons.ANY).not.toBeChecked()
     expect(maxYear.buttons.CURRENT).toBeChecked()
     expect(maxYear.buttons.SET).not.toBeChecked()
     expect(maxYear.value).toHaveValue(null)
 
-    await waitFor(() => user.click(maxYear.buttons.SET))
+    await user.click(maxYear.buttons.SET)
     expect(maxYear.buttons.ANY).not.toBeChecked()
     expect(maxYear.buttons.CURRENT).not.toBeChecked()
     expect(maxYear.buttons.SET).toBeChecked()
     expect(maxYear.value).toHaveValue(DEFAULT_MAX_YEAR)
 
-    await waitFor(() => user.click(maxYear.buttons.ANY))
+    await user.click(maxYear.buttons.ANY)
     expect(maxYear.buttons.ANY).toBeChecked()
     expect(maxYear.buttons.CURRENT).not.toBeChecked()
     expect(maxYear.buttons.SET).not.toBeChecked()
@@ -177,10 +182,9 @@ describe('Year', () => {
     expect(minYear.buttons.SET).toBeChecked()
     expect(minYear.value).toHaveValue(2020)
 
-    await waitFor(async () => {
-      await user.dblClick(minYear.value!)
-      await user.keyboard('2014')
-    })
+    await user.dblClick(minYear.value!)
+    await user.keyboard('2014')
+
     expect(minYear.value).toHaveValue(2014)
   })
 
@@ -189,10 +193,9 @@ describe('Year', () => {
     expect(maxYear.buttons.SET).toBeChecked()
     expect(maxYear.value).toHaveValue(2015)
 
-    await waitFor(async () => {
-      await user.dblClick(maxYear.value!)
-      await user.keyboard('2039')
-    })
+    await user.dblClick(maxYear.value!)
+    await user.keyboard('2039')
+
     expect(maxYear.value).toHaveValue(2039)
   })
 
@@ -202,10 +205,9 @@ describe('Year', () => {
     const {user, maxYear} = setUp(createStepProps({allowPast: false, maximumYear: CURRENT_YEAR}))
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 
-    await waitFor(async () => {
-      await user.dblClick(maxYear.value!)
-      await user.keyboard(errorYear.toString())
-    })
+    await user.dblClick(maxYear.value!)
+    await user.keyboard(errorYear.toString())
+
     expect(maxYear.value).toHaveValue(errorYear)
     const alert = screen.queryByRole('alert')
     expect(alert).toBeInTheDocument()
@@ -218,10 +220,9 @@ describe('Year', () => {
     const {user, minYear} = setUp(createStepProps({allowFuture: false, minimumYear: CURRENT_YEAR}))
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 
-    await waitFor(async () => {
-      await user.dblClick(minYear.value!)
-      await user.keyboard(errorYear.toString())
-    })
+    await user.dblClick(minYear.value!)
+    await user.keyboard(errorYear.toString())
+
     expect(minYear.value).toHaveValue(errorYear)
     const alert = screen.queryByRole('alert')
     expect(alert).toBeInTheDocument()
@@ -237,10 +238,9 @@ describe('Year', () => {
     expect(maxYear.value).toHaveValue(year)
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 
-    await waitFor(async () => {
-      await user.dblClick(maxYear.value!)
-      await user.keyboard(errorYear.toString())
-    })
+    await user.dblClick(maxYear.value!)
+    await user.keyboard(errorYear.toString())
+
     expect(maxYear.value).toHaveValue(errorYear)
     const alert = screen.queryByRole('alert')
     expect(alert).toBeInTheDocument()
@@ -256,10 +256,9 @@ describe('Year', () => {
     expect(maxYear.value).toHaveValue(year)
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 
-    await waitFor(async () => {
-      await user.dblClick(minYear.value!)
-      await user.keyboard(errorYear.toString())
-    })
+    await user.dblClick(minYear.value!)
+    await user.keyboard(errorYear.toString())
+
     expect(minYear.value).toHaveValue(errorYear)
     const alert = screen.queryByRole('alert')
     expect(alert).toBeInTheDocument()
@@ -271,13 +270,13 @@ describe('Year', () => {
       const {user, minYear, onChangeMock} = setUpWithChangeMock(createStepProps({allowFuture: true, allowPast: true}))
       expect(onChangeMock).toHaveBeenCalledTimes(0)
 
-      await waitFor(() => user.click(minYear.buttons.CURRENT))
+      await user.click(minYear.buttons.CURRENT)
       expect(onChangeMock).toHaveBeenCalledTimes(1)
       expect(onChangeMock).toHaveBeenLastCalledWith(
         createStepProps({minimumYear: undefined, allowPast: false, maximumYear: undefined, allowFuture: true})
       )
 
-      await waitFor(() => user.click(minYear.buttons.SET))
+      await user.click(minYear.buttons.SET)
       expect(onChangeMock).toHaveBeenCalledTimes(2)
       expect(onChangeMock).toHaveBeenLastCalledWith(
         createStepProps({
@@ -288,7 +287,7 @@ describe('Year', () => {
         })
       )
 
-      await waitFor(() => user.click(minYear.buttons.ANY))
+      await user.click(minYear.buttons.ANY)
       expect(onChangeMock).toHaveBeenCalledTimes(3)
       expect(onChangeMock).toHaveBeenLastCalledWith(
         createStepProps({minimumYear: undefined, allowPast: true, maximumYear: undefined, allowFuture: true})
@@ -299,13 +298,13 @@ describe('Year', () => {
       const {user, maxYear, onChangeMock} = setUpWithChangeMock(createStepProps({allowFuture: true, allowPast: true}))
       expect(onChangeMock).toHaveBeenCalledTimes(0)
 
-      await waitFor(() => user.click(maxYear.buttons.CURRENT))
+      await user.click(maxYear.buttons.CURRENT)
       expect(onChangeMock).toHaveBeenCalledTimes(1)
       expect(onChangeMock).toHaveBeenLastCalledWith(
         createStepProps({minimumYear: undefined, allowPast: true, maximumYear: undefined, allowFuture: false})
       )
 
-      await waitFor(() => user.click(maxYear.buttons.SET))
+      await user.click(maxYear.buttons.SET)
       expect(onChangeMock).toHaveBeenCalledTimes(2)
       expect(onChangeMock).toHaveBeenLastCalledWith(
         createStepProps({
@@ -316,7 +315,7 @@ describe('Year', () => {
         })
       )
 
-      await waitFor(() => user.click(maxYear.buttons.ANY))
+      await user.click(maxYear.buttons.ANY)
       expect(onChangeMock).toHaveBeenCalledTimes(3)
       expect(onChangeMock).toHaveBeenLastCalledWith(
         createStepProps({minimumYear: undefined, allowPast: true, maximumYear: undefined, allowFuture: true})

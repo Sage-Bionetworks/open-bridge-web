@@ -1,7 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {ChoiceQuestion} from '@typedefs/surveys'
-import {act} from 'react-dom/test-utils'
 import {ProvideTheme} from '__test_utils/utils'
 import SelectExtraActions from './SelectExtraActions'
 
@@ -66,6 +65,6 @@ test('renders the component and executes a callback with correct arguments', asy
   const sortReverse = screen.getByRole('button', {name: /reverse/i})
   await userEvent.click(sort)
   expect(onSortFn).toHaveBeenCalledWith(1)
-  await act(async () => await userEvent.click(sortReverse))
+  await userEvent.click(sortReverse)
   expect(onSortFn).toHaveBeenCalledWith(-1)
 })

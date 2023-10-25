@@ -1,4 +1,4 @@
-import {act, cleanup, fireEvent, render, RenderResult, screen} from '@testing-library/react'
+import {cleanup, fireEvent, render, RenderResult, screen, waitFor} from '@testing-library/react'
 import SurveyAssessment from '__test_utils/mocks/surveyAssessment'
 
 import {loggedInSessionData} from '__test_utils/mocks/user'
@@ -57,10 +57,10 @@ function renderComponent(survey: SurveyConfig | undefined, isNew?: boolean) {
   )
 }
 
-function triggerSave(isNew?: boolean) {
+async function triggerSave(isNew?: boolean) {
   const matchObj = isNew ? {name: /title page/i} : {name: /save/i}
   const saveBtn = component!.getByRole('button', matchObj)
-  act(() => {
+  await waitFor(() => {
     saveBtn.focus()
     saveBtn.click()
   })
@@ -85,7 +85,7 @@ function getPauseMenuSettings() {
 }
 
 describe('<IntroInfo/>', () => {
-  test('should display and set correct assessment information', () => {
+  test('should display and set correct assessment information', async () => {
     renderComponent(surveyConfig)
 
     const surveyName = screen.getByRole('textbox', {name: /survey name/i})
@@ -103,7 +103,7 @@ describe('<IntroInfo/>', () => {
     fireEvent.change(surveyName, {target: {value: 'Mock Name'}})
     fireEvent.change(minutes, {target: {value: '1'}})
 
-    triggerSave()
+    await triggerSave()
     expect(onUpdateFn).toHaveBeenCalledWith(
       expect.objectContaining({title: 'Mock Name', minutesToComplete: 1}),
       expect.any(Object),
@@ -153,7 +153,7 @@ describe('<IntroInfo/>', () => {
       expect(saveForNewBtn).not.toBeDisabled()
     })
 
-    test(' and call update with "CREATE" action', () => {
+    test(' and call update with "CREATE" action', async () => {
       renderComponent(undefined, true)
 
       const surveyName = screen.getByRole('textbox', {name: /survey name/i})
@@ -163,12 +163,12 @@ describe('<IntroInfo/>', () => {
       fireEvent.change(surveyName, {target: {value: 'Mock Name'}})
       fireEvent.change(minutes, {target: {value: '1'}})
 
-      triggerSave(true)
+      await triggerSave(true)
       expect(onUpdateFn).toHaveBeenCalledWith(expect.any(Object), expect.any(Object), 'CREATE')
     })
   })
 
-  test('should display and set Survey Question Settings', () => {
+  test('should display and set Survey Question Settings', async () => {
     renderComponent(surveyConfig)
     const radios = getSurveyQuestionSettings()
 
@@ -179,13 +179,13 @@ describe('<IntroInfo/>', () => {
     expect(radios[1]).toBeChecked()
     expect(radios[2]).not.toBeChecked()
     expect(navigateBackCheck).not.toBeChecked()
-    act(() => {
+    await waitFor(() => {
       radios[0].focus()
       radios[0].click()
       navigateBackCheck.focus()
       navigateBackCheck.click()
     })
-    triggerSave()
+    await triggerSave()
     const expectation = {
       ...surveyConfig,
       shouldHideActions: [],
