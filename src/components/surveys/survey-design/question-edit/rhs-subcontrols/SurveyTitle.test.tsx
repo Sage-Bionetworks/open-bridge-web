@@ -1,4 +1,4 @@
-import {act, screen} from '@testing-library/react'
+import {screen} from '@testing-library/react'
 import {Step} from '@typedefs/surveys'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
 import SurveyTitle from './SurveyTitle'
@@ -37,7 +37,7 @@ test('updates the image correctly', async () => {
   }).parentElement
   expect(currentImgContainer).toHaveClass('selected')
   expect(imgContainerHealth).not.toHaveClass('selected')
-  await act(async () => await user.click(screen.getByRole('img', {name: /mood/i})))
+  await user.click(screen.getByRole('img', {name: /mood/i}))
   expect(currentImgContainer).not.toHaveClass('selected')
   expect(imgContainerHealth).toHaveClass('selected')
 })

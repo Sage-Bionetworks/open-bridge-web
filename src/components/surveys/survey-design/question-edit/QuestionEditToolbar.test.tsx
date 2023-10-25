@@ -1,4 +1,4 @@
-import {act, render, screen} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {ProvideTheme} from '__test_utils/utils'
 import QuestionEditToolbar from './QuestionEditToolbar'
@@ -42,17 +42,13 @@ describe('Correct button actions', () => {
   it("should have working 'save' button", async () => {
     renderComponent(true, [])
 
-    await act(async () => {
-      await userEvent.click(getSaveButton(true)!)
-    })
+    await userEvent.click(getSaveButton(true)!)
     expect(onChange).toHaveBeenCalledWith('save')
   })
 
   it("should have working 'duplicate' button", async () => {
     renderComponent(true, [])
-    await act(async () => {
-      await userEvent.click(getDuplicateButton(true)!)
-    })
+    await userEvent.click(getDuplicateButton(true)!)
     expect(onChange).toHaveBeenCalledWith('duplicate')
   })
 })
@@ -61,9 +57,7 @@ describe('Delete Button', () => {
   it("should not call onChange when 'delete' button is clicked. But should bring up warning modal if no dependednt question", async () => {
     renderComponent(true, [])
     expect(screen.queryByText(/permanently delete this question/)).not.toBeInTheDocument()
-    await act(async () => {
-      await userEvent.click(getDeleteButton(true)!)
-    })
+    await userEvent.click(getDeleteButton(true)!)
     expect(screen.queryByText(/permanently delete this question/)).toBeInTheDocument()
     expect(onChange).not.toHaveBeenCalled()
   })

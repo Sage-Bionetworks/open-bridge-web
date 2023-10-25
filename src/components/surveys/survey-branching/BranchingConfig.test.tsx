@@ -2,7 +2,6 @@
 import {render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {Step} from '@typedefs/surveys'
-import {act} from 'react-dom/test-utils'
 import SurveyQuestions from '__test_utils/mocks/surveyQuestions'
 import {ProvideTheme} from '__test_utils/utils'
 import BranchingConfig from './BranchingConfig'
@@ -32,7 +31,7 @@ export const renderComponent = (step: any) => {
 const radioNext = () => screen.getByRole('radio', {name: /go to next screen in sequence/i})
 const radioSkip = () => screen.getByRole('radio', {name: /skip to/i})
 
-const questionType = () => screen.getByRole('button', {name: /question type:/i})
+// const questionType = () => screen.getByRole('button', {name: /question type:/i})
 //screen.getByRole('option', { name: /3/i })
 
 //mock the props
@@ -96,7 +95,7 @@ describe('BranchingConfig', () => {
 
     var dropdown = within(bRow!).getByRole('button', {name: /question type:/i})
     expect(dropdown).toBeInTheDocument()
-    await act(async () => await user.click(dropdown))
+    await user.click(dropdown)
     const option = within(dropdown).getByText(/11/)
     expect(option).toBeInTheDocument()
   })
@@ -108,7 +107,7 @@ describe('BranchingConfig', () => {
     const rNext = radioNext()
     expect(rSkip).toBeInTheDocument()
     expect(rNext).toHaveAttribute('checked')
-    await act(async () => await user.click(rSkip))
+    await user.click(rSkip)
     const arg = onMock.mock.calls[0][0]
     const q = arg.find((s: {identifier: string}) => s.identifier === step.identifier)
     expect(onMock.mock.calls.length).toBe(1)
@@ -120,7 +119,7 @@ describe('BranchingConfig', () => {
     const rSkip = radioSkip()
     const rNext = radioNext()
     expect(rSkip).toHaveAttribute('checked')
-    await act(async () => await user.click(rNext))
+    await user.click(rNext)
     let arg = onMock.mock.calls[0][0]
     let q = arg.find((s: {identifier: string}) => s.identifier === step.identifier)
     expect(onMock.mock.calls.length).toBe(1)

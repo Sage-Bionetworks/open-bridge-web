@@ -1,4 +1,4 @@
-import {act, cleanup, render, screen} from '@testing-library/react'
+import {cleanup, render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {ChoiceQuestion} from '@typedefs/surveys'
 import SelectPhoneBottomMenu from './SelectPhoneBottomMenu'
@@ -81,7 +81,7 @@ afterEach(cleanup)
 test('trigger fn on add response', async () => {
   const {user} = setUp(step)
   const btnAddResponse = screen.getByRole('button', {name: /Add Response/i})
-  await act(async () => await user.click(btnAddResponse))
+  await user.click(btnAddResponse)
   expect(onChange).toHaveBeenCalled()
 })
 
@@ -89,7 +89,7 @@ test('additional options for integer multiselect', async () => {
   const {user} = setUp(step)
   const btnDots = screen.getByRole('button', {name: /more/i})
 
-  await act(async () => user.click(btnDots))
+  await user.click(btnDots)
 
   expect(screen.queryByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
   expect(screen.queryByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
@@ -100,7 +100,7 @@ test('additional options for string multiselect', async () => {
   const {user} = setUp({...step, baseType: 'string'})
   const btnDots = screen.getByRole('button', {name: /more/i})
 
-  await act(async () => user.click(btnDots))
+  await user.click(btnDots)
 
   expect(screen.queryByRole('menuitem', {name: /all of the above/i})).toBeInTheDocument()
   expect(screen.queryByRole('menuitem', {name: /none of the above/i})).toBeInTheDocument()
@@ -111,7 +111,7 @@ test('additional options for integer single select', async () => {
   const {user} = setUp({...step, baseType: 'integer', singleChoice: true})
   const btnDots = screen.getByRole('button', {name: /more/i})
 
-  await act(async () => user.click(btnDots))
+  await user.click(btnDots)
 
   expect(screen.queryByRole('menuitem', {name: /all of the above/i})).not.toBeInTheDocument()
   expect(screen.queryByRole('menuitem', {name: /none of the above/i})).not.toBeInTheDocument()
@@ -122,7 +122,7 @@ test('additional options for string single select', async () => {
   const {user} = setUp({...step, baseType: 'string', singleChoice: true})
   const btnDots = screen.getByRole('button', {name: /more/i})
 
-  await act(async () => user.click(btnDots))
+  await user.click(btnDots)
 
   expect(screen.queryByRole('menuitem', {name: /all of the above/i})).not.toBeInTheDocument()
   expect(screen.queryByRole('menuitem', {name: /none of the above/i})).not.toBeInTheDocument()

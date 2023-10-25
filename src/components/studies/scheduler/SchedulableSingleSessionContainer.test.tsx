@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 import {EventUpdateType, SchedulingEvent, StudySession} from '@typedefs/scheduling'
 import {createWrapper} from '__test_utils/utils'
 import React from 'react'
-import {act} from 'react-dom/test-utils'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 
 const onUpdateFn = jest.fn()
@@ -154,9 +153,7 @@ describe('SchedulableSingleSessionContainer', () => {
       expect(eventOnlyRadioButton.parentElement).not.toHaveClass('Mui-checked')
       expect(eventAndDurationRadioButton.parentElement).toHaveClass('Mui-checked')
 
-      await act(async () => {
-        await user.click(eventOnlyRadioButton)
-      })
+      await user.click(eventOnlyRadioButton)
 
       expect(eventOnlyRadioButton.parentElement).toHaveClass('Mui-checked')
       expect(eventAndDurationRadioButton.parentElement).not.toHaveClass('Mui-checked')
@@ -167,7 +164,7 @@ describe('SchedulableSingleSessionContainer', () => {
         undefined,
         undefined
       )
-    })
+    }, 10_000)
 
     test('should update start date - change start event only', async () => {
       const {user} = setUp(studySession, customEvents)
@@ -176,12 +173,10 @@ describe('SchedulableSingleSessionContainer', () => {
       const formGroup = within(section).getByLabelText('event-only')
       const eventButton = within(formGroup).getByRole('button', {name: /initial_login/i})
 
-      await act(async () => {
-        user.click(eventButton)
-      })
+      await user.click(eventButton)
       const eventDropdownItem = await screen.findByRole('option', {name: /event 2/i})
-      user.click(eventDropdownItem)
-      await waitForElementToBeRemoved(eventDropdownItem)
+      await user.click(eventDropdownItem)
+      expect(eventDropdownItem).not.toBeInTheDocument()
 
       expect(onUpdateFn).toHaveBeenCalledTimes(1)
       expect(onUpdateFn).toHaveBeenLastCalledWith({...studySession, startEventIds: ['custom:Event 2']}, true, false)
@@ -195,9 +190,7 @@ describe('SchedulableSingleSessionContainer', () => {
       const radioButton = within(formGroup).getByRole('radio')
       expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
 
-      await act(async () => {
-        await user.click(radioButton)
-      })
+      await user.click(radioButton)
       expect(radioButton.parentElement).toHaveClass('Mui-checked')
 
       const durationBox = within(formGroup).getByLabelText('duration-box')
@@ -211,18 +204,17 @@ describe('SchedulableSingleSessionContainer', () => {
       expect(durationBox).toHaveTextContent('days')
       expect(eventButton).toHaveTextContent(/initial_login/i)
 
-      await act(async () => {
-        await user.clear(durationValue)
-        await user.type(durationValue, '47')
-        await user.keyboard('{Tab}') // to trigger onUpdateFn
-      })
+      await user.clear(durationValue)
+      await user.type(durationValue, '47')
+      await user.keyboard('{Tab}') // to trigger onUpdateFn
+
       expect(durationValue).toHaveValue(47)
       expect(onUpdateFn).toHaveBeenCalledTimes(1)
       expect(onUpdateFn).toHaveBeenLastCalledWith({...studySession, delay: 'P47D'}, undefined, undefined)
 
-      user.click(durationUnitsButton)
+      await user.click(durationUnitsButton)
       const durationDropdownItem = await screen.findByRole('option', {name: /hours/i})
-      user.click(durationDropdownItem)
+      await user.click(durationDropdownItem)
       await waitForElementToBeRemoved(durationDropdownItem)
       expect(durationBox).toHaveTextContent('hours')
 
@@ -236,12 +228,10 @@ describe('SchedulableSingleSessionContainer', () => {
       const formGroup = within(section).getByLabelText('event-and-duration')
       const eventButton = within(within(formGroup).getByLabelText(/select-event-id/i)).getByRole('button')
 
-      await act(async () => {
-        user.click(eventButton)
-      })
+      await user.click(eventButton)
       const eventDropdownItem = await screen.findByRole('option', {name: /initial_login/i})
-      user.click(eventDropdownItem)
-      await waitForElementToBeRemoved(eventDropdownItem)
+      await user.click(eventDropdownItem)
+      expect(eventDropdownItem).not.toBeInTheDocument()
 
       expect(onUpdateFn).toHaveBeenCalledTimes(1)
       expect(onUpdateFn).toHaveBeenLastCalledWith(
@@ -266,9 +256,7 @@ describe('SchedulableSingleSessionContainer', () => {
       expect(nOccurrencesRadioButton.parentElement).toHaveClass('Mui-checked')
       expect(repeatFrequencySection).toHaveTextContent(/for 5 times/i)
 
-      await act(async () => {
-        await user.click(endAfterStudyRadioButton)
-      })
+      await user.click(endAfterStudyRadioButton)
       expect(endAfterStudyRadioButton.parentElement).toHaveClass('Mui-checked')
       expect(nOccurrencesRadioButton.parentElement).not.toHaveClass('Mui-checked')
       expect(repeatFrequencySection).toHaveTextContent(/until the end of study/i)
@@ -290,17 +278,15 @@ describe('SchedulableSingleSessionContainer', () => {
       expect(nOccurrencesRadioButton.parentElement).not.toHaveClass('Mui-checked')
       expect(repeatFrequencySection).toHaveTextContent(/until the end of study/i)
 
-      await act(async () => {
-        await user.click(nOccurrencesRadioButton)
-      })
+      await user.click(nOccurrencesRadioButton)
+
       expect(endAfterStudyRadioButton.parentElement).not.toHaveClass('Mui-checked')
       expect(nOccurrencesRadioButton.parentElement).toHaveClass('Mui-checked')
       expect(repeatFrequencySection).toHaveTextContent(/until the end of study/i)
 
-      await act(async () => {
-        await user.clear(nOccurrencesValue)
-        await user.type(nOccurrencesValue, '5')
-      })
+      await user.clear(nOccurrencesValue)
+      await user.type(nOccurrencesValue, '5')
+
       expect(nOccurrencesValue).toHaveValue('5')
       expect(repeatFrequencySection).toHaveTextContent(/for 5 times/i)
 
@@ -322,11 +308,9 @@ describe('SchedulableSingleSessionContainer', () => {
       expect(durationValue).toHaveValue(null)
       expect(durationBox).toHaveTextContent('days')
 
-      await act(async () => {
-        await user.clear(durationValue)
-        await user.type(durationValue, '20')
-        await user.keyboard('{Tab}') // to trigger onUpdateFn
-      })
+      await user.clear(durationValue)
+      await user.type(durationValue, '20')
+      await user.keyboard('{Tab}') // to trigger onUpdateFn
 
       expect(durationValue).toHaveValue(20)
       expect(onUpdateFn).toHaveBeenCalledTimes(1)
@@ -347,9 +331,9 @@ describe('SchedulableSingleSessionContainer', () => {
       const durationUnitsButton = within(within(durationBox).getByLabelText(/repeat every/i)).getByRole('button')
       expect(durationBox).toHaveTextContent('days')
 
-      user.click(durationUnitsButton)
+      await user.click(durationUnitsButton)
       const durationDropdownItem = await screen.findByRole('option', {name: /weeks/i})
-      user.click(durationDropdownItem)
+      await user.click(durationDropdownItem)
       await waitForElementToBeRemoved(durationDropdownItem)
 
       expect(durationBox).toHaveTextContent('weeks')
@@ -358,7 +342,7 @@ describe('SchedulableSingleSessionContainer', () => {
         undefined,
         undefined
       )
-    })
+    }, 10_000)
 
     test('should clear repeat frequency after clicking clear button', async () => {
       const {user} = setUp({...studySession, occurrences: 5, interval: 'P20D'})
@@ -369,9 +353,7 @@ describe('SchedulableSingleSessionContainer', () => {
 
       expect(durationValue).toHaveValue(20)
 
-      await act(async () => {
-        await user.click(clearButton)
-      })
+      await user.click(clearButton)
 
       expect(durationValue).toHaveValue(null)
       expect(onUpdateFn).toHaveBeenCalledTimes(1)
@@ -390,10 +372,10 @@ describe('SchedulableSingleSessionContainer', () => {
       const startTimeButton = within(startTimeContainer).getByRole('button')
       expect(startTimeButton).toHaveTextContent('10:15 AM')
 
-      user.click(startTimeButton)
+      await user.click(startTimeButton)
       const dropdownTime = await screen.findByRole('option', {name: /5:30 pm/i})
-      user.click(dropdownTime)
-      await waitForElementToBeRemoved(dropdownTime)
+      await user.click(dropdownTime)
+      expect(dropdownTime).not.toBeInTheDocument()
 
       expect(sessionWindow).not.toBeInTheDocument()
       const sessionWindowUpdated = within(section).getByLabelText(/session-window-2/i)
@@ -422,11 +404,9 @@ describe('SchedulableSingleSessionContainer', () => {
       expect(durationValue).toHaveValue(2)
       expect(durationBox).toHaveTextContent('hours')
 
-      await act(async () => {
-        await user.clear(durationValue)
-        await user.type(durationValue, '18')
-        await user.keyboard('{Tab}') // to trigger onUpdateFn
-      })
+      await user.clear(durationValue)
+      await user.type(durationValue, '18')
+      await user.keyboard('{Tab}') // to trigger onUpdateFn
 
       const updatedTimeWindow = {
         ...studySession.timeWindows[1],
@@ -451,10 +431,10 @@ describe('SchedulableSingleSessionContainer', () => {
       const durationUnitsButton = within(within(durationBox).getByLabelText(/expire after/i)).getByRole('button')
       expect(durationBox).toHaveTextContent('hours')
 
-      user.click(durationUnitsButton)
+      await user.click(durationUnitsButton)
       const durationDropdownItem = await screen.findByRole('option', {name: /days/i})
-      user.click(durationDropdownItem)
-      await waitForElementToBeRemoved(durationDropdownItem)
+      await user.click(durationDropdownItem)
+      expect(durationDropdownItem).not.toBeInTheDocument()
       expect(durationBox).toHaveTextContent('days')
 
       const updatedTimeWindow = {
@@ -479,9 +459,7 @@ describe('SchedulableSingleSessionContainer', () => {
 
       expect(durationValue).toHaveValue(2)
 
-      await act(async () => {
-        await user.click(clearButton)
-      })
+      await user.click(clearButton)
 
       expect(durationValue).not.toBeInTheDocument()
       const durationValueUpdated = within(within(section).getByLabelText(/session-window-2/i)).getByRole('spinbutton')
@@ -508,9 +486,7 @@ describe('SchedulableSingleSessionContainer', () => {
       expect(within(section).getByLabelText(/session-window-2/i)).toBeInTheDocument()
 
       const deleteButton = within(sessionWindow).getByRole('button', {name: /delete-button/i})
-      await act(async () => {
-        await user.click(deleteButton)
-      })
+      await user.click(deleteButton)
       expect(sessionWindow).not.toBeInTheDocument()
 
       expect(onUpdateFn).toHaveBeenCalledTimes(1)
@@ -541,7 +517,7 @@ describe('SchedulableSingleSessionContainer', () => {
       const section = screen.getByRole('region', {name: /scheduling-form-section-session-window/i})
 
       const addButton = within(section).getByRole('button', {name: /add-assessment-window-button/i})
-      user.click(addButton)
+      await user.click(addButton)
       await within(section).findByLabelText(/session-window-3/i)
 
       expect(onUpdateFn).toHaveBeenCalledTimes(1)
@@ -560,7 +536,7 @@ describe('SchedulableSingleSessionContainer', () => {
         persistent: false,
         type: 'TimeWindow',
       }
-      const {user} = setUp({...studySession, timeWindows: [longTimeWindow]})
+      setUp({...studySession, timeWindows: [longTimeWindow]})
 
       const section = screen.getByRole('region', {name: /scheduling-form-section-session-window/i})
 
@@ -588,8 +564,8 @@ describe('SchedulableSingleSessionContainer', () => {
         expect(checkbox.parentElement).toHaveClass('Mui-checked')
         expect(section).toHaveTextContent(/on/i)
 
-        user.click(checkbox)
-        await waitFor(async () => {
+        await user.click(checkbox)
+        await waitFor(() => {
           expect(checkbox.parentElement).not.toHaveClass('Mui-checked')
           expect(section).toHaveTextContent(/off/i)
           expect(addButton).not.toBeInTheDocument()
@@ -609,8 +585,8 @@ describe('SchedulableSingleSessionContainer', () => {
         expect(checkbox.parentElement).not.toHaveClass('Mui-checked')
         expect(section).toHaveTextContent(/off/i)
 
-        user.click(checkbox)
-        await waitFor(async () => {
+        await user.click(checkbox)
+        await waitFor(() => {
           expect(checkbox.parentElement).toHaveClass('Mui-checked')
           expect(section).toHaveTextContent(/on/i)
           expect(within(section).getByRole('button', {name: /add a reminder notification/i})).toBeInTheDocument()
@@ -636,8 +612,8 @@ describe('SchedulableSingleSessionContainer', () => {
         expect(within(section).getByText(/initial notification/i)).toBeInTheDocument()
         expect(within(section).queryByText(/follow-up notification/i)).not.toBeInTheDocument()
 
-        user.click(addButton)
-        await waitForElementToBeRemoved(addButton)
+        await user.click(addButton)
+        expect(addButton).not.toBeInTheDocument()
 
         expect(within(section).getByText(/initial notification/i)).toBeInTheDocument()
         expect(within(section).getByText(/follow-up notification/i)).toBeInTheDocument()
@@ -662,8 +638,8 @@ describe('SchedulableSingleSessionContainer', () => {
         expect(checkbox.parentElement).toHaveClass('Mui-checked')
         expect(section).toHaveTextContent(/on/i)
 
-        user.click(deleteButton)
-        await waitFor(async () => {
+        await user.click(deleteButton)
+        await waitFor(() => {
           expect(notification).not.toBeInTheDocument()
           expect(addButton).not.toBeInTheDocument()
           expect(checkbox.parentElement).not.toHaveClass('Mui-checked')
@@ -702,10 +678,8 @@ describe('SchedulableSingleSessionContainer', () => {
         expect(within(firstNotification).getByRole('button', {name: /minutes/i})).toBeInTheDocument()
         expect(within(section).queryByText(/add a reminder notification/i)).not.toBeInTheDocument()
 
-        await act(async () => {
-          user.click(deleteButton)
-        })
-        await waitForElementToBeRemoved(secondNotification)
+        await user.click(deleteButton)
+        expect(secondNotification).not.toBeInTheDocument()
 
         expect(onUpdateFn).toHaveBeenCalledTimes(1)
         expect(onUpdateFn).toHaveBeenCalledWith(
@@ -732,11 +706,10 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(subject).toHaveValue('initial')
 
-        await act(async () => {
-          await user.clear(subject)
-          await user.type(subject, thirtyCharString)
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.clear(subject)
+        await user.type(subject, thirtyCharString)
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
+
         expect(notification).not.toBeInTheDocument()
 
         const newMessage = {...studySession.notifications![0].messages[0], subject: thirtyCharString}
@@ -767,11 +740,10 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(subject).toHaveValue('initial')
 
-        await act(async () => {
-          await user.clear(subject)
-          await user.type(subject, thirtyCharString + 'extra_chars')
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.clear(subject)
+        await user.type(subject, thirtyCharString + 'extra_chars')
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
+
         expect(notification).not.toBeInTheDocument()
 
         const newMessage = {...studySession.notifications![0].messages[0], subject: thirtyCharString}
@@ -802,11 +774,10 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(body).toHaveValue('1234')
 
-        await act(async () => {
-          await user.clear(body)
-          await user.type(body, fortyCharString)
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.clear(body)
+        await user.type(body, fortyCharString)
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
+
         expect(notification).not.toBeInTheDocument()
 
         const newMessage = {...studySession.notifications![0].messages[0], message: fortyCharString}
@@ -837,11 +808,10 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(body).toHaveValue('1234')
 
-        await act(async () => {
-          await user.clear(body)
-          await user.type(body, fortyCharString + '_extra_char')
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.clear(body)
+        await user.type(body, fortyCharString + '_extra_char')
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
+
         expect(notification).not.toBeInTheDocument()
 
         const newMessage = {...studySession.notifications![0].messages[0], message: fortyCharString}
@@ -875,11 +845,9 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
 
-        await act(async () => {
-          await user.click(radioButton)
-          await user.type(value, '30')
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.click(radioButton)
+        await user.type(value, '30')
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
 
         // notification key includes notifyAt, so will remove old notification and mount new instance
         expect(notification).not.toBeInTheDocument()
@@ -911,9 +879,7 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
 
-        await act(async () => {
-          await user.click(radioButton)
-        })
+        await user.click(radioButton)
 
         // notification key includes notifyAt, so will remove old notification and mount new instance
         expect(notification).not.toBeInTheDocument()
@@ -945,11 +911,10 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(subject).toHaveValue('reminder')
 
-        await act(async () => {
-          await user.clear(subject)
-          await user.type(subject, thirtyCharString)
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.clear(subject)
+        await user.type(subject, thirtyCharString)
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
+
         expect(notification).not.toBeInTheDocument()
 
         const newMessage = {...studySession.notifications![1].messages[0], subject: thirtyCharString}
@@ -980,11 +945,10 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(subject).toHaveValue('reminder')
 
-        await act(async () => {
-          await user.clear(subject)
-          await user.type(subject, thirtyCharString + 'extra_chars')
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.clear(subject)
+        await user.type(subject, thirtyCharString + 'extra_chars')
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
+
         expect(notification).not.toBeInTheDocument()
 
         const newMessage = {...studySession.notifications![1].messages[0], subject: thirtyCharString}
@@ -1015,11 +979,10 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(body).toHaveValue('5678')
 
-        await act(async () => {
-          await user.clear(body)
-          await user.type(body, fortyCharString)
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.clear(body)
+        await user.type(body, fortyCharString)
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
+
         expect(notification).not.toBeInTheDocument()
 
         const newMessage = {...studySession.notifications![1].messages[0], message: fortyCharString}
@@ -1050,11 +1013,10 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(body).toHaveValue('5678')
 
-        await act(async () => {
-          await user.clear(body)
-          await user.type(body, fortyCharString + '_extra_char')
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.clear(body)
+        await user.type(body, fortyCharString + '_extra_char')
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
+
         expect(notification).not.toBeInTheDocument()
 
         const newMessage = {...studySession.notifications![1].messages[0], message: fortyCharString}
@@ -1089,10 +1051,9 @@ describe('SchedulableSingleSessionContainer', () => {
         expect(within(reminderNotification).getByRole('button', {name: /8:00 am/i})).toBeInTheDocument()
 
         // change freq value
-        await act(async () => {
-          await user.type(freqValue, '5')
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.type(freqValue, '5')
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
+
         expect(reminderNotification).not.toBeInTheDocument()
 
         expect(onUpdateFn).toHaveBeenCalledTimes(1)
@@ -1116,11 +1077,9 @@ describe('SchedulableSingleSessionContainer', () => {
         const timeButton = within(reminderNotification).getByRole('button', {name: /8:00 am/i})
         expect(within(reminderNotification).getByRole('spinbutton')).toHaveValue(5)
 
-        user.click(timeButton)
+        await user.click(timeButton)
         const dropdownTime = await screen.findByRole('option', {name: /3:15 pm/i})
-        await act(async () => {
-          await user.click(dropdownTime)
-        })
+        await user.click(dropdownTime)
         expect(dropdownTime).not.toBeInTheDocument()
 
         expect(reminderNotification).not.toBeInTheDocument()
@@ -1144,7 +1103,7 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(repeatCheckbox).not.toHaveProperty('checked', true)
 
-        user.click(repeatCheckbox)
+        await user.click(repeatCheckbox)
 
         const intervalBox = await within(reminderNotification).findByLabelText('duration-box')
         const intervalValue = within(intervalBox).getByRole('spinbutton')
@@ -1153,11 +1112,9 @@ describe('SchedulableSingleSessionContainer', () => {
         expect(repeatCheckbox).toHaveProperty('checked', true)
         expect(intervalValue).toHaveValue(null)
 
-        await act(async () => {
-          await user.clear(intervalValue)
-          await user.type(intervalValue, '4')
-          await user.keyboard('{TAB}') // to trigger onUpdateFn
-        })
+        await user.clear(intervalValue)
+        await user.type(intervalValue, '4')
+        await user.keyboard('{TAB}') // to trigger onUpdateFn
 
         expect(intervalValue).toHaveValue(4)
         expect(intervalUnits).toHaveTextContent('minutes')
@@ -1189,9 +1146,9 @@ describe('SchedulableSingleSessionContainer', () => {
         expect(intervalValue).toHaveValue(3)
         expect(intervalUnits).toHaveTextContent('minutes')
 
-        user.click(intervalUnits)
+        await user.click(intervalUnits)
         const dropdownUnits = await screen.findByRole('option', {name: /hours/i})
-        user.click(dropdownUnits)
+        await user.click(dropdownUnits)
         await waitForElementToBeRemoved(dropdownUnits)
 
         expect(intervalValue).toHaveValue(3)
@@ -1221,11 +1178,10 @@ describe('SchedulableSingleSessionContainer', () => {
         expect(within(reminderNotification).getByRole('spinbutton')).toHaveValue(5)
         expect(within(reminderNotification).getByRole('button', {name: /3:00 pm/i})).toBeInTheDocument()
 
-        user.click(windowStartTimeButton)
+        await user.click(windowStartTimeButton)
         const dropdownTime = await screen.findByRole('option', {name: /9:30 am/i})
-        await act(async () => {
-          await user.click(dropdownTime)
-        })
+        await user.click(dropdownTime)
+
         expect(dropdownTime).not.toBeInTheDocument()
         expect(reminderNotification).not.toBeInTheDocument()
 
@@ -1262,9 +1218,7 @@ describe('SchedulableSingleSessionContainer', () => {
 
         expect(radioButton.parentElement).not.toHaveClass('Mui-checked')
 
-        await act(async () => {
-          await user.click(radioButton)
-        })
+        await user.click(radioButton)
 
         // notification key includes notifyAt, so will remove old notification and mount new instance
         expect(reminderNotification).not.toBeInTheDocument()
@@ -1295,18 +1249,14 @@ describe('SchedulableSingleSessionContainer', () => {
         const reminderNotification = getNotification('reminder')
         const value = within(reminderNotification!).getByRole('spinbutton')
 
-        await act(async () => {
-          await user.clear(value)
-          await user.type(value, '47')
-        })
+        await user.clear(value)
+        await user.type(value, '47')
 
         const radioButton = within(reminderNotification!).getByRole('radio', {
           name: /window expires/i,
         })
 
-        await act(async () => {
-          await user.click(radioButton)
-        })
+        await user.click(radioButton)
 
         expect(onUpdateFn).toHaveBeenCalledWith(
           expect.objectContaining({

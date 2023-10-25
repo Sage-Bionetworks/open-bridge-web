@@ -1,4 +1,4 @@
-import {act, cleanup, screen, within} from '@testing-library/react'
+import {cleanup, screen, within} from '@testing-library/react'
 import {ChoiceQuestion} from '@typedefs/surveys'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
 import Select from './Select'
@@ -100,9 +100,7 @@ test('updates the values for questions', async () => {
   var cell = screen.getByText(/Time/, {exact: true})
   var textBox = within(cell.parentElement?.parentElement || cell).getByRole('textbox')
   expect(textBox).toHaveValue('6')
-  await act(async () => {
-    await user.type(textBox, '7')
-  })
+  await user.type(textBox, '7')
   expect(textBox).toHaveValue('67')
 })
 
@@ -111,12 +109,12 @@ test('updates the values for select type and data type', async () => {
   const questionTypeSelect = getQuestionTypeSelect()
   const dataTypeSelect = getDataTypeSelect()
   expect(questionTypeSelect).toHaveTextContent('Single Select')
-  await act(async () => await user.click(questionTypeSelect))
-  await act(async () => await user.click(screen.getByRole('option', {name: /multi-select/i})))
+  await user.click(questionTypeSelect)
+  await user.click(screen.getByRole('option', {name: /multi-select/i}))
   expect(questionTypeSelect).toHaveTextContent('Multi-Select')
 
   expect(dataTypeSelect).toHaveTextContent('Integer')
-  await act(async () => await user.click(dataTypeSelect))
-  await act(async () => await user.click(screen.getByRole('option', {name: /string/i})))
+  await user.click(dataTypeSelect)
+  await user.click(screen.getByRole('option', {name: /string/i}))
   expect(dataTypeSelect).toHaveTextContent('String')
 })

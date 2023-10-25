@@ -1,6 +1,6 @@
 import * as useUserSessionDataState from '@helpers/AuthContext'
 import AdherenceService from '@services/adherence.service'
-import {act, cleanup, render, screen, waitFor, waitForElementToBeRemoved} from '@testing-library/react'
+import {cleanup, render, screen, waitFor, waitForElementToBeRemoved} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import constants from '@typedefs/constants'
 import * as adherenceAlerts from '__test_utils/mocks/adherenceAlerts.json'
@@ -83,7 +83,7 @@ describe('AdherenceAlerts', () => {
 
     // uncheck filter and show that hook is called correctly
     const checkbox = screen.getByRole('checkbox', {name: /adherence/i})
-    await act(async () => await user.click(checkbox))
+    await user.click(checkbox)
     await waitForElementToBeRemoved(screen.getByRole('progressbar'))
     expect(screen.queryByRole('table')).toBeInTheDocument()
 
@@ -143,12 +143,11 @@ describe('AdherenceAlerts', () => {
       })
 
       const readAlertButton = screen.getAllByRole('button', {name: /more/i})[readAlertIndex]
-      user.click(readAlertButton)
-      await waitFor(() => {
-        expect(screen.queryByRole('menu')).toBeInTheDocument()
-      })
-      user.click(screen.getByRole('menuitem', {name: /mark as unread/i}))
-      await waitForElementToBeRemoved(screen.getByRole('menu'))
+      await user.click(readAlertButton)
+      expect(screen.queryByRole('menu')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('menuitem', {name: /mark as unread/i}))
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 
       expect(spyOnUpdateAdherenceAlerts).toHaveBeenCalledTimes(1)
       expect(spyOnUpdateAdherenceAlerts).toHaveBeenLastCalledWith(
@@ -166,12 +165,11 @@ describe('AdherenceAlerts', () => {
       })
 
       const unreadAlertButton = screen.getAllByRole('button', {name: /more/i})[unreadAlertIndex]
-      user.click(unreadAlertButton)
-      await waitFor(() => {
-        expect(screen.queryByRole('menu')).toBeInTheDocument()
-      })
-      user.click(screen.getByRole('menuitem', {name: /mark as read/i}))
-      await waitForElementToBeRemoved(screen.getByRole('menu'))
+      await user.click(unreadAlertButton)
+      expect(screen.queryByRole('menu')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('menuitem', {name: /mark as read/i}))
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 
       expect(spyOnUpdateAdherenceAlerts).toHaveBeenCalledTimes(1)
       expect(spyOnUpdateAdherenceAlerts).toHaveBeenLastCalledWith(
@@ -190,27 +188,29 @@ describe('AdherenceAlerts', () => {
 
       // cancel resolve
       const unreadAlertButton = screen.getAllByRole('button', {name: /more/i})[unreadAlertIndex]
-      user.click(unreadAlertButton)
-      await waitFor(() => {
-        expect(screen.queryByRole('menu')).toBeInTheDocument()
-      })
-      user.click(screen.getByRole('menuitem', {name: /resolve/i}))
-      await waitForElementToBeRemoved(screen.getByRole('menu'))
+      await user.click(unreadAlertButton)
+      const menu = await screen.findByRole('menu')
+      expect(menu).toBeInTheDocument()
+
+      await user.click(screen.getByRole('menuitem', {name: /resolve/i}))
+      await waitForElementToBeRemoved(menu)
+
       const cancelButton = screen.getByRole('button', {name: /cancel/i})
-      user.click(cancelButton)
+      await user.click(cancelButton)
       await waitForElementToBeRemoved(cancelButton)
 
       expect(spyOnUpdateAdherenceAlerts).toHaveBeenCalledTimes(0)
 
       // resolve alert
-      user.click(unreadAlertButton)
-      await waitFor(() => {
-        expect(screen.queryByRole('menu')).toBeInTheDocument()
-      })
-      user.click(screen.getByRole('menuitem', {name: /resolve/i}))
-      await waitForElementToBeRemoved(screen.getByRole('menu'))
+      await user.click(unreadAlertButton)
+      const menu2 = await screen.findByRole('menu')
+      expect(menu2).toBeInTheDocument()
+
+      await user.click(screen.getByRole('menuitem', {name: /resolve/i}))
+      await waitForElementToBeRemoved(menu2)
+
       const resolveButton = screen.getByRole('button', {name: /resolve alert/i})
-      user.click(resolveButton)
+      await user.click(resolveButton)
       await waitForElementToBeRemoved(resolveButton)
 
       expect(spyOnUpdateAdherenceAlerts).toHaveBeenCalledTimes(1)

@@ -1,6 +1,6 @@
 //teest for surveyTitle.tsx
 //unit tests for ./SurveyTitle.tsx using react-testing-library
-import {act, screen} from '@testing-library/react'
+import {screen} from '@testing-library/react'
 import {Step} from '@typedefs/surveys'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
 import SurveyTitle from './SurveyTitle'
@@ -40,10 +40,10 @@ test('the datafields pull in data correctly and  can be edited', async () => {
   const detail = getDetail()
   expect(title).toHaveValue(step.title)
   expect(detail).toHaveValue(step.detail)
-  await act(async () => await user.clear(title))
-  await act(async () => await user.clear(detail))
-  await act(async () => await user.type(title, 'New Title'))
-  await act(async () => await user.type(detail, 'Something Else'))
+  await user.clear(title)
+  await user.clear(detail)
+  await user.type(title, 'New Title')
+  await user.type(detail, 'Something Else')
   expect(title).toHaveValue('New Title')
   expect(detail).toHaveValue('Something Else')
 })

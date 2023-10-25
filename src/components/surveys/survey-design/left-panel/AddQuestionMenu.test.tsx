@@ -1,4 +1,4 @@
-import {act, cleanup, render} from '@testing-library/react'
+import {cleanup, render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AddQuestionMenu from './AddQuestionMenu'
 import QUESTIONS from './QuestionConfigs'
@@ -23,7 +23,7 @@ test('renders question selector', async () => {
 
 test('brings up the menu with question types to select', async () => {
   const {user, component, selectBtn} = setUp()
-  await act(async () => await user.click(selectBtn))
+  await user.click(selectBtn)
 
   QUESTIONS.forEach(value => {
     var re = new RegExp(value.title)
@@ -39,10 +39,10 @@ test('fires an appropriate call back when item is selected', async () => {
   const {user, component, selectBtn} = setUp()
 
   const buttonAdd = component.getByRole('button', {name: /add/i})
-  await act(async () => await user.click(selectBtn))
+  await user.click(selectBtn)
   const item = component.getByRole('menuitem', {name: /Free Text/i})
-  await act(async () => await user.click(item))
-  await act(async () => await user.click(buttonAdd))
+  await user.click(item)
+  await user.click(buttonAdd)
 
   expect(onSelect).toHaveBeenCalledWith('FREE_TEXT')
 })

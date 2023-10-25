@@ -1,4 +1,4 @@
-import {act, cleanup, render, RenderResult, screen} from '@testing-library/react'
+import {cleanup, render, RenderResult, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {ScaleQuestion} from '@typedefs/surveys'
 import Likert from './Scale'
@@ -52,13 +52,13 @@ test('display a correct UI for likert and slider scale', async () => {
   let {component, buttons, user} = setUp()
   const getMaxForLikert = (component: RenderResult) => component.queryByRole('option', {name: /7/i})
   const getMaxForSlider = (component: RenderResult) => component.queryByRole('option', {name: /100/i})
-  await act(async () => await user.click(buttons.setMaxVal))
+  await user.click(buttons.setMaxVal)
   expect(getMaxForLikert(component)).toBeInTheDocument()
   expect(getMaxForSlider(component)).not.toBeInTheDocument()
 
   //do slider
   const setupResult = setUp({...QUESTION, uiHint: 'slider'})
-  await act(async () => await setupResult.user.click(setupResult.buttons.setMaxVal))
+  await setupResult.user.click(setupResult.buttons.setMaxVal)
   expect(getMaxForLikert(setupResult.component)).not.toBeInTheDocument()
   expect(getMaxForSlider(setupResult.component)).toBeInTheDocument()
 })
@@ -99,32 +99,32 @@ test('update the setting correctly', async () => {
   const {component, buttons, inputs, user} = setUp()
   expect(buttons.setMinVal).toHaveTextContent('1')
   //st min value
-  await act(async () => await user.click(buttons.setMinVal))
+  await user.click(buttons.setMinVal)
 
   let item = component.getByRole('option', {name: /0/i})
-  await act(async () => await user.click(item))
+  await user.click(item)
   expect(onChange).toHaveBeenCalledWith({
     ...QUESTION,
     inputItem: expectInputs[0],
   })
   //set max value
-  await act(async () => await user.click(buttons.setMaxVal))
+  await user.click(buttons.setMaxVal)
   item = component.getByRole('option', {name: /5/i})
-  await act(async () => await user.click(item))
+  await user.click(item)
   expect(onChange).toHaveBeenCalledWith({
     ...QUESTION,
     inputItem: expectInputs[1],
   })
 
   //set min label
-  await act(async () => await user.type(inputs.setMinLabel, 'T'))
+  await user.type(inputs.setMinLabel, 'T')
 
   expect(onChange).toHaveBeenCalledWith({
     ...QUESTION,
     inputItem: expectInputs[2],
   })
   //set max label
-  await act(async () => await user.type(inputs.setMaxLabel, 'X'))
+  await user.type(inputs.setMaxLabel, 'X')
 
   expect(onChange).toHaveBeenCalledWith({
     ...QUESTION,

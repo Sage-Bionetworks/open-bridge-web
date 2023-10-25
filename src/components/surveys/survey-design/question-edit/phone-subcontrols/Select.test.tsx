@@ -1,4 +1,4 @@
-import {act, cleanup, screen, waitFor, within} from '@testing-library/react'
+import {cleanup, screen, waitFor, within} from '@testing-library/react'
 import {ChoiceQuestion} from '@typedefs/surveys'
 import {renderSurveyQuestionComponent} from '__test_utils/utils'
 import Select from './Select'
@@ -86,7 +86,7 @@ test('delete an option, and rules pertaining to it', async () => {
   const deleteButton = within(birthYearOption).getByRole('button', {
     name: /delete/i,
   })
-  await act(async () => await user.click(deleteButton))
+  await user.click(deleteButton)
   await waitFor(() => {
     expect(screen.queryByRole('button', {name: /birth year/i})).not.toBeInTheDocument()
   })
@@ -97,9 +97,9 @@ test('rename an option', async () => {
   const optionToRename = screen.getByRole('button', {name: /Likert Select/i})
   expect(screen.queryByRole('button', {name: /Likert Select/i})).not.toBeNull()
   const label = within(optionToRename).getByRole('textbox')
-  await act(async () => user.clear(label))
-  await act(async () => await user.type(label, 'New Label'))
-  await act(async () => user.tab())
+  await user.clear(label)
+  await user.type(label, 'New Label')
+  await user.tab()
   expect(screen.queryByRole('button', {name: /Likert Select/i})).toBeNull()
   expect(screen.queryByRole('button', {name: /New Label/i})).not.toBeNull()
 })
