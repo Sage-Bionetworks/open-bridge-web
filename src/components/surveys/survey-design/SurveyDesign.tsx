@@ -23,12 +23,11 @@ import {SURVEY_ICONS} from '../widgets/SurveyIcon'
 import IntroInfo from './IntroInfo'
 import AddQuestionMenu from './left-panel/AddQuestionMenu'
 import LeftPanel from './left-panel/LeftPanel'
-import QUESTIONS, {QuestionTypeKey, getQuestionId} from './left-panel/QuestionConfigs'
+import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
 import QuestionEditPhone from './question-edit/QuestionEditPhone'
 import QuestionEditRhs from './question-edit/QuestionEditRhs'
 import QuestionEditToolbar from './question-edit/QuestionEditToolbar'
 import ReadOnlyBanner from '@components/widgets/ReadOnlyBanner'
-import { ConnectWithoutContactOutlined } from '@mui/icons-material'
 
 const SurveyDesignContainerBox = styled(Box, {
   label: 'SurveyDesignContainerBox',

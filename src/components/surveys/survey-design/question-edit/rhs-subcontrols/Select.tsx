@@ -182,11 +182,11 @@ const Select: React.FunctionComponent<{
     value: findNewValue(changes, ii, choice)
   }))
 
-  const updateChoicesAndRules = (changes: ChangeValue[]) => {
+  const updateChoicesAndRules = (changes: ChangeValue[], updatedStep?: ChoiceQuestion) => {
     const surveyRules = getNewRules(changes)
     const choices = getNewChoices(changes)
     onChange({
-      ...step,
+      ...(updatedStep ?? step),
       choices,
       surveyRules,
     })
@@ -231,18 +231,14 @@ const Select: React.FunctionComponent<{
         delete updatedStep.other
       }
 
-      // generate the appropriate mapping for switch
+      // generate the appropriate mapping for switch of base type
       const changes: ChangeValue[] = step.choices.map((choice, ii) => ({
         choice: choice, 
         index: ii,
         newValue:  generateValue(choice, isSwitchToInteger ? ii : undefined, value)
       }))
-      
-      // apply the changes to both choices and survey rules
-      const choices = getNewChoices(changes)
-      const surveyRules = getNewRules(changes)
 
-      onChange({...updatedStep, choices, surveyRules})
+      updateChoicesAndRules(changes, updatedStep)
     }
   }
 
