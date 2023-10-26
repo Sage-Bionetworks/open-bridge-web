@@ -19,7 +19,7 @@ import {
 } from '@mui/material'
 import {styled} from '@mui/material/styles'
 import {latoFont, theme} from '@style/theme'
-import {ActionButtonName, BaseStep, InterruptionHandlingType, Survey, WebUISkipOptions} from '@typedefs/surveys'
+import {ActionButtonName, BaseStep, InterruptionHandlingType, Survey} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React from 'react'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
@@ -27,6 +27,7 @@ import {RouteComponentProps, withRouter} from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
 import QUESTIONS from './left-panel/QuestionConfigs'
+import { DisappearingInput } from '../widgets/SharedStyled'
 
 const IntroContainer = styled('div', {label: 'IntroContainer'})(({theme}) => ({
   backgroundColor: '#f8f8f8',
@@ -150,23 +151,24 @@ export interface IntroInfoProps {
   onHasChanged: (value: boolean) => void
   onUpdate: (a: Assessment, s: Survey, act: 'UPDATE' | 'CREATE') => void
 }
+
+const InterruptionHandlingDefault: InterruptionHandlingType = {
+  canResume: true,
+  reviewIdentifier: undefined,
+  canSkip: false,
+  canSaveForLater: true,
+}
+
 const getDefaultSurvey = (newSurveyId: string): Survey => ({
   config: {
     type: 'assessment',
     identifier: newSurveyId,
     shouldHideActions: [],
-    interruptionHandling: {
-      canResume: true,
-      reviewIdentifier: 'beginning',
-      canSkip: true,
-      canSaveForLater: true,
-    },
+    interruptionHandling: InterruptionHandlingDefault,
     steps: [QUESTIONS.get('OVERVIEW')!.default! as BaseStep, QUESTIONS.get('COMPLETION')!.default! as BaseStep],
-    webConfig: {
-      skipOption: 'CUSTOMIZE',
-    },
   },
 })
+
 const getDefaultAssessment = (newSurveyId: string, orgMembership: string): Assessment => ({
   title: '',
   labels: [],
@@ -181,13 +183,6 @@ const getDefaultAssessment = (newSurveyId: string, orgMembership: string): Asses
   isReadOnly: false,
 })
 
-const InterruptionHandlingDefault: InterruptionHandlingType = {
-  canResume: true,
-  reviewIdentifier: 'beginning',
-  canSkip: true,
-  canSaveForLater: true,
-}
-
 const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> = ({
   surveyAssessment: _surveyAssessment,
   survey,
@@ -197,7 +192,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
 }: IntroInfoProps) => {
   const newSurveyId = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
   const {orgMembership} = useUserSessionDataState()
-  const [skip, setSkip] = React.useState<WebUISkipOptions | undefined>('CUSTOMIZE')
+  const [hideSkip, setHideSkip] = React.useState(false)
   const [hideBack, setHideBack] = React.useState(false)
   const [interruptionHandling, setInterruptionHandling] =
     React.useState<InterruptionHandlingType>(InterruptionHandlingDefault)
@@ -211,15 +206,10 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
       setBasicInfo(_surveyAssessment)
 
       if (survey) {
-        let skipOption: WebUISkipOptions
-        if (survey.config.shouldHideActions?.includes('skip')) {
-          skipOption = 'NO_SKIP'
-        } else {
-          skipOption = survey.config.webConfig?.skipOption || 'SKIP'
-        }
         const goBackHidden = survey.config.shouldHideActions?.includes('goBackward')
+        const skipHidden = survey.config.shouldHideActions?.includes('skip')
         setHideBack(!!goBackHidden)
-        setSkip(skipOption)
+        setHideSkip(!!skipHidden)
         setSurveyConfig(survey)
         if (survey.config.interruptionHandling) {
           setInterruptionHandling(survey.config.interruptionHandling)
@@ -239,38 +229,27 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
   
   const updateInterruptonHandling = (key: keyof InterruptionHandlingType, value: boolean) => {
     if (basicInfo.isReadOnly) return
+    onHasChanged(true)
     setHasObjectChanged(true)
     if (key !== 'reviewIdentifier') {
       setInterruptionHandling(prev => ({...prev, [key]: value}))
     } else {
-      if (value) {
-        setInterruptionHandling(prev => ({
-          ...prev,
-          reviewIdentifier: 'beginning',
-        }))
-      } else {
-        setInterruptionHandling(prev => {
-          const {reviewIdentifier, ...rest} = prev
-
-          return rest
-        })
-      }
+      setInterruptionHandling(prev => ({
+        ...prev,
+        reviewIdentifier: value ? 'beginning' : undefined,
+      }))
     }
   }
 
   const triggerUpdate = () => {
     const shouldHideActions: ActionButtonName[] = []
-    if (skip === 'NO_SKIP') {
+    if (hideSkip) {
       shouldHideActions.push('skip')
     }
     if (hideBack) {
       shouldHideActions.push('goBackward')
     }
     surveyConfig.config.shouldHideActions = shouldHideActions
-    surveyConfig.config.webConfig = {
-      ...(surveyConfig.config.webConfig || {}),
-      skipOption: skip,
-    }
     surveyConfig.config.interruptionHandling = interruptionHandling
     setHasObjectChanged(false)
 
@@ -338,34 +317,26 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
           <div>minutes</div>
         </Box>
       </StyledFormControl>
-
-      <QuestionSettings>
-        <StyledInputLabel htmlFor="skip">Survey Question Settings</StyledInputLabel>
-        <RadioGroup
-          id="skip"
-          value={skip}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            updateState(() => setSkip((event.target as HTMLInputElement).value as WebUISkipOptions))
-          }>
-          <FormControlLabel
-            value="SKIP"
-            sx={{mt: theme.spacing(1.5)}}
-            control={<Radio />}
-            label="Allow partcipants to skip"
-          />
-          <FormControlLabel value="NO_SKIP" control={<Radio />} label="Make all survey questions required" />
-          <FormControlLabel value="CUSTOMIZE" control={<Radio />} label="Customize each question" />
-        </RadioGroup>
-      </QuestionSettings>
       <StyledFormControl>
+        <StyledInputLabel htmlFor="survey_label">Survey Navigation</StyledInputLabel>
         <FormControlLabel
-          value="SKIP"
+          value={hideSkip}
+          sx={{mt: theme.spacing(1.5)}}
+          control={<Checkbox checked={hideSkip} onChange={e => updateState(() => setHideSkip(e.target.checked))} />}
+          label={
+            <Typography sx={{fontWeight: '14px'}}>
+              Make all survey questions <strong>required</strong>.
+            </Typography>
+          }
+        />
+        <FormControlLabel
+          value={!hideBack}
           sx={{mt: theme.spacing(1.5)}}
           control={<Checkbox checked={!hideBack} onChange={e => updateState(() => setHideBack(!e.target.checked))} />}
           label={
             <Typography sx={{fontWeight: '14px'}}>
               Allow participants to <strong>navigate back</strong>
-              <br /> to previous question
+              <br /> to previous question.
             </Typography>
           }
         />
@@ -394,7 +365,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
             }
           />
 
-          <FormControlLabel
+          {/* <FormControlLabel
             value={interruptionHandling.reviewIdentifier}
             sx={{mt: theme.spacing(1.5)}}
             control={
@@ -408,7 +379,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
                 <strong>Review Instructions</strong> <br /> Displays the Title Page message to participant for review.
               </Typography>
             }
-          />
+          /> */}
 
           <FormControlLabel
             sx={{mt: theme.spacing(1.5), fontSize: '14px'}}
@@ -484,6 +455,21 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
             <AutoCompleteText {...params} variant="outlined" label="survey tags" placeholder="survey tags" />
           )}
         />
+      </StyledFormControl>
+      <StyledFormControl>
+        <StyledInputLabel htmlFor="skip">
+          Summary <HelpText>description of the survey.</HelpText>
+        </StyledInputLabel>
+        {}
+        <DisappearingInput
+            // className="compact"
+            id="survey_summary"
+            sx={{'& input': {width: '550px'}}}
+            multiline={true}
+            minRows={4}
+            value={basicInfo?.summary}
+            onChange={e => updateState(() => setBasicInfo(prev => ({...prev, summary: e.target.value})))}
+          />
       </StyledFormControl>
 
       { !basicInfo.isReadOnly && <SaveButton assessment={basicInfo} onClick={() => triggerUpdate()} />}

@@ -430,7 +430,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                   <QuestionEditPhone
                     isReadOnly={isReadOnly}
                     isDynamic={isDynamicStep()}
-                    globalSkipConfiguration={survey!.config.webConfig?.skipOption || 'CUSTOMIZE'}
+                    globalHideActions={survey!.config.shouldHideActions ?? []}
                     onChange={(step: Step) => {
                       updateCurrentStep(step)
                     }}
