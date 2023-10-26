@@ -209,10 +209,10 @@ const Select: React.FunctionComponent<{
             <Box ref={provided.innerRef} {...provided.droppableProps}>
               {[...stepData.choices!].slice(0, getIndexOfTheLastRealQuestion() + 1).map((choice, index) => (
                 <Draggable
-                  draggableId={choice.value?.toString() || ''}
+                  draggableId={choice.guid ?? choice.text}
                   isDragDisabled={isReadOnly}
                   index={index}
-                  key={choice.value?.toString()}>
+                  key={choice.guid ?? choice.text}>
                   {provided => (
                     <SelectOption
                       options={{

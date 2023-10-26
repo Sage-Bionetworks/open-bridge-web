@@ -13,6 +13,7 @@ import {theme} from '@style/theme'
 import {ChoiceQuestion, ChoiceQuestionChoice, QuestionDataType} from '@typedefs/surveys'
 import React from 'react'
 import QUESTIONS, {QuestionTypeKey} from '../../left-panel/QuestionConfigs'
+import { toInteger } from 'lodash'
 
 const ValueTable = styled('table')(({theme}) => ({
   width: 'calc(100% + 64px)',
@@ -129,10 +130,6 @@ const ChoiceValueInputRow: React.FunctionComponent<{
   )
 }
 
-function generateValue(choice: ChoiceQuestionChoice, setTo?: number) {
-  return SurveyUtils.isSpecialSelectChoice(choice) ? choice.value : setTo ?? choice.text.replaceAll(' ', '_').replaceAll(',', '_')
-}
-
 const Select: React.FunctionComponent<{
   step: ChoiceQuestion
   isReadOnly?: boolean
@@ -142,6 +139,59 @@ const Select: React.FunctionComponent<{
   const [isTypeConversionWarning, setIsTypeConversionWarning] = React.useState(false)
   const answerDataTypeOptions: QuestionDataType[] = ['integer', 'string']
 
+  type ChangeValue = {
+    choice: ChoiceQuestionChoice
+    index: number
+    newValue?: number | string | boolean | undefined
+  }
+
+  const mapTypeCheckedValue = (value: string | undefined, baseType?: typeof step.baseType) => {
+    const trimmedValue = value?.toString().trim()
+    switch (baseType ?? step.baseType) {
+      case 'number': {
+        return trimmedValue && trimmedValue !== '' ? Number(trimmedValue) : undefined 
+      }
+      case 'integer': {
+        return trimmedValue && trimmedValue !== '' ? toInteger(trimmedValue) : undefined
+      }
+      case 'string': {
+        return value?.toString().replaceAll(' ', '_').replaceAll(',', '_')
+      }
+      case 'boolean': {
+        return trimmedValue && trimmedValue !== '' ? Boolean(trimmedValue) : undefined
+      }
+    }
+  }
+
+  function generateValue(choice: ChoiceQuestionChoice, setTo?: number, baseType?: typeof step.baseType) {
+    return SurveyUtils.isSpecialSelectChoice(choice) ? choice.value : (setTo ?? mapTypeCheckedValue(choice.text, baseType))
+  }
+
+  const findNewValue = (changes: ChangeValue[], index: number, choice: ChoiceQuestionChoice) => {
+    const change = changes.find(c => c.index === index)
+    return change ? change.newValue : choice.value
+  }
+
+  const getNewRules = (changes: ChangeValue[]) => step.surveyRules?.map(rule => ({
+    ...rule,
+    matchingAnswer: changes.find(change => change.choice.guid === rule.choiceGuid)?.newValue,
+  }))
+
+  const getNewChoices = (changes: ChangeValue[]) => step.choices.map((choice, ii) => ({
+    ...choice,
+    value: findNewValue(changes, ii, choice)
+  }))
+
+  const updateChoicesAndRules = (changes: ChangeValue[], updatedStep?: ChoiceQuestion) => {
+    const surveyRules = getNewRules(changes)
+    const choices = getNewChoices(changes)
+    onChange({
+      ...(updatedStep ?? step),
+      choices,
+      surveyRules,
+    })
+  }
+
   const handleSelectTypeChange = (event: SelectChangeEvent<QuestionTypeKey>) => {
     const {
       target: {value},
@@ -150,17 +200,12 @@ const Select: React.FunctionComponent<{
     const isSwitchedToSingleSelect = !step.singleChoice && value === 'SINGLE_SELECT'
 
     const updatedStep = {...step}
-    let choices = isSwitchedToSingleSelect
+    const choices = isSwitchedToSingleSelect
     ? step.choices.filter(c => !SurveyUtils.isSpecialSelectChoice(c))
     : step.choices
     if (!isSwitchedToSingleSelect) {
       // if changing to a multiple select -- remove 'other'
       delete updatedStep.other
-      if (step.baseType === 'string') {
-        for (const [_i, v] of choices.entries()) {
-          v.value = generateValue(v)
-        }
-      }
     } 
 
     onChange({
@@ -172,28 +217,43 @@ const Select: React.FunctionComponent<{
 
   const handleDataTypeChange = (value: typeof step.baseType, shouldForceChange?: boolean) => {
     if (value !== step.baseType) {
-      if (value === 'integer' && !shouldForceChange && step.other) {
+      const isSwitchToInteger = value === 'integer'
+
+      if (isSwitchToInteger && !shouldForceChange && step.other) {
         setIsTypeConversionWarning(true)
         return
       }
       const updatedStep = {...step}
       updatedStep.baseType = value as typeof step.baseType
-      let choices = [...step.choices]
-      //switch from string to integer -- number them
-      if (value === 'integer') {
-        for (const [i, v] of choices.entries()) {
-          v.value = generateValue(v, i)
-        }
-        //if changing to integer -- remove 'other'
+
+      if (isSwitchToInteger) {
+        // Other field is not valid for an integer
         delete updatedStep.other
-      } else {
-        for (const [_i, v] of choices.entries()) {
-          v.value = generateValue(v)
-        }
       }
 
-      onChange({...updatedStep, choices})
+      // generate the appropriate mapping for switch of base type
+      const changes: ChangeValue[] = step.choices.map((choice, ii) => ({
+        choice: choice, 
+        index: ii,
+        newValue:  generateValue(choice, isSwitchToInteger ? ii : undefined, value)
+      }))
+
+      updateChoicesAndRules(changes, updatedStep)
     }
+  }
+
+  const matchAllResponseLabels = () => {
+    // this function will only apply to the baseType of string
+    if (step.baseType !== 'string') return
+
+    // generate new values
+    const changes: ChangeValue[] = step.choices.map((choice, index) => ({
+      choice: choice,
+      index: index,
+      newValue: generateValue(choice),
+    }))
+
+    updateChoicesAndRules(changes)
   }
 
   return (
@@ -252,15 +312,7 @@ const Select: React.FunctionComponent<{
             startIcon={<GenerateId />}
             sx={{fontSize: '14px', fontWeight: 900}}
             disabled={step.surveyRules?.find(r => r.matchingAnswer !== undefined) !== undefined}
-            onClick={() =>
-              onChange({
-                ...step,
-                choices: step.choices.map(c => ({
-                  ...c,
-                  value: generateValue(c),
-                })),
-              })
-            }>
+            onClick={matchAllResponseLabels}>
             {' '}
             Match All Response Labels
           </Button>
@@ -275,12 +327,15 @@ const Select: React.FunctionComponent<{
 
             {step.choices?.map((choice, index) => (
               <ChoiceValueInputRow
-                key={choice.text}
+                key={choice.guid ?? index.toString()}
                 choice={choice}
                 allValues={step.choices.map(c => c.value)}
                 onChange={val => {
-                  const choices = step.choices.map((c, i) => (i === index ? {...c, value: val} : c))
-                  onChange({...step, choices})
+                  updateChoicesAndRules([{
+                    choice: choice,
+                    index: index,
+                    newValue: mapTypeCheckedValue(val),
+                  }])
                 }}
               />
             ))}

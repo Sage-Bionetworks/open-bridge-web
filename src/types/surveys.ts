@@ -61,6 +61,8 @@ export type Skip = {
 }
 
 export type ChoiceQuestionChoice = {
+  guid?: string
+
   text: string
   value?: string | number | boolean
 
@@ -80,14 +82,17 @@ export interface Question extends BaseStep {
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
 
+export type SurveyRule = {
+  choiceGuid?: string
+  matchingAnswer?: number | string | boolean
+  skipToIdentifier: string
+  ruleOperator?: SurveyRuleOperator
+}
+
 export interface ChoiceQuestion extends Question {
   baseType: QuestionDataType
 
-  surveyRules?: {
-    matchingAnswer?: number | string | boolean
-    skipToIdentifier: string
-    ruleOperator?: SurveyRuleOperator
-  }[]
+  surveyRules?: SurveyRule[]
 
   choices: ChoiceQuestionChoice[]
   singleChoice?: boolean
