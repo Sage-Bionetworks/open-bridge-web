@@ -364,23 +364,6 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps & RouteComponentProps> =
               </Typography>
             }
           />
-
-          {/* <FormControlLabel
-            value={interruptionHandling.reviewIdentifier}
-            sx={{mt: theme.spacing(1.5)}}
-            control={
-              <Checkbox
-                checked={interruptionHandling.reviewIdentifier !== undefined}
-                onChange={e => updateInterruptonHandling('reviewIdentifier', e.target.checked)}
-              />
-            }
-            label={
-              <Typography sx={{fontSize: '14px'}}>
-                <strong>Review Instructions</strong> <br /> Displays the Title Page message to participant for review.
-              </Typography>
-            }
-          /> */}
-
           <FormControlLabel
             sx={{mt: theme.spacing(1.5), fontSize: '14px'}}
             control={
