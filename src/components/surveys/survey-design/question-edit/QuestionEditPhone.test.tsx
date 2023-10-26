@@ -1,22 +1,23 @@
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {Step, WebUISkipOptions} from '@typedefs/surveys'
+import {ActionButtonName, Step} from '@typedefs/surveys'
 import surveyQuestions from '__test_utils/mocks/surveyQuestions'
 import QuestionEditPhone from './QuestionEditPhone'
 
 const onChange = jest.fn()
 
-const renderComponent = (isDynamic: boolean, skipConfig: WebUISkipOptions, step: Step, progress: number) => {
+const renderComponent = (isDynamic: boolean, skipConfig: ActionButtonName[], step: Step, progress: number) => {
   const component = render(
     <QuestionEditPhone
       isDynamic={isDynamic}
-      globalSkipConfiguration={skipConfig}
+      globalHideActions={skipConfig}
       onChange={(step: Step) => {
         onChange(step)
-      }}
+      } }
       step={step}
-      completionProgress={progress}
-    />
+      completionProgress={progress} 
+      isReadOnly={false}    
+      />
   )
   const user = userEvent.setup()
   return {user, component}
@@ -24,7 +25,7 @@ const renderComponent = (isDynamic: boolean, skipConfig: WebUISkipOptions, step:
 
 describe('QuestionEditPhone', () => {
   it('should render with correct buttons for static questions', () => {
-    renderComponent(false, 'CUSTOMIZE', surveyQuestions[0], 10)
+    renderComponent(false, [], surveyQuestions[0], 10)
     expect(surveyQuestions[0].type).toBe('overview')
     expect(screen.queryByRole('button', {name: /make required/i})).not.toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /allow skip/i})).not.toBeInTheDocument()
@@ -34,7 +35,7 @@ describe('QuestionEditPhone', () => {
   })
 
   it('should render with correct buttons for dynamic not choice questions', () => {
-    renderComponent(true, 'CUSTOMIZE', surveyQuestions[2], 10)
+    renderComponent(true, [], surveyQuestions[2], 10)
     expect(surveyQuestions[2].type).toBe('simpleQuestion')
     expect(screen.queryByRole('button', {name: /make required/i})).toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /allow skip/i})).toBeInTheDocument()
@@ -44,7 +45,7 @@ describe('QuestionEditPhone', () => {
   })
 
   it('should render with correct buttons for choice questions', () => {
-    renderComponent(true, 'CUSTOMIZE', surveyQuestions[1], 10)
+    renderComponent(true, [], surveyQuestions[1], 10)
     expect(surveyQuestions[1].type).toBe('choiceQuestion')
     expect(screen.queryByRole('button', {name: /make required/i})).toBeInTheDocument()
     expect(screen.queryByRole('button', {name: /allow skip/i})).toBeInTheDocument()
@@ -53,16 +54,9 @@ describe('QuestionEditPhone', () => {
     expect(screen.queryByRole('button', {name: /sort reverse/i})).toBeInTheDocument()
   })
 })
-it('should render with correct buttons with config set to SKIP', () => {
-  renderComponent(true, 'SKIP', surveyQuestions[1], 10)
-
-  expect(screen.queryByRole('button', {name: /make required/i})).not.toBeInTheDocument()
-  expect(screen.queryByRole('button', {name: /allow skip/i})).not.toBeInTheDocument()
-  expect(screen.queryByText(/Skip question/i)).toBeInTheDocument()
-})
 
 it('should render with correct buttons with config set to MAKE ALL REQUIRED ', () => {
-  renderComponent(true, 'NO_SKIP', surveyQuestions[1], 10)
+  renderComponent(true, ['skip', 'goBackward'], surveyQuestions[1], 10)
 
   expect(screen.queryByRole('button', {name: /make required/i})).not.toBeInTheDocument()
   expect(screen.queryByRole('button', {name: /allow skip/i})).not.toBeInTheDocument()
