@@ -25,6 +25,7 @@ const StyledCardContent = styled(CardContent)(({theme}) => ({
   height: theme.spacing(46),
   overflowY: 'scroll',
   paddingBottom: 0,
+  // TODO: syoung 10/27/2023 This is here to enforce showing a scrollbar in Safari b/c by default, Apple hides it.
   '&::-webkit-scrollbar': {
     width: '6px',
   },
