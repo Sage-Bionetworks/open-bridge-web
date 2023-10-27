@@ -4,6 +4,7 @@ import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
 import {Box, styled, Typography, TypographyProps} from '@mui/material'
 import {latoFont, theme} from '@style/theme'
 import {
+  ActionButtonName,
   BaseStep,
   ChoiceQuestion,
   ChoiceQuestionChoice,
@@ -11,7 +12,6 @@ import {
   Question,
   ScaleQuestion,
   Step,
-  WebUISkipOptions,
 } from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
@@ -93,7 +93,7 @@ type QuestionEditProps = {
   isReadOnly: boolean
   isDynamic: boolean
   step?: Step
-  globalSkipConfiguration: WebUISkipOptions
+  globalHideActions: ActionButtonName[]
   completionProgress: number
 
   onChange: (step: Step) => void
@@ -169,7 +169,7 @@ const PhoneProgressLine: FunctionComponent<{
 
 const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   step,
-  globalSkipConfiguration,
+  globalHideActions,
   completionProgress,
   isDynamic,
   isReadOnly,
@@ -179,7 +179,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
 
   const shouldShowSkipButton = (): boolean => {
     //show skip button if not required in global config and is not hidden on local config
-    return globalSkipConfiguration !== 'NO_SKIP' && !step!.shouldHideActions?.includes('skip')
+    return !globalHideActions.includes('skip') && !step!.shouldHideActions?.includes('skip')
   }
 
   const sortSelectChoices = (choiceQ: ChoiceQuestion, direction: 1 | -1): ChoiceQuestionChoice[] => {
@@ -277,7 +277,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
             </Box>
           </PhoneDisplay>
 
-          {globalSkipConfiguration === 'CUSTOMIZE' && isDynamic && !isReadOnly && (
+          {!globalHideActions.includes('skip') && isDynamic && !isReadOnly && (
             <RequiredToggle
               shouldHideActionsArray={step.shouldHideActions || []}
               onChange={shouldHideActions =>

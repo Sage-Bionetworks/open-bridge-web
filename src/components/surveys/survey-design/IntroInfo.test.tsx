@@ -66,22 +66,14 @@ async function triggerSave(isNew?: boolean) {
   })
 }
 
-function getSurveyQuestionSettings() {
-  return [
-    screen.getByRole('radio', {name: /allow partcipants to skip/i}),
-    screen.getByRole('radio', {name: /make all survey questions required/i}),
-    screen.getByRole('radio', {name: /customize each/i}),
-  ]
-}
-
 function getPauseMenuSettings() {
-  const review = screen.getByRole('checkbox', {name: /review instructions/i})
+  // const review = screen.getByRole('checkbox', {name: /review instructions/i})
   const skip = screen.getByRole('checkbox', {name: /skip this activity/i})
 
   //save continue
   const save = screen.getByRole('radio', {name: /save & continue later /i})
   const exit = screen.getByRole('radio', {name: /exit without saving /i})
-  return {review, skip, save, exit}
+  return {skip, save, exit}
 }
 
 describe('<IntroInfo/>', () => {
@@ -115,19 +107,16 @@ describe('<IntroInfo/>', () => {
     test('should allow to skip and cusomize each quesiton by default', () => {
       //default is:
       // shouldHideActions: [],
-      // webConfig: {
-      //   skipOption: 'CUSTOMIZE',
-      // }
       //
       renderComponent(undefined, true)
-      const radios = getSurveyQuestionSettings()
 
+      const navigateSkipCheck = screen.getByRole('checkbox', {
+        name: /make all survey questions required/i,
+      })
       const navigateBackCheck = screen.getByRole('checkbox', {
         name: /allow participants to navigate/i,
       })
-      expect(radios[0]).not.toBeChecked()
-      expect(radios[1]).not.toBeChecked()
-      expect(radios[2]).toBeChecked()
+      expect(navigateSkipCheck).not.toBeChecked()
       expect(navigateBackCheck).toBeChecked()
     })
 
@@ -170,18 +159,17 @@ describe('<IntroInfo/>', () => {
 
   test('should display and set Survey Question Settings', async () => {
     renderComponent(surveyConfig)
-    const radios = getSurveyQuestionSettings()
-
+    const navigateSkipCheck = screen.getByRole('checkbox', {
+      name: /make all survey questions required/i,
+    })
     const navigateBackCheck = screen.getByRole('checkbox', {
       name: /allow participants to navigate/i,
     })
-    expect(radios[0]).not.toBeChecked()
-    expect(radios[1]).toBeChecked()
-    expect(radios[2]).not.toBeChecked()
+    expect(navigateSkipCheck).toBeChecked()
     expect(navigateBackCheck).not.toBeChecked()
     await waitFor(() => {
-      radios[0].focus()
-      radios[0].click()
+      navigateSkipCheck.focus()
+      navigateSkipCheck.click()
       navigateBackCheck.focus()
       navigateBackCheck.click()
     })
@@ -196,25 +184,24 @@ describe('<IntroInfo/>', () => {
   /* 
   default for interruptionHandling: {
       canResume: true,
-      reviewIdentifier: 'beginning',
-      canSkip: true,
+      reviewIdentifier: undefined,
+      canSkip: false,
       canSaveForLater: true,
     },*/
 
   test('should display default "Pause Menu" settings if info is not provided ', () => {
     renderComponent(undefined)
 
-    const {review, skip, save, exit} = getPauseMenuSettings()
-    expect(review).toBeChecked()
-    expect(skip).toBeChecked()
+    const {skip, save, exit} = getPauseMenuSettings()
+    expect(skip).not.toBeChecked()
     expect(save).toBeChecked()
     expect(exit).not.toBeChecked()
   })
+
   test('should display and set "Pause Menu" settings ', () => {
     renderComponent(surveyConfig)
 
-    const {review, skip, save, exit} = getPauseMenuSettings()
-    expect(review).not.toBeChecked()
+    const {skip, save, exit} = getPauseMenuSettings()
     expect(skip).not.toBeChecked()
     expect(save).not.toBeChecked()
     expect(exit).toBeChecked()
