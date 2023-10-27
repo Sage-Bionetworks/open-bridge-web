@@ -81,7 +81,7 @@ export const TooltipHoverDisplay: React.FunctionComponent<{
                 sx={{width: '100%', height: '100px', marginBottom: '8px'}}
                 key={`assmnt_${assessment.guid}_${index}`}>
                 <AssessmentImage
-                  resources={assessment.resources}
+                  assessment={assessment}
                   variant="small"
                   name={assessment.title}
                   key={index}

@@ -67,7 +67,7 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
   return (
     <AssessmentSmallCard $isReadOnly={isReadOnly} $isDragging={!!isDragging}>
       <StyledTImageWrapper>
-        <AssessmentImage variant="small" resources={assessment.resources} name={assessment.title}></AssessmentImage>
+        <AssessmentImage variant="small" assessment={assessment} name={assessment.title}></AssessmentImage>
       </StyledTImageWrapper>
       <StyledTextArea>
         <MenuTwoToneIcon sx={{fontSize: '12px'}} />

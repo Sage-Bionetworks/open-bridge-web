@@ -58,7 +58,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
   let {id} = useParams<{id: string}>()
   const handleError = useErrorHandler()
 
-  const {data, isError, error, isLoading} = useAssessmentWithResources(id)
+  const {data, isError, error, isLoading} = useAssessmentWithResources(id, false)
 
   if (isError) {
     handleError(error!)
@@ -144,7 +144,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                 </Hidden>
                 <AssessmentImage
                   name={`${data.title}_img`}
-                  resources={data.resources}
+                  assessment={data}
                   variant="detail"></AssessmentImage>
               </Box>
             </Grid>
