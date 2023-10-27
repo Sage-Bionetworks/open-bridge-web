@@ -60,7 +60,7 @@ const StyledCardGrid = styled(Box, {label: 'StyledCardGrid'})<{layoutType?: View
     ? {
         display: 'grid',
         padding: theme.spacing(0),
-        gridTemplateColumns: `repeat(auto-fill,602px)`,
+        gridTemplateColumns: `repeat(auto-fill,240px)`,
         gridColumnGap: theme.spacing(2),
         justifyContent: 'center',
         gridRowGap: theme.spacing(2),
