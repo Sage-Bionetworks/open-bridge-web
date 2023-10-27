@@ -15,8 +15,6 @@ const CardTop = styled(Box, {label: 'StyledCardMedia'})(({theme}) => ({
   flexDirection: 'row',
   '& img': {
     width: '150px',
-    // height: '150px',
-    backgroundColor: '#f6f6f6', //ALINA TODO PROD CHANGE - remove when images updated to new
   },
   '> div': {
     height: '150px',
