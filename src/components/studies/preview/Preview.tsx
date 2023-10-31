@@ -431,7 +431,7 @@ const PreviewIntroScreen: React.FunctionComponent<{
         </Box>
         <Box>
           <StyledLink
-            to="/MTB-ToS-v2-210923.pdf"
+            to="/terms_of_service.pdf"
             target="_blank"
             sx={{fontSize: '16px', display: 'block', textAlign: 'center', fontWeight: 700}}>
             View Full Terms of Service
