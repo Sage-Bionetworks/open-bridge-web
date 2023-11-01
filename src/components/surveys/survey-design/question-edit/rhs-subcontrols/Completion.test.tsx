@@ -28,8 +28,10 @@ const step: Step = {
   },
 }
 
+
 test('has the link to branching', async () => {
   renderComponent(step)
-  const link = screen.getByRole('link', {name: 'Preview Branching Logic'})
-  expect(link).toBeInTheDocument()
+  // TODO: syoung 11/02/2023 Uncomment once branching logic is supported on production
+  // const link = screen.getByRole('link', {name: 'Preview Branching Logic'})
+  // expect(link).toBeInTheDocument()
 })

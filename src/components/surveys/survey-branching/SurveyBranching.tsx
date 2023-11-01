@@ -1,11 +1,12 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import {Box, styled} from '@mui/material'
+import {Box, styled, Typography} from '@mui/material'
 import {useSurveyAssessment, useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
-import {latoFont} from '@style/theme'
+import {latoFont, theme} from '@style/theme'
 import {ChoiceQuestion, Step, Survey} from '@typedefs/surveys'
 import dagre from 'dagre'
 import React, {FunctionComponent} from 'react'
 import 'reactflow/dist/style.css'
+import useFeatureToggles, {FeatureToggles, features} from '@helpers/FeatureToggle'
 
 import ReactFlow, {
   applyNodeChanges,
@@ -124,9 +125,12 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [currentStepIndex, setCurrentStepIndex] = React.useState<number | undefined>(-1)
   const [isHideInput, setIsHideInput] = React.useState(true)
-  const isReadOnly = assessment?.isReadOnly ?? false
   const [nodes, setNodes] = React.useState<Node[]>([])
   const [edges, setEdges] = React.useState<Edge[]>([])
+  const featureToggles = useFeatureToggles<FeatureToggles>()
+  const isBranchingLogicUnlocked = (featureToggles[features.SURVEY_BRANCHING_LOGIC] ?? false)
+  const isAssessmentReadOnly = (assessment?.isReadOnly ?? false)
+  const isReadOnly = isAssessmentReadOnly || !isBranchingLogicUnlocked
 
   //dagre
   const dagreGraph = new dagre.graphlib.Graph()
@@ -228,7 +232,19 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
 
       <SurveyBranchingContainerBox>
         {error && <span>{error.toString()}</span>}
-        {isReadOnly && <ReadOnlyBanner label='survey' />}
+        {isAssessmentReadOnly && <ReadOnlyBanner label='survey' />}
+        {!isBranchingLogicUnlocked && 
+          <Box
+            sx={{
+              backgroundColor: 'rgba(255, 168, 37, 0.15)',
+              textAlign: 'left',
+              fontSize: '16px',
+              display: 'flex',
+              padding: theme.spacing(1, 8),
+            }}>
+            Branching logic is under development and can only be edited by the Open Bridge team.
+          </Box>
+        }
         <Box ref={ref}>
           <div
             style={{

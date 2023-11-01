@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 
 export const features = {
   SURVEY_BUILDER: 'SURVEY BUILDER',
+  SURVEY_BRANCHING_LOGIC: 'SURVEY BRANCHING LOGIC',
   USERNAME_PASSWORD_LOGIN: 'USERNAME PASSWORD LOGIN',
   SHARED: 'SHARED',
 } as const

@@ -1,12 +1,11 @@
-import FileUploadTwoToneIcon from '@mui/icons-material/FileUploadTwoTone'
 import MediationTwoToneIcon from '@mui/icons-material/MediationTwoTone'
 import Alert from '@mui/icons-material/ReportProblemTwoTone'
-import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone'
 import {Box, Button, Divider, Typography} from '@mui/material'
 import {styled} from '@mui/material/styles'
 import {theme} from '@style/theme'
 import {BaseStep} from '@typedefs/surveys'
 import {useParams} from 'react-router-dom'
+import useFeatureToggles, {FeatureToggles, features} from '@helpers/FeatureToggle'
 
 const StyledText = styled('div')(({theme}) => ({
   fontSize: '16px',
@@ -18,6 +17,7 @@ const Completion: React.FunctionComponent<{
   step: BaseStep
   onChange: (step: BaseStep) => void
 }> = () => {
+  const featureToggles = useFeatureToggles<FeatureToggles>()
   let {id: surveyGuid} = useParams<{
     id: string
   }>()
@@ -34,16 +34,18 @@ const Completion: React.FunctionComponent<{
         {' '}
         Survey Access Settings
       </Button> */}
-      <Typography sx={{fontSize: '20px', mb: 1}}> Ready to use?</Typography>
-      <StyledText> Before adding your survey to a study under design, please review any branching logic used by your questions. </StyledText>
-      <Button
-        color="primary"
-        variant="contained"
-        startIcon={<MediationTwoToneIcon />}
-        href={`/surveys/${surveyGuid}/branching`}
-        sx={{padding: theme.spacing(1, 2.5), margin: theme.spacing(1.5, 0, 5, 0)}}>
-        Preview Branching Logic
-      </Button>
+      {featureToggles[features.SURVEY_BRANCHING_LOGIC] && (<>
+        <Typography sx={{fontSize: '20px', mb: 1}}> Ready to use?</Typography>
+        <StyledText> Before adding your survey to a study under design, please review any branching logic used by your questions. </StyledText>
+        <Button
+          color="primary"
+          variant="contained"
+          startIcon={<MediationTwoToneIcon />}
+          href={`/surveys/${surveyGuid}/branching`}
+          sx={{padding: theme.spacing(1, 2.5), margin: theme.spacing(1.5, 0, 5, 0)}}>
+          Preview Branching Logic
+        </Button>
+      </>)}
       <Typography sx={{fontSize: '20px', mb: 1}}>Publish Survey</Typography>
       <Typography
         sx={{fontStyle: 'italic', fontWeight: 400, fontSize: '14px', display: 'flex', marginTop: theme.spacing(2), marginBottom: theme.spacing(1)}}>
