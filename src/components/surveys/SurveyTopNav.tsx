@@ -136,18 +136,11 @@ type SurveyTopNavProps = {
 }
 
 const ALL_LINKS: {path: string; name: string; icon: React.ReactElement}[] = [
-  {
-    path: `${constants.restrictedPaths.SURVEY_BUILDER}`,
-    name: 'SURVEY DESIGN',
-
-    icon: <BuildTwoToneIcon />,
-  },
+  {name: 'SURVEY DESIGN', path: `${constants.restrictedPaths.SURVEY_BUILDER}`, icon: <BuildTwoToneIcon />},
   {name: 'BRANCHING LOGIC', path: `${constants.restrictedPaths.SURVEY_BRANCHING}`, icon: <MediationTwoToneIcon />},
 ]
 
 const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({survey, error}: SurveyTopNavProps) => {
-  const [isMobileOpen, setIsMobileOpen] = React.useState(false)
-  const classes = useStyles()
 
   const links = ALL_LINKS.map(link => ({
     ...link,

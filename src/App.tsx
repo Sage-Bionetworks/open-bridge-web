@@ -53,7 +53,11 @@ function App() {
         {redirect && <Redirect to={redirect}></Redirect>}
         {/*  <React.StrictMode>*/}
         <FeatureToggleProvider
-          featureToggles={{[features.SURVEY_BUILDER]: true, [features.USERNAME_PASSWORD_LOGIN]: isDevelopment()}}>
+          featureToggles={{
+            [features.SURVEY_BUILDER]: true, 
+            [features.SURVEY_BRANCHING_LOGIC]: isDevelopment(),
+            [features.USERNAME_PASSWORD_LOGIN]: isDevelopment(),
+            }}>
           <Container
             id="outer"
             maxWidth="xl"
