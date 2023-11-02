@@ -1,5 +1,6 @@
+import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
-import {Box, TextField, Typography} from '@mui/material'
+import {Box, FormControl, Typography} from '@mui/material'
 import {latoFont, theme} from '@style/theme'
 import React, {FunctionComponent} from 'react'
 import ErrorDisplay from '../widgets/ErrorDisplay'
@@ -23,22 +24,61 @@ type MemberInviteProps = {
 
 const MemberInvite: FunctionComponent<MemberInviteProps> = ({newOrgAccount, onUpdate}: MemberInviteProps) => {
   const [email, setEmail] = React.useState(newOrgAccount.email)
+  const [firstName, setFirstName] = React.useState(newOrgAccount.firstName)
+  const [lastName, setLastName] = React.useState(newOrgAccount.lastName)
   const [access, setAccess] = React.useState(newOrgAccount.access)
+
+  const inputSx = {fontFamily: latoFont, '& input': {height: '28px'}, marginBottom: theme.spacing(2)}
 
   return (
     <Box width="100%">
-      <Typography sx={{fontWeight: 700, mb: 0.75}}>Email Address*</Typography>
-      <TextField
-        fullWidth
-        variant="outlined"
-        sx={{marginBottom: theme.spacing(6)}}
-        onChange={e => setEmail(e.target.value)}
-        onBlur={e => onUpdate({...newOrgAccount, email: email})}
-        value={email || ''}
-        placeholder="email@synapse.org"
-        style={{fontFamily: latoFont}}></TextField>
+      <Typography variant="h3">Account</Typography>
+      <FormControl fullWidth>
+        <SimpleTextLabel htmlFor="email" required>
+          Email Address
+        </SimpleTextLabel>
+        <SimpleTextInput
+          id="email"
+          fullWidth
+          variant="outlined"
+          onChange={e => setEmail(e.target.value)}
+          onBlur={e => onUpdate({...newOrgAccount, email: email})}
+          value={email || ''}
+          placeholder="example@domain.org"
+          sx={inputSx}
+        />
+      </FormControl>
+      <Box mb={2} display="flex" gap={1}>
+        <FormControl fullWidth>
+          <SimpleTextLabel htmlFor="firstName">First Name</SimpleTextLabel>
+          <SimpleTextInput
+            id="firstName"
+            fullWidth
+            variant="outlined"
+            onChange={e => setFirstName(e.target.value)}
+            onBlur={e => onUpdate({...newOrgAccount, firstName: firstName})}
+            value={firstName || ''}
+            placeholder="First"
+            sx={inputSx}
+          />
+        </FormControl>
+        <FormControl fullWidth>
+          <SimpleTextLabel htmlFor="lastName">Last Name</SimpleTextLabel>
+          <SimpleTextInput
+            id="lastName"
+            fullWidth
+            variant="outlined"
+            onChange={e => setLastName(e.target.value)}
+            onBlur={e => onUpdate({...newOrgAccount, lastName: lastName})}
+            value={lastName || ''}
+            placeholder="Last"
+            sx={{...inputSx, mb: 4}}
+          />
+        </FormControl>
+      </Box>
       {newOrgAccount.error && <ErrorDisplay>{newOrgAccount.error.toString()}</ErrorDisplay>}
 
+      <Typography variant="h3">Permissions</Typography>
       <AccessGrid
         access={access}
         onUpdate={(_access: Access) => {

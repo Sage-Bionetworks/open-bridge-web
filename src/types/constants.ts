@@ -172,6 +172,7 @@ const constants = {
     schedule: '/v5/studies/:studyId/schedule',
     scheduleTimeline: '/v5/studies/:studyId/timeline',
     selfInfo: '/v3/participants/self',
+    sendRequestResetPassword: '/v1/accounts/:userId/requestResetPassword',
     signIn: '/v3/auth/signIn',
     signOut: '/v3/auth/signOut',
     signUp: '/v3/auth/signUp',

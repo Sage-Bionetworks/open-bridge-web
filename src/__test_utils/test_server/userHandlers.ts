@@ -14,6 +14,15 @@ const endpoints = [
       })
     )
   }),
+  rest.post(`*${constants.endpoints.sendRequestResetPassword.replace(':id', '*')}`, async (req, res, ctx) => {
+    return res(
+      ctx.status(202),
+      ctx.json({
+        identifer: 'Request to reset password sent to user.',
+        type: 'StatusMessage',
+      })
+    )
+  }),
 ]
 
 export default endpoints

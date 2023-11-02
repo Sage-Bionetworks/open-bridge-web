@@ -1,18 +1,37 @@
+import {IdentifierHolder} from '@services/access.service'
 import constants from '@typedefs/constants'
+import {LoggedInUserData, UserData, UserSessionData} from '@typedefs/types'
 import {rest} from 'msw'
 
 const getAllAccountsEndpoint = constants.endpoints.getAccountsForOrg.replace(':orgId', 'testMembership')
-const getIndividualAccountEndpoint = constants.endpoints.bridgeAccount.replace(':id', 'testID')
+const postIndividualAccountsEndpoint = constants.endpoints.bridgeAccount.replace(':id', '')
+const getIndividualAccountEndpoint = postIndividualAccountsEndpoint.replace(':id', 'testID')
+
+const orgAdminUser: UserData = {
+  orgMembership: 'testMembership',
+  roles: ['org_admin'],
+  id: 'testID',
+  dataGroups: [],
+  synapseUserId: '12345678',
+}
+export const orgAdminSession: UserSessionData = {
+  ...orgAdminUser,
+  token: 'testing-token',
+  appId: constants.constants.OPEN_BRIDGE_APP_ID,
+}
+const orgAdminLoggedIn: LoggedInUserData = {
+  ...orgAdminUser,
+  sessionToken: 'test-session-token',
+  firstName: 'FirstTest',
+  lastName: 'LastTest',
+  email: 'test.testing@synapse.org',
+}
+
+export const testUserId = 'U6tVUQfQr2GYDROdeTNLa6LB'
 
 const endpoints = [
   rest.post(`*${getAllAccountsEndpoint}`, async (req, res, ctx) => {
-    const data = [
-      {
-        firstName: 'John',
-        lastName: 'Roberts',
-        id: 'testID',
-      },
-    ]
+    const data = [orgAdminLoggedIn]
     return res(
       ctx.status(200),
       ctx.json({
@@ -22,15 +41,18 @@ const endpoints = [
   }),
 
   rest.get(`*${getIndividualAccountEndpoint}`, async (req, res, ctx) => {
-    const data = {
-      status: 'org_admin',
-      email: 'test@testing@synapse.org',
-      synapseUserId: '12345678',
-      roles: ['org_admin'],
-      firstName: 'John',
-      lastName: 'Roberts',
-    }
+    const data = orgAdminLoggedIn
     return res(ctx.status(200), ctx.json(data))
+  }),
+
+  rest.post(`*${postIndividualAccountsEndpoint}`, async (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        identifier: testUserId,
+        type: 'IdentifierHolder',
+      } as IdentifierHolder)
+    )
   }),
 ]
 

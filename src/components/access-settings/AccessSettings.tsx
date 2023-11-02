@@ -8,12 +8,13 @@ import {Alert, Avatar, Box, Button, CircularProgress, Theme, Typography} from '@
 import makeStyles from '@mui/styles/makeStyles'
 import AccessService from '@services/access.service'
 import ParticipantService from '@services/participants.service'
+import UserService from '@services/user.service'
 import {theme} from '@style/theme'
 import {LoggedInUserClientData, LoggedInUserData, Study} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent, useRef} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import AccessGrid, {Access, getAccessFromRoles, getRolesFromAccess, NO_ACCESS, userHasCoadminAccess} from './AccessGrid'
+import AccessGrid, {Access, NO_ACCESS, getAccessFromRoles, getRolesFromAccess, userHasCoadminAccess} from './AccessGrid'
 import MemberInvite, {NewOrgAccount} from './MemberInvite'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -157,22 +158,42 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
     [id]
   )
 
-  async function createNewAccount(email: string, access: Access, token: string, currentUserOrg: string) {
+  async function createNewAccount(
+    email: string,
+    firstName: string | undefined,
+    lastName: string | undefined,
+    access: Access,
+    token: string,
+    currentUserOrg: string
+  ) {
     try {
-      const {principalId, firstName, lastName} = await AccessService.getAliasFromSynapseByEmail(email)
+      let principalId: string | null = null
+      let synapseFirstName: string | null = null
+      let synapseLastName: string | null = null
+
+      if (AccessService.isSynapseEmail(email)) {
+        const synapseAlias = await AccessService.getAliasFromSynapseByEmail(email)
+        principalId = synapseAlias.principalId
+        synapseFirstName = synapseAlias.firstName
+        synapseLastName = synapseAlias.lastName
+      }
 
       const demoExternalId = await ParticipantService.signUpForAssessmentDemoStudy(token!)
 
-      await AccessService.createIndividualAccount(
+      const {identifier: userId} = await AccessService.createIndividualAccount(
         token!,
         email,
         principalId,
-        firstName,
-        lastName,
+        firstName || synapseFirstName,
+        lastName || synapseLastName,
         currentUserOrg,
         {demoExternalId},
         getRolesFromAccess(access)
       )
+
+      if (!AccessService.isSynapseEmail(email)) {
+        await UserService.sendRequestResetPassword(userId, token!)
+      }
 
       return [true]
     } catch (error) {
@@ -260,7 +281,14 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
       setNewOrgAccount({...account, error: 'No email provided'})
       return
     }
-    const [success, error] = await createNewAccount(account.email, account.access, token!, orgMembership!)
+    const [success, error] = await createNewAccount(
+      account.email,
+      account.firstName,
+      account.lastName,
+      account.access,
+      token!,
+      orgMembership!
+    )
     if (success) {
       setNewOrgAccount({...account, isAdded: true})
       setUpdateToggle(prev => !prev)
@@ -320,7 +348,7 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
               onClick={() => setIsAddingNewMember(true)}
               variant="contained"
               color="primary"
-              disabled={isAddingNewMember}>
+              disabled={isAddingNewMember || isAccessLoading}>
               Add New Member
             </Button>
           )}
