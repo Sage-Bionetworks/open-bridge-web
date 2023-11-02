@@ -77,7 +77,11 @@ const renderComponent = (step: ChoiceQuestion) => {
     Component: Select,
   })
 }
-afterEach(cleanup)
+afterEach(() => {
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
+  cleanup()
+})
 
 test('show the setting correctly for single select and integer', async () => {
   renderComponent(step)

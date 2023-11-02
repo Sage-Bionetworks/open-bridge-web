@@ -71,7 +71,11 @@ const renderComponent = (step: ChoiceQuestion) => {
   return renderSurveyQuestionComponent({step, Component: Select})
 }
 
-afterEach(cleanup)
+afterEach(() => {
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
+  cleanup()
+})
 
 test('show the Select options correctly', () => {
   renderComponent(step)

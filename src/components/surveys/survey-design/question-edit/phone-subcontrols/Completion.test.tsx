@@ -25,6 +25,11 @@ const step: Step = {
   },
 }
 
+afterEach(() => {
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
+})
+
 //test the component renders
 test('renders the component', () => {
   renderComponent(step)

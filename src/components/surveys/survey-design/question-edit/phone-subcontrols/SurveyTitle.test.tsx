@@ -26,6 +26,11 @@ const step: Step = {
   },
 }
 
+afterEach(() => {
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
+})
+
 //test the component renders
 test('renders the component with the right image', () => {
   renderComponent(step)
