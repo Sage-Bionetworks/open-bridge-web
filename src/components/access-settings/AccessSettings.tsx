@@ -4,7 +4,7 @@ import SideBarListItem from '@components/widgets/SideBarListItem'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import Delete from '@mui/icons-material/DeleteTwoTone'
-import {Alert, Avatar, Box, Button, CircularProgress, Theme, Typography} from '@mui/material'
+import {Alert, Avatar, Backdrop, Box, Button, CircularProgress, Theme, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AccessService from '@services/access.service'
 import ParticipantService from '@services/participants.service'
@@ -58,13 +58,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   error: {},
 }))
 
-function getNameDisplay({
-  firstName,
-  lastName,
-
-  synapseUserId,
-}: LoggedInUserData): string {
-  const name = firstName || lastName ? [firstName, lastName].join(' ') : synapseUserId
+function getNameDisplay({firstName, lastName, email, synapseUserId}: LoggedInUserData): string {
+  const name = firstName || lastName ? [firstName, lastName].join(' ') : synapseUserId || email
   return name || ''
 }
 
@@ -142,6 +137,7 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
   >()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isUpdating, setIsUpdating] = React.useState(false)
+  const [isCreatingNewMember, setIsCreatingNewMember] = React.useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
   const [updateError, setUpdateError] = React.useState('')
   const [members, setMembers] = React.useState<LoggedInUserData[]>([])
@@ -277,8 +273,10 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
   }
 
   const inviteUser = async (account: NewOrgAccount) => {
+    setIsCreatingNewMember(true)
     if (!account.email) {
       setNewOrgAccount({...account, error: 'No email provided'})
+      setIsCreatingNewMember(false)
       return
     }
     const [success, error] = await createNewAccount(
@@ -296,6 +294,7 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
       const errorString = error.message || error.reason
       setNewOrgAccount({...account, error: errorString})
     }
+    setIsCreatingNewMember(false)
   }
 
   return (
@@ -454,6 +453,7 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
             />
 
             <Button
+              disabled={isCreatingNewMember}
               sx={{marginLeft: 'auto', marginTop: theme.spacing(5), float: 'right'}}
               onClick={() => {
                 scollToRef.current?.scrollIntoView()
@@ -462,8 +462,11 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
               }}
               color="primary"
               variant="contained">
-              Save Changes
+              {isCreatingNewMember ? 'Saving...' : 'Save Changes'}
             </Button>
+            <Backdrop open={isCreatingNewMember} sx={{zIndex: theme => theme.zIndex.drawer + 1}}>
+              <CircularProgress />
+            </Backdrop>
           </Box>
         )}
       </Loader>
