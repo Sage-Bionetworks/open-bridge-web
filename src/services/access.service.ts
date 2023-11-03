@@ -14,7 +14,7 @@ const AccessService = {
 }
 
 function isSynapseEmail(emailAddress: string): boolean {
-  return emailAddress.replace(new RegExp('.*@'), '') === 'synapse.org'
+  return emailAddress.endsWith('@synapse.org')
 }
 
 export type SynapseAlias = {
@@ -25,7 +25,7 @@ export type SynapseAlias = {
 
 async function getAliasFromSynapseByEmail(synapseEmailAddress: string): Promise<SynapseAlias> {
   if (!isSynapseEmail(synapseEmailAddress)) {
-    return Promise.reject({message: 'the email should be ...@synapse.org'})
+    throw Error('the email should be ...@synapse.org')
   }
 
   const alias = synapseEmailAddress.replace('@synapse.org', '').trim()
