@@ -113,6 +113,35 @@ describe('AccessSettings', () => {
     const firstName = 'FirstNonSynapse'
     const lastName = 'LastNonSynapse'
 
+    test('should display an error when an email is not provided', async () => {
+      const errorText = 'No email provided'
+      const {
+        user,
+        spyOnGetAliasFromSynapseByEmail,
+        spyOnSignUpForAssessmentDemoStudy,
+        spyOnCreateIndividualAccount,
+        spyOnSendRequestResetPassword,
+        addNewMemberButton,
+      } = await setUp()
+
+      await openAddNewMemberPanel(user, addNewMemberButton)
+
+      const {emailInput, saveChangesButton} = await newMemberAccountControls()
+      expect(emailInput).toHaveValue('')
+
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+      await user.click(saveChangesButton)
+
+      expect(errorSpy).toHaveBeenCalledTimes(1)
+      expect(spyOnGetAliasFromSynapseByEmail).toHaveBeenCalledTimes(0)
+      expect(spyOnSignUpForAssessmentDemoStudy).toHaveBeenCalledTimes(0)
+      expect(spyOnCreateIndividualAccount).toHaveBeenCalledTimes(0)
+      expect(spyOnSendRequestResetPassword).toHaveBeenCalledTimes(0)
+
+      expect(screen.getByText(errorText)).toBeVisible()
+      errorSpy.mockRestore()
+    })
+
     test('should create new account with first and last name for non-Synapse email', async () => {
       const {
         user,

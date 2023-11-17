@@ -8,7 +8,6 @@ import {Alert, Avatar, Backdrop, Box, Button, CircularProgress, Theme, Typograph
 import makeStyles from '@mui/styles/makeStyles'
 import AccessService from '@services/access.service'
 import ParticipantService from '@services/participants.service'
-import UserService from '@services/user.service'
 import {theme} from '@style/theme'
 import {LoggedInUserClientData, LoggedInUserData, Study} from '@typedefs/types'
 import clsx from 'clsx'
@@ -16,6 +15,7 @@ import React, {FunctionComponent, useRef} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import AccessGrid, {Access, NO_ACCESS, getAccessFromRoles, getRolesFromAccess, userHasCoadminAccess} from './AccessGrid'
 import MemberInvite, {NewOrgAccount} from './MemberInvite'
+import {useCreateNewAccount} from './accessHooks'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -137,7 +137,6 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
   >()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isUpdating, setIsUpdating] = React.useState(false)
-  const [isCreatingNewMember, setIsCreatingNewMember] = React.useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
   const [updateError, setUpdateError] = React.useState('')
   const [members, setMembers] = React.useState<LoggedInUserData[]>([])
@@ -154,48 +153,16 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
     [id]
   )
 
-  async function createNewAccount(
-    email: string,
-    firstName: string | undefined,
-    lastName: string | undefined,
-    access: Access,
-    token: string,
-    currentUserOrg: string
-  ) {
-    try {
-      let principalId: string | null = null
-      let synapseFirstName: string | null = null
-      let synapseLastName: string | null = null
-
-      if (AccessService.isSynapseEmail(email)) {
-        const synapseAlias = await AccessService.getAliasFromSynapseByEmail(email)
-        principalId = synapseAlias.principalId
-        synapseFirstName = synapseAlias.firstName
-        synapseLastName = synapseAlias.lastName
-      }
-
-      const demoExternalId = await ParticipantService.signUpForAssessmentDemoStudy(token!)
-
-      const {identifier: userId} = await AccessService.createIndividualAccount(
-        token!,
-        email,
-        principalId,
-        firstName || synapseFirstName,
-        lastName || synapseLastName,
-        currentUserOrg,
-        {demoExternalId},
-        getRolesFromAccess(access)
-      )
-
-      if (!AccessService.isSynapseEmail(email)) {
-        await UserService.sendRequestResetPassword(userId, token!)
-      }
-
-      return [true]
-    } catch (error) {
-      return [false, error]
-    }
-  }
+  const {mutate: inviteUser, isLoading: isCreatingNewMember} = useCreateNewAccount({
+    onSuccess: () => {
+      setNewOrgAccount(CreateNewOrgAccountTemplate())
+      setUpdateToggle(prev => !prev)
+    },
+    onError: error => {
+      const errorString = error.message || error.reason
+      setNewOrgAccount({...newOrgAccount, error: errorString})
+    },
+  })
 
   React.useEffect(() => {
     let isSubscribed = true
@@ -270,31 +237,6 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
 
   const isSelf = (): boolean => {
     return currentMemberAccess?.member.id === id
-  }
-
-  const inviteUser = async (account: NewOrgAccount) => {
-    setIsCreatingNewMember(true)
-    if (!account.email) {
-      setNewOrgAccount({...account, error: 'No email provided'})
-      setIsCreatingNewMember(false)
-      return
-    }
-    const [success, error] = await createNewAccount(
-      account.email,
-      account.firstName,
-      account.lastName,
-      account.access,
-      token!,
-      orgMembership!
-    )
-    if (success) {
-      setNewOrgAccount({...account, isAdded: true})
-      setUpdateToggle(prev => !prev)
-    } else {
-      const errorString = error.message || error.reason
-      setNewOrgAccount({...account, error: errorString})
-    }
-    setIsCreatingNewMember(false)
   }
 
   return (
@@ -458,7 +400,7 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
               onClick={() => {
                 scollToRef.current?.scrollIntoView()
                 setCurrentMemberAccess(undefined)
-                inviteUser(newOrgAccount)
+                inviteUser({account: newOrgAccount, currentUserOrg: orgMembership!})
               }}
               color="primary"
               variant="contained">
