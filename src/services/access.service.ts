@@ -9,12 +9,23 @@ const AccessService = {
   getAccountsForOrg,
   getDetailedAccountsForOrg,
   getIndividualAccount,
+  isSynapseEmail,
   updateIndividualAccountRoles,
 }
 
-async function getAliasFromSynapseByEmail(synapseEmailAddress: string): Promise<any> {
-  if (synapseEmailAddress.indexOf('@synapse.org') === -1 && synapseEmailAddress.indexOf('@synapse.org') > -1) {
-    return Promise.reject({message: 'the email should be ...@synapse.org'})
+function isSynapseEmail(emailAddress: string): boolean {
+  return emailAddress.endsWith('@synapse.org')
+}
+
+export type SynapseAlias = {
+  principalId: string
+  firstName: string
+  lastName: string
+}
+
+async function getAliasFromSynapseByEmail(synapseEmailAddress: string): Promise<SynapseAlias> {
+  if (!isSynapseEmail(synapseEmailAddress)) {
+    throw Error('the email should be ...@synapse.org')
   }
 
   const alias = synapseEmailAddress.replace('@synapse.org', '').trim()
@@ -74,16 +85,21 @@ async function deleteIndividualAccount(token: string, userId: string): Promise<L
   return result.data
 }
 
+export type IdentifierHolder = {
+  identifier: string
+  type: 'IdentifierHolder'
+}
+
 async function createIndividualAccount(
   token: string,
   email: string,
-  synapseUserId: string,
-  firstName: string,
-  lastName: string,
+  synapseUserId: string | null,
+  firstName: string | null,
+  lastName: string | null,
   orgMembership: string,
   clientData: object,
   userRoles: string[]
-): Promise<any> {
+) {
   const postData = {
     appId: Utility.getAppId(),
     email,
@@ -95,9 +111,8 @@ async function createIndividualAccount(
     clientData,
   }
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', '')
-  const result = await Utility.callEndpoint<any>(endpoint, 'POST', postData, token)
-
-  return result.ok
+  const result = await Utility.callEndpoint<IdentifierHolder>(endpoint, 'POST', postData, token)
+  return result.data
 }
 
 async function updateIndividualAccountRoles(

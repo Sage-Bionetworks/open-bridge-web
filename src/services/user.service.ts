@@ -65,12 +65,22 @@ async function requestResetPassword(email: string) {
   return await Utility.callEndpoint<MessageResponse>(constants.endpoints.requestResetPassword, 'POST', postData)
 }
 
+async function sendRequestResetPassword(userId: string, token: string) {
+  return await Utility.callEndpoint<MessageResponse>(
+    constants.endpoints.sendRequestResetPassword.replace(':userId', userId),
+    'POST',
+    {},
+    token
+  )
+}
+
 const UserService = {
   loginOauth,
   loginUsernamePassword,
   getUserInfo,
   getUserInfoFromSynapse,
   requestResetPassword,
+  sendRequestResetPassword,
 }
 
 export default UserService

@@ -21,6 +21,11 @@ const step: Step = {
   },
 }
 
+afterEach(() => {
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
+})
+
 test('renders the component with the right image', () => {
   renderComponent(step)
   const imgContainer = screen.getByRole('img', {name: /energy/i}).parentElement

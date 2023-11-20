@@ -1,5 +1,6 @@
 import constants from '@typedefs/constants'
 import {rest} from 'msw'
+import AccountHandlers from './accountHandlers'
 import AdherenceAlertsHandlers from './adherenceAlertsHandlers'
 import AssessmentRequests from './assessmentHandlers'
 import EnrollmentParticipantRequests from './enrollmentParticipantHandlers'
@@ -8,6 +9,7 @@ import {default as AccountRequests, default as StudyRequests} from './studyHandl
 import UserHandlers from './userHandlers'
 
 export const handlers = [
+  ...AccountHandlers,
   ...AssessmentRequests,
   ...EnrollmentParticipantRequests,
   ...StudyRequests,

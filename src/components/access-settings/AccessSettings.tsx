@@ -4,7 +4,7 @@ import SideBarListItem from '@components/widgets/SideBarListItem'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import Delete from '@mui/icons-material/DeleteTwoTone'
-import {Alert, Avatar, Box, Button, CircularProgress, Theme, Typography} from '@mui/material'
+import {Alert, Avatar, Backdrop, Box, Button, CircularProgress, Theme, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AccessService from '@services/access.service'
 import ParticipantService from '@services/participants.service'
@@ -13,8 +13,9 @@ import {LoggedInUserClientData, LoggedInUserData, Study} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent, useRef} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import AccessGrid, {Access, getAccessFromRoles, getRolesFromAccess, NO_ACCESS, userHasCoadminAccess} from './AccessGrid'
+import AccessGrid, {Access, NO_ACCESS, getAccessFromRoles, getRolesFromAccess, userHasCoadminAccess} from './AccessGrid'
 import MemberInvite, {NewOrgAccount} from './MemberInvite'
+import {useCreateNewAccount} from './accessHooks'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -57,13 +58,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   error: {},
 }))
 
-function getNameDisplay({
-  firstName,
-  lastName,
-
-  synapseUserId,
-}: LoggedInUserData): string {
-  const name = firstName || lastName ? [firstName, lastName].join(' ') : synapseUserId
+function getNameDisplay({firstName, lastName, email, synapseUserId}: LoggedInUserData): string {
+  const name = firstName || lastName ? [firstName, lastName].join(' ') : synapseUserId || email
   return name || ''
 }
 
@@ -157,28 +153,16 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
     [id]
   )
 
-  async function createNewAccount(email: string, access: Access, token: string, currentUserOrg: string) {
-    try {
-      const {principalId, firstName, lastName} = await AccessService.getAliasFromSynapseByEmail(email)
-
-      const demoExternalId = await ParticipantService.signUpForAssessmentDemoStudy(token!)
-
-      await AccessService.createIndividualAccount(
-        token!,
-        email,
-        principalId,
-        firstName,
-        lastName,
-        currentUserOrg,
-        {demoExternalId},
-        getRolesFromAccess(access)
-      )
-
-      return [true]
-    } catch (error) {
-      return [false, error]
-    }
-  }
+  const {mutate: inviteUser, isLoading: isCreatingNewMember} = useCreateNewAccount({
+    onSuccess: () => {
+      setNewOrgAccount(CreateNewOrgAccountTemplate())
+      setUpdateToggle(prev => !prev)
+    },
+    onError: error => {
+      const errorString = error.message || error.reason
+      setNewOrgAccount({...newOrgAccount, error: errorString})
+    },
+  })
 
   React.useEffect(() => {
     let isSubscribed = true
@@ -255,21 +239,6 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
     return currentMemberAccess?.member.id === id
   }
 
-  const inviteUser = async (account: NewOrgAccount) => {
-    if (!account.email) {
-      setNewOrgAccount({...account, error: 'No email provided'})
-      return
-    }
-    const [success, error] = await createNewAccount(account.email, account.access, token!, orgMembership!)
-    if (success) {
-      setNewOrgAccount({...account, isAdded: true})
-      setUpdateToggle(prev => !prev)
-    } else {
-      const errorString = error.message || error.reason
-      setNewOrgAccount({...account, error: errorString})
-    }
-  }
-
   return (
     <Box className={classes.root}>
       <Box className={classes.listing}>
@@ -320,7 +289,7 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
               onClick={() => setIsAddingNewMember(true)}
               variant="contained"
               color="primary"
-              disabled={isAddingNewMember}>
+              disabled={isAddingNewMember || isAccessLoading}>
               Add New Member
             </Button>
           )}
@@ -426,16 +395,20 @@ const AccessSettings: FunctionComponent<{study: Study}> = ({study}) => {
             />
 
             <Button
+              disabled={isCreatingNewMember}
               sx={{marginLeft: 'auto', marginTop: theme.spacing(5), float: 'right'}}
               onClick={() => {
                 scollToRef.current?.scrollIntoView()
                 setCurrentMemberAccess(undefined)
-                inviteUser(newOrgAccount)
+                inviteUser({account: newOrgAccount, currentUserOrg: orgMembership!})
               }}
               color="primary"
               variant="contained">
-              Save Changes
+              {isCreatingNewMember ? 'Saving...' : 'Save Changes'}
             </Button>
+            <Backdrop open={isCreatingNewMember} sx={{zIndex: theme => theme.zIndex.drawer + 1}}>
+              <CircularProgress />
+            </Backdrop>
           </Box>
         )}
       </Loader>

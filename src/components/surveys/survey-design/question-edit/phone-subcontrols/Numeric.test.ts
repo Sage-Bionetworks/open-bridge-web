@@ -24,6 +24,11 @@ const step: NumericQuestion = {
   },
 }
 
+afterEach(() => {
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
+})
+
 //test the component renders without field label
 test('renders the component without label', () => {
   renderComponent(step)

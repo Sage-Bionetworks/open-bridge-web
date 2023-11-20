@@ -32,6 +32,10 @@ export interface ExtendedError extends Error {
   entity?: any
 }
 
+export interface SynapseClientError extends Error {
+  reason: string
+}
+
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
 
 export type ViewType = 'LIST' | 'GRID'

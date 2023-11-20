@@ -28,6 +28,10 @@ const step: Step = {
   },
 }
 
+afterEach(() => {
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
+})
 
 test('has the link to branching', async () => {
   renderComponent(step)

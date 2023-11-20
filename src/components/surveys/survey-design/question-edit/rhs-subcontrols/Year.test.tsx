@@ -46,6 +46,7 @@ function setUp(step: YearQuestion) {
 
 const setUpWithChangeMock = (step: YearQuestion) => {
   const onChangeMock = jest.fn()
+  jest.useFakeTimers()
   const user = userEvent.setup({advanceTimers: jest.advanceTimersByTime})
   const component = render(<Year step={step} onChange={onChangeMock} />, {
     wrapper: createWrapper(),
@@ -78,6 +79,8 @@ function createStepProps(formatOptions: FormatOptionsYear) {
 describe('Year', () => {
   afterEach(() => {
     jest.restoreAllMocks()
+    jest.runOnlyPendingTimers()
+    jest.useRealTimers()
     cleanup()
   })
 

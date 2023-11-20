@@ -23,6 +23,11 @@ const step: TimeQuestion = {
   },
 }
 
+afterEach(() => {
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
+})
+
 //test the component renders without field label
 test('renders the component without min/max', () => {
   renderComponent(step)
