@@ -155,6 +155,7 @@ export type AssessmentBase = {
   originGuid?: string
   imageResource?: AssessmentImageResource
   phase?: string
+  frameworkIdentifier?: string
 }
 
 /**
