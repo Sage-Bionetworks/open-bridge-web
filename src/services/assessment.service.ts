@@ -143,10 +143,11 @@ async function getAssessmentsWithResources(
   refactored as to add the proper tags conditionally */
 async function createSurveyAssessment(appId: string, assessment: Assessment, token: string): Promise<Assessment> {
   const tags = Array.from(new Set([...assessment.tags, SURVEY_APP_TAG[appId]]))
+  const frameworkIdentifier = assessment.frameworkIdentifier ?? 'health.bridgedigital.assessment'
   const response = await Utility.callEndpoint<Assessment>(
     constants.endpoints.assessment.replace(':id', ''),
     'POST',
-    {...assessment, tags},
+    {...assessment, tags, frameworkIdentifier},
     token
   )
   return response.data
@@ -191,7 +192,8 @@ async function updateSurveyAssessment(appId: string, assessment: Assessment, tok
         value: (assessment.defaultLabel && assessment.defaultLabel.trim() !== "") ? assessment.defaultLabel : assessment.title,
       },
     ]
-  const assessmentToUpdate = {...assessment, labels, tags}
+  const frameworkIdentifier = assessment.frameworkIdentifier ?? 'health.bridgedigital.assessment'
+  const assessmentToUpdate = {...assessment, labels, tags, frameworkIdentifier}
   const update = async (a: Assessment): Promise<Assessment> => {
     const assessmentResponse = await Utility.callEndpoint<Assessment>(
       endpoint,
