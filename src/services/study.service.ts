@@ -2,7 +2,7 @@ import {Schedule} from '@typedefs/scheduling'
 
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
-import {DisplayStudyPhase, ExtendedError, FileRevision, Study, StudyPhase} from '../types/types'
+import {DisplayStudyPhase, ExtendedError, FileRevision, Study, StudyPhase, UploadTableJobResult} from '../types/types'
 import ScheduleService from './schedule.service'
 
 const StudyService = {
@@ -21,6 +21,8 @@ const StudyService = {
   updateStudy,
   completeStudy,
   withdrawStudy,
+  startUploadTableJob,
+  getUploadTableJobStatus,
 }
 
 function getDisplayStatusForStudyPhase(phase: StudyPhase): DisplayStudyPhase {
@@ -274,4 +276,29 @@ async function launchStudy(studyId: string, token: string): Promise<Study> {
   }
   return data
 }
+
+async function startUploadTableJob(studyId: string, token: string): Promise<string> {
+  const newJob = await Utility.callEndpoint<{jobGuid: string}>(
+    constants.endpoints.uploadTableStartJob.replace(':studyId', studyId),
+    'POST',
+    {},
+    token
+  )
+
+  return newJob.data.jobGuid
+}
+
+async function getUploadTableJobStatus(studyId: string, jobGuid: string, token: string): Promise<UploadTableJobResult> {
+  const jobStatus = await Utility.callEndpoint<UploadTableJobResult>(
+    constants.endpoints.uploadTableJobStatus
+      .replace(':studyId', studyId)
+      .replace(':jobGuid', jobGuid),
+    'POST',
+    {},
+    token
+  )
+
+  return jobStatus.data
+}
+
 export default StudyService

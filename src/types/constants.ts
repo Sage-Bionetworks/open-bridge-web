@@ -185,6 +185,8 @@ const constants = {
     studies: '/v5/studies',
     synapseGetAlias: '/repo/v1/principal/alias',
     synapseGetUserProfile: '/repo/v1/user/:id/bundle',
+    uploadTableStartJob: '/v5/studies/:studyId/uploadtable/requests',
+    uploadTableJobStatus: '/v5/studies/:studyId/uploadtable/requests/:jobGuid',
   },
 }
 
