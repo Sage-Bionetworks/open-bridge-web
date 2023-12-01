@@ -6,6 +6,7 @@ import AssessmentLibrary from '@components/assessments/AssessmentLibrary'
 import AssessmentsPreview from '@components/assessments/AssessmentsPreview'
 import StudyLive from '@components/studies/launch/Live'
 import ParticipantManager from '@components/studies/participants/ParticipantManager'
+import StudyData from '@components/studies/study-data/StudyData'
 import StudyBuilder from '@components/studies/StudyBuilder'
 import StudyList from '@components/studies/StudyList'
 import SurveyBranching from '@components/surveys/survey-branching/SurveyBranching'
@@ -77,6 +78,12 @@ const PATHS: NavRouteType[] = [
     name: '',
     exact: false,
     Component: ParticipantManager,
+  },
+  {
+    path: constants.restrictedPaths.STUDY_DATA,
+    name: '',
+    exact: false,
+    Component: StudyData,
   },
   {
     path: constants.restrictedPaths.ACCESS_SETTINGS,

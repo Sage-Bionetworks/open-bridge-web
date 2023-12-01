@@ -293,7 +293,7 @@ async function getUploadTableJobStatus(studyId: string, jobGuid: string, token: 
     constants.endpoints.uploadTableJobStatus
       .replace(':studyId', studyId)
       .replace(':jobGuid', jobGuid),
-    'POST',
+    'GET',
     {},
     token
   )
