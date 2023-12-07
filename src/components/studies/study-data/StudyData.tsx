@@ -66,7 +66,6 @@ const StudyData: FunctionComponent<StudyDataProps> = () => {
           keepGoing = false
           if (job.status === 'succeeded' && job.url) {
             // If the job succeeded and it has a non-null url, then set the URL
-            console.log(`Job successful: ${job.url!}`)
             setFileDownloadUrl(job.url)
           } else {
             throw Error(`Failed to build CVS scores tables. Try again later.`)
