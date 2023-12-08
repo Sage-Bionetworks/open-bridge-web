@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type UploadStudyLogoSection = {
+type UploadStudyLogoSectionProps = {
   handleFileChange: Function
   imgHeight: number
   saveLoader: boolean
@@ -29,7 +29,7 @@ type UploadStudyLogoSection = {
   isSettingStudyLogo: boolean
 }
 
-const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = ({
+const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSectionProps> = ({
   handleFileChange,
   imgHeight,
   saveLoader,

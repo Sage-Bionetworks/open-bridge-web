@@ -1,5 +1,4 @@
 import Utility from '../../helpers/utility'
-import CONSTANTS from '../../types/constants'
 
 import CategoryTwoToneIcon from '@mui/icons-material/CategoryTwoTone'
 import DateRangeTwoToneIcon from '@mui/icons-material/DateRangeTwoTone'

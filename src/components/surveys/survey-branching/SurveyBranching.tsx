@@ -1,5 +1,5 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import {Box, styled, Typography} from '@mui/material'
+import {Box, styled} from '@mui/material'
 import {useSurveyAssessment, useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
 import {latoFont, theme} from '@style/theme'
 import {ChoiceQuestion, Step, Survey} from '@typedefs/surveys'
@@ -24,7 +24,6 @@ import BranchingConfig from './BranchingConfig'
 import getNodes from './GetNodesToPlot'
 import {useGetPlotWidth} from './UseGetPlotWidth'
 import { Assessment } from '@typedefs/types'
-import { isJSDocReadonlyTag } from 'typescript'
 import ReadOnlyBanner from '@components/widgets/ReadOnlyBanner'
 
 /*const edgeTypes = {

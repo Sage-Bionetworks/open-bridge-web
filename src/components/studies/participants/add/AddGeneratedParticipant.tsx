@@ -1,15 +1,10 @@
 import {Box, FormControl, FormGroup, LinearProgress} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import Alert from '@mui/material/Alert'
 import React, {FunctionComponent} from 'react'
 import Utility from '../../../../helpers/utility'
 import ParticipantService from '../../../../services/participants.service'
 import HideWhen from '../../../widgets/HideWhen'
 import {BlueButton, SimpleTextInput, SimpleTextLabel} from '../../../widgets/StyledComponents'
-
-const useStyles = makeStyles(theme => ({
-  root: {},
-}))
 
 type AddGeneratedParticipantProps = {
   token: string

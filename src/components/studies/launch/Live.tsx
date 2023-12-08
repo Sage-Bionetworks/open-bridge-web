@@ -13,7 +13,7 @@ const Live: React.FunctionComponent<RouteComponentProps> = () => {
     id: string
   }>()
 
-  const {data: study, error: studyError} = useStudy(id)
+  const {data: study} = useStudy(id)
   if (!study) {
     return <></>
   }

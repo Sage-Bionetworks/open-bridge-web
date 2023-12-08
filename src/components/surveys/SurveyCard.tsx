@@ -1,7 +1,7 @@
 import CardWithMenu, {StatusColor} from '@components/widgets/CardWithMenu'
 import Utility from '@helpers/utility'
 import {Box, styled} from '@mui/material'
-import {Assessment, AssessmentEditPhase, DisplayStudyPhase} from '@typedefs/types'
+import {Assessment, AssessmentEditPhase} from '@typedefs/types'
 import dayjs from 'dayjs'
 import {FunctionComponent} from 'react'
 

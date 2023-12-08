@@ -8,7 +8,6 @@ import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {Assessment, AssessmentEditPhase} from '@typedefs/types'
 import React, { FunctionComponent } from 'react'
-import {useErrorHandler} from 'react-error-boundary'
 import {Redirect, useHistory} from 'react-router-dom'
 import SurveyCard from './SurveyCard'
 import CollapsableMenu from './widgets/MenuDropdown'
@@ -112,7 +111,7 @@ const SurveySublist: FunctionComponent<SurveySublistProps> = ({
   highlightedId,
   menuAnchor,
 }: SurveySublistProps) => {
-  const displayItems = status ? surveys.filter(survey => status == survey.phase) : surveys
+  const displayItems = status ? surveys.filter(survey => status === survey.phase) : surveys
 
   if (displayItems?.length === 0) {
     return <></>
@@ -146,7 +145,6 @@ const SurveySublist: FunctionComponent<SurveySublistProps> = ({
 }
 
 const SurveyList: React.FunctionComponent<{}> = () => {
-  const handleError = useErrorHandler()
   const history = useHistory()
 
   const [isNew, setIsNew] = React.useState(false)

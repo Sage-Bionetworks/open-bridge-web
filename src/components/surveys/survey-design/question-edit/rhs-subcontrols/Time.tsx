@@ -8,11 +8,8 @@ import {
   FormControlLabel,
   MenuItem,
   OutlinedInput,
-  Radio,
-  RadioGroup,
   SelectChangeEvent,
   Typography,
-  styled,
 } from '@mui/material'
 import {theme} from '@style/theme'
 import {FormatOptionsTime, TimeQuestion} from '@typedefs/surveys'
@@ -79,21 +76,6 @@ const ValueSelector: React.FunctionComponent<{
   )
 }
 
-type LimitType = 'PAST' | 'FUTURE' | 'NONE'
-
-function getLimit(fo?: FormatOptionsTime): LimitType {
-  if (!fo) {
-    return 'NONE'
-  }
-  if (fo.allowPast === false) {
-    return 'FUTURE'
-  }
-  if (fo.allowFuture === false) {
-    return 'PAST'
-  }
-  return 'NONE'
-}
-
 // TODO: Time is partially controlled, so parent (QuestionEditRhs) uses a key
 // to re-render the entire component when the step is changed.
 // Consider making this components fully controlled instead.
@@ -110,7 +92,6 @@ const Time: React.FunctionComponent<{
     max: step.inputItem.formatOptions?.maximumValue,
   })
 
-  const [exclude, setExclude] = React.useState<LimitType>(getLimit(step.inputItem.formatOptions))
   const onUpdateFormat = (fm: FormatOptionsTime) => {
     const inputItem = {...step.inputItem, formatOptions: fm}
     onChange({...step, inputItem})

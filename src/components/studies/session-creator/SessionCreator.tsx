@@ -122,9 +122,9 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
 
   const {data: schedule} = useSchedule(id)
 
-  const {data: study, error, isLoading} = useStudy(id)
+  const {data: study} = useStudy(id)
 
-  const {mutateAsync: mutateSchedule, data} = useUpdateSchedule()
+  const {mutateAsync: mutateSchedule} = useUpdateSchedule()
 
   const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)

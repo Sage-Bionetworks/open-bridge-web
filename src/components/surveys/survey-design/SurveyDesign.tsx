@@ -155,7 +155,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
   const {mutate: mutateAssessment, error: errorAssessmentUpdate} = useUpdateSurveyAssessment()
   const {mutate: mutateSurvey, error: errorSurveyUpdate} = useUpdateSurveyConfig()
-  const {mutate: mutateResource, error: errorResourceUpdate} = useUpdateSurveyResource()
+  const {error: errorResourceUpdate} = useUpdateSurveyResource()
   const [debugOpen, setDebugOpen] = React.useState(false)
 
   //effects to populate local copies

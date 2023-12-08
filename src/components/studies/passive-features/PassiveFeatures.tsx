@@ -117,11 +117,7 @@ export interface PassiveFeaturesProps {
 const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, children}) => {
   const {data: study} = useStudy(id)
 
-  const {mutateAsync: mutateStudy, data} = useUpdateStudyDetail()
-
-  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
-
-  const [saveLoader, setSaveLoader] = React.useState(false)
+  const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
 
   const onUpdate = async (recorders: BackgroundRecorders) => {
     if (!study) {
@@ -134,6 +130,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
     updatedStudy.clientData.backgroundRecorders = recorders
     try {
       const result = await mutateStudy({study: updatedStudy})
+      console.log(`study ${result.identifier} updated`)
     } catch (e) {
       alert(e)
     } finally {

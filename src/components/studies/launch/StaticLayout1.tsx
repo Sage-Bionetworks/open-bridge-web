@@ -14,7 +14,7 @@ const Live: React.FunctionComponent<{
     id: string
   }>()
 
-  const {data: study, error: studyError} = useStudy(id)
+  const {data: study} = useStudy(id)
   if (!study) {
     return <></>
   }

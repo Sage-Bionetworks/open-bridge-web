@@ -80,7 +80,8 @@ const ROW_HEADINGS = [
   'Does not require PHI IRB approval',
 ]
 
-const PHONE_SELECTIONS = [false, true, true, false]
+// TODO: syoung 12/08/2023 Uncomment when/if we ever support phone sign-in
+// const PHONE_SELECTIONS = [false, true, true, false]
 
 const ID_SELECTIONS = [true, false, false, true]
 

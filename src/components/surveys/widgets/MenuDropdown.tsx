@@ -52,9 +52,7 @@ export const MenuDesktop = <T extends unknown>({
   selectedFn,
   onClick,
   displayItem,
-  width,
 }: MenuDropdownProps<T> & {displayItem: (a: T, isSelected?: boolean) => React.ReactElement}) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
 
   return (
     <Box id="hight">

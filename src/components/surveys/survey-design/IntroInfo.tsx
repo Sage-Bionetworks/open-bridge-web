@@ -80,20 +80,6 @@ const AutoCompleteText = styled(TextField)(({theme}) => ({
   },
 }))
 
-const QuestionSettings = styled('div', {label: 'QuestionSettings'})(({theme}) => ({
-  width: '345px',
-  height: '171px',
-  marginBottom: theme.spacing(4),
-  padding: theme.spacing(3),
-
-  textAlign: 'left',
-  '& span': {fontSize: '14px'},
-  '& .MuiRadio-root': {
-    padding: theme.spacing(0.5, 1.5),
-  },
-
-  backgroundColor: ' #FFF',
-}))
 const PauseMenuSettings = styled('div', {label: 'PauseMenuSettings'})(({theme}) => ({
   backgroundColor: '#fff',
   maxWidth: '550px',

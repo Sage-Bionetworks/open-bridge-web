@@ -2,7 +2,6 @@ import AssessmentSmall from '@components/assessments/AssessmentSmall'
 import {BuilderWrapper} from '@components/studies/StudyBuilder'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Box, Typography} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import {theme} from '@style/theme'
 import {StudySession} from '@typedefs/scheduling'
 import React, {FunctionComponent} from 'react'
@@ -13,14 +12,6 @@ type ReadOnlySessionCreatorProps = {
   sessions: StudySession[]
   children: React.ReactNode
 }
-
-const useStyles = makeStyles(theme => ({
-  assessmentContainer: {
-    marginRight: theme.spacing(2),
-    backgroundColor: '#f2f2f2',
-    paddingBottom: theme.spacing(5),
-  },
-}))
 
 const ReadOnlySessionCreator: FunctionComponent<ReadOnlySessionCreatorProps> = ({sessions, children}) => {
   const sessionCreatorClasses = SharedSessionCreatorStyles()

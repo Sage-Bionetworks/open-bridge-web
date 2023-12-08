@@ -9,7 +9,7 @@ import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
 import {Route, RouteComponentProps, Switch, useParams} from 'react-router-dom'
-import {ExtendedError, StringDictionary, Study} from '../../types/types'
+import {ExtendedError, Study} from '../../types/types'
 import AlertBanner from '../widgets/AlertBanner'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
@@ -26,16 +26,17 @@ import SessionCreator from './session-creator/SessionCreator'
 import StudyBuilderHeader from './StudyBuilderHeader'
 import StudyLeftNav from './StudyLeftNav'
 
-const subtitles: StringDictionary<string> = {
-  description: 'Description',
-  'team-settings': 'Team Settings',
-  scheduler: 'Schedule Sessions',
-  'session-creator': 'Create Sessions',
-  customize: 'Customize your App',
-  'enrollment-type-selector': 'Participant Study Enrollment',
-  'passive-features': 'Optional Background Monitoring',
-  launch: 'Launch Study Requirements',
-}
+// TODO: syoung 12/08/2023 figure out it this is needed or remove
+// const subtitles: StringDictionary<string> = {
+//   description: 'Description',
+//   'team-settings': 'Team Settings',
+//   scheduler: 'Schedule Sessions',
+//   'session-creator': 'Create Sessions',
+//   customize: 'Customize your App',
+//   'enrollment-type-selector': 'Participant Study Enrollment',
+//   'passive-features': 'Optional Background Monitoring',
+//   launch: 'Launch Study Requirements',
+// }
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWrapper: {
@@ -143,8 +144,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     section: StudySection
   }>()
 
-  const {data: schedule, error: scheduleError, isLoading: isScheduleLoading} = useSchedule(id)
-  const {data: studySource, error: studyError, isLoading: isStudyLoading} = useStudy(id)
+  const {data: schedule, isLoading: isScheduleLoading} = useSchedule(id)
+  const {data: studySource, isLoading: isStudyLoading} = useStudy(id)
   const [study, setStudy] = React.useState<Study | undefined>()
 
   const [error, setError] = React.useState<string>()

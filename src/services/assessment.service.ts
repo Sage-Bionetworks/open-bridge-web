@@ -114,10 +114,11 @@ async function getAssessmentsWithResources(
       //@ts-ignore
       .map(i => i.value) as Assessment[]
 
-    const itemsFailed = items1
-      .filter(i => i.status === 'rejected')
-      //@ts-ignore
-      .map(i => i.reason)
+    // TODO: syoung 12/08/2023 Figure out why this is here since its ignored
+    // const itemsFailed = items1
+    //   .filter(i => i.status === 'rejected')
+    //   //@ts-ignore
+    //   .map(i => i.reason)
 
     const allTags = items.map(item => item.tags).flat()
     const tags = allTags.reduce((acc, curr) => {
