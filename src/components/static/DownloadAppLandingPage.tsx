@@ -7,6 +7,13 @@ import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, playfairDisplayFont, theme} from '@style/theme'
 import React from 'react'
 
+
+/**
+ * syoung 12/11/2020 
+ * This is currently hardcoded to hide this component if this is an ARC website which will work
+ * fine until we are supporting any other websites other than ARC and Open Bridge.
+ */
+
 const useStyles = makeStyles(theme => ({
   container: {
     width: '100%',
