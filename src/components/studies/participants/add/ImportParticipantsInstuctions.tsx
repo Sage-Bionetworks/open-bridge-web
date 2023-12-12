@@ -6,7 +6,7 @@ import {theme} from '@style/theme'
 import React, {FunctionComponent} from 'react'
 import {jsonToCSV} from 'react-papaparse'
 import CsvUtility from '../csv/csvUtility'
-import ParticipantDownloadTrigger from '../csv/ParticipantDownloadTrigger'
+import DownloadTrigger from '../../DownloadTrigger'
 //import { EnrollmentType } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
@@ -92,7 +92,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
       {recList}
       Your file should match this template:
       <br />
-      <ParticipantDownloadTrigger
+      <DownloadTrigger
         onDownload={() => createDownloadTemplate()}
         fileDownloadUrl={fileDownloadUrl}
         hasItems={true}
@@ -118,7 +118,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
           <DownloadTwoToneIcon />
           &nbsp; Participant Import Template
         </Box>
-      </ParticipantDownloadTrigger>
+      </DownloadTrigger>
       *Required info. Please include only <strong>new participants</strong> in the .csv.
       <p>&nbsp;</p>
       <Box mx="auto" my={2} textAlign="center">

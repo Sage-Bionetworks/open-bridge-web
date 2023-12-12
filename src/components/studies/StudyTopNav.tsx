@@ -3,6 +3,7 @@ import Utility from '@helpers/utility'
 import BuildTwoToneIcon from '@mui/icons-material/BuildTwoTone'
 import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone'
 import PersonSearchTwoToneIcon from '@mui/icons-material/PersonSearchTwoTone'
+import CloudUploadTwoToneIcon from '@mui/icons-material/CloudUploadTwoTone'
 import {Alert, Box} from '@mui/material'
 import constants from '@typedefs/constants'
 import {ExtendedError, Study, StudyPhase} from '@typedefs/types'
@@ -35,6 +36,12 @@ const allLinks: {path: string; name: string; status: StudyPhase[]; icon: React.R
     name: 'adherence data',
     status: ['in_flight', 'legacy', 'recruitment'],
     icon: <EventAvailableTwoToneIcon />,
+  },
+  {
+    path: constants.restrictedPaths.STUDY_DATA,
+    name: 'study data',
+    status: ['in_flight', 'recruitment', 'completed'],
+    icon: <CloudUploadTwoToneIcon />,
   },
 ]
 

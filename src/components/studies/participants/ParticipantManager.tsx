@@ -35,7 +35,7 @@ import {useInvalidateParticipants, useParticipants} from '../../../services/part
 import StudyBuilderHeader from '../StudyBuilderHeader'
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
-import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
+import DownloadTrigger from '../DownloadTrigger'
 import ParticipantTableGrid from './grid/ParticipantTableGrid'
 import BatchEditForm from './modify/BatchEditForm'
 import ParticipantDeleteModal from './ParticipantDeleteModal'
@@ -398,10 +398,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           Batch Edit
                         </Button>
                       )}
-                      <ParticipantDownloadTrigger
+                      <DownloadTrigger
                         hasImage={true}
                         onDownload={() => downloadParticipants(isAllSelected ? 'ALL' : 'SOME')}
                         fileDownloadUrl={fileDownloadUrl}
+                        fileLabel={'StudyParticipants.csv'}
                         hasItems={!!data?.items?.length && selectedParticipantIds[tab].length > 0}
                         onDone={() => {
                           URL.revokeObjectURL(fileDownloadUrl!)
@@ -410,7 +411,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         <>
                           {!loadingIndicators.isDownloading ? 'StudyParticipants.csv' : <CircularProgress size={24} />}
                         </>
-                      </ParticipantDownloadTrigger>
+                      </DownloadTrigger>
                       <Button
                         aria-label="delete"
                         onClick={() => {

@@ -582,6 +582,57 @@ export type AdherenceAssessmentLevelReport = {
   sessionRecords: AdherenceAssessmentLevelReportSessionRecord[]
 }
 
+/* CVS Upload Table */
+
+/**
+ * Status of the CSV generation job.
+ *  - in_progress = Job is in progress.
+ *  - succeeded = Job is complete.
+ *  - failed = Job failed.
+ */
+export type UploadTableJobStatus =
+  | 'in_progress'
+  | 'succeeded'
+  | 'failed'
+
+/**
+ * This encapsulates not just the table job, but also the S3 pre-signed URL to download results from.
+ */
+export type UploadTableJobResult = {
+
+  /**
+   * Unique identifier for this job.
+   */
+  jobGuid: string
+
+  /**
+   * Study ID that this job is part of.
+   */
+  studyId: string
+
+  /**
+   * Date and time when this job was requested.
+   */
+  requestedOn: Date | string
+
+  /**
+   * Current status of this job.
+   */
+  status: UploadTableJobStatus
+
+  /**
+   * S3 pre-signed URL to download the results of this job. May be null if the job is still in progress or
+   * failed.
+   */
+  url?: string
+
+  /**
+   * Date and time when this job will expire. May be null if the job is still in progress or failed.
+   */
+  expiresOn?: Date | string
+}
+
+
 // POST MVP
 
 export type StudyArm = {
