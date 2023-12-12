@@ -40,7 +40,7 @@ const allLinks: {path: string; name: string; status: StudyPhase[]; icon: React.R
   {
     path: constants.restrictedPaths.STUDY_DATA,
     name: 'study data',
-    status: ['in_flight', 'legacy', 'recruitment'],
+    status: ['in_flight', 'recruitment', 'completed'],
     icon: <CloudUploadTwoToneIcon />,
   },
 ]
