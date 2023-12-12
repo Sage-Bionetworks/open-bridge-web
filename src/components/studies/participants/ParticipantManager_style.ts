@@ -1,5 +1,4 @@
 import makeStyles from '@mui/styles/makeStyles'
-import {latoFont} from '@style/theme'
 
 const useStyles = makeStyles(theme => ({
 

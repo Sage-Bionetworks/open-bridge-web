@@ -104,7 +104,6 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
   }
 
   const onSave = async () => {
-    {
       if (!study) {
         return
       }
@@ -117,13 +116,13 @@ const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedb
 
       try {
         const result = await mutateStudy({study: study})
+        console.log(`Study ${result.identifier} updated`)
         setHasObjectChanged(false)
       } catch (e) {
         alert(e)
       } finally {
         console.log('finishing update')
       }
-    }
   }
 
   const onUpdate = (study: Study) => {

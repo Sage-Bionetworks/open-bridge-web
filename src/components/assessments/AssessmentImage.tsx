@@ -2,7 +2,7 @@ import assDetailFrame from '@assets/assessments/assessment_detail_frame.svg'
 import DefaultImg from '@assets/sage.svg'
 import { SURVEY_ICONS } from '@components/surveys/widgets/SurveyIcon'
 import {Box, styled, SxProps} from '@mui/material'
-import {Assessment, AssessmentImageResource, AssessmentResource} from '@typedefs/types'
+import {Assessment} from '@typedefs/types'
 import React, {FunctionComponent, ReactNode} from 'react'
 
 const CardTop = styled(Box, {label: 'StyledCardMedia'})(({theme}) => ({

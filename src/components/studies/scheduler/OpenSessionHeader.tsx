@@ -11,7 +11,7 @@ const OpenSessionHeader: React.FunctionComponent<{
     return <></>
   }
 
-  const {symbol, name, assessments = []} = session
+  const {name, assessments = []} = session
 
   const totalTime = assessments.reduce((total, curr) => {
     const time = curr.minutesToComplete

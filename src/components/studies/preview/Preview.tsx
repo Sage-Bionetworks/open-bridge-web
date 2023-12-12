@@ -20,7 +20,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  Divider,
   FormControl,
   FormLabel,
   Typography,
@@ -28,12 +27,10 @@ import {
 import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService from '@services/participants.service'
 import {latoFont, playfairDisplayFont, poppinsFont, theme, ThemeType} from '@style/theme'
-import {Assessment} from '@typedefs/types'
 import clsx from 'clsx'
-import React, {useEffect} from 'react'
+import React from 'react'
 import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
 import {NavLink} from 'react-router-dom'
-import {useSchedule} from '../../../services/scheduleHooks'
 import {BuilderWrapper} from '../StudyBuilder'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -187,6 +184,9 @@ const Reminder: React.FunctionComponent<{text: string; img: string}> = ({text, i
   )
 }
 
+/**
+ * TODO: syoung 12/08/2023 Figure out why this component was created and if it can be safely deleted.
+
 const PreviewAssessments: React.FunctionComponent<{
   studyId: string
 }> = ({studyId}) => {
@@ -239,6 +239,7 @@ const PreviewAssessments: React.FunctionComponent<{
     </>
   )
 }
+ */
 
 const PreviewIdGenerated: React.FunctionComponent<{
   testParticipantId: string
@@ -395,7 +396,6 @@ const PreviewIntroScreen: React.FunctionComponent<{
   onGetParticipantId: Function
 }> = ({onGetParticipantId, isAssessmentDemo}) => {
   const classes = useStyles()
-  const {token} = useUserSessionDataState()
 
   const text = [
     'Only use the Open Bridge for authorized purposes.',

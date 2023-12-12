@@ -1,6 +1,6 @@
 import MediationTwoToneIcon from '@mui/icons-material/MediationTwoTone'
 import Alert from '@mui/icons-material/ReportProblemTwoTone'
-import {Box, Button, Divider, Typography} from '@mui/material'
+import {Box, Button, Typography} from '@mui/material'
 import {styled} from '@mui/material/styles'
 import {theme} from '@style/theme'
 import {BaseStep} from '@typedefs/surveys'

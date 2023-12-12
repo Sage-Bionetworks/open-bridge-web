@@ -9,10 +9,12 @@ import {
 } from '@typedefs/types'
 
 //[database, column header]
-const TEMPLATE_FIELDS = {
-  phone: ['phoneNumber', 'Phone Number'],
-  healthCode: ['healthCode', 'Health Code'],
-}
+
+// TODO: syoung 12/08/2023 Uncomment when/if phone number registration is ever supported
+// const TEMPLATE_FIELDS = {
+//   phone: ['phoneNumber', 'Phone Number'],
+//   healthCode: ['healthCode', 'Health Code'],
+// }
 
 export type ParticipantData = {
   items: ExtendedParticipantAccountSummary[]

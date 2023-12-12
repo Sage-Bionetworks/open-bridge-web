@@ -1,12 +1,6 @@
 import {ReactComponent as MtbSymbol} from '@assets/logo_open_bridge_symbol.svg'
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import Loader from '@components/widgets/Loader'
-//import ArticleTwoToneIcon from '@mui/icons-material/ArticleTwoTone'
-//import CakeTwoToneIcon from '@mui/icons-material/CakeTwoTone'
-//import ChatBubbleTwoToneIcon from '@mui/icons-material/ChatBubbleTwoTone'
-//import FactCheckTwoToneIcon from '@mui/icons-material/FactCheckTwoTone'
-//import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone'
-//import StarsTwoToneIcon from '@mui/icons-material/StarsTwoTone'
 import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone'
 import VerifiedTwoToneIcon from '@mui/icons-material/VerifiedTwoTone'
 import {Box, Container, Divider, Grid, Hidden, styled, Typography} from '@mui/material'
@@ -16,6 +10,14 @@ import React, {FunctionComponent, ReactElement} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
 import AssessmentImage from './AssessmentImage'
+import Utility from '@helpers/utility'
+
+/**
+ * syoung 12/11/2020 
+ * This is currently hardcoded to hide the "official open bridge assessment" logo if this is an 
+ * ARC app. 
+ * TODO: figure out what the point is of the symbol and refactor.
+ */
 
 const InfoTextInContainer = styled(Box)(({theme}) => ({
   fontSize: '14px',
@@ -81,14 +83,16 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
           {data.tags.join(', ')}
         </Typography>
         <Box sx={{display: 'flex'}}>
-          <MtbSymbol
-            title="official_open_bridge_icon"
-            style={{
-              marginRight: '8px',
-              width: '20px',
-              height: '20px',
-            }}
-          />
+          {!Utility.isArcApp() &&
+            <MtbSymbol
+              title="official_open_bridge_icon"
+              style={{
+                marginRight: '8px',
+                width: '20px',
+                height: '20px',
+              }}
+            />
+          }
 
           <Typography component="span">Official Open Bridge version</Typography>
         </Box>

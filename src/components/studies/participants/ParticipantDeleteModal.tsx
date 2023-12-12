@@ -7,7 +7,6 @@ import {ParticipantAccountSummary, ParticipantActivityType} from '@typedefs/type
 import React, {FunctionComponent} from 'react'
 import {useParticipants, useUpdateParticipantInList} from '../../../services/participantHooks'
 import DialogContents from './DialogContents'
-import useStyles from './ParticipantManager_style'
 
 type SelectedParticipantIdsType = {
   ACTIVE: string[]
@@ -50,19 +49,12 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> = (
   loadingIndicators,
   onLoadingIndicatorsChange,
 }) => {
-  const classes = useStyles()
-
-  type SelectedParticipantIdsType = {
-    ACTIVE: string[]
-    TEST: string[]
-    WITHDRAWN: string[]
-  }
 
   const {token} = useUserSessionDataState()
   const {data: study} = useStudy(studyId)
 
   const {data} = useParticipants(study?.identifier, currentPage, pageSize, tab)
-  const {mutate, error: deleteParticipantError, isSuccess} = useUpdateParticipantInList()
+  const {mutate, error: deleteParticipantError} = useUpdateParticipantInList()
 
   const [error, setError] = React.useState<Error>()
 

@@ -25,14 +25,11 @@ type AssessmentLibraryProps = AssessmentLibraryOwnProps & RouteComponentProps
 
 const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: AssessmentLibraryProps) => {
   const classes = useStyles()
-  //const handleError = useErrorHandler()
-  //const view = new URLSearchParams(useLocation().search).get('view')
 
   const [filteredAssessments, setFilteredAssessments] = useState<Assessment[] | undefined>(undefined)
   const [viewMode, setViewMode] = useViewToggle(useLocation().search)
   const {data, isError, error, status, isLoading} = useAssessmentsWithResources(false, false)
   console.log('data', data)
-  const {data: surveys} = useAssessmentsWithResources(false, true)
 
   if (isError) {
     handleError(error!)
@@ -51,20 +48,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: A
           viewMode={viewMode}
           onChangeViewMode={setViewMode}
           onChangeAssessmentsType={() => {}}
-          onChangeTags={(assessments: Assessment[]) => setFilteredAssessments(assessments) /*setFilterTags(tags)*/}>
-          {/*    {surveys?.assessments &&
-            (surveys?.assessments).map((a, index) => (
-              <Link
-                to={`${match.url}/${a.guid}`}
-                className={classes.cardLink}
-                key={a.guid}>
-                <AssessmentCard
-                  index={index}
-                  assessment={a}
-                  key={a.guid}></AssessmentCard>
-              </Link>
-            ))}*/}
-
+          onChangeTags={(assessments: Assessment[]) => setFilteredAssessments(assessments) }>
           {viewMode === 'GRID' ? (
             <>
               {(filteredAssessments || data.assessments).map((a, index) => (

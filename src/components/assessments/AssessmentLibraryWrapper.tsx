@@ -1,7 +1,6 @@
 import CollapsableMenu from '@components/surveys/widgets/MenuDropdown'
 import {StyledToggleButton, StyledToggleButtonGroup} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import ViewListIcon from '@mui/icons-material/ViewListTwoTone'
 import ViewModuleIcon from '@mui/icons-material/ViewModuleTwoTone'
 import {Box, Button, Container, styled, Typography} from '@mui/material'

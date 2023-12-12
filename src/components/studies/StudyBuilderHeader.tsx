@@ -9,7 +9,6 @@ import Utility from '@helpers/utility'
 import {styled} from '@mui/material'
 import StudyService from '@services/study.service'
 import React from 'react'
-import {useHistory} from 'react-router-dom'
 import ReadOnlyBanner from '@components/widgets/ReadOnlyBanner'
 
 const BG_COLOR: Record<DisplayStudyPhase, string> = {
@@ -33,7 +32,6 @@ const StudyBuilderHeader: React.FunctionComponent<{study: Study; isReadOnly?: bo
   isReadOnly,
   sx = {},
 }) => {
-  const history = useHistory()
   const [isOpenAS, setIsOpenAS] = React.useState(false)
 
   return (

@@ -2,8 +2,6 @@ import AssessmentCard from '@components/assessments/AssessmentCard'
 import AssessmentLibraryWrapper from '@components/assessments/AssessmentLibraryWrapper'
 import AssessmentTable from '@components/assessments/AssessmentsTable'
 import Loader from '@components/widgets/Loader'
-import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
-
 import CheckIcon from '@mui/icons-material/Check'
 import {ToggleButton, ToggleButtonGroup} from '@mui/material'
 import {styled} from '@mui/material/styles'
@@ -15,7 +13,7 @@ import React, {FunctionComponent, useState} from 'react'
 const StyledToggleButton = styled(ToggleButton, {label: 'StyledToggleButton'})<{
   disabled?: boolean
   selected?: boolean
-}>(({theme, disabled, selected}) => ({
+}>(({disabled, selected}) => ({
   position: 'relative',
   padding: '0',
   border: disabled ? 'none' : selected ? '2px solid #ccc' : '0px solid transparent',
@@ -93,7 +91,6 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   selectedAssessments,
   onUpdateAssessments,
 }: AssessmentSelectorProps) => {
-  const surveyToggle = useFeatureToggles<FeatureToggles>()
   const [filteredAssessments, setFilteredAssessments] = useState<Assessment[] | undefined>(undefined)
   const [assessmentsType, setAssessmentsType] = React.useState<AssessmentsType>('SHARED')
   const {data, isLoading, status} = useAssessmentsWithResources(false, false)

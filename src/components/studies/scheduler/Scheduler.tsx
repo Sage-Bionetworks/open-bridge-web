@@ -396,6 +396,10 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
       //start event id has changed
       //see if the old session startEventId is study start event Id, and if no other session Has It
       //it is it -- update the study to start with the new starteventId
+
+      // TODO: syoung 12/08/2023 Getting a warning about `studyStartedFromEventId` unused. Silence the
+      // warning by logging to the console, but need to figure out if this whole thing can be deleted.
+      console.log(`start event id has changed: studyStartedFromEventId=${studyStartedFromEventId}`)
     }
     const sessions = actionsReducer(schedule.sessions!, action)
     const newSchedule = {...schedule, sessions}

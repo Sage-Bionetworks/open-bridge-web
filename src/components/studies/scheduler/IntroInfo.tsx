@@ -102,7 +102,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({id, onShowFeedback,
 
   const [studyName, setStudyName] = React.useState('')
   const [duration, setDuration] = React.useState<any>('')
-  const {data: study, error: studyError, isLoading: isLoadingStudy} = useStudy(id)
+  const {data: study, error: studyError} = useStudy(id)
   const {data: schedule, error: scheduleError, isLoading: isLoadingSchedule} = useSchedule(id)
   const {mutateAsync: mutateSchedule} = useUpdateSchedule()
   const history = useHistory()

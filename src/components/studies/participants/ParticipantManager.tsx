@@ -28,7 +28,6 @@ import {
 } from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import {useEvents, useEventsForUsers} from '../../../services/eventHooks'
 import {useInvalidateParticipants, useParticipants} from '../../../services/participantHooks'
@@ -89,7 +88,6 @@ const TAB_DEFs = [
 ]
 
 const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({title}) => {
-  const classes = useStyles()
   return (
     <div>
       <AddTestParticipantsIcon title={title} />
@@ -97,7 +95,6 @@ const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({title}) 
   )
 }
 const GoToDownloadPageLinkSC: FunctionComponent = () => {
-  const classes = useStyles()
   return (
     <Button
       href="/app-store-download"
@@ -128,9 +125,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }>()
 
   const {token} = useUserSessionDataState()
-  const {data: study, error: studyError, isLoading: isStudyLoading} = useStudy(studyId)
+  const {data: study, isLoading: isStudyLoading} = useStudy(studyId)
 
-  const handleError = useErrorHandler()
   const classes = useStyles()
   const [pIds, setPIds] = React.useState<string[]>([])
 
@@ -173,7 +169,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [data, setData] = React.useState<ParticipantData>()
 
   // Hook to get scheduled events
-  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
+  const {data: scheduleEvents = []} = useEvents(studyId)
 
   // Hook to get participants
   const {

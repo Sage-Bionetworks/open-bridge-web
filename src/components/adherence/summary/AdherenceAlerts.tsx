@@ -244,12 +244,12 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => 
   const [pageSize, setPageSize] = React.useState(50)
 
   // fetch data
-  const {data, error, isLoading} = useAdherenceAlerts(studyId, checked, pageSize, currentPage)
+  const {data, isLoading} = useAdherenceAlerts(studyId, checked, pageSize, currentPage)
 
   // update alerts state
   const [updateError, setUpdateError] = React.useState<Error>()
   const [processingAlertId, setProcessingAlertId] = React.useState<string | undefined>(undefined)
-  const {isLoading: isMutating, error: alertUpdateError, mutate} = useUpdateAdherenceAlerts()
+  const {error: alertUpdateError, mutate} = useUpdateAdherenceAlerts()
 
   // update checked boxes
   const handleToggle = (value: AdherenceAlertCategory) => () => {
