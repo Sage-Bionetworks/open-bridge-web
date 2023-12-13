@@ -2,7 +2,7 @@ name: deploy-arc-staging
 
 on:
   push:
-    branches: ["main", "feature"]
+    branches: ["feature"]
 
 jobs:
   deploy:
