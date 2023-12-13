@@ -1,30 +1,26 @@
 import {ReactComponent as SessionStartIcon} from '@assets/scheduler/calendar_icon.svg'
 import SessionIcon from '@components/widgets/SessionIcon'
-import {Tooltip} from '@mui/material'
+import {Box, Paper, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {useStudy} from '@services/studyHooks'
-import {latoFont} from '@style/theme'
-import {
-  ScheduleTimeline,
-  SchedulingEvent,
-  StudySessionTimeline,
-  TimelineScheduleItem,
-} from '@typedefs/scheduling'
+import {latoFont, theme} from '@style/theme'
+import {ScheduleTimeline, SchedulingEvent, StudySessionTimeline, TimelineScheduleItem} from '@typedefs/scheduling'
 import _ from 'lodash'
 import React from 'react'
 import SessionPlot from './SingleSessionPlot'
 import Utility, {CoordItem} from './utility'
 
 const LayoutConstants = {
-  marginGap: 4,
+  marginGap: 2,
   bracketOverlay: 8,
   weekVPad: 10,
   height: 30,
-  singleSessionGraphHeight: 16,
+  singleSessionGraphHeight: 32,
   singleSessionGraphBottomMargin: 0, //5,
   weekMinHeight: 22,
+  border: '1px solid #EAECEE',
 }
 
 const useStyles = makeStyles(theme => ({
@@ -33,9 +29,9 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     position: 'absolute',
-    right: '-70px',
+    right: '-62px',
     '&> div:first-child': {
-      width: '14px',
+      width: '12px',
       border: '1px solid black',
       borderLeft: 'none',
     },
@@ -55,12 +51,10 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: '0em',
     textAlign: 'left',
   },
-  plotContainer: {
-    paddingRight: theme.spacing(8),
-  },
 
   graph: {
     display: 'flex',
+
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: `${LayoutConstants.singleSessionGraphBottomMargin}px`,
@@ -84,6 +78,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    //backgroundColor: '#F1F3F5',
   },
   weekTitle: {
     width: '82px',
@@ -145,9 +140,7 @@ const FrequencyBracket: React.FunctionComponent<{
   const bottom = -1 * (heightInterval + LayoutConstants.bracketOverlay)
   const height = heightInterval + LayoutConstants.bracketOverlay * 2
   return (
-    <div
-      className={classes.frequencyBracket}
-      style={{bottom: `${bottom}px`, height: `${height}px`}}>
+    <div className={classes.frequencyBracket} style={{bottom: `${bottom}px`, height: `${height}px`}}>
       <div style={{height: `${height}px`}} />
       <div>
         <SessionStartIcon />
@@ -157,66 +150,12 @@ const FrequencyBracket: React.FunctionComponent<{
   )
 }
 
-export const PlotDaysDisplay: React.FunctionComponent<{
-  unitWidth: number
-  title: string
-  endLabel?: React.ReactNode
-  titleStyle?: React.CSSProperties
-}> = ({unitWidth, title, endLabel, titleStyle}) => {
-  const classes = useStyles()
-  const defaultTitleStyle = {
-    width: `${99 + unitWidth / 2}px`,
-    paddingLeft: '12px',
-    fontSize: '12px',
-  }
-  return (
-    <div className={classes.week}>
-      <div style={{...defaultTitleStyle, ...titleStyle}}>{title}</div>
-      <div className={classes.graph}>
-        <div className={classes.sessionName}></div>
-        <div
-          style={{
-            position: 'relative',
-            top: '-10px',
-            left: `-${unitWidth / 2}px`,
-          }}>
-          {[...new Array(7)].map((_i, index) => (
-            <div
-              key={`day_number_${index}`}
-              className={classes.dayNumbers}
-              style={{
-                width: `${unitWidth}px`,
-                left: `${unitWidth * index - 10}px`,
-              }}>
-              {index + 1}
-            </div>
-          ))}
-          {endLabel}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function useGetPlotAndUnitWidth(
-  ref: React.RefObject<HTMLDivElement>,
-  nOfUnits: number,
-  padding = 0
-) {
+export function useGetPlotAndUnitWidth(ref: React.RefObject<HTMLDivElement>, nOfUnits: number, padding = 0) {
   // save current window width in the state object
-  let [width, setWidth] = React.useState(
-    ref?.current?.getBoundingClientRect()?.width
-  )
+  let [width, setWidth] = React.useState(ref?.current?.getBoundingClientRect()?.width)
   let [unitWidth, setUnitWidth] = React.useState(
-    getUnitWidth(
-      nOfUnits,
-      ref?.current?.getBoundingClientRect()?.width,
-      padding
-    )
+    getUnitWidth(nOfUnits, ref?.current?.getBoundingClientRect()?.width, padding)
   )
-
-  // in this case useEffect will execute only once because
-  // it does not have any dependencies.
 
   function getUnitWidth(nOfUnits: number, width = 0, padding = 0) {
     return Math.round((width - padding) / nOfUnits)
@@ -243,31 +182,25 @@ export function useGetPlotAndUnitWidth(
   return {width, unitWidth}
 }
 
-const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
-  studyId,
-  timeline,
-  children,
-}) => {
+const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({studyId, timeline, children}) => {
   const classes = useStyles()
 
   const [isLoading, setIsLoading] = React.useState(true)
   const [eventIds, setEventIds] = React.useState<string[]>([])
+  const [hasBurst, setHasBurst] = React.useState(false)
 
   const {data: study} = useStudy(studyId)
 
-  const [plotData, setPlotData] = React.useState<
-    Record<string, PlotData[]> | undefined
-  >()
+  const [plotData, setPlotData] = React.useState<Record<string, PlotData[]> | undefined>()
   const ref = React.useRef<HTMLDivElement>(null)
-  const {unitWidth} = useGetPlotAndUnitWidth(ref, 7, 180)
+
+  const {unitWidth} = useGetPlotAndUnitWidth(ref, 7, hasBurst ? 180 : 198 - 64)
 
   //check if we are dealing with the sesison converted into a burst
   const isSessionBurst = (sessionGuid: string): boolean => {
     return (
-      timeline?.schedule.find(
-        scheduleItem =>
-          scheduleItem.refGuid === sessionGuid && scheduleItem.studyBurstId
-      ) !== undefined
+      timeline?.schedule.find(scheduleItem => scheduleItem.refGuid === sessionGuid && scheduleItem.studyBurstId) !==
+      undefined
     )
   }
 
@@ -278,39 +211,21 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
   React.useEffect(() => {
     setIsLoading(true)
-    const getEvents = async (
-      timeline: ScheduleTimeline,
-      studyEvents: SchedulingEvent[]
-    ) => {
+    const getEvents = async (timeline: ScheduleTimeline, studyEvents: SchedulingEvent[]) => {
       try {
-        const events = [
-          JOINED_EVENT_ID,
-          ...studyEvents.map(e =>
-            EventService.prefixCustomEventIdentifier(e.eventId)
-          ),
-        ]
+        const events = [JOINED_EVENT_ID, ...studyEvents.map(e => EventService.prefixCustomEventIdentifier(e.eventId))]
 
         const unwrappedSessions = unWrapSessions(timeline.schedule)
         const lastDay = Math.max(...unwrappedSessions.map(s => s.endDay)) + 1
         const numOfWeeks = Math.ceil(lastDay / 7)
-        const maxWindows = Math.max(
-          ...timeline.sessions.map(s => s.timeWindowGuids.length)
-        )
+        const maxWindows = Math.max(...timeline.sessions.map(s => s.timeWindowGuids.length))
         const burst = ScheduleService.getStudyBurst(timeline)
+        setHasBurst(!!burst)
         var result: Record<string, PlotData[]> = {}
         for (var event of events) {
           //if current event initiates burst pass the eventId
-          const burstEventId =
-            burst && burst.originEventId === event
-              ? burst.originEventId
-              : undefined
-          const plotData = getPlotDataForEvent(
-            unwrappedSessions,
-            numOfWeeks,
-            maxWindows,
-            event,
-            burstEventId
-          )
+          const burstEventId = burst && burst.originEventId === event ? burst.originEventId : undefined
+          const plotData = getPlotDataForEvent(unwrappedSessions, numOfWeeks, maxWindows, event, burstEventId)
           result[event] = plotData
         }
 
@@ -335,9 +250,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       if (i.studyBurstNum === undefined) {
         return i
       } else {
-        const offSet =
-          (i.studyBurstNum - 1) *
-          (getBurstIntervalInWeeks() * 7) /*+ burstLength*/
+        const offSet = (i.studyBurstNum - 1) * (getBurstIntervalInWeeks() * 7) /*+ burstLength*/
         return {...i, startDay: i.startDay + offSet, endDay: i.endDay + offSet}
       }
     })
@@ -383,16 +296,8 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
     for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
       // do the non-burst sessions
-
-      const nonBurstSessions = timeline.sessions.filter(
-        s => !isSessionBurst(s.guid!) && s.startEventId === eventId
-      )
-      const dataForWeek = getDataForSessionsInWeek(
-        schedItems,
-        nonBurstSessions,
-        weekNumber,
-        maxWindows
-      )
+      const nonBurstSessions = timeline.sessions.filter(s => !isSessionBurst(s.guid!) && s.startEventId === eventId)
+      const dataForWeek = getDataForSessionsInWeek(schedItems, nonBurstSessions, weekNumber, maxWindows)
       if (dataForWeek.length) {
         result[`${weekNumber}`] = {
           name: weekNumber + 1,
@@ -403,23 +308,15 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       }
 
       if (burstOriginEventId) {
-        const burstSessions = timeline.sessions.filter(s =>
-          isSessionBurst(s.guid!)
-        )
+        const burstSessions = timeline.sessions.filter(s => isSessionBurst(s.guid!))
 
-        let dataForWeek = getDataForSessionsInWeek(
-          schedItems,
-          burstSessions,
-          weekNumber,
-          maxWindows
-        )
+        let dataForWeek = getDataForSessionsInWeek(schedItems, burstSessions, weekNumber, maxWindows)
 
         if (dataForWeek.length) {
           //get burst number from one of the items
-          const itemsWidthBurstForWeek = Utility.getSchedulingItemsForWeek(
-            schedItems,
-            weekNumber
-          ).filter(i => i.studyBurstNum !== undefined)
+          const itemsWidthBurstForWeek = Utility.getSchedulingItemsForWeek(schedItems, weekNumber).filter(
+            i => i.studyBurstNum !== undefined
+          )
 
           result[`${weekNumber}_burst`] = {
             name: weekNumber + 1,
@@ -483,16 +380,12 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         //if we are in the same bust - add graph height
         if (!plotData.burst) {
           const weekHeight =
-            plotData.sessions.length *
-              LayoutConstants.singleSessionGraphHeight +
-            (plotData.sessions.length - 1) *
-              LayoutConstants.singleSessionGraphBottomMargin
+            plotData.sessions.length * LayoutConstants.singleSessionGraphHeight +
+            (plotData.sessions.length - 1) * LayoutConstants.singleSessionGraphBottomMargin
           //add padding
-          pxGapBetweenBursts = pxGapBetweenBursts + LayoutConstants.weekVPad * 2
+          pxGapBetweenBursts = pxGapBetweenBursts //+ LayoutConstants.weekVPad * 2
 
-          pxGapBetweenBursts =
-            pxGapBetweenBursts +
-            Math.max(weekHeight, LayoutConstants.weekMinHeight)
+          pxGapBetweenBursts = pxGapBetweenBursts + Math.max(weekHeight, LayoutConstants.weekMinHeight)
         }
       }
     }
@@ -500,112 +393,139 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   }
 
   return (
-    <div ref={ref} className={classes.plotContainer}>
-      <PlotDaysDisplay
-        unitWidth={unitWidth}
-        titleStyle={{
-          width: `${110 + unitWidth / 2}px`,
-        }}
-        title="Schedule by week day"
-      />
-      <div style={{position: 'relative' /*, overflow: 'hidden'*/}}>
-        {!isLoading && plotData && (
-          <>
-            {children && (
-              <div
-                className={classes.defaultMessage}
-                style={{
-                  height:
-                    LayoutConstants.singleSessionGraphHeight *
-                      timeline.sessions.length +
-                    'px',
-                }}>
-                {children}
-              </div>
-            )}
-            {eventIds.map((evt, evtIndex) => (
-              <div key={`${evt}_${evtIndex}`}>
+    <Box
+      ref={ref}
+      id="plotContainer"
+      sx={{paddingBottom: theme.spacing(4), paddingRight: hasBurst ? theme.spacing(8) : 0}}>
+      <Paper elevation={2} sx={{paddingBottom: theme.spacing(4)}}>
+        <Box
+          sx={{
+            display: 'flex',
+            width: '100%',
+            backgroundColor: '#F1F3F5',
+            borderTop: '1px solid #EAECEE',
+            borderRight: '1px solid #EAECEE',
+            height: '50px',
+          }}>
+          <Box sx={{padding: theme.spacing(0, 2), width: '112px', display: 'flex', alignItems: 'center'}}>
+            <strong>
+              Schedule by <br />
+              weekday
+            </strong>
+          </Box>
+
+          {[...new Array(7)].map((_i, index) => (
+            <Box
+              key={`day_number_${index}`}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+
+                width: `${unitWidth}px`,
+
+                borderLeft: '1px solid #EAECEE',
+              }}>
+              {index + 1}
+            </Box>
+          ))}
+        </Box>
+
+        <div style={{position: 'relative' /*, overflow: 'hidden'*/}}>
+          {!isLoading && plotData && (
+            <>
+              {children && (
                 <div
-                  className={classes.weekTitle}
+                  className={classes.defaultMessage}
                   style={{
-                    width: 'auto',
-                    fontWeight: 'bold',
-                    padding: `${LayoutConstants.weekVPad}px 16px 0 16px`,
-                    backgroundColor: plotData[evt]?.[0]?.burst
-                      ? 'yellow'
-                      : '#eee',
+                    height: LayoutConstants.singleSessionGraphHeight * timeline.sessions.length + 'px',
                   }}>
-                  {' '}
-                  {EventService.formatEventIdForDisplay(evt)}
+                  {children}
                 </div>
-
-                {plotData[evt]?.map((wk, index) => (
+              )}
+              {eventIds.map((evt, evtIndex) => (
+                <div
+                  key={`${evt}_${evtIndex}`}
+                  id={evt.toString()}
+                  style={{border: LayoutConstants.border, borderBottom: 'none'}}>
                   <div
-                    className={classes.week}
-                    key={`week_${wk.name}_ ${wk.burstNum}`}
+                    className={classes.weekTitle}
                     style={{
-                      marginBottom:
-                        plotData[evt][index + 1] &&
-                        plotData[evt][index + 1].burstNum === wk.burstNum
-                          ? '0px'
-                          : `${LayoutConstants.marginGap}px`,
-                      padding: `${LayoutConstants.weekVPad}px 16px`,
-                      // height: `${LayoutConstants.height}px`,
-                      backgroundColor: wk.burst ? 'yellow' : '#eee',
-                      position: 'relative',
+                      width: 'auto',
+                      fontWeight: 'bold',
+                      padding: `${LayoutConstants.weekVPad}px 16px 2px 16px`,
+                      borderBottom: LayoutConstants.border,
+                      backgroundColor: plotData[evt]?.[0]?.burst ? '#eaebf4' : '#fff',
                     }}>
-                    <FrequencyBracket
-                      intervalInWeeks={getBurstIntervalInWeeks()}
-                      heightInterval={calculateDistanceToNextBurst(
-                        plotData[evt],
-                        wk.name,
-                        wk.burstNum,
-                        plotData[evt]
-                      )}
-                    />
-
-                    <div className={classes.weekTitle} key="week_index">
-                      Week {wk.name}
-                      {wk.burst !== false ? '/ Burst' + wk.burstNum * 1 : ''}
-                    </div>
-                    <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
-                      {wk.sessions.map((sessionInfo, sIndex: number) => (
-                        <div
-                          className={classes.graph}
-                          key={`sessionA_${sIndex}`}>
-                          <Tooltip
-                            key="tooltip"
-                            placement="top"
-                            title={`Starts on: ${EventService.formatEventIdForDisplay(
-                              sessionInfo.startEventId!
-                            )}`}>
-                            <div className={classes.sessionName}>
-                              <SessionIcon
-                                symbolKey={sessionInfo.session.symbol}
-                                index={sessionInfo.sessionIndex}
-                              />
-                            </div>
-                          </Tooltip>
-
-                          <SessionPlot
-                            sessionIndex={sessionInfo.sessionIndex}
-                            lineNumber={index}
-                            xCoords={sessionInfo.coords}
-                            sessionSymbol={sessionInfo.session.symbol}
-                            unitPixelWidth={unitWidth}
-                            sessionGuid={sessionInfo.session.guid!}
-                          />
-                        </div>
-                      ))}
-                    </div>
+                    {' '}
+                    {EventService.formatEventIdForDisplay(evt)}
                   </div>
-                ))}
-              </div>
-            ))}
-          </>
-        )}
-      </div>
-    </div>
+
+                  {plotData[evt]?.map((wk, index) => (
+                    <div
+                      className={classes.week}
+                      key={`week_${wk.name}_ ${wk.burstNum}`}
+                      style={{
+                        marginBottom:
+                          plotData[evt][index + 1] && plotData[evt][index + 1].burstNum === wk.burstNum
+                            ? '0px'
+                            : `${LayoutConstants.marginGap}px`,
+                        //marginBottom: 0,
+                        // padding: `${LayoutConstants.weekVPad}px 0 ${LayoutConstants.weekVPad}px 16px`,
+                        padding: '0 0 0 16px',
+                        // height: `${LayoutConstants.height}px`,
+                        backgroundColor: wk.burst ? '#eaebf4' : index % 2 === 0 ? '#fff' : '#FBFBFC',
+                        position: 'relative',
+                        borderBottom: LayoutConstants.border,
+                      }}>
+                      <FrequencyBracket
+                        intervalInWeeks={getBurstIntervalInWeeks()}
+                        heightInterval={calculateDistanceToNextBurst(
+                          plotData[evt],
+                          wk.name,
+                          wk.burstNum,
+                          plotData[evt]
+                        )}
+                      />
+
+                      <div className={classes.weekTitle} key="week_index">
+                        Week {wk.name}
+                        {wk.burst !== false ? '/ Burst' + wk.burstNum * 1 : ''}
+                      </div>
+                      <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
+                        {wk.sessions.map((sessionInfo, sIndex: number) => (
+                          <div className={classes.graph} key={`sessionA_${sIndex}`}>
+                            <Tooltip
+                              key="tooltip"
+                              placement="top"
+                              title={`Starts on: ${EventService.formatEventIdForDisplay(sessionInfo.startEventId!)}`}>
+                              <div className={classes.sessionName}>
+                                <SessionIcon symbolKey={sessionInfo.session.symbol} index={sessionInfo.sessionIndex} />
+                              </div>
+                            </Tooltip>
+
+                            <SessionPlot
+                              sessionIndex={sessionInfo.sessionIndex}
+                              lineNumber={index}
+                              weekSessionNumber={sIndex}
+                              xCoords={sessionInfo.coords}
+                              sessionSymbol={sessionInfo.session.symbol}
+                              unitPixelWidth={unitWidth}
+                              isBurst={plotData[evt]?.[0]?.burst ? true : false}
+                              sessionGuid={sessionInfo.session.guid!}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      </Paper>
+    </Box>
   )
 }
 

@@ -1,111 +1,66 @@
+import {ReactComponent as MtbSymbol} from '@assets/logo_open_bridge_symbol.svg'
+import BreadCrumb from '@components/widgets/BreadCrumb'
 import Loader from '@components/widgets/Loader'
-import {Box, Container, Divider, Paper, Typography} from '@mui/material'
-import createStyles from '@mui/styles/createStyles'
-import makeStyles from '@mui/styles/makeStyles'
+import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone'
+import VerifiedTwoToneIcon from '@mui/icons-material/VerifiedTwoTone'
+import {Box, Container, Divider, Grid, Hidden, styled, Typography} from '@mui/material'
 import {useAssessmentWithResources} from '@services/assessmentHooks'
-import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
+import {latoFont, theme} from '@style/theme'
+import React, {FunctionComponent, ReactElement} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {RouteComponentProps, useParams} from 'react-router-dom'
-import ClockIcon from '../../assets/clock.svg'
-import OfficialMobileToolboxVersion from '../../assets/official_mobile_toolbox_icon.svg'
-import ScientificallyValidatedIcon from '../../assets/validated.svg'
-import {playfairDisplayFont, poppinsFont} from '../../style/theme'
-import BreadCrumb from '../widgets/BreadCrumb'
+import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
 import AssessmentImage from './AssessmentImage'
+import Utility from '@helpers/utility'
 
-const useStyles = makeStyles(theme =>
-  createStyles({
-    breadCrumbs: {
-      backgroundColor: '#F8F8F8',
-      padding: theme.spacing(5, 5, 8, 3),
-      boxShadow: '0 0 0 0',
-    },
-    container: {
-      padding: theme.spacing(6),
-    },
-    categories: {
-      fontFamily: playfairDisplayFont,
-      fontStyle: 'italic',
-      fontSize: '20px',
-      lineHeight: '20px',
-      marginBottom: theme.spacing(2),
-    },
-    informationText: {
-      fontSize: '14px',
-      lineHeight: '18px',
-      marginTop: theme.spacing(2.5),
-      marginBottom: theme.spacing(2.5),
-      fontFamily: poppinsFont,
-    },
-    titleText: {
-      fontFamily: 'Lato',
-      fontSize: '32px',
-      fontWeight: 'bold',
-      lineHeight: '27px',
-      marginBottom: theme.spacing(4),
-    },
-    row: {
-      display: 'flex',
-      flexDirection: 'row',
-    },
-    overallContainer: {
-      backgroundColor: '#F8F8F8',
-      minHeight: '100vh',
-    },
-    informationTextInContainer: {
-      fontSize: '14px',
-      lineHeight: '18px',
-      fontFamily: poppinsFont,
-    },
-    imageTextRow: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      //  marginLeft: theme.spacing(-3.5),
-      marginTop: theme.spacing(2.5),
-      marginBottom: theme.spacing(2.5),
-    },
-    icon: {
-      marginRight: theme.spacing(1),
-      width: '20px',
-      height: '20px',
-    },
-    divider: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2.5),
-      width: '100%',
-    },
-    informationBox: {
-      padding: theme.spacing(7.5),
-      borderRadius: '0px',
-    },
-    overallBackground: {
-      textAlign: 'center',
-      backgroundColor: '#F8F8F8',
-    },
-    validatedIcon: {
-      marginRight: theme.spacing(1),
-      width: '24px',
-      height: '24px',
-    },
-    imageTextRowValidatedIcon: {
-      //marginLeft: theme.spacing(-3.9),
-    },
-  })
-)
+/**
+ * syoung 12/11/2020 
+ * This is currently hardcoded to hide the "official open bridge assessment" logo if this is an 
+ * ARC app. 
+ * TODO: figure out what the point is of the symbol and refactor.
+ */
+
+const InfoTextInContainer = styled(Box)(({theme}) => ({
+  fontSize: '14px',
+  lineHeight: '18px',
+}))
+
+const StyledDivider = styled(Divider)(({theme}) => ({
+  marginTop: theme.spacing(5),
+  marginBottom: theme.spacing(5),
+  width: '100%',
+  backgroundColor: '#EAECEE',
+}))
 
 type AssessmentDetailOwnProps = {}
 
 type AssessmentDetailProps = AssessmentDetailOwnProps & RouteComponentProps
 
+const SectionWithIcon: FunctionComponent<{icon: ReactElement; heading: string; text: string}> = ({
+  icon,
+  heading,
+  text,
+}) => {
+  return (
+    <Box>
+      <Box sx={{display: 'flex', alignItems: 'center', ' > svg': {color: '#878E95'}}}>
+        {icon}
+        <Typography variant="h4" sx={{marginLeft: theme.spacing(1)}}>
+          {heading}
+        </Typography>
+      </Box>
+      <Typography variant="body1" component={'p'} sx={{display: 'block', margin: theme.spacing(0.5, 0, 4, 0)}}>
+        {text}
+      </Typography>
+    </Box>
+  )
+}
+
 const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
-  const classes = useStyles()
-  const links = [{url: '/assessments', text: 'Assessments'}]
+  const [view] = React.useState(new URLSearchParams(useLocation().search).get('viewType'))
   let {id} = useParams<{id: string}>()
   const handleError = useErrorHandler()
 
-  const {data, isError, error, isLoading} = useAssessmentWithResources(id)
+  const {data, isError, error, isLoading} = useAssessmentWithResources(id, false)
 
   if (isError) {
     handleError(error!)
@@ -114,82 +69,128 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
     return <Loader reqStatusLoading={true} />
   }
 
-  const correctResource = data?.resources?.find(
-    resource => resource.category === 'website'
+  const Header = (
+    <>
+      <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+        <Typography
+          component={'p'}
+          sx={{
+            fontWeight: '400',
+            fontSize: '14px',
+            lineHeight: '18px',
+            textTransform: 'uppercase',
+          }}>
+          {data.tags.join(', ')}
+        </Typography>
+        <Box sx={{display: 'flex'}}>
+          {!Utility.isArcApp() &&
+            <MtbSymbol
+              title="official_open_bridge_icon"
+              style={{
+                marginRight: '8px',
+                width: '20px',
+                height: '20px',
+              }}
+            />
+          }
+
+          <Typography component="span">Official Open Bridge version</Typography>
+        </Box>
+      </Box>
+      <Typography variant="h2" sx={{margin: {lg: theme.spacing(2, 0), md: theme.spacing(4, 0)}}}>
+        {data.title}
+      </Typography>
+    </>
   )
 
   return (
-    <div className={classes.overallContainer}>
-      <Paper className={classes.breadCrumbs}>
-        <BreadCrumb links={links} currentItem={data.title}></BreadCrumb>
-      </Paper>
-      <Container maxWidth="lg" className={classes.overallBackground}>
-        <Paper className="classes.container">
-          <Box display="flex" className={classes.informationBox}>
-            <Box width="530px" marginRight="32px" style={{textAlign: 'left'}}>
-              <AssessmentImage
-                name={`${data.title}_img`}
-                resources={data.resources}
-                variant="detail"></AssessmentImage>
-            </Box>
-            <Box textAlign="left">
-              <Typography variant="subtitle2" className={classes.categories}>
-                {data.tags.join(', ')}
-              </Typography>
-              <div className={classes.titleText}>{data.title}</div>
-              <Box>{data.summary}</Box>
-              <Divider className={classes.divider} />
-              <div
-                className={clsx(
-                  classes.imageTextRow,
-                  classes.imageTextRowValidatedIcon
-                )}>
-                <img
-                  className={classes.validatedIcon}
-                  src={ScientificallyValidatedIcon}
-                  alt="scientifically_validated_icon"></img>
-                <div className={classes.informationTextInContainer}>
-                  Validation and Norming in progress
-                </div>
-              </div>
-              <div className={classes.imageTextRow}>
-                <img
-                  className={classes.icon}
-                  src={OfficialMobileToolboxVersion}
-                  alt="official_mobile_toolbox_icon"></img>
-                <div className={classes.informationTextInContainer}>
-                  Official Mobile Toolbox version
-                </div>
-              </div>
-              <div className={classes.imageTextRow}>
-                <img
-                  className={classes.icon}
-                  src={ClockIcon}
-                  alt="clock_icon"></img>
-                <div className={classes.informationTextInContainer}>
-                  {data.minutesToComplete} min
-                </div>
-              </div>
-              {/*<div className={classes.informationText}>[Age: 18 +]</div>*/}
-              <div className={clsx(classes.informationText, classes.row)}>
-                <div style={{width: '100px'}}>Designed By:</div>
-                <div>
-                  {correctResource && correctResource.creators
-                    ? correctResource.creators.join(', ')
-                    : ''}
-                </div>
-              </div>
-              {/* <div className={classes.informationText}>
-                  [Used in <u>15 published studies</u>]
-                </div>
-                <div className={classes.informationText}>
-                  [2840 participants]
-                    </div>*/}
-            </Box>
-          </Box>
-        </Paper>
+    <Box sx={{backgroundColor: '#fff'}}>
+      <Container
+        sx={{
+          textAlign: 'center',
+          paddingBottom: theme.spacing(6),
+          backgroundColor: '#fff',
+
+          minHeight: '100vh',
+
+          maxWidth: {
+            lg: theme.breakpoints.values['lg'],
+            xs: theme.breakpoints.values['sm'],
+          },
+        }}>
+        <Box
+          sx={{
+            padding: theme.spacing(3, 5, 0, 3),
+            boxShadow: '0 0 0 0',
+            marginBottom: 6,
+          }}>
+          <BreadCrumb
+            links={[{url: `/assessments?viewType=${view}`, text: 'Back to Assessments'}]}
+            sx={{fontSize: '16px'}}></BreadCrumb>
+        </Box>
+
+        <InfoTextInContainer>
+          <Grid
+            container
+            columnSpacing={{xs: 0, lg: 4}}
+            sx={{
+              padding: {
+                lg: theme.spacing(1, 4),
+                md: theme.spacing(3, 3),
+              },
+              borderRadius: '0px',
+            }}>
+            <Grid item xs={12} lg={6}>
+              <Box style={{textAlign: 'left'}}>
+                <Hidden lgUp>
+                  {/*  */}
+                  {Header}
+                </Hidden>
+                <AssessmentImage
+                  name={`${data.title}_img`}
+                  assessment={data}
+                  variant="detail"></AssessmentImage>
+              </Box>
+            </Grid>
+            <Grid item xs={12} lg={6}>
+              <Box textAlign="left" sx={{fontFamily: latoFont}}>
+                {' '}
+                <Hidden lgDown>{Header}</Hidden>
+                <Box sx={{fontSize: '16px', lineHeight: '20px', marginTop: {lg: 0, md: theme.spacing(3)}}}>
+                  {data.summary}
+                </Box>
+                <StyledDivider />
+                <Box sx={{width: '100%', '> div': {width: '50%', float: 'left'}}}>
+                  <Box>
+                    <SectionWithIcon
+                      icon={<VerifiedTwoToneIcon />}
+                      heading="Validation"
+                      text="Scientifically Validated"
+                    />
+
+                    {/*  TODO: add when available     <SectionWithIcon icon={<CakeTwoToneIcon />} heading="Age" text="todo: age" />*/}
+                  </Box>
+                  <Box>
+                    <SectionWithIcon
+                      icon={<TimerTwoToneIcon />}
+                      heading="Duration"
+                      text={`${data.minutesToComplete} min`}
+                    />
+                    {/*   <SectionWithIcon icon={<ChatBubbleTwoToneIcon />} heading="Language" text="todo:" />*/}
+                  </Box>
+                </Box>
+                {/*  TODO: add when available     <Box sx={{clear: 'left'}}>
+                  <SectionWithIcon icon={<StarsTwoToneIcon />} heading="Score" text="todo: " />
+                  <SectionWithIcon icon={<FactCheckTwoToneIcon />} heading="Reliability" text="todo: " />
+                  <SectionWithIcon icon={<ArticleTwoToneIcon />} heading="Publications" text="todo: " />
+                  <SectionWithIcon icon={<MenuBookTwoToneIcon />} heading="Technical Manual" text="" />
+          </Box>*/}
+              </Box>
+            </Grid>
+          </Grid>
+        </InfoTextInContainer>
       </Container>
-    </div>
+    </Box>
   )
 }
 

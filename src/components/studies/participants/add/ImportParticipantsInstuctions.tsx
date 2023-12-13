@@ -1,17 +1,18 @@
-import {ReactComponent as DownloadIcon} from '@assets/download.svg'
+import DownloadTwoToneIcon from '@mui/icons-material/DownloadTwoTone'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
+import {theme} from '@style/theme'
 import React, {FunctionComponent} from 'react'
 import {jsonToCSV} from 'react-papaparse'
 import CsvUtility from '../csv/csvUtility'
-import ParticipantDownloadTrigger from '../csv/ParticipantDownloadTrigger'
+import DownloadTrigger from '../../DownloadTrigger'
 //import { EnrollmentType } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
   root: {},
   recList: {listStyle: 'none'},
-  templateLink: {
+  /* templateLink: {
     margin: theme.spacing(2, 'auto', 5, 'auto'),
     display: 'flex',
     justifyContent: 'center',
@@ -21,7 +22,7 @@ const useStyles = makeStyles(theme => ({
       textDecoration: 'underline',
       marginLeft: theme.spacing(0.5),
     },
-  },
+  },*/
 }))
 
 // -----------------  Import participants tab control
@@ -31,15 +32,10 @@ const ImportParticipantsInstructions: FunctionComponent<{
   scheduleEventIds: string[]
 }> = ({children, isEnrolledById, scheduleEventIds}) => {
   const classes = useStyles()
-  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
-    string | undefined
-  >(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<string | undefined>(undefined)
 
   const createDownloadTemplate = async () => {
-    const templateData = CsvUtility.getDownloadTemplateRow(
-      isEnrolledById,
-      scheduleEventIds
-    )
+    const templateData = CsvUtility.getDownloadTemplateRow(isEnrolledById, scheduleEventIds)
     //csv and blob it
     const csvData = jsonToCSV([templateData])
     const blob = new Blob([csvData], {
@@ -91,13 +87,12 @@ const ImportParticipantsInstructions: FunctionComponent<{
   return (
     <Box>
       <p>
-        To add <strong>new participants</strong> to your study, we will need the
-        following information by columns:
+        To add <strong>new participants</strong> to your study, we will need the following information by columns:
       </p>
       {recList}
       Your file should match this template:
       <br />
-      <ParticipantDownloadTrigger
+      <DownloadTrigger
         onDownload={() => createDownloadTemplate()}
         fileDownloadUrl={fileDownloadUrl}
         hasItems={true}
@@ -106,15 +101,25 @@ const ImportParticipantsInstructions: FunctionComponent<{
           URL.revokeObjectURL(fileDownloadUrl!)
           setFileDownloadUrl(undefined)
         }}>
-        <Box className={classes.templateLink}> </Box>
-        <DownloadIcon width="20px" />
-        &nbsp;&nbsp;
-        <strong>
-          <u>Participant Import Template</u>
-        </strong>
-      </ParticipantDownloadTrigger>
-      *Required info. Please include only <strong>new participants</strong> in
-      the .csv.
+        <br />
+        <br />
+        <Box
+          sx={{
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            whiteSpace: 'nowrap',
+            backgroundColor: 'transparent',
+            padding: theme.spacing(0.75, 1, 0.75, 0.75),
+
+            borderRadius: '6px',
+            border: '1px solid #4F527D',
+          }}>
+          <DownloadTwoToneIcon />
+          &nbsp; Participant Import Template
+        </Box>
+      </DownloadTrigger>
+      *Required info. Please include only <strong>new participants</strong> in the .csv.
       <p>&nbsp;</p>
       <Box mx="auto" my={2} textAlign="center">
         {children}

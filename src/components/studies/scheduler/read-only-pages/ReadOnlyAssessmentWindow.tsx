@@ -1,67 +1,37 @@
-import ClockIcon from '@assets/clock.svg'
-import {Box} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import {latoFont} from '@style/theme'
-import moment from 'moment'
-import React from 'react'
-import {useStyles as SharedSchedulerStyles} from '../Scheduler'
-import {getFormattedTimeDateFromPeriodString} from '../utility'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    backgroundColor: 'white',
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    height: '164px',
-  },
-  topLevel: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: theme.spacing(3),
-    fontFamily: latoFont,
-    fontSize: '16px',
-  },
-  timesContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '190px',
-    fontSize: '16px',
-  },
-}))
+import React from 'react'
+
+import {getFormattedTimeDateFromPeriodString} from '../utility'
+import ReadOnlyWindowTemplate from './ReadOnlyWindowTemplate'
+dayjs.extend(customParseFormat)
 
 type ReadOnlyAssessmentWindowProps = {
   index: number
   startTime: string
-  expireAfter: string
+  expireAfter?: string
 }
 
-const ReadOnlyAssessmentWindow: React.FunctionComponent<ReadOnlyAssessmentWindowProps> =
-  ({index, startTime, expireAfter}) => {
-    const classes = useStyles()
-    const sharedSchedulerStyles = SharedSchedulerStyles()
-    const start = moment(startTime, 'HH:mm').format('h:mm a')
-    return (
-      <Box className={classes.container}>
-        <Box className={classes.topLevel}>
-          <Box alignSelf="flex-start">{index}.</Box>
-          <img src={ClockIcon} style={{height: '22px', width: '22px'}}></img>
-        </Box>
-        <Box className={classes.timesContainer}>
-          <Box className={sharedSchedulerStyles.row} mb={2}>
-            <Box>Start:</Box> <strong>{start}</strong>
-          </Box>
-          <Box className={sharedSchedulerStyles.row}>
-            <Box>Expire After:</Box>{' '}
-            <strong>{getFormattedTimeDateFromPeriodString(expireAfter)}</strong>
-          </Box>
-        </Box>
-      </Box>
-    )
-  }
+const ReadOnlyAssessmentWindow: React.FunctionComponent<ReadOnlyAssessmentWindowProps> = ({
+  index,
+  startTime,
+  expireAfter,
+}) => {
+  const start = dayjs(startTime, 'HH:mm').format('h:mm a')
+  return (
+    <ReadOnlyWindowTemplate title={`${index}: Session WIndow`} type="SESSION">
+      <strong>Start:</strong>
+      <br />
+      {start}
+      <br />
+      <br />
+
+      <strong>Expire After:</strong>
+      <br />
+      {expireAfter ? getFormattedTimeDateFromPeriodString(expireAfter) : 'n/a'}
+    </ReadOnlyWindowTemplate>
+  )
+}
 
 export default ReadOnlyAssessmentWindow

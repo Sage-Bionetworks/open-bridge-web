@@ -1,13 +1,13 @@
-import {Box, Paper} from '@mui/material'
+import {BuilderWrapper} from '@components/studies/StudyBuilder'
+import {Box, Container, Paper, Typography} from '@mui/material'
+import {theme} from '@style/theme'
+import {Study} from '@typedefs/types'
 import React from 'react'
-import {Study} from '../../../../types/types'
-import {MTBHeadingH2} from '../../../widgets/Headings'
 import {
   formatPhoneNumber,
   getContact,
   StudyPageBottomPhone,
   StudyPageTopPhone,
-  useStyles as AppDesignSharedStyles,
   WelcomeScreenDisplay,
 } from '../AppDesign'
 
@@ -15,57 +15,36 @@ const ReadOnlyAppDesign: React.FunctionComponent<{
   children: React.ReactNode
   study: Study
   getContactPersonObject: Function
-}> = ({children, study, getContactPersonObject}) => {
-  const AppDesignClasses = AppDesignSharedStyles()
-  const generalContactPhoneNumber =
-    getContact(study, 'study_support')?.phone?.number || ''
-  const irbPhoneNumber = formatPhoneNumber(
-    getContact(study, 'irb')?.phone?.number || ''
-  )
+}> = ({study, getContactPersonObject}) => {
+  const generalContactPhoneNumber = getContact(study, 'study_support')?.phone?.number || ''
+  const irbPhoneNumber = formatPhoneNumber(getContact(study, 'irb')?.phone?.number || '')
 
   return (
-    <>
-      <Box className={AppDesignClasses.root}>
-        <Paper
-          className={AppDesignClasses.section}
-          style={{flexDirection: 'column'}}
-          elevation={2}
-          id="container">
-          <Box className={AppDesignClasses.fields}>
-            <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
-            <p
-              className={AppDesignClasses.smallScreenText}
-              style={{maxWidth: '350px'}}>
-              When a participant first downloads the app, they will see this
-              Welcome screen message:
-            </p>
-          </Box>
-          <Box className={AppDesignClasses.phoneArea}>
-            <Box ml={-3}>
-              <WelcomeScreenDisplay
-                study={study}
-                isReadOnly={true}
-                studyLogoUrl={study.studyLogoUrl}
-              />
-            </Box>
+    <BuilderWrapper isReadOnly={true} sectionName={''}>
+      <Container maxWidth="md" key="c1">
+        <Paper elevation={2} sx={{padding: theme.spacing(2, 2, 10, 2)}}>
+          <Typography variant="h3" paragraph textAlign="left">
+            Welcome Screen
+          </Typography>
+          <Box sx={{width: '330px', margin: '0 auto'}}>
+            <WelcomeScreenDisplay study={study} isReadOnly={true} studyLogoUrl={study.studyLogoUrl} />
           </Box>
         </Paper>
-        <Paper
-          className={AppDesignClasses.section}
-          style={{flexDirection: 'column'}}
-          elevation={2}>
-          <Box className={AppDesignClasses.fields}>
-            <MTBHeadingH2>Study Page</MTBHeadingH2>
-            <p className={AppDesignClasses.smallScreenText}>
-              Your About the Study and Contact & Support pages will look like
-              this:
-            </p>
-          </Box>
+      </Container>
+      <Container maxWidth="md" key="c2">
+        <Paper elevation={2} sx={{padding: theme.spacing(2, 2, 10, 2)}}>
+          <Typography variant="h3" paragraph textAlign="left">
+            Study Page
+          </Typography>
           <Box
-            display="flex"
-            flexDirection="row"
-            alignItems="flex-start"
-            ml={-1}>
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '800px',
+              mx: 'auto',
+              '>div': {width: 'auto'},
+            }}>
             <StudyPageTopPhone
               study={study}
               studyLogoUrl={study.studyLogoUrl}
@@ -81,10 +60,8 @@ const ReadOnlyAppDesign: React.FunctionComponent<{
             />
           </Box>
         </Paper>
-      </Box>
-      {children}
-    </>
+      </Container>
+    </BuilderWrapper>
   )
 }
-
 export default ReadOnlyAppDesign

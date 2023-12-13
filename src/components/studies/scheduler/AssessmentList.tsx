@@ -1,87 +1,15 @@
-import BlackBorderDropdown from '@components/widgets/BlackBorderDropdown'
-import SessionIcon from '@components/widgets/SessionIcon'
-import {Box, FormControlLabel, FormGroup} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import ClockIcon from '@mui/icons-material/AccessTime'
-import {latoFont, poppinsFont, ThemeType} from '@style/theme'
+import AssessmentSmall from '@components/assessments/AssessmentSmall'
+import {Box, FormControlLabel, FormGroup, MenuItem, Select, Typography} from '@mui/material'
+import {theme} from '@style/theme'
 import {PerformanceOrder, StudySession} from '@typedefs/scheduling'
 import {Assessment} from '@typedefs/types'
-import clsx from 'clsx'
 import React from 'react'
-import AssessmentSmall from '../../assessments/AssessmentSmall'
-
-const useStyles = makeStyles((theme: ThemeType) => ({
-  root: {
-    padding: theme.spacing(1.5),
-    border: '1px solid #C4C4C4',
-    '&.active': {
-      border: theme.activeBorder,
-    },
-  },
-  inner: {
-    borderTop: '1px solid #000',
-    borderBottom: '1px solid #000',
-    padding: theme.spacing(2),
-  },
-  order: {
-    width: '100%',
-    marginLeft: theme.spacing(0),
-    marginTop: theme.spacing(1.5),
-    display: 'flex',
-    flexDirection: 'row-reverse',
-    justifyContent: 'space-between',
-  },
-  assessmentOrderText: {
-    fontSize: '11px',
-    fontFamily: poppinsFont,
-    lineHeight: '15px',
-    fontWeight: 'bold',
-    width: '80px',
-    textAlign: 'left',
-  },
-}))
 
 export interface AssessmentListProps {
-  studySessionIndex: number
   studySession: StudySession
   performanceOrder: PerformanceOrder
   onChangePerformanceOrder: (p: PerformanceOrder) => void
   isReadOnly?: boolean
-}
-
-export interface SessionHeaderProps {
-  order: number
-  name: string
-  symbol?: string
-  assessments: Assessment[]
-}
-const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
-  order,
-  name,
-  symbol,
-  assessments,
-}: SessionHeaderProps) => {
-  const totalTime = assessments.reduce((total, curr) => {
-    const time = curr.minutesToComplete
-    return total + (time ? time : 0)
-  }, 0)
-  const result = (
-    <Box mb={2}>
-      <SessionIcon index={order} symbolKey={symbol}>
-        <span>{name}</span>
-      </SessionIcon>
-      <Box
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="flex-end">
-        {totalTime} min &nbsp;&nbsp;
-        <ClockIcon
-          style={{fontSize: '18px', verticalAlign: 'middle'}}></ClockIcon>
-      </Box>
-    </Box>
-  )
-  return result
 }
 
 type AssessmentDisplayType = {
@@ -95,18 +23,10 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   studySession,
   performanceOrder,
   onChangePerformanceOrder,
-  studySessionIndex,
+
   isReadOnly,
 }: AssessmentListProps): JSX.Element => {
-  const classes = useStyles()
-
-  const [isGroupAssessments, setIsGroupAssessments] = React.useState(
-    performanceOrder !== 'participant_choice'
-  )
-
-  const [assessmentsToDisplay, setAssessentsToDisplay] = React.useState<
-    AssessmentDisplayType[]
-  >([])
+  const [assessmentsToDisplay, setAssessentsToDisplay] = React.useState<AssessmentDisplayType[]>([])
 
   React.useEffect(() => {
     if (!studySession.assessments) {
@@ -124,9 +44,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
     if (performanceOrder === 'randomized') {
       const shuffledAssesments = shuffle([...assessments])
       for (const assessmentInfo of assessments) {
-        const newIndex = shuffledAssesments.findIndex(
-          el => el.assessmentIndex === assessmentInfo.assessmentIndex
-        )
+        const newIndex = shuffledAssesments.findIndex(el => el.assessmentIndex === assessmentInfo.assessmentIndex)
         const indexChanged = newIndex - assessmentInfo.assessmentIndex
         assessmentInfo.translateY = indexChanged * 96 + indexChanged * 8
         assessmentInfo.realIndex = newIndex
@@ -152,72 +70,70 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
     //{value: 'randomized', label: 'Randomized Order'},
   ]
 
-  const assessmentOrderElement = !isReadOnly ? (
-    <BlackBorderDropdown
-      width="180px"
-      value={performanceOrder}
+  const assessmentOrderElement = (
+    <Select
+      fullWidth
+      variant="outlined"
       onChange={e => {
         onChangePerformanceOrder(e.target.value as PerformanceOrder)
       }}
-      emptyValueLabel="select"
-      itemHeight="42px"
-      dropdown={performanceOrderList}
-    />
-  ) : (
-    <Box fontSize="14px" fontFamily={latoFont}>
-      {performanceOrderList.find(el => el.value === performanceOrder)?.label ||
-        ''}
-    </Box>
+      value={performanceOrder}>
+      {performanceOrderList.map((el, index) => (
+        <MenuItem /*className={classes.optionClass}*/ key={index} value={el.value} id={`investigator-${index}`}>
+          {el.label}
+        </MenuItem>
+      ))}
+    </Select>
   )
 
   return (
-    <Box m={0.5} style={isReadOnly ? {backgroundColor: '#f8f8f8'} : {}}>
-      <SessionHeader
-        order={studySessionIndex}
-        symbol={studySession.symbol}
-        name={studySession.name}
-        assessments={studySession.assessments || []}></SessionHeader>
+    <Box>
+      {studySession.assessments &&
+        studySession.assessments.length > 1 &&
+        (isReadOnly ? (
+          <>
+            <Typography variant="h4"> Assessment Order:</Typography>
+            <Typography paragraph>
+              {performanceOrderList.find(el => el.value === performanceOrder)?.label || ''}
+            </Typography>
+          </>
+        ) : (
+          <FormGroup aria-label="assessments" sx={{marginBottom: theme.spacing(2), width: '100%'}}>
+            <FormControlLabel
+              labelPlacement="top"
+              sx={{
+                width: '100%',
 
-      <div
-        className={clsx({
-          [classes.inner]: true,
-        })}>
-        {studySession.assessments &&
-          assessmentsToDisplay.map((assessmentInfo, index) => (
-            <Box
-              key={studySession.guid! + assessmentInfo.assessment.guid + index}
-              style={{
-                opacity:
-                  performanceOrder !== 'participant_choice' &&
-                  assessmentInfo.realIndex !== 0 &&
-                  !isReadOnly
-                    ? 0.3
-                    : 1,
-                transform: `translateY(${assessmentInfo.translateY}px)`,
-                transitionDuration: '0.4s',
-              }}>
-              <AssessmentSmall
-                isHideDuration={false}
-                assessment={assessmentInfo.assessment}
-                hasHover={false}
-                isDragging={false}></AssessmentSmall>
-            </Box>
-          ))}
-      </div>
-      {studySession.assessments && studySession.assessments.length > 1 && (
-        <FormGroup aria-label="assessments" row>
-          <FormControlLabel
-            labelPlacement="start"
-            className={classes.order}
-            control={assessmentOrderElement}
-            label={
-              <Box className={classes.assessmentOrderText}>
-                Assessment Order:
-              </Box>
-            }
-          />
-        </FormGroup>
-      )}
+                marginLeft: theme.spacing(0),
+                marginTop: theme.spacing(1.5),
+              }}
+              control={assessmentOrderElement}
+              label={
+                <Typography variant="h4" sx={{textSlign: 'left', width: '100%', marginBottom: theme.spacing(1)}}>
+                  Assessment Order:
+                </Typography>
+              }
+            />
+          </FormGroup>
+        ))}
+
+      {studySession.assessments &&
+        assessmentsToDisplay.map((assessmentInfo, index) => (
+          <Box
+            key={studySession.guid! + assessmentInfo.assessment.guid + index}
+            style={{
+              opacity:
+                performanceOrder !== 'participant_choice' && assessmentInfo.realIndex !== 0 && !isReadOnly ? 0.3 : 1,
+              transform: `translateY(${assessmentInfo.translateY}px)`,
+              transitionDuration: '0.4s',
+            }}>
+            <AssessmentSmall
+              isHideDuration={false}
+              assessment={assessmentInfo.assessment}
+              isReadOnly={true}
+              isDragging={false}></AssessmentSmall>
+          </Box>
+        ))}
     </Box>
   )
 }

@@ -33,10 +33,7 @@ export enum NotificationTimeAtEnum {
   'before_window_end' = 'before window expires',
 }
 
-export type PerformanceOrder =
-  | 'sequential'
-  | 'randomized'
-  | 'participant_choice' //done
+export type PerformanceOrder = 'sequential' | 'randomized' | 'participant_choice' //done
 
 //export type StartEventId = 'timeline_retrieved' | 'study_start_date'\
 
@@ -64,6 +61,7 @@ export type ScheduleNotification = {
   notifyAt: keyof typeof NotificationTimeAtEnum //notifyAt
   offset?: string //ReminderIntervalType //remindAt
   interval?: string //reminderPeriod?
+  allowSnooze?: boolean
   messages: NotificationMessage[] //messages
 }
 

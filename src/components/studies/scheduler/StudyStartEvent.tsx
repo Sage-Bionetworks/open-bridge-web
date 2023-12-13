@@ -35,9 +35,7 @@ const StudyStartEvent: React.FunctionComponent<StudyStartEventProps> = ({
 
   if (eventsInStudy) {
     for (var eventId of eventsInStudy) {
-      let e = eventIdsInSchedule.find(
-        e => EventService.formatEventIdForDisplay(e) === eventId
-      )
+      let e = eventIdsInSchedule.find(e => EventService.formatEventIdForDisplay(e) === eventId)
       if (e) {
         console.log('pusing' + e)
         eventDropdownValues.push({

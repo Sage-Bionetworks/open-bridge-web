@@ -1,4 +1,3 @@
-import {ReactComponent as PencilIcon} from '@assets/edit_pencil_red.svg'
 import JoinedCheckSymbol from '@assets/participants/joined_check_mark.svg'
 import JoinedPhoneSymbol from '@assets/participants/joined_phone_icon.svg'
 import {ReactComponent as HidePhoneIcon} from '@assets/participants/phone_hide_icon.svg'
@@ -9,21 +8,16 @@ import EditParticipantForm from '@components/studies/participants/modify/EditPar
 import WithdrawParticipantForm from '@components/studies/participants/modify/WithdrawParticipantForm'
 import HideWhen from '@components/widgets/HideWhen'
 import SelectAll from '@components/widgets/SelectAll'
+import {StyledLink} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {
-  Box,
-  Button,
-  Checkbox,
-  CircularProgress,
-  Dialog,
-  IconButton,
-  Paper,
-} from '@mui/material'
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
+import {Box, Button, Checkbox, CircularProgress, Dialog, IconButton, Paper, styled} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {
   DataGrid,
   GridCellParams,
   GridCellValue,
+  gridClasses,
   GridColDef,
   GridColumnMenuContainer,
   GridColumnMenuProps,
@@ -38,9 +32,7 @@ import {
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import {useEvents} from '@services/eventHooks'
 import {useUpdateParticipantInList} from '@services/participantHooks'
-import ParticipantService, {
-  EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
-} from '@services/participants.service'
+import ParticipantService, {EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING} from '@services/participants.service'
 import {latoFont} from '@style/theme'
 import {
   EditableParticipantData,
@@ -49,16 +41,60 @@ import {
   ParticipantEvent,
   SelectionType,
 } from '@typedefs/types'
+import dayjs from 'dayjs'
 import _ from 'lodash'
-import moment from 'moment'
 import React, {FunctionComponent, ReactNode, SyntheticEvent} from 'react'
 import Pluralize from 'react-pluralize'
 import {Link} from 'react-router-dom'
 import GridCellExpand from './GridCellExpand'
 
+const StyledDataGrid = styled(DataGrid)(({theme}) => ({
+  border: 0,
+  color: '#353A3F',
+  [`& .${gridClasses.row}:nth-child(odd)`]: {
+    backgroundColor: '#fff',
+    borderBottom: `1px solid #EAECEE`,
+  },
+  [`& .${gridClasses.row}:nth-child(even)`]: {
+    backgroundColor: '#FBFBFC',
+    borderBottom: `1px solid #EAECEE`,
+  },
+
+  [`& .${gridClasses.columnHeaders}`]: {
+    backgroundColor: '#F1F3F5',
+    fontWeight: 700,
+  },
+
+  [`& .${gridClasses.columnHeader},  .${gridClasses.cell}`]: {
+    minHeight: '60px',
+    borderColor: '#EAECEE',
+    borderBottom: `1px solid #EAECEE`,
+    fontSize: '12px',
+    outline: 'none !important',
+    '&:last-of-type': {
+      borderRight: 'none',
+    },
+  },
+}))
+
+const StyledSelectionDisplay = styled(Box, {label: 'selectionDisplay'})(({theme}) => ({
+  fontFamily: latoFont,
+  height: theme.spacing(3),
+  textAlign: 'left',
+  padding: theme.spacing(0, 0, 0, 2),
+  fontWeight: 'bold',
+  fontSize: '12px',
+  fontStyle: 'italic',
+  position: 'relative',
+}))
+
 const useStyles = makeStyles(theme => ({
   root: {},
+  gridHeaderTitle: {
+    fontWeight: 700,
+  },
   gridHeader: {
+    fontWeight: 700,
     '& .MuiDataGrid-columnSeparator': {
       display: 'none',
     },
@@ -67,15 +103,6 @@ const useStyles = makeStyles(theme => ({
     fontFamily: latoFont,
     fontSize: '15px',
     marginRight: theme.spacing(1),
-  },
-  selectionDisplay: {
-    fontFamily: latoFont,
-    height: theme.spacing(3),
-    textAlign: 'left',
-    padding: theme.spacing(1.5, 0, 0, 2),
-    fontWeight: 'bold',
-    fontSize: '12px',
-    fontStyle: 'italic',
   },
 }))
 
@@ -100,11 +127,9 @@ const PhoneCell: FunctionComponent<{
   }
 
   return params.formattedValue ? (
-    <div style={{textAlign: 'center', width: '115px'}}>
+    <div style={{textAlign: 'left', width: '115px'}}>
       {!isHidden && params.formattedValue}
-      <Button
-        onClick={onClick}
-        style={{minWidth: 'auto', margin: '0 auto', padding: '4px'}}>
+      <Button onClick={onClick} style={{minWidth: 'auto', margin: '0 auto', padding: '4px'}}>
         {isHidden ? <ShowPhoneIcon /> : <HidePhoneIcon />}
       </Button>
     </div>
@@ -169,15 +194,10 @@ const EditCell: FunctionComponent<{
       throw e
     }
   }
-  const isWithdrawn =
-    params.row['externalId'] === EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
+  const isWithdrawn = params.row['externalId'] === EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
   return !isWithdrawn ? (
-    <IconButton
-      onClick={onClick}
-      aria-label="edit participant"
-      component="span"
-      size="large">
-      <PencilIcon />
+    <IconButton onClick={onClick} aria-label="edit participant" component="span" size="large">
+      <EditTwoToneIcon />
     </IconButton>
   ) : (
     <></>
@@ -195,36 +215,22 @@ const SelectionControl: FunctionComponent<{
 
   return (
     <GridToolbarContainer>
-      <div style={{position: 'relative'}}>
-        <Box
-          className={classes.selectionDisplay}
-          style={{
-            visibility: !selectionModel?.length ? 'hidden' : 'visible',
-          }}>
-          {`${isAllSelected ? 'All ' : ''}`}
-          <Pluralize
-            singular={'participant'}
-            count={isAllSelected ? totalParticipants : selectionModel.length}
-          />{' '}
-          selected
-        </Box>
-      </div>
+      <StyledSelectionDisplay sx={{display: !selectionModel?.length ? 'none' : 'block'}}>
+        {`${isAllSelected ? 'All ' : ''}`}
+        <Pluralize singular={'participant'} count={isAllSelected ? totalParticipants : selectionModel.length} />{' '}
+        selected
+      </StyledSelectionDisplay>
     </GridToolbarContainer>
   )
 }
 
-export function CustomColumnMenuComponent(
-  props: GridColumnMenuProps & {color: string}
-) {
+export function CustomColumnMenuComponent(props: GridColumnMenuProps & {color: string}) {
   const {hideMenu, currentColumn, color, ...other} = props
   // more info here: https://material-ui.com/components/data-grid/components/#components
   /*if (currentColumn.field === 'name') { }*/
 
   return (
-    <GridColumnMenuContainer
-      hideMenu={hideMenu}
-      currentColumn={currentColumn}
-      {...other}>
+    <GridColumnMenuContainer hideMenu={hideMenu} currentColumn={currentColumn} {...other}>
       <GridColumnsMenuItem onClick={hideMenu} column={currentColumn!} />
       <HideGridColMenuItem onClick={hideMenu} column={currentColumn!} />
     </GridColumnMenuContainer>
@@ -237,17 +243,13 @@ function getPhone(params: GridValueGetterParams) {
   } else return ''
 }
 function getDate(value: GridCellValue) {
-  return value && moment(value.toString()).isValid()
-    ? moment(value.toString()).format('MM/DD/YYYY')
-    : undefined
+  return value && dayjs(value.toString()).isValid() ? dayjs(value.toString()).format('MM/DD/YYYY') : undefined
 }
 
 function getJoinedDateWithIcons(params: GridValueGetterParams) {
   // const joinedDate = params.row.joinedDate
   // const smsDate = params.row.smsDate
-  const foundEvent = params.row.events.find(
-    (event: any) => event.eventId === JOINED_EVENT_ID
-  )
+  const foundEvent = params.row.events.find((event: any) => event.eventId === JOINED_EVENT_ID)
   const joinedDate = foundEvent ? getDate(foundEvent.timestamp) : undefined
 
   const dateToDisplay = joinedDate //|| smsDate
@@ -269,10 +271,7 @@ function getJoinedDateWithIcons(params: GridValueGetterParams) {
 function renderColumnHeaderWithIcon(icon: string, headerName: string) {
   return (
     <Box display="flex" flexDirection="row">
-      <img
-        src={icon}
-        style={{marginRight: '6px', width: '16px'}}
-        alt={headerName}></img>
+      <img src={icon} style={{marginRight: '6px', width: '16px'}} alt={headerName}></img>
       {headerName}
     </Box>
   ) as ReactNode
@@ -311,7 +310,7 @@ function getColumns(
 
       renderHeader: () => {
         return (
-          <Box display="flex" flexDirection="row" alignItems="center">
+          <Box display="flex" flexDirection="row" alignItems="left">
             Phone Number
             <Button
               onClick={() => setIsGloballyHidePhone(!isGloballyHidePhone)}
@@ -328,21 +327,13 @@ function getColumns(
       },
 
       renderCell: (params: GridCellParams) => {
-        return (
-          <PhoneCell
-            params={params}
-            hidePhone={isGloballyHidePhone}></PhoneCell>
-        )
+        return <PhoneCell params={params} hidePhone={isGloballyHidePhone}></PhoneCell>
       },
     },
     {
       field: 'externalId',
-      headerName: isEnrolledById
-        ? 'Participant ID'
-        : `${gridType === 'TEST' ? 'Log in' : 'Reference'} ID`,
-      renderCell: params => (
-        <Link to={`adherence/${params.row['id']}`}>{params.value}</Link>
-      ),
+      headerName: isEnrolledById ? 'Participant ID' : `${gridType === 'TEST' ? 'Log in' : 'Reference'} ID`,
+      renderCell: params => <StyledLink to={`adherence/${params.row['id']}`}>{params.value}</StyledLink>,
       width: 125,
     },
 
@@ -355,14 +346,13 @@ function getColumns(
     {
       field: 'clientTimeZone',
       headerName: 'Time Zone',
-      align: 'center',
+      align: 'left',
       valueGetter: params => params.value || '-',
       width: 150,
     },
     {
       field: 'joinedDate',
-      renderHeader: () =>
-        renderColumnHeaderWithIcon(JoinedCheckSymbol, 'Joined'),
+      renderHeader: () => renderColumnHeaderWithIcon(JoinedCheckSymbol, 'Joined'),
       renderCell: getJoinedDateWithIcons,
       width: 110,
     },
@@ -382,18 +372,13 @@ function getColumns(
 
   const editColumn: GridColDef = {
     field: 'edit',
-    headerName: 'Edit',
+    headerName: ' ',
     //AGv5  disableClickEventBubbling: true,
     disableColumnMenu: true,
-    width: 80,
+    width: 60,
 
     renderCell: (params: GridCellParams) => (
-      <EditCell
-        params={params}
-        studyId={studyId}
-        token={token!}
-        onSetParticipantToEdit={setParticipantToEdit}
-      />
+      <EditCell params={params} studyId={studyId} token={token!} onSetParticipantToEdit={setParticipantToEdit} />
     ),
   }
 
@@ -402,15 +387,11 @@ function getColumns(
     const formattedEventId = EventService.formatEventIdForDisplay(eventId)
     const isBurstEvent = EventService.isEventBurstEvent(eventId)
     const hasConnectedBursts =
-      scheduleEventIds.find(e =>
-        e.includes(`study_burst:custom_${formattedEventId}_burst:`)
-      ) !== undefined
+      scheduleEventIds.find(e => e.includes(`study_burst:custom_${formattedEventId}_burst:`)) !== undefined
 
     const sourceOfBurstEvents = !isBurstEvent && hasConnectedBursts
 
-    return sourceOfBurstEvents
-      ? `${formattedEventId}/Burst 1`
-      : formattedEventId
+    return sourceOfBurstEvents ? `${formattedEventId}/Burst 1` : formattedEventId
   }
 
   const shouldShowEvent = (eventId: string) => {
@@ -432,9 +413,7 @@ function getColumns(
         headerName: getEventHeader(scheduleEventIds, eventId), //+
         valueGetter: params => {
           const foundEvent = params.row.events.find(
-            (event: any) =>
-              event.eventId ===
-              EventService.prefixCustomEventIdentifier(eventId)
+            (event: any) => event.eventId === EventService.prefixCustomEventIdentifier(eventId)
           )
           return foundEvent ? getDate(foundEvent.timestamp) : ' '
         },
@@ -446,45 +425,30 @@ function getColumns(
   let participantColumns = [...COLUMNS]
   // for active participants -- don't need withdrawn date and note
   if (gridType === 'ACTIVE') {
-    participantColumns = _.filter(
-      participantColumns,
-      c => !_.includes(['dateWithdrawn', 'withdrawalNote'], c.field)
-    )
+    participantColumns = _.filter(participantColumns, c => !_.includes(['dateWithdrawn', 'withdrawalNote'], c.field))
   }
 
   participantColumns.splice(1, 0, editColumn)
 
   //for withdrawn participants -- remove edit and note fileds
   if (gridType === 'WITHDRAWN') {
-    participantColumns = _.filter(
-      participantColumns,
-      c => !_.includes(['note', 'edit'], c.field)
-    )
+    participantColumns = _.filter(participantColumns, c => !_.includes(['note', 'edit'], c.field))
   }
   if (gridType === 'TEST') {
-    participantColumns = participantColumns.filter(
-      el => el.headerName !== 'Phone Number'
-    )
+    participantColumns = participantColumns.filter(el => el.headerName !== 'Phone Number')
   }
 
   // if enrolled by ID -- dont' need phone
   if (isEnrolledById) {
-    participantColumns = _.filter(
-      participantColumns,
-      c => !_.includes(['phone'], c.field)
-    )
+    participantColumns = _.filter(participantColumns, c => !_.includes(['phone'], c.field))
   }
 
   // if no custom event / burst -- remove time zone column
   if (scheduleEventIds.length === 1) {
-    participantColumns = participantColumns.filter(
-      el => el.headerName !== 'Time Zone'
-    )
+    participantColumns = participantColumns.filter(el => el.headerName !== 'Time Zone')
   }
 
-  const eventInsertionIndex = participantColumns.findIndex(
-    column => column.field === 'clientTimeZone'
-  )
+  const eventInsertionIndex = participantColumns.findIndex(column => column.field === 'clientTimeZone')
   participantColumns.splice(eventInsertionIndex, 0, ...customEventColumns)
   //participantColumns = [...participantColumns, ...customEventColumns]
   return participantColumns
@@ -522,8 +486,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const {token} = useUserSessionDataState()
   const {data: scheduleEvents = []} = useEvents(studyId)
 
-  const {isLoading: isParticipantUpdating, mutate} =
-    useUpdateParticipantInList()
+  const {isLoading: isParticipantUpdating, mutate} = useUpdateParticipantInList()
 
   //when we are editing the record this is where the info is stored
   const [participantToEdit, setParticipantToEdit] = React.useState<
@@ -536,9 +499,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     | undefined
   >(undefined)
 
-  const [selectionModel, setSelectionModel] = React.useState<string[]>([
-    ...selectedParticipantIds,
-  ])
+  const [selectionModel, setSelectionModel] = React.useState<string[]>([...selectedParticipantIds])
   const [isGloballyHidePhone, setIsGloballyHidePhone] = React.useState(true)
   const [error, setError] = React.useState<Error>()
 
@@ -559,13 +520,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   })
 
   React.useEffect(() => {
-    setSelectionModel([
-      ...selectedParticipantIds.filter(id => rows.find(row => row.id === id)),
-    ])
+    setSelectionModel([...selectedParticipantIds.filter(id => rows.find(row => row.id === id))])
   }, [selectedParticipantIds, rows])
 
-  const allSelectedPage = () =>
-    rows && !rows.find(row => !selectionModel.includes(row.id))
+  const allSelectedPage = () => rows && !rows.find(row => !selectionModel.includes(row.id))
 
   const getSelectionType = (): SelectionType => {
     if (isAllSelected) {
@@ -601,17 +559,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     )
   }
 
-  const updateParticiant = (
-    note: string,
-    clientTimeZone?: string,
-    customEvents?: ParticipantEvent[]
-  ) => {
+  const updateParticiant = (note: string, clientTimeZone?: string, customEvents?: ParticipantEvent[]) => {
     setError(undefined)
     const changedEvents = customEvents?.filter(ue => {
       let prevEvents = participantToEdit!.participant.events || []
-      const updatedEvent = prevEvents.find(
-        e => e.eventId === ue.eventId && e.timestamp !== ue.timestamp
-      )
+      const updatedEvent = prevEvents.find(e => e.eventId === ue.eventId && e.timestamp !== ue.timestamp)
       const existingEvent = prevEvents.find(e => e.eventId === ue.eventId)
       return updatedEvent || !existingEvent
     })
@@ -649,7 +601,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     align: 'left',
     renderHeader: () => {
       return (
-        <div style={{marginLeft: '-6px'}}>
+        <div>
           <SelectAll
             selectionType={getSelectionType()}
             allText={`Select all ${totalParticipants}`}
@@ -695,13 +647,16 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
   return (
     <>
-      <Paper elevation={0}>
+      <Paper elevation={0} sx={{fontSize: '14px'}}>
         <div style={{display: 'flex', height: '90vh'}}>
           <div style={{flexGrow: 1}}>
-            <DataGrid
+            <StyledDataGrid
               rows={rows}
+              showColumnRightBorder={true}
+              showCellRightBorder={true}
+              sx={{fontSize: '14px', borderBottom: '1px solid #EAECEE'}}
               loading={isParticipantUpdating}
-              classes={{columnHeader: classes.gridHeader}}
+              classes={{columnHeader: classes.gridHeader, columnHeaderTitle: classes.gridHeaderTitle}}
               density="standard"
               columns={participantColumns}
               checkboxSelection={false}
@@ -751,7 +706,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       </Paper>
       <Dialog
         open={participantToEdit !== undefined}
-        maxWidth="sm"
+        maxWidth="md"
         scroll="body"
         fullWidth
         aria-labelledby="edit participant">
@@ -770,11 +725,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             isEnrolledById={isEnrolledById}
             onError={error}
             onCancel={() => setParticipantToEdit(undefined)}
-            onOK={(
-              note: string,
-              clientTimeZone?: string,
-              customEvents?: ParticipantEvent[]
-            ) => {
+            onOK={(note: string, clientTimeZone?: string, customEvents?: ParticipantEvent[]) => {
               updateParticiant(note, clientTimeZone, customEvents)
             }}
             participant={participantToEdit?.participant || {}}>
@@ -793,9 +744,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <WithdrawParticipantForm
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
-            onOK={(note: string) =>
-              withdrawParticipant(participantToEdit?.id!, note)
-            }
+            onOK={(note: string) => withdrawParticipant(participantToEdit?.id!, note)}
             participant={participantToEdit?.participant || {}}
             onError={error}
             onHandleError={setError}></WithdrawParticipantForm>

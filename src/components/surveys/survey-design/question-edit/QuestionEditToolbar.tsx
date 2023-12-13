@@ -1,23 +1,23 @@
-import {ReactComponent as DeleteIcon} from '@assets/surveys/actions/delete.svg'
-import {ReactComponent as DuplicateIcon} from '@assets/surveys/actions/duplicate.svg'
-import {ReactComponent as SaveIcon} from '@assets/surveys/actions/save.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
-import {Box, styled} from '@mui/material'
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone'
+import FileCopyTwoToneIcon from '@mui/icons-material/FileCopyTwoTone'
+import {Box, Button, styled} from '@mui/material'
 import React, {FunctionComponent} from 'react'
 import {ActionButton} from '../../widgets/SharedStyled'
 
 const QuestionEditToolbarContainer = styled('div')(({theme}) => ({
   bottom: '0',
-  position: 'fixed',
+  // position: 'fixed',
   height: '54px',
   display: 'flex',
-  backgroundColor: '#f7f7f7',
+  //backgroundColor: 'blue',
   flexDirection: 'row',
   alignItems: 'center',
-  width: '425px',
-  justifyContent: 'space-between',
-  padding: theme.spacing(0, 2.5),
+  width: '100%',
+
+  padding: theme.spacing(0, 5),
+  margin: theme.spacing(3, 0),
 }))
 
 const DeleteButton: FunctionComponent<{
@@ -25,29 +25,33 @@ const DeleteButton: FunctionComponent<{
   dependentQuestions: number[] | undefined
 }> = ({onClick, dependentQuestions}) => {
   const isDisabled = !!dependentQuestions?.length
+
+  const getText = (depQs: number[]) => {
+    if (depQs.length === 1) {
+      return `If you want to delete this question, first change the branching on question ${depQs[0]}.`
+    }
+    return `If you want to delete this question, first change the branching on questions: ${depQs.join(', ')}.`
+  }
   if (!isDisabled) {
     return (
-      <ActionButton startIcon={<DeleteIcon />} variant="text" onClick={onClick}>
+      <ActionButton
+        startIcon={<DeleteTwoToneIcon sx={{color: '#FF4164'}} />}
+        variant="text"
+        onClick={onClick}
+        color="error">
         Delete
       </ActionButton>
     )
   } else {
     return (
       <>
-        <ActionButton
-          startIcon={<DeleteIcon />}
-          disabled={true}
-          variant="text"
-          onClick={onClick}>
+        <ActionButton startIcon={<DeleteTwoToneIcon />} disabled={true} variant="text" onClick={onClick}>
           Delete
         </ActionButton>
         <Box sx={{display: 'inline-flex', alignItems: 'center'}}>
           <InfoCircleWithToolTip
             style={{marginLeft: '0px'}}
-            tooltipDescription={
-              'If you want to delete this question, first change the branching on questions: ' +
-              dependentQuestions?.map(index => ++index).join(',')
-            }
+            tooltipDescription={getText(dependentQuestions)}
             variant="info"
           />
         </Box>
@@ -64,27 +68,18 @@ const QuestionEditToolbar: FunctionComponent<{
   const [isConfirmDelete, setIsConfirmDelete] = React.useState(false)
   return (
     <>
-      <QuestionEditToolbarContainer>
-        <ActionButton
-          startIcon={<SaveIcon />}
-          variant="text"
-          onClick={() => onAction('save')}>
-          Save Changes
-        </ActionButton>
+      <QuestionEditToolbarContainer sx={{justifyContent: isDynamic ? 'space-between' : 'flex-end'}}>
         {isDynamic && (
           <div>
-            <ActionButton
-              startIcon={<DuplicateIcon />}
-              variant="text"
-              onClick={() => onAction('duplicate')}>
+            <ActionButton startIcon={<FileCopyTwoToneIcon />} variant="text" onClick={() => onAction('duplicate')}>
               Duplicate
             </ActionButton>
-            <DeleteButton
-              dependentQuestions={dependentQuestions}
-              onClick={() => setIsConfirmDelete(true)}
-            />
+            <DeleteButton dependentQuestions={dependentQuestions} onClick={() => setIsConfirmDelete(true)} />
           </div>
         )}
+        <Button color="primary" variant="contained" onClick={() => onAction('save')}>
+          Save Changes
+        </Button>
       </QuestionEditToolbarContainer>
       <ConfirmationDialog
         isOpen={isConfirmDelete}
@@ -92,13 +87,11 @@ const QuestionEditToolbar: FunctionComponent<{
         type={'DELETE'}
         onCancel={() => setIsConfirmDelete(false)}
         onConfirm={() => {
-          onAction('delete')
           setIsConfirmDelete(false)
+          onAction('delete')
         }}>
         <div>
-          <strong>
-            Are you sure you would like to permanently delete this question?
-          </strong>
+          <strong>Are you sure you would like to permanently delete this question?</strong>
         </div>
       </ConfirmationDialog>
     </>

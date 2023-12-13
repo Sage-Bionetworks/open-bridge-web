@@ -4,17 +4,12 @@ import {BlueButton} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import {Box, CircularProgress} from '@mui/material'
 import Alert from '@mui/material/Alert'
-import makeStyles from '@mui/styles/makeStyles'
 import {useAddParticipant} from '@services/participantHooks'
 import ParticipantService from '@services/participants.service'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {EditableParticipantData, Phone} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import AddSingleParticipantForm from './AddSingleParticipantForm'
-
-const useStyles = makeStyles(theme => ({
-  root: {},
-}))
 
 type AddSingleParticipantProps = {
   token: string
@@ -24,11 +19,7 @@ type AddSingleParticipantProps = {
   studyIdentifier: string
 }
 
-export async function addParticipantById(
-  studyIdentifier: string,
-  token: string,
-  options: EditableParticipantData
-) {
+export async function addParticipantById(studyIdentifier: string, token: string, options: EditableParticipantData) {
   await ParticipantService.addParticipant(studyIdentifier, token, options)
 }
 
@@ -46,24 +37,16 @@ export async function addParticipantByPhone(
 
 // -----------------  Add participant  tab control
 const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
-  onAdded,
   isEnrolledById,
   scheduleEvents,
-  token,
+
   studyIdentifier,
 }) => {
-  const classes = useStyles()
-  const [participant, setParticipant] = React.useState<EditableParticipantData>(
-    {
-      externalId: '',
-    }
-  )
+  const [participant, setParticipant] = React.useState<EditableParticipantData>({
+    externalId: '',
+  })
   const [error, setError] = React.useState<Error>()
-  const {
-    isLoading,
-    error: participantAddError,
-    mutateAsync,
-  } = useAddParticipant()
+  const {isLoading, error: participantAddError, mutateAsync} = useAddParticipant()
 
   React.useEffect(() => {
     if (participantAddError) setError(participantAddError as Error)
@@ -88,19 +71,13 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
 
   const isAddDisabled = (): boolean => {
     const enrolledByPhoneWithoutNumber =
-      !isEnrolledById &&
-      (!participant.phoneNumber ||
-        Utility.isInvalidPhone(participant.phoneNumber))
+      !isEnrolledById && (!participant.phoneNumber || Utility.isInvalidPhone(participant.phoneNumber))
     const enrolledNyIdWithoutId = isEnrolledById && !participant.externalId
     const noTimeZoneForStudiesWithCustomEvents =
       scheduleEvents.find(e => e.eventId.includes('custom')) !== undefined &&
       (participant.clientTimeZone || '').length < 3
 
-    return (
-      enrolledByPhoneWithoutNumber ||
-      enrolledNyIdWithoutId ||
-      noTimeZoneForStudiesWithCustomEvents
-    )
+    return enrolledByPhoneWithoutNumber || enrolledNyIdWithoutId || noTimeZoneForStudiesWithCustomEvents
   }
 
   return (
@@ -123,7 +100,6 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
           }
         }}
       />
-
       <Box textAlign="center" my={2}>
         <BlueButton
           color="primary"

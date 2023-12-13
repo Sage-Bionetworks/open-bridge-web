@@ -1,17 +1,8 @@
-import {ReactComponent as EditIcon} from '@assets/edit_pencil.svg'
-import {ReactComponent as RedEditIcon} from '@assets/edit_pencil_red.svg'
-import {
-  FormControl,
-  FormGroup,
-  IconButton,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Select,
-  Tooltip,
-} from '@mui/material'
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
+import {FormControl, FormGroup, IconButton, MenuItem, Radio, RadioGroup, Select, Tooltip} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {JOINED_EVENT_ID} from '@services/event.service'
+import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {HDWMEnum, SchedulingEvent} from '@typedefs/scheduling'
 import React, {FunctionComponent} from 'react'
@@ -54,25 +45,12 @@ type ToolIconProps = {
 }
 const ToolIcon: FunctionComponent<ToolIconProps> = ({onOpenEventsEditor}) => {
   const classes = useStyles()
-  const [isHoveringEdit, setIsHoveringEdit] = React.useState(false)
-  const handleMouseOver = () => setIsHoveringEdit(true)
-  const handleMouseOut = () => setIsHoveringEdit(false)
+
   return (
     <Tooltip title="Edit Custom Event">
-      <IconButton
-        className={classes.editIcon}
-        onClick={() => onOpenEventsEditor()}
-        onMouseEnter={handleMouseOver}
-        onMouseLeave={handleMouseOut}
-        size="large">
+      <IconButton className={classes.editIcon} onClick={() => onOpenEventsEditor()} size="large">
         {' '}
-        {isHoveringEdit ? (
-          <EditIcon />
-        ) : (
-          <RedEditIcon
-            style={{position: 'relative', bottom: '0.5px', right: '0.5px'}}
-          />
-        )}
+        <EditTwoToneIcon sx={{color: theme.palette.primary.main, '&:hover': {stroke: theme.palette.primary.main}}} />
       </IconButton>
     </Tooltip>
   )
@@ -128,11 +106,12 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
     return (
       <FormControl className={classes.formControl}>
         <Select
+          aria-label="select-event-id"
           variant="outlined"
           disabled={disabled}
           classes={{select: classes.select}}
           onChange={e => onChangeFn(e.target.value)}
-          id={'id'}
+          name={'id'}
           value={value}>
           {eventDropdownValues.map(item => (
             <MenuItem value={item.value} key={item.value}>
@@ -145,25 +124,23 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   }
 
   return (
-    <SchedulingFormSection label={`${sessionName} starts on*:`}>
+    <SchedulingFormSection label="Start Session On" ariaLabel="scheduling-form-section-start-date">
       <div className={isBurst ? classes.disabled : ''}>
         <RadioGroup
           aria-label="Session Starts On"
           name="startDate"
           value={hasDelay}
           onChange={e => changeStartDelayType(e.target.value === 'true')}>
-          <FormGroup row={true} style={{alignItems: 'center'}}>
+          <FormGroup aria-label="event-only" row={true} style={{alignItems: 'center'}}>
             <Radio value={false} disabled={isBurst} color="secondary" />
             <SelectEventId
               disabled={hasDelay || isBurst}
               value={!hasDelay ? startEventId : ''}
-              onChangeFn={(e: string) =>
-                onChangeStartEventId(e)
-              }></SelectEventId>
+              onChangeFn={(e: string) => onChangeStartEventId(e)}></SelectEventId>
             <ToolIcon onOpenEventsEditor={onOpenEventsEditor} />
             {isBurst ? children : ''}
           </FormGroup>
-          <FormGroup row={true} style={{alignItems: 'center'}}>
+          <FormGroup aria-label="event-and-duration" row={true} style={{alignItems: 'center'}}>
             <Radio value={true} color="secondary" disabled={isBurst} />{' '}
             <Duration
               onChange={e => {
@@ -181,9 +158,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
             <SelectEventId
               disabled={!hasDelay || !!isBurst}
               value={hasDelay ? startEventId : ''}
-              onChangeFn={(e: string) =>
-                onChangeStartEventId(e)
-              }></SelectEventId>
+              onChangeFn={(e: string) => onChangeStartEventId(e)}></SelectEventId>
             <ToolIcon onOpenEventsEditor={onOpenEventsEditor} />
           </FormGroup>
         </RadioGroup>

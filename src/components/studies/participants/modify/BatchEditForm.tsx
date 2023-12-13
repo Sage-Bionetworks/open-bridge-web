@@ -21,10 +21,9 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   onSetIsBatchEditOpen,
   selectedParticipants,
   studyId,
-  isAllSelected,
 }) => {
-  const [isLoading, setIsLoading] = React.useState(false)
-  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
+  const [isLoading] = React.useState(false)
+  const {data: scheduleEvents = []} = useEvents(studyId)
   const [error, setError] = React.useState<Error>()
 
   const {mutateAsync, error: batchUpdateError} = useUpdateParticipantInList()
@@ -49,11 +48,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   }
 
   return (
-    <Dialog
-      open={isBatchEditOpen}
-      maxWidth="sm"
-      fullWidth
-      aria-labelledby="edit participant">
+    <Dialog open={isBatchEditOpen} maxWidth="sm" fullWidth aria-labelledby="edit participant">
       <EditDialogTitle
         onCancel={() => {
           onSetIsBatchEditOpen(false)

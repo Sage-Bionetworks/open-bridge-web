@@ -23,8 +23,7 @@ export type ActionPayload = {
   }
 }
 
-export type SessionScheduleAction =
-  ActionMap<ActionPayload>[keyof ActionMap<ActionPayload>]
+export type SessionScheduleAction = ActionMap<ActionPayload>[keyof ActionMap<ActionPayload>]
 
 function updateSessionSchedule(
   sessions: StudySession[],
@@ -45,10 +44,7 @@ function updateSessionSchedule(
   return result
 }
 
-function actionsReducer(
-  sessions: StudySession[],
-  action: SessionScheduleAction
-): StudySession[] {
+function actionsReducer(sessions: StudySession[], action: SessionScheduleAction): StudySession[] {
   switch (action.type) {
     case ActionTypes.UpdateSessionSchedule: {
       return updateSessionSchedule(

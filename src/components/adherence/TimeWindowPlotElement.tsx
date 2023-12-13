@@ -31,8 +31,7 @@ const TimeWindowPlotElement: FunctionComponent<{
 }) => {
   const tooltipTitle = (
     <div>
-      {timeZone && <div>{timeZone}</div>}{' '}
-      {AdherenceUtility.getDateForDisplay(startDate)}
+      {timeZone && <div>{timeZone}</div>} {AdherenceUtility.getDateForDisplay(startDate)}
       {AdherenceUtility.getTimeForDisplay(startTime)}
       <div style={{marginTop: '8px'}}>
         <i>
@@ -50,11 +49,7 @@ const TimeWindowPlotElement: FunctionComponent<{
           textAlign: 'center',
           width: `${Math.floor(100 / maxNumberOfWindows)}%`,
         }}>
-        <AdherenceSessionIcon
-          sessionSymbol={sessionSymbol}
-          windowState={windowState}
-          isRed={!isCompliant}
-        />
+        <AdherenceSessionIcon sessionSymbol={sessionSymbol} windowState={windowState} isRed={!isCompliant} />
       </div>
     </Tooltip>
   )

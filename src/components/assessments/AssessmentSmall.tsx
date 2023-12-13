@@ -1,81 +1,58 @@
-import {Box, Paper} from '@mui/material'
-import createStyles from '@mui/styles/createStyles'
-import makeStyles from '@mui/styles/makeStyles'
+import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone'
+import {Box, Paper, styled, Typography} from '@mui/material'
+import {shouldForwardProp} from '@style/theme'
 import {Assessment} from '@typedefs/types'
-import clsx from 'clsx'
 import {FunctionComponent} from 'react'
 import AssessmentImage from './AssessmentImage'
 
-const useStyles = makeStyles(theme =>
-  createStyles({
-    root: {
-      display: 'flex',
-      padding: 0,
-      marginBottom: theme.spacing(1),
-      boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+const AssessmentSmallCard = styled(Paper, {label: 'StyledCard', shouldForwardProp: shouldForwardProp})<{
+  $isReadOnly: boolean
+  $isDragging: boolean
+}>(({theme, $isReadOnly, $isDragging}) => ({
+  display: 'flex',
+  padding: $isDragging ? '5px' : 0,
+  marginBottom: theme.spacing(1),
+  boxShadow: $isReadOnly ? 'none' : '0px 2px 2px rgba(0, 0, 0, 0.25)',
+  '&  svg': {display: 'none', fontSize: '12px'},
+  '&:hover': {
+    border: $isReadOnly ? 'none' : `2px solid ${theme.palette.accent.purple}`,
+    '&  svg': {
+      display: $isReadOnly ? 'none' : 'block',
+      position: 'absolute',
+      right: '5px',
 
-      '&.dragging': {
-        border: '1px dashed #000',
-        padding: '5px',
-      },
-      '&:hover': {
-        border: '2px solid #000',
+      top: '0',
+      bottom: '0',
+      margin: 'auto',
+    },
+  },
+}))
 
-        '& $text $hoverImage': {
-          display: 'block',
-          position: 'absolute',
-          right: '5px',
-          width: '20px',
-          height: '20px',
-          top: '0',
-          bottom: '0',
-          margin: 'auto',
-        },
-      },
-      '&.no-hover:hover': {
-        border: 'none',
-        '& $text $hoverImage': {
-          display: 'none',
-        },
-      },
-    },
+const StyledTextArea = styled(Box, {label: 'StyledTextArea'})(({theme}) => ({
+  padding: theme.spacing(1),
+  paddingRight: theme.spacing(3),
+  backgroundColor: '#fff',
+  position: 'relative',
+  overflow: 'hidden',
+  flexGrow: 1,
+  textAlign: 'left',
+}))
 
-    card: {
-      width: '104px',
-      height: '96px',
-      flexShrink: 0,
-      display: 'flex',
-      alignContent: 'space-around',
-      justifyContent: 'space-around',
-      overflow: 'hidden',
-    },
-    title: {
-      fontSize: '12px',
-      overflowWrap: 'break-word',
-    },
-    text: {
-      padding: theme.spacing(1),
-      paddingRight: theme.spacing(3),
-      backgroundColor: '#E0E0E0',
-      position: 'relative',
-      overflow: 'hidden',
-      flexGrow: 1,
-      textAlign: 'left',
-    },
-    duration: {
-      fontSize: '13px',
-    },
-    hoverImage: {
-      display: 'none',
-    },
-  })
-)
+const StyledTImageWrapper = styled(Box, {label: 'StyledTImageWrapper'})(({theme}) => ({
+  width: '104px',
+  height: '96px',
+  flexShrink: 0,
+  display: 'flex',
+  alignContent: 'space-around',
+  justifyContent: 'space-around',
+  overflow: 'hidden',
+}))
 
 type AssessmentSmallOwnProps = {
   assessment: Assessment
   isDragging?: boolean
   isHideDuration?: boolean
-  hasHover?: boolean
+  isReadOnly?: boolean
 }
 
 type AssessmentSmallProps = AssessmentSmallOwnProps
@@ -84,38 +61,24 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
   assessment,
   isDragging,
   isHideDuration,
-  hasHover = true,
+  isReadOnly = false,
   children,
 }) => {
-  const classes = useStyles()
-
   return (
-    <Paper
-      className={clsx(
-        classes.root,
-        !hasHover && 'no-hover',
-        isDragging && 'dragging'
-      )}>
-      <Box className={classes.card}>
-        <AssessmentImage
-          variant="small"
-          resources={assessment.resources}
-          name={assessment.title}></AssessmentImage>
-      </Box>
-      <div className={classes.text}>
-        <div className={classes.hoverImage}> &#9776;</div>
-        <span className={classes.title}>
+    <AssessmentSmallCard $isReadOnly={isReadOnly} $isDragging={!!isDragging}>
+      <StyledTImageWrapper>
+        <AssessmentImage variant="small" assessment={assessment} name={assessment.title}></AssessmentImage>
+      </StyledTImageWrapper>
+      <StyledTextArea>
+        <MenuTwoToneIcon sx={{fontSize: '12px'}} />
+        <Typography variant="body1">
           {assessment.title}
 
-          {!isHideDuration && (
-            <div className={classes.duration}>
-              {assessment.minutesToComplete} min
-            </div>
-          )}
-        </span>
+          {!isHideDuration && <Typography sx={{color: '#878E95'}}>{assessment.minutesToComplete} min</Typography>}
+        </Typography>
         {children}
-      </div>
-    </Paper>
+      </StyledTextArea>
+    </AssessmentSmallCard>
   )
 }
 

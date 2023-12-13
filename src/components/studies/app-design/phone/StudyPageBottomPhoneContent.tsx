@@ -1,6 +1,6 @@
-import {Box, Divider} from '@mui/material'
+import {Box, Divider, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import {latoFont, poppinsFont} from '@style/theme'
+import {latoFont} from '@style/theme'
 import {Contact} from '@typedefs/types'
 import React from 'react'
 import StudySummaryRoles from '../StudySummaryRoles'
@@ -18,21 +18,11 @@ const useStyles = makeStyles(theme => ({
   },
   divider: {
     width: '256px',
-    marginTop: theme.spacing(3.75),
+    margin: theme.spacing(3.5, 0),
   },
-  contactAndSupportText: {
-    fontFamily: poppinsFont,
-    fontWeight: 'normal',
-    fontSize: '18px',
-    lineHeight: '24px',
-    textAlign: 'left',
-  },
+
   summaryRoles: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
+    marginLeft: theme.spacing(3),
     marginBottom: theme.spacing(1.25),
     marginTop: theme.spacing(1),
     position: 'relative',
@@ -44,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   container: {
     padding: theme.spacing(2, 2, 2, 2.25),
     width: '311px',
-    backgroundColor: '#F6F6F6',
+
     marginLeft: theme.spacing(1.25),
   },
   innerContainer: {
@@ -52,15 +42,13 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
     width: '100%',
     padding: theme.spacing(3, 2, 3, 2),
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
+    textAlign: 'left',
   },
   withdrawFromStudyContainer: {
     height: '140px',
     width: '225px',
     borderRadius: '10px',
-    backgroundColor: '#93CCF0',
+    backgroundColor: '#F1F3F5',
     alignSelf: 'center',
     marginTop: theme.spacing(3),
     padding: theme.spacing(0.5, 2.5, 0.5, 2.5),
@@ -93,86 +81,64 @@ type StudyPageBottomPhoneContentProps = {
   isReadOnly?: boolean
 }
 
-const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneContentProps> =
-  ({
-    generalContactPhoneNumber,
-    irbPhoneNumber,
-    studyID,
-    ethicsBoardInfo,
-    contactLead,
-    irbProtocolId,
-    getContactName,
-    isReadOnly,
-  }) => {
-    const classes = useStyles()
-    return (
-      <Box className={classes.container}>
-        <Box className={classes.innerContainer}>
-          <Box className={classes.contactAndSupportText}>General Support</Box>
-          <p className={classes.bodyPhoneText}>
-            For general questions about the study or to{' '}
-            <strong>withdraw</strong> from the study, please contact:
-          </p>
-          <Box className={classes.summaryRoles}>
-            {!isReadOnly && (
-              <SectionIndicator
-                index={6}
-                className={classes.sectionSixAndSevenIndicatorPosition}
-              />
-            )}
-            <StudySummaryRoles
-              type={contactLead.position || 'Role in study'}
-              name={getContactName(contactLead.name) || 'Contact lead'}
-            />
-          </Box>
-          <ContactInformation
-            phoneNumber={generalContactPhoneNumber}
-            email={contactLead.email || ''}
+const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneContentProps> = ({
+  generalContactPhoneNumber,
+  irbPhoneNumber,
+  studyID,
+  ethicsBoardInfo,
+  contactLead,
+  irbProtocolId,
+  getContactName,
+  isReadOnly,
+}) => {
+  const classes = useStyles()
+  return (
+    <Box className={classes.container}>
+      <Box className={classes.innerContainer}>
+        <Typography variant="h4">General Support</Typography>
+        <Typography variant="h4" sx={{fontWeight: '400', mt: 1}}>
+          For general questions about the study or to <strong>withdraw</strong> from the study, please contact:
+        </Typography>
+        <Box className={classes.summaryRoles}>
+          {!isReadOnly && <SectionIndicator index={6} className={classes.sectionSixAndSevenIndicatorPosition} />}
+          <StudySummaryRoles
+            type={contactLead.position || 'Role in study'}
+            name={getContactName(contactLead.name) || 'Contact lead'}
           />
-          <Box className={classes.withdrawFromStudyContainer}>
-            <p className={classes.widthdrawText}>
-              To <strong>withdraw from this study</strong>, you’ll need the
-              following info:
-            </p>
-            <Box className={classes.idContainer}>
-              <Box>
-                <strong>Study ID:</strong> {studyID}
-              </Box>
-              <Box>
-                <strong>Enrollment ID:</strong> -------
-              </Box>
+        </Box>
+        <ContactInformation phoneNumber={generalContactPhoneNumber} email={contactLead.email || ''} />
+        <Box className={classes.withdrawFromStudyContainer}>
+          <p className={classes.widthdrawText}>
+            To <strong>withdraw from this study</strong>, you’ll need the following info:
+          </p>
+          <Box className={classes.idContainer}>
+            <Box>
+              <strong>Study ID:</strong> {studyID}
+            </Box>
+            <Box>
+              <strong>Enrollment ID:</strong> -------
             </Box>
           </Box>
-          <Divider className={classes.divider} />
-          <Box className={classes.contactAndSupportText} mt={3}>
-            Your Participant Rights
-          </Box>
-          <p className={classes.bodyPhoneText}>
-            For questions about your rights as a research participant, please
-            contact :
-          </p>
-          <Box className={classes.summaryRoles}>
-            {!isReadOnly && (
-              <SectionIndicator
-                index={7}
-                className={classes.sectionSixAndSevenIndicatorPosition}
-              />
-            )}
-            <StudySummaryRoles
-              type={ethicsBoardInfo.position!}
-              name={getContactName(ethicsBoardInfo.name) || 'IRB/Ethics Board'}
-            />
-          </Box>
-          <ContactInformation
-            phoneNumber={irbPhoneNumber}
-            email={ethicsBoardInfo.email || ''}
+        </Box>
+        <Divider className={classes.divider} />
+        <Typography variant="h4">Your Participant Rights</Typography>
+        <p className={classes.bodyPhoneText}>
+          For questions about your rights as a research participant, please contact :
+        </p>
+        <Box className={classes.summaryRoles}>
+          {!isReadOnly && <SectionIndicator index={7} className={classes.sectionSixAndSevenIndicatorPosition} />}
+          <StudySummaryRoles
+            type={ethicsBoardInfo.position!}
+            name={getContactName(ethicsBoardInfo.name) || 'IRB/Ethics Board'}
           />
-          <Box mt={1.5} width="100%">
-            IRB Protocol ID: {irbProtocolId || 'placeholder'}
-          </Box>
+        </Box>
+        <ContactInformation phoneNumber={irbPhoneNumber} email={ethicsBoardInfo.email || ''} />
+        <Box className={classes.summaryRoles} sx={{fontSize: '14px'}}>
+          IRB Protocol ID: {irbProtocolId || 'placeholder'}
         </Box>
       </Box>
-    )
-  }
+    </Box>
+  )
+}
 
 export default StudyPageBottomPhoneContent

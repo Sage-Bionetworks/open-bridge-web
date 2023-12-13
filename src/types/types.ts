@@ -4,6 +4,8 @@ import {Schedule, ScheduleNotification, SchedulingEvent} from './scheduling'
 
 /* *** General Types ********************************/
 //usage example type JsonPrimitive = SubType<Person, number | string>;
+
+export type Language = 'en' | 'es_es'
 export type SubType<Base, Condition> = Pick<
   Base,
   {
@@ -30,13 +32,20 @@ export interface ExtendedError extends Error {
   entity?: any
 }
 
+export interface SynapseClientError extends Error {
+  reason: string
+}
+
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
+
+export type ViewType = 'LIST' | 'GRID'
 
 export type OauthEnvironment = {
   client: string
   vendor: string
   redirect: string
   appId: string
+  oneSageAppId: string
 }
 
 export type NavRouteType = {
@@ -59,27 +68,19 @@ export type NavRouteType = {
 
 /* ***  User Types ********************************/
 
-export type UserSessionData = {
-  token: string | undefined
-  orgMembership: string | undefined
-  dataGroups?: string[]
-  roles: AdminRole[]
-  firstName?: string
-  lastName?: string
-  userName?: string
-  alert?: string
-  id: string
-  appId: string
-  demoExternalId?: string
-}
-
 export type AdminRole = typeof constants.org_roles[number]
 
 export interface UserData {
   username?: string
-  firstName: string
-  lastName: string
+  firstName?: string
+  lastName?: string
   id: string
+  orgMembership: string | undefined
+  dataGroups?: string[]
+  roles: AdminRole[]
+  synapseUserId: string | undefined
+  isVerified?: boolean
+
   // email?: string
 }
 
@@ -87,22 +88,25 @@ export type LoggedInUserClientData = {demoExternalId?: string}
 
 export interface LoggedInUserData extends UserData {
   sessionToken: string
-  orgMembership: string
-  dataGroups?: string[]
-  roles: AdminRole[]
+  validated?: boolean
+  email?: string
   clientData?: LoggedInUserClientData
 }
 
-export interface OrgUser extends LoggedInUserData {
-  status: string
-  email?: string
-  synapseUserId: string
+export type LoginMethod = 'USERNAME_PASSWORD' | 'OAUTH_SYNAPSE'
+export interface UserSessionData extends UserData {
+  token: string | undefined
+  alert?: string
+  appId: string
+  lastLoginMethod?: LoginMethod
+  demoExternalId?: string
 }
 
 /* *** Assessment ********************************/
-export type AssessmentsType = 'SURVEY' | 'OTHER'
+export type AssessmentsType = 'SURVEY' | 'SHARED'
 export type ResourceFormat = 'image/png'
 export type AssessmentCategory = 'screenshot' | 'icon' | 'website'
+export type AssessmentEditPhase = 'draft' | 'review' | 'published'
 export type AssessmentResource = {
   category: AssessmentCategory
   deleted?: boolean
@@ -117,13 +121,20 @@ export type AssessmentResource = {
   url: string
   version?: number
 }
-export type Assessment = {
+
+/** 
+ * The `Assessment` object returned by services.
+*/
+export type AssessmentBase = {
   appId?: string
-  labels?: string[]
+  labels?: {
+    lang: Language
+    value: string
+  }[]
   identifier: string
   revision: number
-  osName: 'Android' | 'iPhone OS' | 'Both' | 'Universal' //iPhone OS"
-  ownerId: string //sage-bionetworks"
+  osName?: 'Android' | 'iPhone OS' | 'Both' | 'Universal' //iPhone OS"
+  ownerId?: string //sage-bionetworks"
   title: string
 
   createdOn?: string
@@ -137,28 +148,49 @@ export type Assessment = {
   summary?: string
   tags: string[]
 
-  version: number
+  version?: number
   validationStatus?: string
   minutesToComplete?: number
   resources?: AssessmentResource[]
   originGuid?: string
+  imageResource?: AssessmentImageResource
+  phase?: string
+  frameworkIdentifier?: string
+}
+
+/**
+ * The `Assessment` object used throughout this app that includes additional fields
+ * needed to support determining which endpoint to call, as well as editing state.
+ * 
+ * These properties are not part of the object JSON returned by services.
+ * This mutation is hardcoded into a function in the code file: `assessment.services.ts`
+ * syoung 10/06/2023
+ */
+export type Assessment = AssessmentBase & {
+  isLocal: boolean
+  isReadOnly: boolean
+  defaultLanguage?: Language
+  defaultLabel?: string
 }
 
 export type AssessmentConfig = {
   guid: string
   config: JSON
 }
+export type AssessmentImageResource = {
+  name: string
+
+  module: 'sage_survey'
+  labels: {
+    lang: Language
+    value: string
+  }[]
+  type: 'ImageResource'
+}
 
 /* *** Study ********************************/
 export type SignInType = 'phone_password' | 'external_id_password'
-export type StudyPhase =
-  | 'legacy'
-  | 'design'
-  | 'recruitment'
-  | 'in_flight'
-  | 'analysis'
-  | 'completed'
-  | 'withdrawn'
+export type StudyPhase = 'legacy' | 'design' | 'recruitment' | 'in_flight' | 'analysis' | 'completed' | 'withdrawn'
 export type DisplayStudyPhase = 'DRAFT' | 'LIVE' | 'COMPLETED' | 'WITHDRAWN'
 export type StudyDesignType = 'observation' | 'intervention'
 export type Study = {
@@ -284,11 +316,7 @@ type EnrolledSubrecord = {
   enrolledOn: string
 }
 
-export type ProgressionStatus =
-  | 'done'
-  | 'in_progress'
-  | 'unstarted'
-  | 'no_schedule'
+export type ProgressionStatus = 'done' | 'in_progress' | 'unstarted' | 'no_schedule'
 
 export type ParticipantClientData = {
   hasMigratedToV2?: boolean
@@ -337,7 +365,7 @@ export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
 }
 
 export type EnrolledAccountRecord = {
-  enrolledBy: OrgUser
+  enrolledBy: LoggedInUserData
   enrolledOn: Date
   externalId: string
   participant: {
@@ -346,7 +374,7 @@ export type EnrolledAccountRecord = {
   }
   studyId: string
   withdrawalNote?: string
-  withdrawnBy: OrgUser
+  withdrawnBy: LoggedInUserData
   withdrawnOn: Date
   note?: string
 }
@@ -395,7 +423,7 @@ export type EventStreamDay = AdherenceSessionInfo & {
 
 export type AdherenceByDayEntries = Record<string, EventStreamDay[]>
 
-export type AdherenceDetailReportWeek = {
+export type AdherenceParticipantReportWeek = {
   weekInStudy: number
 
   startDate: string
@@ -404,7 +432,7 @@ export type AdherenceDetailReportWeek = {
   byDayEntries: AdherenceByDayEntries
 }
 
-export type AdherenceDetailReport = {
+export type AdherenceParticipantReport = {
   participant: {identifier: string; externalId: string}
 
   testAccount?: boolean
@@ -417,7 +445,7 @@ export type AdherenceDetailReport = {
   adherencePercent: number
   clientTimeZone: string
   createdOn: string
-  weeks: AdherenceDetailReportWeek[]
+  weeks: AdherenceParticipantReportWeek[]
 
   nextActivity: AdherenceSessionInfo
   unsetEventIds: string[]
@@ -480,6 +508,22 @@ export type AdherenceStatistics = {
   entries: AdherenceStatisticsEntry[]
 }
 
+export type AdherenceAlertCategory =
+  | 'new_enrollment'
+  | 'timeline_accessed'
+  | 'low_adherence'
+  | 'upcoming_study_burst'
+  | 'study_burst_change'
+
+export type AdherenceAlert = {
+  id: string
+  createdOn: string
+  participant: {identifier: string; externalId: string}
+  category: AdherenceAlertCategory
+  data: {adherenceThreshold: string} | null
+  read: boolean
+}
+
 export type ParticipantRequestInfo = {
   userId: string
   clientInfo: {
@@ -500,6 +544,95 @@ export type ParticipantRequestInfo = {
   timeZone: string
   timelineAccessedOn: string
 }
+
+export type AdherenceAssessmentLevelReportSessionRecord = {
+  sessionName: string
+  sessionGuid: string
+  sessionStart?: string
+  sessionCompleted?: string
+  sessionExpiration?: string
+  burstName?: string
+  burstId?: string
+  assessmentRecords: AdherenceAssessmentLevelReportAdhRecord[]
+}
+
+export type AdherenceAssessmentLevelReportAdhRecord = {
+  assessmentId: string
+
+  assessmentName: string
+
+  assessmentGuid: string
+  assessmentInstanceGuid: string
+  assessmentStatus: 'completed' | 'not_completed'
+  assessmentStart?: string
+  assessmentCompleted?: string
+  uploadedOn?: string
+}
+
+export type AdherenceAssessmentLevelReportParticipant = {
+  identifier: string
+  firstName?: string
+  lastName?: string
+  email: string
+}
+
+export type AdherenceAssessmentLevelReport = {
+  participant: AdherenceAssessmentLevelReportParticipant
+  testAccount: boolean
+  clientTimeZone: string
+  sessionRecords: AdherenceAssessmentLevelReportSessionRecord[]
+}
+
+/* CVS Upload Table */
+
+/**
+ * Status of the CSV generation job.
+ *  - in_progress = Job is in progress.
+ *  - succeeded = Job is complete.
+ *  - failed = Job failed.
+ */
+export type UploadTableJobStatus =
+  | 'in_progress'
+  | 'succeeded'
+  | 'failed'
+
+/**
+ * This encapsulates not just the table job, but also the S3 pre-signed URL to download results from.
+ */
+export type UploadTableJobResult = {
+
+  /**
+   * Unique identifier for this job.
+   */
+  jobGuid: string
+
+  /**
+   * Study ID that this job is part of.
+   */
+  studyId: string
+
+  /**
+   * Date and time when this job was requested.
+   */
+  requestedOn: Date | string
+
+  /**
+   * Current status of this job.
+   */
+  status: UploadTableJobStatus
+
+  /**
+   * S3 pre-signed URL to download the results of this job. May be null if the job is still in progress or
+   * failed.
+   */
+  url?: string
+
+  /**
+   * Date and time when this job will expire. May be null if the job is still in progress or failed.
+   */
+  expiresOn?: Date | string
+}
+
 
 // POST MVP
 

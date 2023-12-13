@@ -1,13 +1,7 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import EventService from '@services/event.service'
-import ScheduleService, {
-  ExtendedScheduleEventObject,
-} from '@services/schedule.service'
-import {
-  ExtendedError,
-  ParticipantEvent,
-  StringDictionary,
-} from '@typedefs/types'
+import ScheduleService, {ExtendedScheduleEventObject} from '@services/schedule.service'
+import {ExtendedError, ParticipantEvent, StringDictionary} from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
 import {ADHERENCE_KEYS} from '../components/studies/adherenceHooks'
 
@@ -15,8 +9,7 @@ export const EVENTS_KEYS = {
   all: ['events'] as const,
   list: (studyId: string | undefined) => [...EVENTS_KEYS.all, 'list'] as const,
 
-  detail: (studyId: string | undefined, userId: string | undefined) =>
-    [...EVENTS_KEYS.list(studyId), userId] as const,
+  detail: (studyId: string | undefined, userId: string | undefined) => [...EVENTS_KEYS.list(studyId), userId] as const,
   details: (studyId: string | undefined, userIds: string[] | undefined) =>
     [...EVENTS_KEYS.list(studyId), userIds] as const,
 }
@@ -56,34 +49,22 @@ export const useUpdateEventsForUser = () => {
   }
   const mutation = useMutation(update, {
     onMutate: async props => {
-      queryClient.cancelQueries(
-        EVENTS_KEYS.detail(props.studyId, props.participantId)
-      )
+      queryClient.cancelQueries(EVENTS_KEYS.detail(props.studyId, props.participantId))
     },
     onError: (err, variables, context) => {
       console.log('error updating events')
     },
     onSuccess: (data, props) => {
-      queryClient.invalidateQueries(
-        EVENTS_KEYS.detail(props.studyId, props.participantId)
-      )
-      queryClient.invalidateQueries(
-        ADHERENCE_KEYS.detail(props.studyId, props.participantId)
-      )
-      queryClient.refetchQueries(
-        ADHERENCE_KEYS.detail(props.studyId, props.participantId)
-      )
-      console.debug('refetch')
+      queryClient.invalidateQueries(EVENTS_KEYS.detail(props.studyId, props.participantId))
+      queryClient.invalidateQueries(ADHERENCE_KEYS.detail(props.studyId, props.participantId))
+      queryClient.refetchQueries(ADHERENCE_KEYS.detail(props.studyId, props.participantId))
     },
   })
 
   return mutation
 }
 
-export const useEventsForUser = (
-  studyId: string | undefined,
-  userId: string | undefined
-) => {
+export const useEventsForUser = (studyId: string | undefined, userId: string | undefined) => {
   const {token} = useUserSessionDataState()
 
   return useQuery<
@@ -94,10 +75,7 @@ export const useEventsForUser = (
     ExtendedError
   >(
     EVENTS_KEYS.detail(studyId, userId),
-    () =>
-      EventService.getRelevantEventsForParticipants(studyId!, token!, [
-        userId!,
-      ]).then(result => result[userId!]),
+    () => EventService.getRelevantEventsForParticipants(studyId!, token!, [userId!]).then(result => result[userId!]),
     {
       enabled: !!studyId && !!userId,
       retry: false,
@@ -106,10 +84,7 @@ export const useEventsForUser = (
   )
 }
 
-export const useEventsForUsers = (
-  studyId: string | undefined,
-  userIds: string[]
-) => {
+export const useEventsForUsers = (studyId: string | undefined, userIds: string[]) => {
   const {token} = useUserSessionDataState()
 
   return useQuery<
@@ -121,11 +96,7 @@ export const useEventsForUsers = (
   >(
     EVENTS_KEYS.details(studyId, userIds),
     () => {
-      return EventService.getRelevantEventsForParticipants(
-        studyId!,
-        token!,
-        userIds
-      )
+      return EventService.getRelevantEventsForParticipants(studyId!, token!, userIds)
     },
     {
       enabled: !!studyId,

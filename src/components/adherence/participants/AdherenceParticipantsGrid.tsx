@@ -1,44 +1,27 @@
-import {
-  PlotDaysDisplay,
-  useGetPlotAndUnitWidth,
-} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import {Box, Tooltip} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-
+import {useGetPlotAndUnitWidth} from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
 import {getSessionSymbolName} from '@components/widgets/SessionIcon'
+import {BorderedTableCell, StyledLink} from '@components/widgets/StyledComponents'
+import {Box, Table, TableBody, TableRow, Tooltip} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
-import {theme} from '@style/theme'
-import {
-  AdherenceWeeklyReport,
-  ProgressionStatus,
-  SessionDisplayInfo,
-} from '@typedefs/types'
+import {AdherenceWeeklyReport, ProgressionStatus, SessionDisplayInfo} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {Link} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
 import DayDisplay from '../DayDisplay'
 import {useCommonStyles} from '../styles'
+import TableHeader from '../TableHeader'
 import NextActivity from './NextActivity'
 
 export const useStyles = makeStyles(theme => ({
-  participantRow: {
-    display: 'flex',
-    borderBottom: '4px solid #fbfbfb',
-    padding: theme.spacing(2, 0),
-    alignItems: 'center',
-  },
   adherenceCell: {
-    borderRight: 'none',
-    borderLeft: '1px solid black',
     verticalAlign: 'middle',
-    display: 'flex',
-    alignItems: 'center',
+    textAlign: 'center',
     paddingLeft: theme.spacing(1),
   },
   labelDisplay: {
-    width: theme.spacing(17),
+    width: theme.spacing(15),
     display: 'flex',
     fontSize: '12px',
     lineHeight: 1,
@@ -68,156 +51,128 @@ const AdherenceCell: FunctionComponent<{
       key="adherence"
       className={clsx(
         classes.adherenceCell,
-        adherencePercent ??
-          (100 < AdherenceService.COMPLIANCE_THRESHOLD && classes.red)
+        adherencePercent ?? (100 < AdherenceService.COMPLIANCE_THRESHOLD && classes.red)
       )}>
-      {adherencePercent !== undefined && activityRows > 0
-        ? `${adherencePercent}%`
-        : 'n/a'}
+      {adherencePercent !== undefined && activityRows > 0 ? `${adherencePercent}%` : 'n/a'}
     </Box>
   )
 }
 
-const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProps> =
-  ({studyId, adherenceWeeklyReport, sessions}) => {
-    const classes = {...useCommonStyles(), ...useStyles()}
+const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProps> = ({
+  studyId,
+  adherenceWeeklyReport,
+  sessions,
+}) => {
+  const classes = {...useCommonStyles(), ...useStyles()}
 
-    const ref = React.useRef<HTMLDivElement>(null)
-    const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 260)
-    //  const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
+  const ref = React.useRef<HTMLDivElement>(null)
+  const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 380)
+  //  const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
 
-    return (
-      <div ref={ref} style={{marginBottom: '32px'}}>
-        <div style={{display: 'flex', marginBottom: '16px'}}>
-          <Box width={theme.spacing(11)}>Participant</Box>
-          <Box width={theme.spacing(12)}>Day in Study</Box>
-          <div style={{marginLeft: '-60px'}}>
-            <PlotDaysDisplay
-              title=""
-              unitWidth={dayWidthInPx}
-              endLabel={
-                <div
-                  className={classes.adherenceLabel}
-                  style={{
-                    width: `${dayWidthInPx}px`,
-                    left: `${dayWidthInPx * 7 + 12}px`,
-                    top: '0px',
+  return (
+    <div ref={ref} style={{marginBottom: '32px'}}>
+      <Table sx={{border: '1px solid #EAECEE', borderCollapse: 'separate'}}>
+        <TableHeader
+          prefixColumns={[
+            ['Participant', 108],
+            ['Day in Study', 166],
+          ]}
+          unitWidth={dayWidthInPx}
+        />
+
+        <TableBody>
+          {adherenceWeeklyReport.items.map((item, index) =>
+            !item.participant ? (
+              <TableRow key={`no_participant_${index}`}>
+                <BorderedTableCell colSpan={10} style={{border: 'none'}}>
+                  the participant withdrew
+                </BorderedTableCell>
+              </TableRow>
+            ) : (
+              <TableRow key={`${item.participant}_${index}`}>
+                <BorderedTableCell
+                  $isDark={index % 2 === 1}
+                  $staticColor={item.progression === 'done' ? '#F7FBF6' : undefined}
+                  sx={{
+                    width: '108px',
+                    textAlign: 'center',
+                  }}
+                  key={'pIdentifier'}>
+                  <StyledLink to={`adherence/${item.participant?.identifier || 'nothing'}`}>
+                    {ParticipantService.formatExternalId(studyId, item.participant.externalId)}
+                  </StyledLink>
+                </BorderedTableCell>
+                <BorderedTableCell
+                  colSpan={8}
+                  key={'data'}
+                  id="data"
+                  $isDark={index % 2 === 1}
+                  $staticColor={item.progression === 'done' ? '#F7FBF6' : undefined}
+                  sx={{
+                    padding: 0,
+                    textAlign: 'center',
+
+                    borderLeft: 'none',
                   }}>
-                  Adh
-                  <br />%
-                </div>
-              }
-            />
-          </div>
-        </div>
-        {adherenceWeeklyReport.items.map((item, index) =>
-          !item.participant ? (
-            <div
-              className={classes.participantRow}
-              key={`no_participant_${index}`}>
-              the participant withdrew
-            </div>
-          ) : (
-            <div
-              key={`${item.participant}_${index}`}
-              className={classes.participantRow}>
-              <Box
-                sx={{width: theme.spacing(11), flexShrink: 0}}
-                key={'pIdentifier'}>
-                <Link
-                  to={`adherence/${item.participant?.identifier || 'nothing'}`}>
-                  {ParticipantService.formatExternalId(
-                    studyId,
-                    item.participant.externalId
-                  )}
-                </Link>
-              </Box>
-              <div
-                key={'data'}
-                id="data"
-                style={{width: '100%', display: 'flex'}}>
-                {!item.rows?.length ? (
-                  <NextActivity
-                    dayPxWidth={dayWidthInPx}
-                    nextActivity={item.nextActivity}
-                    completionStatus={item.progression}
-                  />
-                ) : (
-                  <div style={{}} className={classes.eventRowForWeekSessions}>
-                    <div>
+                  {!item.rows?.length ? (
+                    <NextActivity
+                      dayPxWidth={dayWidthInPx}
+                      nextActivity={item.nextActivity}
+                      completionStatus={item.progression}
+                    />
+                  ) : (
+                    <Table>
                       {item.rows.map((info, rowIndex) => (
-                        <div
-                          key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
-                          className={classes.eventRowForWeekSingleSession}>
-                          <Tooltip title={info.label}>
-                            <Box key="label" className={classes.labelDisplay}>
-                              {AdherenceUtility.getDisplayFromLabel(
-                                info.label,
-                                info.studyBurstNum
-                              )}
-                            </Box>
-                          </Tooltip>
-                          {/*    <div className={classes.sessionLegendIcon}>
-                            <AdherenceSessionIcon
-                              sessionSymbol={info.sessionSymbol}
-                              windowState="completed">
-                              &nbsp;
-                            </AdherenceSessionIcon>
-                              </div>*/}
+                        <TableRow key={`${info}_ind${rowIndex}`}>
+                          <BorderedTableCell sx={{width: '166px', textAlign: 'center'}}>
+                            <Tooltip title={info.label}>
+                              <Box key="label" className={classes.labelDisplay}>
+                                {AdherenceUtility.getDisplayFromLabel(info.label, info.studyBurstNum)}
+                              </Box>
+                            </Tooltip>
+                          </BorderedTableCell>
 
-                          <div
-                            key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
-                            className={classes.sessionWindows}>
-                            {[...new Array(7)].map((i, dayIndex) => (
-                              <DayDisplay
-                                relevantReportStartDate={
-                                  //only care about the first day of weekly report
-                                  dayIndex === 0 ? item.startDate : undefined
-                                }
-                                todayStyle={true}
-                                key={dayIndex}
-                                entry={AdherenceUtility.getItemFromByDayEntries(
-                                  item.byDayEntries,
-                                  dayIndex,
-                                  rowIndex
-                                )}
-                                isCompliant={
-                                  item.weeklyAdherencePercent >=
-                                  AdherenceService.COMPLIANCE_THRESHOLD
-                                }
-                                timeZone={item.clientTimeZone}
-                                dayWidth={dayWidthInPx}
-                                sessionSymbol={
-                                  info.sessionSymbol ||
-                                  getSessionSymbolName(
-                                    sessions.findIndex(
-                                      s => s.sessionGuid === info.sessionGuid
-                                    )
-                                  )
-                                }
-                                numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(
-                                  adherenceWeeklyReport.items
-                                )}
-                                border={dayIndex !== 6}
-                              />
-                            ))}
-                          </div>
-                        </div>
+                          {[...new Array(7)].map((i, dayIndex) => (
+                            <DayDisplay
+                              relevantReportStartDate={
+                                //only care about the first day of weekly report
+                                dayIndex === 0 ? item.startDate : undefined
+                              }
+                              todayStyle={true}
+                              key={dayIndex}
+                              entry={AdherenceUtility.getItemFromByDayEntries(item.byDayEntries, dayIndex, rowIndex)}
+                              isCompliant={item.weeklyAdherencePercent >= AdherenceService.COMPLIANCE_THRESHOLD}
+                              timeZone={item.clientTimeZone}
+                              dayWidth={dayWidthInPx}
+                              sessionSymbol={
+                                info.sessionSymbol ||
+                                getSessionSymbolName(sessions.findIndex(s => s.sessionGuid === info.sessionGuid))
+                              }
+                              numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(adherenceWeeklyReport.items)}
+                              border={dayIndex !== 6}
+                            />
+                          ))}
+                        </TableRow>
                       ))}
-                    </div>
-                  </div>
-                )}
-                <AdherenceCell
-                  progression={item.progression}
-                  adherencePercent={item.weeklyAdherencePercent}
-                  activityRows={item.rows?.length || 0}
-                />
-              </div>
-            </div>
-          )
-        )}
-      </div>
-    )
-  }
+                    </Table>
+                  )}
+                </BorderedTableCell>
+                <BorderedTableCell
+                  $isDark={index % 2 === 1}
+                  $staticColor={item.progression === 'done' ? '#F7FBF6' : undefined}>
+                  <AdherenceCell
+                    progression={item.progression}
+                    adherencePercent={item.weeklyAdherencePercent}
+                    activityRows={item.rows?.length || 0}
+                  />
+                </BorderedTableCell>
+              </TableRow>
+            )
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
 
 export default AdherenceParticipantsGrid

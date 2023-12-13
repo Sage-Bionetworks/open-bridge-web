@@ -1,13 +1,23 @@
-const MTB_APP_ID = 'mobile-toolbox'
-const ARC_APP_ID = 'arc'
-const INV_ARC_ID = 'inv-arc'
-export default {
+export const OPEN_BRIDGE_APP_ID = 'open-bridge'
+export const MTB_APP_ID = 'mobile-toolbox'
+export const ARC_APP_ID = 'arc'
+export const INV_ARC_ID = 'inv-arc'
+const OPEN_BRIDGE_ONESAGE_APP_ID = 'OPEN-BRIDGE'
+const MTB_ONESAGE_APP_ID = 'MTB'
+const ARC_ONESAGE_APP_ID = 'ARC'
+const INV_ARC_ONESAGE_APP_ID = 'INV-ARC'
+const constants = {
   constants: {
+    OPEN_BRIDGE_APP_ID: OPEN_BRIDGE_APP_ID,
     MTB_APP_ID: MTB_APP_ID,
     ARC_APP_ID: ARC_APP_ID,
     INV_ARC_APP_ID: INV_ARC_ID,
+    OPEN_BRIDGE_ONESAGE_APP_ID: OPEN_BRIDGE_ONESAGE_APP_ID,
+    MTB_ONESAGE_APP_ID: MTB_ONESAGE_APP_ID,
+    ARC_ONESAGE_APP_ID: ARC_ONESAGE_APP_ID,
+    INV_ARC_ONESAGE_APP_ID: INV_ARC_ONESAGE_APP_ID,
 
-    SESSION_NAME: 'mtb-user-session',
+    SESSION_NAME: 'open-bridge-user-session',
     ENDPOINT: 'https://webservices.sagebridge.org',
     SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
     NEW_STUDY_NAME: 'Untitled Study',
@@ -15,6 +25,11 @@ export default {
     IS_TEST_MODE: false,
     CUSTOM_EVENT_PREFIX: 'custom:',
     ASSESSMENT_DEMO_STUDY_ID: 'demo',
+  },
+
+  publicPaths: {
+    SIGN_IN: '/sign-in',
+    RESET_PASSWORD: '/reset-password',
   },
 
   restrictedPaths: {
@@ -36,11 +51,33 @@ export default {
   org_roles: ['org_admin', 'study_designer', 'study_coordinator'] as const,
 
   oauth: {
+    local_open_bridge: {
+      client: '100359',
+      vendor: 'open-bridge-local',
+      redirect: 'http://127.0.0.1:3003',
+      appId: OPEN_BRIDGE_APP_ID,
+      oneSageAppId: OPEN_BRIDGE_ONESAGE_APP_ID,
+    },
+    stage_open_bridge_studies: {
+      client: '100361',
+      vendor: 'open-bridge-staging',
+      redirect: 'https://staging.studies.bridgedigital.health',
+      appId: OPEN_BRIDGE_APP_ID,
+      oneSageAppId: OPEN_BRIDGE_ONESAGE_APP_ID,
+    },
+    prod_open_bridge_studies: {
+      client: '100360',
+      vendor: 'open-bridge-prod',
+      redirect: 'https://studies.bridgedigital.health',
+      appId: OPEN_BRIDGE_APP_ID,
+      oneSageAppId: OPEN_BRIDGE_ONESAGE_APP_ID,
+    },
     local_mtb: {
       client: '100062',
       vendor: 'mtb-dev',
       redirect: 'http://127.0.0.1:3000',
       appId: MTB_APP_ID,
+      oneSageAppId: MTB_ONESAGE_APP_ID,
     },
     /* staging_mtb: {
       client: '100069',
@@ -51,36 +88,37 @@ export default {
       client: '100122',
       vendor: 'mtb-staging-studies',
       redirect: 'https://staging.studies.mobiletoolbox.org',
-
       appId: MTB_APP_ID,
+      oneSageAppId: MTB_ONESAGE_APP_ID,
     },
     prod_mtb_studies: {
       client: '100123',
       vendor: 'mtb-prod',
       redirect: 'https://studies.mobiletoolbox.org',
-
       appId: MTB_APP_ID,
+      oneSageAppId: MTB_ONESAGE_APP_ID,
     },
     local_arc: {
       client: '100104',
       vendor: 'arc-dev',
       redirect: 'http://127.0.0.1:3001',
       appId: ARC_APP_ID,
+      oneSageAppId: ARC_ONESAGE_APP_ID,
     },
 
     stage_arc_studies: {
       client: '100162',
       vendor: 'arc-stage',
-
       redirect: 'https://staging.arcdashboard.sagebionetworks.org',
       appId: ARC_APP_ID,
+      oneSageAppId: ARC_ONESAGE_APP_ID,
     },
     prod_arc_studies: {
       client: '100164',
       vendor: 'arc-prod',
-
       redirect: 'https://arcdashboard.sagebionetworks.org',
       appId: ARC_APP_ID,
+      oneSageAppId: ARC_ONESAGE_APP_ID,
     },
 
     local_inv_arc: {
@@ -88,41 +126,42 @@ export default {
       vendor: 'inv-arc-dev',
       redirect: 'http://127.0.0.1:3002',
       appId: INV_ARC_ID,
+      oneSageAppId: INV_ARC_ONESAGE_APP_ID,
     },
     stage_inv_arc_studies: {
       client: '100274',
       vendor: 'inv-arc-stage',
       redirect: 'https://staging.inv-arcdashboard.sagebionetworks.org',
       appId: INV_ARC_ID,
+      oneSageAppId: INV_ARC_ONESAGE_APP_ID,
     },
     prod_inv_arc_studies: {
       client: '100275',
       vendor: 'inv-arc-prod',
       redirect: 'https://inv-arcdashboard.sagebionetworks.org',
       appId: INV_ARC_ID,
+      oneSageAppId: INV_ARC_ONESAGE_APP_ID,
     },
   },
 
   endpoints: {
-    adherenceDetail:
-      '/v5/studies/:studyId/participants/:userId/adherence/study',
+    adherenceAlerts: '/v5/studies/:studyId/alerts',
+    adherenceSingleParticipant: '/v5/studies/:studyId/participants/:userId/adherence/study',
+    adherenceSingleParticipantDetail: '/v5/studies/:studyId/participants/:userId/adherence/detail',
     adherenceStats: '/v5/studies/:studyId/adherence/stats',
-    adherenceUserWeekly:
-      '/v5/studies/:studyId/participants/:userId/adherence/weekly',
+    adherencePrimeParticipantWeekly: '/v5/studies/:studyId/participants/:userId/adherence/weekly',
     adherenceWeekly: '/v5/studies/:studyId/adherence/weekly',
     assessment: '/v1/assessments/:id',
     assessmentShared: '/v1/sharedassessments/:id',
     assessments: '/v1/assessments/?includeDeleted=false',
     assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
     assessmentResources: '/v1/assessments/identifier::identifier/resources', //'/v1/sharedassessments',
-    assessmentSharedResources:
-      '/v1/sharedassessments/identifier::identifier/resources',
+    assessmentSharedResources: '/v1/sharedassessments/identifier::identifier/resources',
     assmentsForSessions: '/v1/sessions/:sessionId/assessments',
     bridgeAccount: '/v1/accounts/:id',
     enrollments: '/v5/studies/:studyId/enrollments',
     enrollment: '/v5/studies/:studyId/enrollments/:userId',
-    participantEnrollments:
-      '/v5/studies/:studyId/participants/:userId/enrollments',
+    participantEnrollments: '/v5/studies/:studyId/participants/:userId/enrollments',
     events: '/v5/studies/:studyId/participants/:userId/activityevents',
     getAccountsForOrg: '/v1/organizations/:orgId/members',
     oauthSignIn: '/v3/auth/oauth/signIn',
@@ -133,6 +172,7 @@ export default {
     schedule: '/v5/studies/:studyId/schedule',
     scheduleTimeline: '/v5/studies/:studyId/timeline',
     selfInfo: '/v3/participants/self',
+    sendRequestResetPassword: '/v1/accounts/:userId/requestResetPassword',
     signIn: '/v3/auth/signIn',
     signOut: '/v3/auth/signOut',
     signUp: '/v3/auth/signUp',
@@ -145,5 +185,9 @@ export default {
     studies: '/v5/studies',
     synapseGetAlias: '/repo/v1/principal/alias',
     synapseGetUserProfile: '/repo/v1/user/:id/bundle',
+    uploadTableStartJob: '/v5/studies/:studyId/uploadtable/requests',
+    uploadTableJobStatus: '/v5/studies/:studyId/uploadtable/requests/:jobGuid',
   },
 }
+
+export default constants

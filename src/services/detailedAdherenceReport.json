@@ -1,0 +1,370 @@
+{
+  "participant": {
+    "identifier": "X59d3YjehlT8n9STfqlwWU45",
+    "email": "jack.nelson+1@sagebase.org"
+  },
+  "testAccount": true,
+  "clientTimeZone": "America/Chicago",
+  "joinedDate": "2023-03-22T12:27:33.442Z",
+  "sessionRecords": [
+    {
+      "sessionName": "Session #1",
+      "sessionGuid": "MHwBCuyYTEtBL7UgMzocEUqe",
+      "sessionInstanceGuid": "30R8oUx6eR-xYmMAIa5Guw",
+      "sessionStatus": "completed",
+      "sessionStart": "2023-03-22T16:00:00.000Z",
+      "sessionCompleted": "2023-03-22T16:20:00.000Z",
+      "sessionExpiration": "2023-03-22T12:27:33.442Z",
+      "assessmentRecords": [
+        {
+          "assessmentName": "assessment 1",
+          "assessmentId": "assessment-1",
+          "assessmentGuid": "siMZI2EJfs99DCjJxnUfhLFL",
+          "assessmentInstanceGuid": "cMjjeh7ZmYYMgzn8RGD6hA",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T16:00:00.000Z",
+          "assessmentCompleted": "2023-03-22T16:05:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 2",
+          "assessmentId": "assessment-2",
+          "assessmentGuid": "EL3qFbXSkrQt6t0R-3l5EV56",
+          "assessmentInstanceGuid": "n_iaZ-ULZrkHAiUMmzyuIA",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T16:10:00.000Z",
+          "assessmentCompleted": "2023-03-22T16:15:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 3",
+          "assessmentId": "assessment-3",
+          "assessmentGuid": "ioyzc4C74RqIANQdH2Wt5Xuq",
+          "assessmentInstanceGuid": "s2esrdXneh7LlR_CQJL4Zw",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T16:15:00.000Z",
+          "assessmentCompleted": "2023-03-22T16:20:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        }
+      ],
+      "type": "DetailedAdherenceReportSessionRecord"
+    },
+    {
+      "sessionName": "Session #1",
+      "sessionGuid": "MHwBCuyYTEtBL7UgMzocEUqe",
+      "sessionInstanceGuid": "O3HOdoSDCpJP5NhHIiOsRg",
+      "sessionStatus": "completed",
+      "sessionStart": "2023-03-22T15:00:00.000Z",
+      "sessionCompleted": "2023-03-22T15:25:00.000Z",
+      "sessionExpiration": "2023-03-23T12:27:33.442Z",
+      "assessmentRecords": [
+        {
+          "assessmentName": "assessment 1",
+          "assessmentId": "assessment-1",
+          "assessmentGuid": "siMZI2EJfs99DCjJxnUfhLFL",
+          "assessmentInstanceGuid": "o0aO8Owgh2wk1BJrPo9oWg",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T15:00:00.000Z",
+          "assessmentCompleted": "2023-03-22T15:05:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 2",
+          "assessmentId": "assessment-2",
+          "assessmentGuid": "EL3qFbXSkrQt6t0R-3l5EV56",
+          "assessmentInstanceGuid": "Gk9WyMdziNtoU4f2jcO4-w",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T15:10:00.000Z",
+          "assessmentCompleted": "2023-03-22T15:15:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 3",
+          "assessmentId": "assessment-3",
+          "assessmentGuid": "ioyzc4C74RqIANQdH2Wt5Xuq",
+          "assessmentInstanceGuid": "CtpmXDdgoZU0naNaL1XGPw",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T15:20:00.000Z",
+          "assessmentCompleted": "2023-03-22T15:25:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        }
+      ],
+      "type": "DetailedAdherenceReportSessionRecord"
+    },
+    {
+      "sessionName": "Session #1",
+      "sessionGuid": "MHwBCuyYTEtBL7UgMzocEUqe",
+      "sessionInstanceGuid": "daCXFVpKKSYP7DZmWLHBJw",
+      "sessionStatus": "completed",
+      "sessionStart": "2023-03-22T16:00:00.000Z",
+      "sessionCompleted": "2023-03-22T16:25:00.000Z",
+      "sessionExpiration": "2023-03-23T12:27:33.442Z",
+      "assessmentRecords": [
+        {
+          "assessmentName": "assessment 1",
+          "assessmentId": "assessment-1",
+          "assessmentGuid": "siMZI2EJfs99DCjJxnUfhLFL",
+          "assessmentInstanceGuid": "IKZDp9kEVrmPGiTgP_79Bg",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T16:00:00.000Z",
+          "assessmentCompleted": "2023-03-22T16:05:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 2",
+          "assessmentId": "assessment-2",
+          "assessmentGuid": "EL3qFbXSkrQt6t0R-3l5EV56",
+          "assessmentInstanceGuid": "eeO_O692B5osKatoTCPgpg",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T16:10:00.000Z",
+          "assessmentCompleted": "2023-03-22T16:15:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 3",
+          "assessmentId": "assessment-3",
+          "assessmentGuid": "ioyzc4C74RqIANQdH2Wt5Xuq",
+          "assessmentInstanceGuid": "YC07I_WTszayl4yZrgcEsg",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T16:20:00.000Z",
+          "assessmentCompleted": "2023-03-22T16:25:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        }
+      ],
+      "type": "DetailedAdherenceReportSessionRecord"
+    },
+    {
+      "sessionName": "Session #1",
+      "sessionGuid": "MHwBCuyYTEtBL7UgMzocEUqe",
+      "sessionInstanceGuid": "RJxwD2H-CS0UjB3GJwEVIA",
+      "sessionStatus": "declined",
+      "sessionExpiration": "2023-03-24T12:27:33.442Z",
+      "assessmentRecords": [
+        {
+          "assessmentName": "assessment 1",
+          "assessmentId": "assessment-1",
+          "assessmentGuid": "siMZI2EJfs99DCjJxnUfhLFL",
+          "assessmentInstanceGuid": "bcsL_r62rPWX9iDifngGzg",
+          "assessmentStatus": "Declined",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 2",
+          "assessmentId": "assessment-2",
+          "assessmentGuid": "EL3qFbXSkrQt6t0R-3l5EV56",
+          "assessmentInstanceGuid": "KNOUwNz2R82H-A2YlZUt1g",
+          "assessmentStatus": "Declined",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 3",
+          "assessmentId": "assessment-3",
+          "assessmentGuid": "ioyzc4C74RqIANQdH2Wt5Xuq",
+          "assessmentInstanceGuid": "MrL5w7BQ-kSfCQ95EK_GwQ",
+          "assessmentStatus": "Declined",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        }
+      ],
+      "type": "DetailedAdherenceReportSessionRecord"
+    },
+    {
+      "sessionName": "Session #1",
+      "sessionGuid": "MHwBCuyYTEtBL7UgMzocEUqe",
+      "sessionInstanceGuid": "KkdH2tulQQvgOzTDZRJv2Q",
+      "sessionStatus": "declined",
+      "sessionExpiration": "2023-03-24T12:27:33.442Z",
+      "assessmentRecords": [
+        {
+          "assessmentName": "assessment 1",
+          "assessmentId": "assessment-1",
+          "assessmentGuid": "siMZI2EJfs99DCjJxnUfhLFL",
+          "assessmentInstanceGuid": "BkGzTXT-5ICWLqiRYAAayg",
+          "assessmentStatus": "Declined",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 2",
+          "assessmentId": "assessment-2",
+          "assessmentGuid": "EL3qFbXSkrQt6t0R-3l5EV56",
+          "assessmentInstanceGuid": "wuwSwk7qPGXPdM5bbMcCxA",
+          "assessmentStatus": "Declined",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 3",
+          "assessmentId": "assessment-3",
+          "assessmentGuid": "ioyzc4C74RqIANQdH2Wt5Xuq",
+          "assessmentInstanceGuid": "dYho-lyJf1Navqnuhemx7Q",
+          "assessmentStatus": "Declined",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        }
+      ],
+      "type": "DetailedAdherenceReportSessionRecord"
+    },
+    {
+      "sessionName": "Session #1",
+      "sessionGuid": "MHwBCuyYTEtBL7UgMzocEUqe",
+      "sessionInstanceGuid": "tp1S1e-nmYcrj_5HToJrqA",
+      "sessionStatus": "started",
+      "sessionStart": "2023-03-22T15:00:00.000Z",
+      "sessionExpiration": "2023-03-25T12:27:33.442Z",
+      "assessmentRecords": [
+        {
+          "assessmentName": "assessment 1",
+          "assessmentId": "assessment-1",
+          "assessmentGuid": "siMZI2EJfs99DCjJxnUfhLFL",
+          "assessmentInstanceGuid": "csdN7kUBpNANXCidaYDKrg",
+          "assessmentStatus": "Not Completed",
+          "assessmentStart": "2023-03-22T15:00:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 2",
+          "assessmentId": "assessment-2",
+          "assessmentGuid": "EL3qFbXSkrQt6t0R-3l5EV56",
+          "assessmentInstanceGuid": "4YHA2Y3SQyif6GfPZGdw3g",
+          "assessmentStatus": "Not Completed",
+          "assessmentStart": "2023-03-22T15:00:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 3",
+          "assessmentId": "assessment-3",
+          "assessmentGuid": "ioyzc4C74RqIANQdH2Wt5Xuq",
+          "assessmentInstanceGuid": "--z6TBb6AZu7StQUSyvm8A",
+          "assessmentStatus": "Not Completed",
+          "assessmentStart": "2023-03-22T15:00:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        }
+      ],
+      "type": "DetailedAdherenceReportSessionRecord"
+    },
+    {
+      "sessionName": "Session #1",
+      "sessionGuid": "MHwBCuyYTEtBL7UgMzocEUqe",
+      "sessionInstanceGuid": "vkkfjSN1ZgOzJZUIkWGLuQ",
+      "sessionStatus": "started",
+      "sessionStart": "2023-03-22T16:00:00.000Z",
+      "sessionExpiration": "2023-03-25T12:27:33.442Z",
+      "assessmentRecords": [
+        {
+          "assessmentName": "assessment 1",
+          "assessmentId": "assessment-1",
+          "assessmentGuid": "siMZI2EJfs99DCjJxnUfhLFL",
+          "assessmentInstanceGuid": "javxvvS7X9ZR7M6DKznpHw",
+          "assessmentStatus": "Not Completed",
+          "assessmentStart": "2023-03-22T16:00:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 2",
+          "assessmentId": "assessment-2",
+          "assessmentGuid": "EL3qFbXSkrQt6t0R-3l5EV56",
+          "assessmentInstanceGuid": "_EC_ryycZn0X47vLhtpMlQ",
+          "assessmentStatus": "Not Completed",
+          "assessmentStart": "2023-03-22T16:00:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 3",
+          "assessmentId": "assessment-3",
+          "assessmentGuid": "ioyzc4C74RqIANQdH2Wt5Xuq",
+          "assessmentInstanceGuid": "AFwBEnps2_eMfnyk2cocqQ",
+          "assessmentStatus": "Not Completed",
+          "assessmentStart": "2023-03-22T16:00:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        }
+      ],
+      "type": "DetailedAdherenceReportSessionRecord"
+    },
+    {
+      "sessionName": "Session #2",
+      "sessionGuid": "s1LVT3DhzmJWYat5BzdzjBPB",
+      "sessionInstanceGuid": "ReUj6muTEBnFFSXVzK11Dg",
+      "sessionStatus": "completed",
+      "sessionStart": "2023-03-22T21:00:00.000Z",
+      "sessionCompleted": "2023-03-22T21:15:00.000Z",
+      "sessionExpiration": "2023-04-01T12:27:33.442Z",
+      "assessmentRecords": [
+        {
+          "assessmentName": "assessment 1",
+          "assessmentId": "assessment-1",
+          "assessmentGuid": "siMZI2EJfs99DCjJxnUfhLFL",
+          "assessmentInstanceGuid": "LLw-wqwboMALoqFnwTDMZA",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T21:00:00.000Z",
+          "assessmentCompleted": "2023-03-22T21:05:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 2",
+          "assessmentId": "assessment-2",
+          "assessmentGuid": "EL3qFbXSkrQt6t0R-3l5EV56",
+          "assessmentInstanceGuid": "YmEeZ8xSaO_cen5ppnpy3w",
+          "assessmentStatus": "Completed",
+          "assessmentStart": "2023-03-22T21:10:00.000Z",
+          "assessmentCompleted": "2023-03-22T21:15:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        }
+      ],
+      "type": "DetailedAdherenceReportSessionRecord"
+    },
+    {
+      "sessionName": "Session #2",
+      "sessionGuid": "s1LVT3DhzmJWYat5BzdzjBPB",
+      "sessionInstanceGuid": "MJKCJflfqcthhadQ9Ds8Sw",
+      "sessionStatus": "started",
+      "sessionStart": "2023-03-22T23:00:00.000Z",
+      "sessionExpiration": "2023-04-01T12:27:33.442Z",
+      "assessmentRecords": [
+        {
+          "assessmentName": "assessment 1",
+          "assessmentId": "assessment-1",
+          "assessmentGuid": "siMZI2EJfs99DCjJxnUfhLFL",
+          "assessmentInstanceGuid": "txl1GlNxbRbMqAvWz4SaOw",
+          "assessmentStatus": "Not Completed",
+          "assessmentStart": "2023-03-22T23:00:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 2",
+          "assessmentId": "assessment-2",
+          "assessmentGuid": "EL3qFbXSkrQt6t0R-3l5EV56",
+          "assessmentInstanceGuid": "yHKHP-UhUF-9rb67RjeS5A",
+          "assessmentStatus": "Declined",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        }
+      ],
+      "type": "DetailedAdherenceReportSessionRecord"
+    },
+    {
+      "sessionName": "Session #2",
+      "sessionGuid": "s1LVT3DhzmJWYat5BzdzjBPB",
+      "sessionInstanceGuid": "LfRxSOfxYzu1XJH7LKEXVQ",
+      "sessionStatus": "started",
+      "sessionStart": "2023-04-03T19:00:00.000Z",
+      "sessionExpiration": "2023-04-03T12:27:33.442Z",
+      "assessmentRecords": [
+        {
+          "assessmentName": "assessment 1",
+          "assessmentId": "assessment-1",
+          "assessmentGuid": "siMZI2EJfs99DCjJxnUfhLFL",
+          "assessmentInstanceGuid": "G0h9pVJtb94mz6Au5tw9Vg",
+          "assessmentStatus": "Declined",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        },
+        {
+          "assessmentName": "assessment 2",
+          "assessmentId": "assessment-2",
+          "assessmentGuid": "EL3qFbXSkrQt6t0R-3l5EV56",
+          "assessmentInstanceGuid": "Nb87vgzyj-EQUcRYjh-qjw",
+          "assessmentStatus": "Not Completed",
+          "assessmentStart": "2023-04-03T19:00:00.000Z",
+          "type": "DetailedAdherenceReportAssessmentRecord"
+        }
+      ],
+      "type": "DetailedAdherenceReportSessionRecord"
+    }
+  ],
+  "type": "DetailedAdherenceReport"
+}

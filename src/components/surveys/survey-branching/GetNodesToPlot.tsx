@@ -1,17 +1,17 @@
 import UtilityObject from '@helpers/utility'
 import {Box, styled} from '@mui/material'
 import {latoFont} from '@style/theme'
-import {ChoiceQuestion, Step} from '@typedefs/surveys'
-import {Edge, MarkerType, Node, Position} from 'react-flow-renderer'
-import QUESTIONS, {
-  getQuestionId,
-} from '../survey-design/left-panel/QuestionConfigs'
+import {ChoiceQuestion, Question, Step} from '@typedefs/surveys'
+import {Edge, MarkerType, Node} from 'reactflow'
+import QUESTIONS, {getQuestionId} from '../survey-design/left-panel/QuestionConfigs'
 import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 
-const HWIDTH = 120
-const HHEIGHT = 150
+const position = {x: 0, y: 0}
 
-const StyledQuestionTitle = styled('div', {label: 'StyledQuestionTitle'})<{
+const StyledQuestionTitle = styled('div', {
+  label: 'StyledQuestionTitle',
+  shouldForwardProp: prop => prop !== 'unconnected',
+})<{
   unconnected?: boolean
 }>(({theme, unconnected}) => ({
   '&.title': {
@@ -32,15 +32,14 @@ const StyledQuestionTitle = styled('div', {label: 'StyledQuestionTitle'})<{
 function createNode(
   q: Step,
   qSequentialIndex: number,
-  xCoord: number,
-  yCoord: number,
+
   isUnconnected: boolean
 ): Node {
   const label = (
     <div style={{position: 'relative'}}>
-      <DivContainer>
+      <DivContainer $type="branching">
         {QUESTIONS.get(getQuestionId(q))?.img}
-        <Box>{qSequentialIndex + 1}</Box>
+        {q.type !== 'completion' && q.type !== 'overview' && <Box>{qSequentialIndex}</Box>}
         <StyledQuestionTitle className="title" unconnected={isUnconnected}>
           {q.title}
         </StyledQuestionTitle>
@@ -51,107 +50,58 @@ function createNode(
   return {
     id: q.identifier,
     data: {label: label},
-    position: {x: xCoord, y: yCoord},
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
+    position,
   }
 }
 
-function createEdge(i1: string, i2: string) {
+function createEdge(i1: string, i2: string, isDisconnected?: boolean): Edge {
   return {
     id: i1 + '-' + i2,
     source: i1,
     target: i2,
-    type: 'default',
-    markerEnd: {type: MarkerType.ArrowClosed, color: '#000'},
+    type: 'smoothstep',
+    animated: !!isDisconnected,
+
+    style: {stroke: isDisconnected ? 'red' : 'black'},
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: !!isDisconnected ? 'red' : 'black',
+    },
   }
 }
 
-function getCoordinatesForNextNode(
-  plotWidth: number,
-  x: number,
-  y: number,
-  childNumber: number,
-  totalChildren: number
-) {
-  const getChildOffset = () => {
-    //odd number of children
-    if (totalChildren % 2 === 1) {
-      const middleNode = Math.floor(totalChildren / 2)
-      if (childNumber === middleNode) {
-        return 0
-      } else {
-        return (middleNode - childNumber) * HHEIGHT
-      }
-    }
-    // even
-    else {
-      const middleNode = (totalChildren - 1) / 2
-      const y = (middleNode - childNumber) * HHEIGHT
+function getChildNodes(questions: (ChoiceQuestion | Step)[], q: ChoiceQuestion | Step) {
+  let nextQs: (ChoiceQuestion | Step)[] = []
+  const choices = (q as ChoiceQuestion).choices
+  const surveyRules = (q as ChoiceQuestion).surveyRules
+  const nextStepIdentifier = (q as Question).nextStepIdentifier
+  const qChoiceValues = choices?.map(c => c.value) || []
 
-      return Math.round(y)
-    }
-  }
-
-  const newHeight = y + getChildOffset()
-
-  const nextRow = x + HWIDTH + 80 > plotWidth
-  const lastInRow = !nextRow && x + HWIDTH * 2 + 80 > plotWidth
-
-  const cx = nextRow ? 0 : x + HWIDTH
-  const cy = nextRow ? HHEIGHT + newHeight : newHeight
-
-  return {x: cx, y: cy, nextRow: nextRow, lastInRow: lastInRow}
-}
-
-function getCoordiatesForNextDisconnectedNode(
-  index: number,
-  plotWidth: number,
-
-  id: string
-) {
-  const rows = Math.floor((HWIDTH * index) / plotWidth)
-
-  const isPerRow = Math.ceil(plotWidth / HWIDTH)
-  const newI = index % isPerRow
-
-  const cx = rows > 1 ? HWIDTH * newI : index * HWIDTH
-  const cy = rows * HHEIGHT
-
-  return {x: cx, y: cy}
-}
-
-function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
-  let nextQs: ChoiceQuestion[] = []
-  const qChoiceValues = (q.choices || []).map(c => c.value) || []
-  //if surveyRules
-  if (q.surveyRules) {
+  if (surveyRules?.length) {
     //only use the rules that map to the choices the question has,
     // find ids we are going to next/create a set to remove dups
     //only included rules that have matchingAnswer
     const nextIds = [
       ...new Set(
-        q.surveyRules
-          .filter(
-            rule =>
-              rule.matchingAnswer && qChoiceValues.includes(rule.matchingAnswer)
-          )
+        surveyRules
+          .filter(rule => rule.matchingAnswer !== undefined && qChoiceValues.includes(rule.matchingAnswer))
           .map(rule => rule.skipToIdentifier)
       ),
     ]
     //find questions correcponding to those ids
     nextQs = questions.filter(q1 => nextIds.includes(q1.identifier))
 
-    const qOptions = q.choices.map(c => c.value).filter(v => v !== undefined)
-    const ruleValues = q.surveyRules.map(rule => rule.matchingAnswer)
+    const qOptions = choices.map(c => c.value).filter(v => v !== undefined)
+    const ruleValues = surveyRules.map(rule => rule.matchingAnswer)
+    //if we have rule for all choices we will skipp next identifier
     if (UtilityObject.areArraysEqual(qOptions, ruleValues)) {
       return nextQs
     }
   }
 
   //either use next step identifier or next step in array
-  if (q.nextStepIdentifier) {
-    const next = questions.find(q1 => q1.identifier === q.nextStepIdentifier)
+  if (nextStepIdentifier) {
+    const next = questions.find(q1 => q1.identifier === nextStepIdentifier)
     if (next) {
       nextQs.push(next)
     }
@@ -164,99 +114,60 @@ function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
   return nextQs
 }
 
-const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
+const getNodes = (questions: (ChoiceQuestion | Step)[]) => {
   const nodes: Node[] = []
   const edges: Edge[] = []
   let error: Error | undefined = undefined
 
-  function addNode(
-    q: ChoiceQuestion,
-    index: number,
-    x: number,
-    y: number,
-
-    runNumber: number,
-    error: Error | undefined
-  ) {
-    //  console.log('node', q, index)
-    const node = createNode(q, index, x, y, false)
+  function addNode(q: ChoiceQuestion | Step, index: number, error: Error | undefined) {
+    const node = createNode(q, index, false)
     nodes.push(node)
     let nextQs = getChildNodes(questions, q)
 
     if (nextQs.length) {
-      //add it if it hasn't been added, otherwise just add edge
-
-      var i = 0
-      for (var child of nextQs) {
+      //add child edges
+      for (let child of nextQs) {
         //find sequential index of the quesiton
-        const qIndex = questions.findIndex(
-          q1 => q1.identifier === child.identifier
-        )
+        const qIndex = questions.findIndex(q1 => q1.identifier === child.identifier)
 
-        const uniqs = new Set(nextQs.map(q => q.identifier))
-        const result = getCoordinatesForNextNode(plotWidth, x, y, i, uniqs.size)
-        const edge = createEdge(q.identifier, child.identifier)
-        // console.log('adding edge', edge, nextQs.length)
-        if (edges.findIndex(e => e.id === edge.id) === -1) {
-          edges.push(edge)
+        //add child node
+        const indexOfNode = nodes.findIndex(q1 => q1.id === child.identifier)
+
+        if (indexOfNode === -1) {
+          addNode(child, qIndex, error)
         }
-
-        i++
-        //
-        if (runNumber > questions.length * 5) {
-          error = new Error('Overflow')
-          //this would only happen with infinite loops. Should never happen in realistic context
-        } else {
-          const indexOfNode = nodes.findIndex(q1 => q1.id === child.identifier)
-
-          if (indexOfNode === -1) {
-            addNode(
-              child,
-              qIndex,
-              result.x,
-              result.y,
-
-              ++runNumber,
-              error
-            )
-            //
-          }
+        //add edge
+        const indexOfEdge = edges.findIndex(e => e.source === q.identifier && e.target === child.identifier)
+        if (indexOfEdge === -1) {
+          const edge = createEdge(q.identifier, child.identifier)
+          edges.push(edge)
         }
       }
     }
   }
 
-  addNode(questions[0], 0, 0, 0, 0, undefined)
+  addNode(questions[0], 0, undefined)
 
   //get nodes that don't have connections
   const nodeIds = nodes.map(n => n.id)
 
   const disconnectedQs = questions.filter(q => !nodeIds.includes(q.identifier))
 
-  //adjust y positions
-
-  const minY = Math.min(...nodes.map(n => n.position.y))
-
-  const rows = Math.ceil((HWIDTH * disconnectedQs.length) / plotWidth)
-
-  const unconnectedHeight = rows * 130
-
-  if (minY < unconnectedHeight) {
-    nodes.forEach(
-      n => (n.position.y = n.position.y + Math.abs(minY - unconnectedHeight))
-    )
-  }
-
   disconnectedQs.forEach((dq, i) => {
-    const result = getCoordiatesForNextDisconnectedNode(
-      i,
-      plotWidth,
-      dq.identifier
-    )
-
     const qIndex = questions.findIndex(q1 => q1.identifier === dq.identifier)
-    const node = createNode(dq, qIndex, result.x, result.y, true)
+    const node = createNode(dq, qIndex, true)
     nodes.push(node)
+
+    let nextQs = getChildNodes(questions, dq)
+    if (nextQs.length) {
+      //add child edges
+      for (let child of nextQs) {
+        const edge = createEdge(dq.identifier, child.identifier, true)
+        if (edges.findIndex(e => e.id === edge.id) === -1) {
+          edges.push(edge)
+        }
+      }
+    }
   })
 
   return {nodes, edges, error}
@@ -304,11 +215,11 @@ export const detectCycle = (edges: Edge[]): boolean => {
   return false
 }
 
-export const getEdgesFromSteps = (questions: ChoiceQuestion[]) => {
+export const getEdgesFromSteps = (questions: ChoiceQuestion[] | Step[]) => {
   const edges: Edge[] = []
   let error: Error | undefined = undefined
 
-  function addEdge(q: ChoiceQuestion, error: Error | undefined) {
+  function addEdge(q: Step | ChoiceQuestion, error: Error | undefined) {
     let nextEdges = getChildNodes(questions, q)
 
     //add it if it hasn't been added, otherwise just add edge

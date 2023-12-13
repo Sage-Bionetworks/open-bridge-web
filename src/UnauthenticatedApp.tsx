@@ -1,33 +1,23 @@
 import {FunctionComponent} from 'react'
-import {
-  Route,
-  RouteComponentProps,
-  Switch,
-  useLocation,
-  withRouter,
-} from 'react-router-dom'
+import {Route, RouteComponentProps, Switch, useLocation, withRouter} from 'react-router-dom'
+import {UseLoginReturn} from 'useLogin'
 import TopNav from './components/widgets/AppTopNav'
-import Utility from './helpers/utility'
+import {default as Utility, default as UtilityObject} from './helpers/utility'
 import PublicRoutes from './routes_public'
 import SignInPage from './SignInPage'
-import constants from './types/constants'
 
 const UnauthenticatedApp: FunctionComponent<
   RouteComponentProps & {
     appId: string
+    usernameAndPasswordLogin: UseLoginReturn['usernameAndPasswordLogin']
   }
-> = ({appId}) => {
+> = ({appId, usernameAndPasswordLogin}) => {
   Utility.setBodyClass()
   const loc = useLocation()
   const route = PublicRoutes.find(r => r.path === loc.pathname)
 
-  if (
-    [
-      constants.constants.ARC_APP_ID,
-      constants.constants.INV_ARC_APP_ID,
-    ].includes(appId)
-  ) {
-    return <SignInPage isARCApp={true} />
+  if (UtilityObject.isArcApp(appId)) {
+    return <SignInPage isARCApp={true} usernameAndPasswordLogin={usernameAndPasswordLogin} />
   }
   return (
     <>
@@ -39,7 +29,7 @@ const UnauthenticatedApp: FunctionComponent<
               exact
               path={path}
               key={key}
-              render={props => <Component {...props}></Component>}
+              render={props => <Component usernameAndPasswordLogin={usernameAndPasswordLogin} {...props}></Component>}
             />
           ))}
         </Switch>

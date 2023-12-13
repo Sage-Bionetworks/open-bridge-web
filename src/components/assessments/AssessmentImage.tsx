@@ -1,47 +1,61 @@
+import assDetailFrame from '@assets/assessments/assessment_detail_frame.svg'
 import DefaultImg from '@assets/sage.svg'
-import {CardMedia} from '@mui/material'
-import createStyles from '@mui/styles/createStyles'
-import makeStyles from '@mui/styles/makeStyles'
-import {AssessmentResource} from '@typedefs/types'
+import { SURVEY_ICONS } from '@components/surveys/widgets/SurveyIcon'
+import {Box, styled, SxProps} from '@mui/material'
+import {Assessment} from '@typedefs/types'
 import React, {FunctionComponent, ReactNode} from 'react'
 
-const useStyles = makeStyles(theme =>
-  createStyles({
-    media: {
-      height: 180,
-      padding: `${theme.spacing(2)} ${theme.spacing(2)} 0 ${theme.spacing(2)}`,
-      backgroundPositionY: 'top',
-      display: 'flex',
-      flexShrink: 0,
-      flexDirection: 'row',
-    },
-    detailImageContainer: {
-      padding: theme.spacing(0),
-      '& img': {
-        width: '100%',
-      },
-    },
-  })
-)
+const CardTop = styled(Box, {label: 'StyledCardMedia'})(({theme}) => ({
+  height: 150,
+  padding: 0, //`${theme.spacing(2)} ${theme.spacing(2)} 0 ${theme.spacing(2)}`,
+  backgroundPositionY: 'top',
+  display: 'flex',
+  flexShrink: 0,
+  textAlign: 'left',
+  flexDirection: 'row',
+  '& img': {
+    width: '150px',
+  },
+  '> div': {
+    height: '150px',
+    width: '100%',
+    backgroundColor: '#f6f6f6',
+    padding: theme.spacing(2, 3),
+  },
+}))
+
+const DetailImageContainer = styled(Box, {label: 'DetailImageContainer'})(({theme}) => ({
+  padding: '9px 0px 16px 0px',
+  backgroundImage: `url(${assDetailFrame})`,
+  backgroundRepeat: 'no-repeat',
+  height: '270px',
+  width: '530px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  '& img': {
+    width: '100%',
+  },
+}))
 
 type AssessmentImageProps = {
-  resources: AssessmentResource[] | undefined
+  assessment: Assessment
   name: string
-  variant: 'small' | 'detail' | 'normal'
+  variant: 'small' | 'detail' | 'card' | 'normal'
   children?: ReactNode
   smallVariantProperties?: React.CSSProperties
 }
 
-const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
-  resources,
+const AssessmentImage: FunctionComponent<AssessmentImageProps & SxProps> = ({
+  assessment,
   name,
   variant = 'normal',
   children = <></>,
   smallVariantProperties,
+  ...sxProps
 }: AssessmentImageProps) => {
-  const classes = useStyles()
-
-  const screen = resources?.find(
+  const screen = assessment.resources?.find(
     resource =>
       resource.category === 'icon' &&
       !resource.deleted &&
@@ -49,41 +63,47 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
       resource.title.includes('_square') &&
       resource.url
   )
+  const surveyImageName = assessment.imageResource?.name
+  const surveyImage = surveyImageName ? SURVEY_ICONS.get(surveyImageName)?.img : null
+  const imageSrc = screen?.url || surveyImage || DefaultImg
+  const imgHeight = !screen ? "70%" : "100%"
+  const iconImage = <img src={imageSrc} alt={name} height={imgHeight} style={smallVariantProperties} />
+
   let image
 
   switch (variant) {
     case 'small': {
       image = (
-        <img
-          src={screen?.url || DefaultImg}
-          alt={name}
-          height="100%"
-          style={smallVariantProperties}
-        />
+        <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+          {iconImage}
+        </div>
       )
       break
     }
     case 'detail': {
       image = (
-        <div className={classes.detailImageContainer}>
-          <img
-            src={screen?.url || DefaultImg}
-            alt={name}
-            height="100%"
-            style={smallVariantProperties}
-          />
-        </div>
+        <DetailImageContainer>
+          {iconImage}
+        </DetailImageContainer>
+      )
+      break
+    }
+    case 'card': {
+      image = (
+        <CardTop title={name} {...sxProps}>
+          <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+            {iconImage}
+          </div>
+        </CardTop>
       )
       break
     }
     default: {
       image = (
-        <CardMedia
-          className={classes.media}
-          image={screen?.url || DefaultImg}
-          title={name}>
-          {children}
-        </CardMedia>
+        <CardTop title={name} {...sxProps}>
+          {iconImage}
+          <div>{children}</div>
+        </CardTop>
       )
     }
   }

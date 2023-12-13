@@ -1,10 +1,10 @@
-import {ReactComponent as Celebration} from '@assets/adherence/celebration_row.svg'
 import {ReactComponent as Arrow} from '@assets/arrow_long.svg'
-import {Box} from '@mui/material'
+import {Box, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {theme} from '@style/theme'
 import {AdherenceSessionInfo, ProgressionStatus} from '@typedefs/types'
-import moment from 'moment'
+import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone'
+import dayjs from 'dayjs'
 import React, {FunctionComponent} from 'react'
 import {useCommonStyles} from '../styles'
 
@@ -12,8 +12,7 @@ export const useStyles = makeStyles(theme => ({
   nextActivity: {
     textAlign: 'center',
     // marginRight: theme.spacing(1),
-    background:
-      'linear-gradient(to bottom, #fff 10px, #333 10px 11px, #fff 11px )',
+    background: 'linear-gradient(to bottom, #fff 10px, #999 10px 11px, #fff 11px )',
     '& span': {
       backgroundColor: '#fff',
       padding: theme.spacing(0, 3),
@@ -44,7 +43,12 @@ const NoActivities: FunctionComponent<{
   let innerElement = <></>
   switch (completionStatus) {
     case 'done':
-      innerElement = <Celebration />
+      //innerElement = <Celebration />
+      innerElement = (
+        <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px'}}>
+          <CheckCircleTwoToneIcon sx={{color: '#63A650', marginRight: '4px'}} /> Completed
+        </Box>
+      )
       break
     case 'in_progress':
       innerElement = (
@@ -62,21 +66,13 @@ const NoActivities: FunctionComponent<{
   }
 
   return (
-    <div
-      className={
-        completionStatus === 'done' ? classes.completed : classes.nextActivity
-      }
-      style={rowStyle}>
+    <div className={completionStatus === 'done' ? classes.completed : classes.nextActivity} style={rowStyle}>
       {innerElement}
     </div>
   )
 }
 
-const NoRows: FunctionComponent<NoRowsProps> = ({
-  dayPxWidth,
-  nextActivity,
-  completionStatus,
-}) => {
+const NoRows: FunctionComponent<NoRowsProps> = ({dayPxWidth, nextActivity, completionStatus}) => {
   const classes = {...useCommonStyles(), ...useStyles()}
   const leftMargin = 8
   const rowStyle: React.CSSProperties = {
@@ -89,9 +85,7 @@ const NoRows: FunctionComponent<NoRowsProps> = ({
     upNext = nextActivity.studyBurstNum
       ? `Week ${nextActivity.weekInStudy}/Burst ${nextActivity.studyBurstNum}`
       : `Week ${nextActivity.weekInStudy}/Burst ${nextActivity.sessionName}`
-    upNext = `${upNext} on ${moment(nextActivity.startDate).format(
-      'MM/DD/YYYY'
-    )}`
+    upNext = `${upNext} on ${dayjs(nextActivity.startDate).format('MM/DD/YYYY')}`
   }
 
   return (
@@ -100,14 +94,16 @@ const NoRows: FunctionComponent<NoRowsProps> = ({
         {completionStatus === 'in_progress' ? (
           <Arrow style={{transform: 'scaleX(-1)'}} />
         ) : completionStatus === 'done' ? (
-          'Completed'
+          <Box sx={{textAlign: 'center'}}>&nbsp;</Box>
         ) : (
           ''
         )}
       </Box>
       {nextActivity ? (
         <div className={classes.nextActivity} style={rowStyle}>
-          <span>Up Next: {upNext}</span>
+          <Typography component={'span'} sx={{fontSize: '12px', fontStyle: 'italic', color: theme.palette.grey[800]}}>
+            Up Next: {upNext}
+          </Typography>
         </div>
       ) : (
         <NoActivities completionStatus={completionStatus} rowStyle={rowStyle} />

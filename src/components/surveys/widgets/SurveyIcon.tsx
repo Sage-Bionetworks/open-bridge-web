@@ -24,7 +24,7 @@ import React from 'react'
 
 export const SURVEY_ICONS = new Map<string, {img: string; title: string}>([
   ['cognition', {img: cognition, title: 'Cognition'}],
-  ['day_to_day', {img: dayToDay, title: 'Day to day'}],
+  ['day_to_day', {img: dayToDay, title: 'Day to Day'}],
   ['default', {img: general, title: 'Default'}],
   ['demographics', {img: demographics, title: 'Demographics'}],
   ['energy', {img: energy, title: 'Energy'}],
@@ -85,19 +85,11 @@ type SurveyIconProps = {
   onSelected: () => void
 }
 
-const SurveyIcon: React.FunctionComponent<SurveyIconProps> = ({
-  name,
-  isSelected,
-  onSelected,
-}) => {
+const SurveyIcon: React.FunctionComponent<SurveyIconProps> = ({name, isSelected, onSelected}) => {
   return SURVEY_ICONS.has(name) ? (
     <IconContainer>
       <div className={isSelected ? 'selected' : ''} onClick={onSelected}>
-        <img
-          width="100%"
-          src={SURVEY_ICONS.get(name)?.img}
-          alt={SURVEY_ICONS.get(name)?.title}
-        />
+        <img width="100%" src={SURVEY_ICONS.get(name)?.img} alt={SURVEY_ICONS.get(name)?.title} />
       </div>
       <span>{SURVEY_ICONS.get(name)?.title}</span>
     </IconContainer>

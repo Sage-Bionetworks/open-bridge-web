@@ -1,21 +1,17 @@
 import React from 'react'
 
-export function useGetPlotWidth(ref: React.RefObject<HTMLDivElement>) {
+export function useGetPlotWidth(ref?: React.RefObject<HTMLDivElement>) {
   // save current window width in the state object
-  let [width, setWidth] = React.useState(
-    ref?.current?.getBoundingClientRect()?.width
-  )
+  let [width, setWidth] = React.useState(ref?.current?.getBoundingClientRect()?.width || window.innerWidth)
 
   // in this case useEffect will execute only once because
   // it does not have any dependencies.
 
   React.useLayoutEffect(() => {
     const handleResize = () => {
-      if (ref && ref.current) {
-        const {width} = ref?.current?.getBoundingClientRect()
+      const width = ref?.current?.getBoundingClientRect().width || window.innerWidth
 
-        setWidth(width)
-      }
+      setWidth(width)
     }
     handleResize()
 
@@ -24,7 +20,7 @@ export function useGetPlotWidth(ref: React.RefObject<HTMLDivElement>) {
       // remove resize listener
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+  }, [ref])
 
   return {width}
 }

@@ -1,11 +1,5 @@
-import {
-  StyledFormControl,
-  StyledLabel14,
-} from '@components/surveys/widgets/SharedStyled'
-import {
-  StyledDropDown,
-  StyledDropDownItem,
-} from '@components/surveys/widgets/StyledDropDown'
+import {StyledFormControl, StyledLabel14} from '@components/surveys/widgets/SharedStyled'
+import {StyledDropDown, StyledDropDownItem} from '@components/surveys/widgets/StyledDropDown'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import {Box, MenuItem, OutlinedInput, styled} from '@mui/material'
 import {theme} from '@style/theme'
@@ -31,8 +25,9 @@ const ValueSelector: React.FunctionComponent<{
   scaleType: 'likert' | 'slider'
   type: 'MIN' | 'MAX'
   gtValue?: number
+  isReadOnly?: boolean
   onChange: (value: number) => void
-}> = ({value, scaleType, type, gtValue = -1, onChange}) => {
+}> = ({value, scaleType, type, gtValue = -1, isReadOnly, onChange}) => {
   const CONFIG = {
     MIN: {
       label: 'Min Value',
@@ -42,17 +37,17 @@ const ValueSelector: React.FunctionComponent<{
     MAX: {
       label: 'Max Value',
       labelId: 'maxValueLbl',
-      options:
-        scaleType === 'likert' ? [...Array(8).keys()] : [10, 20, 50, 100],
+      options: scaleType === 'likert' ? [...Array(8).keys()] : [10, 20, 50, 100],
     },
   }
 
   return (
-    <StyledFormControl sx={{marginRight: theme.spacing(2)}}>
+    <StyledFormControl sx={{marginRight: theme.spacing(2), marginLeft: theme.spacing(2)}}>
       <StyledLabel14 mb={0.5} id={CONFIG[type].labelId}>
         {CONFIG[type].label}
       </StyledLabel14>
       <StyledDropDown
+        readOnly={isReadOnly}
         labelId={CONFIG[type].labelId}
         value={value}
         height="42px"
@@ -77,9 +72,11 @@ const ValueSelector: React.FunctionComponent<{
 
 const Scale: React.FunctionComponent<{
   step: ScaleQuestion
+  isReadOnly?: boolean
   onChange: (step: Step) => void
-}> = ({step, onChange}) => {
+}> = ({step, isReadOnly, onChange}) => {
   const onUpdateFormat = (fm: FormatOptionsInteger) => {
+    if (isReadOnly) return
     const inputItem = {...step.inputItem, formatOptions: fm}
     onChange({...step, inputItem})
   }
@@ -90,6 +87,7 @@ const Scale: React.FunctionComponent<{
           display: 'flex',
         }}>
         <ValueSelector
+          isReadOnly={isReadOnly}
           type="MIN"
           scaleType={step.uiHint}
           value={step.inputItem.formatOptions.minimumValue || 0}
@@ -101,15 +99,11 @@ const Scale: React.FunctionComponent<{
           }
         />
         <ValueSelector
+          isReadOnly={isReadOnly}
           type="MAX"
           scaleType={step.uiHint}
           gtValue={1}
-          value={
-            step.inputItem.formatOptions.maximumValue ||
-            step.uiHint === 'likert'
-              ? 7
-              : 100
-          }
+          value={step.inputItem.formatOptions.maximumValue || (step.uiHint === 'likert' ? 7 : 100)}
           onChange={num =>
             onUpdateFormat({
               ...step.inputItem.formatOptions,

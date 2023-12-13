@@ -9,12 +9,12 @@ export const handlers = [
   rest.get(`*${constants.endpoints.studies}`, async (req, res, ctx) => {
     // Check if the user is authenticated in this session
     //const isAuthenticated = sessionStorage.getItem('is-authenticated')
-    console.log('get studies handler')
 
     return res(
       ctx.status(200),
       ctx.json({
         items: studies.data,
+        total: 6,
       })
     )
   }),
@@ -48,7 +48,6 @@ export const handlers = [
 
   //create study
   rest.post(`*${constants.endpoints.study}`, async (req, res, ctx) => {
-    const {id} = req.params
     const study = req.body as Study
 
     return res(
@@ -60,21 +59,18 @@ export const handlers = [
   }),
 
   // update
-  rest.post(
-    `*${constants.endpoints.study.replace('/:id', '')}`,
-    async (req, res, ctx) => {
-      const study = req.body as Study
-      study.identifier = req.params.id
+  rest.post(`*${constants.endpoints.study.replace('/:id', '')}`, async (req, res, ctx) => {
+    const study = req.body as Study
+    study.identifier = req.params.id
 
-      return res(
-        ctx.status(201),
-        ctx.json({
-          version: study.version + 1,
-          data: study,
-        })
-      )
-    }
-  ),
+    return res(
+      ctx.status(201),
+      ctx.json({
+        version: study.version + 1,
+        data: study,
+      })
+    )
+  }),
 ]
 
 export default handlers

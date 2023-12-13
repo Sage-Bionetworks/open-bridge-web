@@ -15,14 +15,13 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
   occurrences,
   onChange,
 }: RepeatFrequencyProps) => {
-  const label = occurrences
-    ? ` for ${occurrences} times`
-    : 'until the end of study'
+  const label = occurrences ? ` for ${occurrences} times` : 'until the end of study'
   const disabled = occurrences === 1
   return (
     <SchedulingFormSection
       label={'Run this session every:'}
-      disabled={disabled}>
+      disabled={disabled}
+      ariaLabel="scheduling-form-section-repeat-frequency">
       <FormControlLabel
         style={{
           marginLeft: '0',

@@ -1,28 +1,37 @@
-import BackToBeginningIcon from '@assets/participants/paging/back_to_beginning_icon.svg'
-import ForwardToEndIcon from '@assets/participants/paging/forward_to_end_icon.svg'
-import NextPageIcon from '@assets/participants/paging/next_page_icon.svg'
-import PreviousPageIcon from '@assets/participants/paging/previous_page_icon.svg'
-import {Button} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import ChevronLeftTwoToneIcon from '@mui/icons-material/ChevronLeftTwoTone'
+import ChevronRightTwoToneIcon from '@mui/icons-material/ChevronRightTwoTone'
+
+import {Box, Button, buttonClasses, styled} from '@mui/material'
 import React from 'react'
 import PageBox from './PageBox'
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
+const StyledDots = styled(Box, {label: 'StyledDots'})(({theme}) => ({
+  fontWeight: 700,
+  fontSize: '18px',
+
+  marginRight: '5px',
+  color: '#D0D4D9',
+}))
+
+const NavButton = styled(Button, {label: 'NavButton'})(({theme}) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'flex-start',
+  padding: '7px 10px',
+  width: '42px',
+  height: '36px',
+  background: '#FFFFFF',
+  border: '1px solid #DFE2E6',
+  borderRadius: '3px',
+  color: '#515359',
+  [`${buttonClasses.disabled}`]: {
+    color: '#DFE2E6',
   },
-  image: {
-    width: '10px',
-    height: '10px',
+  '&:first-of-type': {
+    marginRight: theme.spacing(3),
   },
-  button: {
-    width: '10px',
-    minWidth: '5px',
-    marginLeft: theme.spacing(0.5),
-    marginRight: theme.spacing(0.5),
+  '&:last-of-type': {
+    marginLeft: '10px',
   },
 }))
 
@@ -41,90 +50,88 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
   numberOfPages,
   handlePageNavigationArrowPressed,
 }) => {
-  const classes = useStyles()
-  const pageNumbers = []
-  for (let i = 1; i <= numberOfPages; i++) {
-    pageNumbers.push(i)
-  }
+  const [pages, setPages] = React.useState<Array<number | string>>([])
 
-  const rotateAndDisableBackIcons = currentPageSelected === 0
-  const rotateAndDisableForwardIcons =
-    currentPageSelected + 1 === numberOfPages || numberOfPages === 0
+  React.useEffect(() => {
+    const shouldShowPage = (index: number) => {
+      const lastIndexToShowGroup = numberOfPages - 5
+      // always show first and last
+      if (index === 0 || index === numberOfPages - 1) {
+        return true
+      }
+      //always show current page
+
+      if (index === currentPageSelected) {
+        return true
+      }
+      //if current page < 4 -- show first 4
+      if (currentPageSelected < 3 && index < 4) {
+        return true
+      }
+
+      //if current page is in the last 4
+      if (currentPageSelected > lastIndexToShowGroup + 1 && index > lastIndexToShowGroup) {
+        console.log('i', index)
+        return true
+      }
+
+      if (index === currentPageSelected - 1) {
+        return true
+      }
+      if (index === currentPageSelected + 1) {
+        return true
+      }
+      return false
+    }
+
+    const pagesTemp: Array<string | number> = []
+    for (let i = 0; i < numberOfPages; i++) {
+      if (shouldShowPage(i)) {
+        pagesTemp.push(i)
+      } else {
+        if (pagesTemp[pagesTemp.length - 1] !== '...') {
+          pagesTemp.push('...')
+        }
+      }
+    }
+    setPages(pagesTemp)
+  }, [currentPageSelected, numberOfPages])
 
   return (
-    <div className={classes.container}>
-      <Button
-        onClick={() => handlePageNavigationArrowPressed('BB')}
-        classes={{root: classes.button}}
-        disabled={rotateAndDisableBackIcons}
-        id="back-to-beginning-button">
-        <img
-          src={
-            rotateAndDisableBackIcons ? BackToBeginningIcon : ForwardToEndIcon
-          }
-          className={classes.image}
-          alt="back_to_beginning_icon"
-          style={{
-            transform: rotateAndDisableBackIcons ? '' : 'rotate(180deg)',
-          }}></img>
-      </Button>
-      <Button
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+      }}>
+      <NavButton
         onClick={() => handlePageNavigationArrowPressed('B')}
-        classes={{root: classes.button}}
-        disabled={rotateAndDisableBackIcons}
-        id="back-one-page-button">
-        <img
-          src={rotateAndDisableBackIcons ? PreviousPageIcon : NextPageIcon}
-          className={classes.image}
-          alt="back_icon"
-          style={{
-            transform: rotateAndDisableBackIcons ? '' : 'rotate(180deg)',
-          }}></img>
-      </Button>
-
-      {pageNumbers.map((element, index) => (
-        <PageBox
-          key={`page-box-${index}`}
-          isSelected={index === currentPageSelected}
-          pageNumber={element}
-          onPageSelected={onPageSelected}
-          index={index}
-        />
-      ))}
-
-      <Button
+        disabled={currentPageSelected === 0}
+        id="back-0-button">
+        <ChevronLeftTwoToneIcon />
+      </NavButton>
+      {pages.map((element, index) =>
+        isNaN(parseInt(element.toString())) ? (
+          <StyledDots>...</StyledDots>
+        ) : (
+          <PageBox
+            key={`page-box-${index}`}
+            isSelected={element === currentPageSelected}
+            pageNumber={parseInt(element.toString()) + 1}
+            onPageSelected={onPageSelected}
+            index={index}
+          />
+        )
+      )}
+      <NavButton
         onClick={() => handlePageNavigationArrowPressed('F')}
-        classes={{root: classes.button}}
-        disabled={rotateAndDisableForwardIcons}
-        id="forward-one-page-button">
-        <img
-          src={rotateAndDisableForwardIcons ? PreviousPageIcon : NextPageIcon}
-          className={classes.image}
-          alt="previous_page_icon"
-          style={{
-            transform: rotateAndDisableForwardIcons ? 'rotate(180deg)' : '',
-          }}></img>
-      </Button>
-      <Button
-        onClick={() => {
-          handlePageNavigationArrowPressed('FF')
-        }}
-        classes={{root: classes.button}}
-        disabled={rotateAndDisableForwardIcons}
-        id="forward-to-end-button">
-        <img
-          src={
-            rotateAndDisableForwardIcons
-              ? BackToBeginningIcon
-              : ForwardToEndIcon
-          }
-          className={classes.image}
-          alt="forward_to_end_icon"
-          style={{
-            transform: rotateAndDisableForwardIcons ? 'rotate(180deg)' : '',
-          }}></img>
-      </Button>
-    </div>
+        disabled={currentPageSelected + 1 === numberOfPages}
+        id="forward-all-button">
+        <ChevronRightTwoToneIcon />
+      </NavButton>
+    </Box>
   )
 }
 

@@ -10,14 +10,16 @@ import {
   UserSessionData,
 } from '../types/types'
 
+import OpenBridgeLogoLarge from '@assets/logo_open_bridge_large.svg'
+import OpenBridgeLogoSmall from '@assets/logo_open_bridge_small.svg'
+import OpenBridgeLogoSymbol from '@assets/logo_open_bridge_symbol.svg'
+import ArcLogoLarge from '@assets/logo_arc_large.svg'
+import ArcLogoSmall from '@assets/logo_arc_small.svg'
+import ArcLogoSymbol from '@assets/logo_arc_symbol.svg'
+
 type RestMethod = 'POST' | 'GET' | 'DELETE'
 
-function makeRequest(
-  method: RestMethod = 'POST',
-  url: string,
-  body: any,
-  token?: string
-): Promise<any> {
+function makeRequest(method: RestMethod = 'POST', url: string, body: any, token?: string): Promise<any> {
   return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest()
     xhr.open(method, url)
@@ -84,7 +86,7 @@ const callEndpoint = async <T>(
   isSynapseEndpoint?: boolean
 ): Promise<Response<T>> => {
   /* 
-  Agendel: this is only used for e2e which we are doing doing here
+  Agendel: this is only used for e2e which we are not  doing here
   const ls = window.localStorage
   const isE2E = ls.getItem('crc_e2e')
   */
@@ -151,8 +153,7 @@ const getOauthEnvironment = (): OauthEnvironment => {
 const getOauthEnvironmentFromLocation = (loc: URL): OauthEnvironment => {
   var href = loc.origin
 
-  const isLocalhost = (): boolean =>
-    href.indexOf('127.0.0.1') > -1 || href.indexOf('localhost') > -1
+  const isLocalhost = (): boolean => href.indexOf('127.0.0.1') > -1 || href.indexOf('localhost') > -1
 
   //localhost
   if (isLocalhost()) {
@@ -179,6 +180,19 @@ const getAppId = () => {
   return getOauthEnvironment().appId
 }
 
+const getSynpaseRedirectUrl = (): string => {
+  let state = new Date().getTime().toString(32)
+
+  let array = []
+  array.push('response_type=code')
+  array.push('client_id=' + getOauthEnvironment().client)
+  array.push('scope=openid')
+  array.push('state=' + encodeURIComponent(state))
+  array.push('redirect_uri=' + encodeURIComponent(document.location.origin))
+  array.push('claims=' + encodeURIComponent('{"id_token":{"userid":null}}'))
+  return 'https://signin.synapse.org/?' + array.join('&')
+}
+
 const redirectToSynapseLogin = () => {
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
   let code: URL | null | string = new URL(window.location.href)
@@ -186,22 +200,34 @@ const redirectToSynapseLogin = () => {
   const {searchParams} = code
 
   if (!searchParams?.get('code')) {
-    let state = new Date().getTime().toString(32)
-
-    let array = []
-    array.push('response_type=code')
-    array.push('client_id=' + getOauthEnvironment().client)
-    array.push('scope=openid')
-    array.push('state=' + encodeURIComponent(state))
-    array.push('redirect_uri=' + encodeURIComponent(document.location.origin))
-    array.push('claims=' + encodeURIComponent('{"id_token":{"userid":null}}'))
-    window.location.replace('https://signin.synapse.org/?' + array.join('&'))
+    window.location.replace(getSynpaseRedirectUrl())
   } else {
     console.log('has code')
   }
 }
 
+//integration with one sage
+const getRedirectLinkToOneSage = (action: 'login' | 'validate' | 'profile' = 'login'): string => {
+  let path = ''
+  switch (action) {
+    case 'validate':
+      path = 'authenticated/validate'
+      break
+    case 'profile':
+      path = 'authenticated/myaccount'
+      break
+    default:
+      path = ''
+  }
+
+  let array = []
+  array.push('appId=' + getOauthEnvironment().oneSageAppId)
+  array.push('redirectURL=' + encodeURIComponent(getSynpaseRedirectUrl()))
+  const url = `https://staging.accounts.sagebionetworks.synapse.org/${path}?${array.join('&')}`
+  return url
+}
 // function to use session storage (react hooks)
+
 const useSessionStorage = (
   key: string,
   initialValue: string | undefined
@@ -242,13 +268,9 @@ const getRandomId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2)
 }
 
-const getEnumKeys = <T extends {}>(enum1: T): (keyof T)[] =>
-  Object.keys(enum1) as (keyof T)[]
+const getEnumKeys = <T extends {}>(enum1: T): (keyof T)[] => Object.keys(enum1) as (keyof T)[]
 
-const getEnumKeyByEnumValue = (
-  myEnum: any,
-  enumValue: number | string
-): string => {
+const getEnumKeyByEnumValue = (myEnum: any, enumValue: number | string): string => {
   let keys = Object.keys(myEnum).filter(x => myEnum[x] === enumValue)
   const result = keys.length > 0 ? keys[0] : ''
 
@@ -258,10 +280,7 @@ const getEnumKeyByEnumValue = (
 const bytesToSize = (bytes: number) => {
   const sizes = ['bytes', 'kb', 'MB', 'GB', 'TB']
   if (bytes === 0) return 'n/a'
-  const i = parseInt(
-    Math.floor(Math.log(bytes) / Math.log(1024)).toString(),
-    10
-  )
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)).toString(), 10)
   if (i === 0) return `${bytes} ${sizes[i]})`
   return `${(bytes / 1024 ** i).toFixed(1)}${sizes[i]}`
 }
@@ -327,10 +346,7 @@ const isPathAllowed = (studyId: string, path: string) => {
   const pathToCheck = path.replace(':id', studyId)
   const access = {
     org_admin: [CONSTANTS.restrictedPaths.ACCESS_SETTINGS],
-    study_designer: [
-      CONSTANTS.restrictedPaths.STUDY_BUILDER,
-      CONSTANTS.restrictedPaths.SURVEY_BUILDER,
-    ],
+    study_designer: [CONSTANTS.restrictedPaths.STUDY_BUILDER, CONSTANTS.restrictedPaths.SURVEY_BUILDER],
     study_coordinator: [
       CONSTANTS.restrictedPaths.PARTICIPANT_MANAGER,
       CONSTANTS.restrictedPaths.ADHERENCE_DATA,
@@ -344,9 +360,7 @@ const isPathAllowed = (studyId: string, path: string) => {
       (access[role] || []).map(link => link.replace(':id', studyId))
     )
   })
-  const hasPath = allowedPaths.find(allowedPath =>
-    pathToCheck.includes(allowedPath)
-  )
+  const hasPath = allowedPaths.find(allowedPath => pathToCheck.includes(allowedPath))
   return !!hasPath
 }
 
@@ -381,10 +395,7 @@ if (studyId.length !== 6) return studyId
 
 //this function allows to retrieve all of the pages for a query function
 
-async function getAllPages<T>(
-  fn: Function,
-  args: any[]
-): Promise<{items: T[]; total: number}> {
+async function getAllPages<T>(fn: Function, args: any[]): Promise<{items: T[]; total: number}> {
   const pageSize = 50
   const result = await fn(...args, pageSize, 0)
   const pages = Math.ceil(result.total / pageSize)
@@ -404,9 +415,10 @@ async function getAllPages<T>(
   })
 }
 function capitalize(s: string) {
-  return s && s[0].toUpperCase() + s.slice(1)
+  return s && s[0].toUpperCase() + s.slice(1).toLowerCase()
 }
 
+//shallow equal
 function areArraysEqual<T>(array1: T[], array2: T[]) {
   if (array1.length === array2.length) {
     return array1.every((element, index) => {
@@ -428,8 +440,86 @@ function isArcApp(appId?: string) {
   ].includes(_appId)
 }
 
-const UtilityObject = {
+//object deep equal
+function areObjectsEqual(obj1: any, obj2: any) {
+  if (obj1 === obj2) {
+    return true
+  }
+
+  if (obj1 === null || obj2 === null) {
+    return false
+  }
+
+  if (obj1 === undefined || obj2 === undefined) {
+    return false
+  }
+
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object') {
+    return false
+
+    // if (obj1 instanceof Date && obj2 instanceof Date) {
+    //   return obj1.getTime() === obj2.getTime()
+    // }
+
+    // if (obj1 instanceof RegExp && obj2 instanceof RegExp) {
+    //   return obj1.toString() === obj2.toString()
+    // }
+
+    // if (obj1 instanceof String && obj2 instanceof String) {
+    //   return obj1.toString() === obj2.toString()
+
+    // if (obj1 instanceof Number && obj2 instanceof Number) {
+    //   return obj1.toString() === obj2.toString()
+
+    // if (obj1 instanceof Boolean && obj2 instanceof Boolean) {
+    //   return obj1.toString() === obj2.toString()
+
+    // if (obj1 instanceof Array && obj2 instanceof Array) {
+    //   return obj1.toString() === obj2.toString()
+  }
+
+  const keys1 = Object.keys(obj1)
+  const keys2 = Object.keys(obj2)
+
+  if (keys1.length !== keys2.length) {
+    return false
+  }
+
+  const allKeys = new Set([...keys1, ...keys2])
+
+  for (const key of allKeys) {
+    if (!areObjectsEqual(obj1[key], obj2[key])) {
+      return false
+    }
+  }
+
+  return true
+}
+
+function isArcApp(appId?: string) {
+  const _appId = appId || getAppId()
+  return [constants.constants.ARC_APP_ID, constants.constants.INV_ARC_APP_ID].includes(_appId)
+}
+
+function logoLargeWithName(appId?: string) {
+  return isArcApp(appId) ? ArcLogoLarge : OpenBridgeLogoLarge
+}
+
+function logoSmallWithName(appId?: string) {
+  return isArcApp(appId) ? ArcLogoSmall : OpenBridgeLogoSmall
+}
+
+function logoWithName(hasSubNav?: boolean, appId?: string) {
+  return hasSubNav ? logoSmallWithName(appId) : logoLargeWithName(appId)
+}
+
+function logoSymbolOnly(appId?: string) {
+  return isArcApp(appId) ? ArcLogoSymbol : OpenBridgeLogoSymbol
+}
+
+const Utility = {
   areArraysEqual,
+  areObjectsEqual,
   capitalize,
   formatStudyId,
   setBodyClass,
@@ -453,9 +543,14 @@ const UtilityObject = {
   callEndpoint,
   callEndpointXHR,
   redirectToSynapseLogin,
+  getRedirectLinkToOneSage,
   getAllPages,
   getOauthEnvironment,
   getOauthEnvironmentFromLocation,
+  logoLargeWithName,
+  logoSmallWithName,
+  logoWithName,
+  logoSymbolOnly,
 }
 
-export default UtilityObject
+export default Utility

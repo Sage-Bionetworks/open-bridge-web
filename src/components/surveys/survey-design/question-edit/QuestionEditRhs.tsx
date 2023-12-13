@@ -1,19 +1,12 @@
-import {ReactComponent as GenerateId} from '@assets/surveys/actions/generate_id.svg'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
+import GenerateId from '@mui/icons-material/JoinInnerTwoTone'
 import {Box, Button, styled} from '@mui/material'
 import {latoFont, theme} from '@style/theme'
-import {
-  BaseStep,
-  ChoiceQuestion,
-  ScaleQuestion,
-  Step,
-  TimeQuestion,
-  YearQuestion,
-} from '@typedefs/surveys'
+import {BaseStep, ChoiceQuestion, ScaleQuestion, Step, TimeQuestion, YearQuestion} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {StyledLabel14} from '../../widgets/SharedStyled'
-import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
+import {QuestionTypeKey, getQuestionId} from '../left-panel/QuestionConfigs'
 import Completion from './rhs-subcontrols/Completion'
 import Numeric from './rhs-subcontrols/Numeric'
 import Scale from './rhs-subcontrols/Scale'
@@ -23,16 +16,19 @@ import Time from './rhs-subcontrols/Time'
 import Year from './rhs-subcontrols/Year'
 
 const StyledContainer = styled('div')(({theme}) => ({
-  width: '425px',
+  width: '516px',
   height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
 }))
 
 const StyledButton = styled(Button)(({theme}) => ({
-  width: '150px',
-  fontSize: '12px',
-  textAlign: 'left',
+  width: '300px',
+  fontSize: '14px',
+  fontWeight: 900,
+  justifyContent: 'left',
   lineHeight: '14px',
-  textDecoration: 'underline',
 }))
 
 const StyledSimpleTextInput = styled(SimpleTextInput)(({theme}) => ({
@@ -44,31 +40,22 @@ const StyledSimpleTextInput = styled(SimpleTextInput)(({theme}) => ({
 function Factory(args: {
   step: Step
   onChange: (step: Step) => void
+
   q_type: QuestionTypeKey
+  isReadOnly: boolean
 }) {
   switch (args.q_type) {
-    case 'SINGLE_SELECT': {
-      return (
-        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
-      )
-    }
-
+    case 'SINGLE_SELECT':
     case 'MULTI_SELECT':
-      return (
-        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
-      )
+      return <Select step={args.step as ChoiceQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
 
-    case 'FREE_TEXT':
-      return <></>
     case 'SLIDER':
     case 'LIKERT':
-      return (
-        <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
-      )
+      return <Scale step={args.step as ScaleQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
+
     case 'NUMERIC':
-      return (
-        <Numeric step={args.step as ScaleQuestion} onChange={args.onChange} />
-      )
+      return <Numeric step={args.step as ScaleQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
+
     case 'DURATION':
       return (
         <Box
@@ -79,24 +66,40 @@ function Factory(args: {
             fontSize: '16px',
             lineHeight: '19px',
           }}>
-          *Hours and Minutes will be converted into seconds (SI unit) in the
-          results data.{' '}
+          *Hours and Minutes will be converted into seconds (SI unit) in the results data.{' '}
         </Box>
       )
+
     case 'TIME':
-      return <Time step={args.step as TimeQuestion} onChange={args.onChange} />
+      return <Time step={args.step as TimeQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
+
     case 'YEAR':
-      return <Year step={args.step as YearQuestion} onChange={args.onChange} />
-    case 'OVERVIEW':
-      return (
-        <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
-      )
-    case 'COMPLETION':
-      return (
-        <Completion step={args.step as BaseStep} onChange={args.onChange} />
-      )
+      return <Year step={args.step as YearQuestion} isReadOnly={args.isReadOnly} onChange={args.onChange} />
+
+    case 'FREE_TEXT':
+      return <></>
+      
+    case 'OVERVIEW': {
+      if (args.isReadOnly) {
+        return <></>
+      } else {
+        return <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
+      }
+    }
+
+    case 'COMPLETION': {
+      if (args.isReadOnly) {
+        return <></>
+      } else {
+        return <Completion step={args.step as BaseStep} onChange={args.onChange} />
+      }
+    }
+
+    case 'INSTRUCTION':     
+      return <></>
+    
     default:
-      return <>nothing</>
+      return <>TODO: {args.q_type} not supported</>
   }
 }
 /* 
@@ -111,14 +114,10 @@ type QuestionEditProps = {
   dependentQuestions: number[] | undefined
   onChange: (step: Step) => void
   isDynamic: boolean
+  isReadOnly: boolean
 }
 
-const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
-  step,
-  onChange,
-  children,
-  isDynamic,
-}) => {
+const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({step, onChange, children, isDynamic, isReadOnly}) => {
   const matchIdentifier = () => {
     const newId = `${step?.title
       .replaceAll(' ', '_')
@@ -131,31 +130,41 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
   }
   return (
     <StyledContainer>
-      {isDynamic && (
-        <Box
-          id="identifier"
-          sx={{
-            backgroundColor: '#ECECEC;',
-            padding: theme.spacing(3, 0, 3, 4),
-          }}>
-          <StyledLabel14 htmlFor="q_id">Question Identifier</StyledLabel14>
-          <StyledSimpleTextInput
-            onChange={e => onChange({...step, identifier: e.target.value})}
-            id="q_id"
-            value={step?.identifier}></StyledSimpleTextInput>
-          <StyledButton variant="text" onClick={matchIdentifier}>
-            <GenerateId /> Match Identifier to Question
-          </StyledButton>
+      <div>
+        {isDynamic && (
+          <Box
+            id="identifier"
+            sx={{
+              borderBottom: '1px solid #F1F3F5',
+              padding: theme.spacing(3, 0, 1, 5),
+            }}>
+            <StyledLabel14 htmlFor="q_id">Question Identifier</StyledLabel14>
+            <StyledSimpleTextInput
+              sx={{display: 'block', width: '200px'}}
+              $readOnly={true}
+              id="q_id"
+              value={step?.identifier}></StyledSimpleTextInput>
+            {!isReadOnly && 
+              <StyledButton variant="text" onClick={matchIdentifier} startIcon={<GenerateId />}>
+                Match Identifier to Question
+              </StyledButton>
+            }
+          </Box>
+        )}
+        <Box sx={{padding: isDynamic ? theme.spacing(3) : 0}}>
+          <Factory
+            {...{
+              step: {...step},
+              onChange: onChange,
+              q_type: getQuestionId(step),
+              isReadOnly: isReadOnly,
+            }}
+            // TODO: hallieswan 10/11/2023 Year and Time are partially controlled, so use a key to
+            // re-render the entire component when the step is changed. Consider making these 
+            // components fully controlled instead.
+            key={step.identifier}></Factory>
         </Box>
-      )}
-      <Box sx={{padding: isDynamic ? theme.spacing(3) : 0}}>
-        <Factory
-          {...{
-            step: {...step},
-            onChange: onChange,
-            q_type: getQuestionId(step),
-          }}></Factory>
-      </Box>
+      </div>
       {children}
     </StyledContainer>
   )

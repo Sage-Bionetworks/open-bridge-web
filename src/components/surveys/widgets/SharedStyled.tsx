@@ -1,13 +1,6 @@
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined'
-import {
-  Button,
-  Checkbox,
-  CheckboxProps,
-  FormControl,
-  OutlinedInput,
-  styled,
-} from '@mui/material'
-import {latoFont, poppinsFont} from '@style/theme'
+import {Button, Checkbox, CheckboxProps, FormControl, OutlinedInput, styled} from '@mui/material'
+import {latoFont} from '@style/theme'
 
 export const ActionButton = styled(Button)(({theme}) => ({
   '&:hover': {
@@ -16,32 +9,26 @@ export const ActionButton = styled(Button)(({theme}) => ({
   },
 }))
 
-export const StyledLabel14 = styled('label')<{mb?: number}>(
-  ({theme, mb = 1}) => ({
-    display: 'block',
-    fontFamily: poppinsFont,
-    fontWeight: 400,
-    fontSize: '14px',
-    marginBottom: theme.spacing(mb),
-  })
-)
+export const StyledLabel14 = styled('label')<{mb?: number}>(({theme, mb = 1}) => ({
+  display: 'block',
 
-export const StyledLabel12 = styled('label')<{mb?: number}>(
-  ({theme, mb = 1}) => ({
-    display: 'block',
-    fontFamily: latoFont,
-    fontWeight: 400,
-    fontSize: '12px',
-    marginBottom: theme.spacing(mb),
-  })
-)
+  fontWeight: 700,
+  fontSize: '14px',
+  marginBottom: theme.spacing(mb),
+}))
 
-export const StyledFormControl = styled(FormControl)<{mb?: number}>(
-  ({theme, mb = 5}) => ({
-    marginBottom: theme.spacing(mb),
-    display: 'flex',
-  })
-)
+export const StyledLabel12 = styled('label')<{mb?: number}>(({theme, mb = 1}) => ({
+  display: 'block',
+  fontFamily: latoFont,
+  fontWeight: 400,
+  fontSize: '12px',
+  marginBottom: theme.spacing(mb),
+}))
+
+export const StyledFormControl = styled(FormControl)<{mb?: number}>(({theme, mb = 5}) => ({
+  marginBottom: theme.spacing(mb),
+  display: 'flex',
+}))
 
 export const DisappearingInput = styled(OutlinedInput)(({theme}) => ({
   padding: '0px',
@@ -88,19 +75,35 @@ export const FakeInput = styled('div', {label: 'FakeInput'})<{
   height: `${height}px`,
   lineHeight: `${height}px`,
   margin: '0 auto 24px auto',
-  background: '#FCFCFC',
-  border: '1px solid #2A2A2A',
+  background: '#F1F3F5',
+  //border: '1px solid #2A2A2A',
 }))
-
-export const QuestionEditToolbarContainer = styled('div')(({theme}) => ({
+/*
+export const QuestionEditToolbarContainer = styled('div', {label: 'QuestionEditToolbarContainer'})(({theme}) => ({
   bottom: '0',
   position: 'fixed',
   height: '54px',
   display: 'flex',
-  backgroundColor: '#f7f7f7',
+  backgroundColor: 'blue',
   flexDirection: 'row',
   alignItems: 'center',
   width: '425px',
   justifyContent: 'space-between',
   padding: theme.spacing(0, 2.5),
+  margin: theme.spacing(3, 0),
 }))
+
+
+const QuestionEditToolbarContainer = styled('div')(({theme}) => ({
+  bottom: '0',
+  // position: 'fixed',
+  height: '54px',
+  display: 'flex',
+  backgroundColor: 'blue',
+  flexDirection: 'row',
+  alignItems: 'center',
+  width: '425px',
+  justifyContent: 'space-between',
+  padding: theme.spacing(0, 2.5),
+  margin: theme.spacing(3, 0),
+}))*/

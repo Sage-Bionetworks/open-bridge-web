@@ -1,9 +1,14 @@
+import {ResetPassword} from '@components/account/ResetPassword'
+import useFeatureToggles, {FeatureToggles, features} from '@helpers/FeatureToggle'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import constants from '@typedefs/constants'
 import clsx from 'clsx'
 import React from 'react'
-import ArcLogo from './assets/arc_main_logo.svg'
-import MtbFinalLogo from './assets/mtb_final_logo.svg'
+import {useLocation} from 'react-router-dom'
+import {UseLoginReturn} from 'useLogin'
+import ArcLogo from './assets/logo_arc_main.svg'
+import MtbFinalLogo from './assets/logo_open_bridge_large.svg'
 import AccountLogin from './components/account/AccountLogin'
 
 const useStyles = makeStyles(theme => ({
@@ -22,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   },
   rightContainer: {
     height: '100%',
-    width: '50%',
+
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -46,30 +51,43 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type SignInPageProps = {
+  usernameAndPasswordLogin: UseLoginReturn['usernameAndPasswordLogin']
   isARCApp?: boolean
 }
 
-const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp}) => {
+const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp, usernameAndPasswordLogin}) => {
   const classes = useStyles()
+  const location = useLocation()
+  const featureToggles = useFeatureToggles<FeatureToggles>()
+
   return (
     <Box className={clsx(classes.container, !isARCApp && classes.mtbContainer)}>
-      <Box
-        className={clsx(
-          classes.leftContainer,
-          isARCApp && classes.arcAppBackground,
-          !isARCApp && classes.mtbAppBackground
-        )}>
-        <img
-          style={{
-            height: isARCApp ? '211px' : '160px',
-            width: isARCApp ? '211px' : '95px',
-          }}
-          src={isARCApp ? ArcLogo : MtbFinalLogo}></img>
-      </Box>
-      <Box className={classes.rightContainer}>
-        <AccountLogin
-          callbackFn={() => {}}
-          isArcSignIn={isARCApp}></AccountLogin>
+      {isARCApp && (
+        <Box
+          className={clsx(
+            classes.leftContainer,
+            isARCApp && classes.arcAppBackground,
+            !isARCApp && classes.mtbAppBackground
+          )}>
+          <img
+            alt="logo"
+            style={{
+              height: isARCApp ? '211px' : '160px',
+              width: isARCApp ? '211px' : '95px',
+            }}
+            src={isARCApp ? ArcLogo : MtbFinalLogo}></img>
+        </Box>
+      )}
+      <Box className={classes.rightContainer} sx={{width: isARCApp ? '50%' : '100%'}}>
+        {(location.pathname === constants.publicPaths.SIGN_IN || location.pathname === '/') && (
+          <AccountLogin
+            callbackFn={() => {}}
+            isArcSignIn={isARCApp}
+            usernameAndPasswordLogin={usernameAndPasswordLogin}
+          />
+        )}
+        {featureToggles[features.USERNAME_PASSWORD_LOGIN] &&
+          location.pathname === constants.publicPaths.RESET_PASSWORD && <ResetPassword />}
       </Box>
     </Box>
   )

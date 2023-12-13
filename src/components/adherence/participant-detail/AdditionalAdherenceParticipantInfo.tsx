@@ -1,49 +1,34 @@
-import {Box, styled, Typography} from '@mui/material'
-import {latoFont, poppinsFont, theme} from '@style/theme'
-import {ParticipantClientData, ParticipantRequestInfo} from '@typedefs/types'
-import moment from 'moment'
+import {Box, Button, Popover, styled} from '@mui/material'
+import {theme} from '@style/theme'
+import {ParticipantAccountSummary, ParticipantClientData, ParticipantRequestInfo} from '@typedefs/types'
+import dayjs from 'dayjs'
+import React from 'react'
 import ClientDeviceMap from '../clientDevices'
 
-const Table = styled('table')(({theme}) => ({
-  borderSpacing: 0,
-  borderCollapse: 'collapse',
+const InfoRow = styled(Box, {label: 'InfoRow'})(({theme}) => ({
+  lineHeight: '18px',
+  '& > strong': {
+    fontWeight: 700,
+    marginRight: theme.spacing(1.5),
+  },
+
+  marginBottom: '6px',
 }))
 
-const Th = styled('th')(({theme}) => ({
-  fontFamily: poppinsFont,
-  fontSize: '14px',
-  fontWeight: 600,
-  padding: theme.spacing(1, 1.5),
-  borderBottom: '1px solid #BBC3CD',
-  textAlign: 'left',
-  '&:first-child': {paddingLeft: 0},
-}))
-
-const Td = styled('td')(({theme}) => ({
-  fontFamily: latoFont,
-  fontSize: '16px',
-  fontWeight: 'normal',
-  borderBottom: '1px solid #BBC3CD',
-  padding: theme.spacing(2, 1.5),
-  '&:first-child': {paddingLeft: 0},
-}))
-
-const StyledHeader = styled(Typography)(({theme}) => ({
-  fontWeight: 'bold',
-  fontSize: '16px',
-  fontFamily: poppinsFont,
-  marginBottom: theme.spacing(0.5),
-}))
-
-const StyledSection = styled(Box)(({theme}) => ({
-  fontFamily: latoFont,
-  marginBottom: theme.spacing(5),
-  fontSize: '16px',
+const Separator = styled('div')(({theme}) => ({
+  width: '1px',
+  backgroundColor: '#afb5bd',
+  height: '10px',
+  margin: theme.spacing(0, 1),
+  display: 'inline-block',
 }))
 
 type AdditionalAdherenceParticipantInfoProps = {
   participantRequestInfo?: ParticipantRequestInfo
   participantClientData?: ParticipantClientData
+  adherenceReport: AdherenceParticipantReport
+
+  enrollment: ParticipantAccountSummary
 }
 
 function getDeviceName(deviceType: string): string {
@@ -52,86 +37,135 @@ function getDeviceName(deviceType: string): string {
   }
   const keys = Array.from(ClientDeviceMap.keys())
   const deviceKey = keys.find(key => deviceType.includes(key))
-  return deviceKey && ClientDeviceMap.has(deviceKey)
-    ? ClientDeviceMap.get(deviceKey)!
-    : deviceType
+  return deviceKey && ClientDeviceMap.has(deviceKey) ? ClientDeviceMap.get(deviceKey)! : deviceType
 }
 
-const AdditionalAdherenceParticipantInfo: React.FunctionComponent<AdditionalAdherenceParticipantInfoProps> =
-  ({participantRequestInfo, participantClientData}) => {
+const AdditionalAdherenceParticipantInfo: React.FunctionComponent<AdditionalAdherenceParticipantInfoProps> = ({
+  participantRequestInfo,
+  participantClientData,
+  adherenceReport,
+  enrollment,
+}) => {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const open = Boolean(anchorEl)
+  const id = open ? 'simple-popover' : undefined
+
+  const getDisplayTimeInStudyTime = (adherenceReport?: AdherenceParticipantReport) => {
+    if (!adherenceReport?.dateRange) {
+      return ''
+    }
+    const startDate = dayjs(adherenceReport.dateRange.startDate).format('MM/DD/YYYY')
+
+    const endDate = dayjs(adherenceReport.dateRange.endDate).format('MM/DD/YYYY')
+    return `${startDate}-${endDate}`
+  }
+
+  const getSumEarnings = (earnings: string[]) => {
+    const paymentText = earnings.length > 1 ? 'payments' : 'payment'
+    const earningsTotal = earnings.reduce((acc, e) => {
+      const num = Number(e.replace('$', ''))
+      return acc + num
+    }, 0)
     return (
-      <Box width="35%">
-        {participantClientData?.availability && (
-          <StyledSection>
-            <StyledHeader>Availability</StyledHeader>
-            {participantClientData?.availability?.wake}(wake) -{' '}
-            {participantClientData?.availability?.bed}(bed)
-          </StyledSection>
-        )}
-        {participantClientData?.baselineCompleteDate && (
-          <StyledSection>
-            <StyledHeader>Baseline Testing Completion</StyledHeader>
-            {moment(participantClientData?.baselineCompleteDate).format(
-              'MM/DD/YYYY  hh:mm:ss'
-            )}
-          </StyledSection>
-        )}
-
-        {participantClientData?.earnings?.length && (
-          <StyledSection>
-            <StyledHeader>History of Earnings</StyledHeader>
-            <Table width="100%">
-              {participantClientData?.earnings.map((e, index) => (
-                <tr>
-                  <Td>
-                    Burst {index + 1}&nbsp; Earnings:&nbsp;&nbsp; {e}
-                  </Td>
-                  {/*<Td width="20px">
-                    <CheckBlue />
-              </Td>*/}
-                </tr>
-              ))}
-            </Table>
-          </StyledSection>
-        )}
-        {participantRequestInfo?.clientInfo && (
-          <StyledSection sx={{marginTop: theme.spacing(9)}}>
-            <StyledHeader>Device Type</StyledHeader>
-            <Typography
-              sx={{fontFamily: latoFont, marginBottom: 3}}
-              component="p">
-              {' '}
-              {getDeviceName(participantRequestInfo.clientInfo.deviceName)}
-            </Typography>
-
-            <Table>
-              <thead>
-                <tr>
-                  <Th>Last signed in with: </Th>
-
-                  <Th>OS Version:</Th>
-                  <Th> App Version:</Th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <Td>
-                    {moment(participantRequestInfo.signedInOn).format(
-                      'MM/DD/yyy @ h:mm a'
-                    )}
-                  </Td>
-                  <Td>
-                    {participantRequestInfo.clientInfo.osName}{' '}
-                    {participantRequestInfo.clientInfo.osVersion}
-                  </Td>
-                  <Td>{participantRequestInfo.clientInfo.appVersion}</Td>
-                </tr>
-              </tbody>
-            </Table>
-          </StyledSection>
-        )}
-      </Box>
+      <>
+        {`${earningsTotal.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        })}`}{' '}
+        <Separator /> {`${earnings.length} ${paymentText}`}{' '}
+      </>
     )
   }
+
+  return (
+    <>
+      <InfoRow>
+        <strong> Time in Study</strong>
+        {getDisplayTimeInStudyTime(adherenceReport)}
+        {adherenceReport?.progression === 'done' && (
+          <div>
+            <strong>Completed</strong>
+          </div>
+        )}
+      </InfoRow>
+
+      <InfoRow>
+        <strong>Health Code </strong>
+        {enrollment ? enrollment.healthCode : ''}
+      </InfoRow>
+      <InfoRow>
+        <strong>Client TimeZone</strong>
+        {adherenceReport?.clientTimeZone || 'Unknown'}
+      </InfoRow>
+
+      {participantRequestInfo?.clientInfo && (
+        <>
+          <InfoRow>
+            <strong>Device Type</strong>
+            {getDeviceName(participantRequestInfo.clientInfo.deviceName)}
+          </InfoRow>
+          <InfoRow>
+            <strong>Last signed in</strong> {dayjs(participantRequestInfo.signedInOn).format('MM/DD/YYYY @ h:mma')}{' '}
+            <Separator /> OS Version: {participantRequestInfo.clientInfo.osName}{' '}
+            {participantRequestInfo.clientInfo.osVersion} <Separator /> App Version{' '}
+            {participantRequestInfo.clientInfo.appVersion}
+          </InfoRow>
+        </>
+      )}
+
+      {participantClientData?.availability && (
+        <InfoRow>
+          <strong>Availability</strong>
+          {participantClientData?.availability?.wake}(wake) - {participantClientData?.availability?.bed}(bed)
+        </InfoRow>
+      )}
+
+      {participantClientData?.earnings?.length && (
+        <InfoRow>
+          <strong>History of Earnings</strong>
+          {getSumEarnings(participantClientData.earnings)}
+          {participantClientData.earnings.length > 1 && (
+            <>
+              <Separator />
+              <Button
+                variant="text"
+                color="primary"
+                sx={{fontSize: '14px', height: '14px'}}
+                onClick={e => setAnchorEl(e.currentTarget)}>
+                View Earnings History
+              </Button>
+              <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}>
+                <Box sx={{padding: theme.spacing(2), backgroundColor: '#fff'}}>
+                  {participantClientData?.earnings.map((e, index) => (
+                    <>
+                      <span>
+                        {' '}
+                        Burst {index + 1}&nbsp; Earnings:&nbsp;&nbsp; {e}
+                      </span>{' '}
+                      <br />
+                    </>
+                  ))}
+                </Box>
+              </Popover>
+            </>
+          )}
+        </InfoRow>
+      )}
+    </>
+  )
+}
 
 export default AdditionalAdherenceParticipantInfo

@@ -10,16 +10,12 @@ import SurveyList from './SurveyList'
 
 jest.mock('@helpers/AuthContext')
 
-const mockedAuth = useUserSessionDataState as jest.Mocked<
-  typeof useUserSessionDataState
->
+const mockedAuth = useUserSessionDataState as jest.Mocked<typeof useUserSessionDataState>
 mockedAuth.useUserSessionDataState.mockImplementation(() => loggedInSessionData)
 
 function renderControl(appId?: string) {
   const queryClient = new QueryClient()
-  const userData = appId
-    ? {...loggedInSessionData, appId: appId}
-    : loggedInSessionData
+  const userData = appId ? {...loggedInSessionData, appId: appId} : loggedInSessionData
 
   /* mockedAuth.useUserSessionDataState.mockImplementation(
     () => loggedInSessionData*/
@@ -44,19 +40,15 @@ afterEach(() => {
 test('should display the list of surveys', async () => {
   const container = renderControl()
   await waitFor(() => {
-    expect(container.queryAllByRole('link')).toHaveLength(1)
-    expect(
-      container.getByText(LocalAssessmentsMTB[0].title)
-    ).toBeInTheDocument()
+    expect(container.getAllByRole('button', {name: /last edited/i})).toHaveLength(1)
+    expect(container.getByText(LocalAssessmentsMTB[0].title)).toBeInTheDocument()
   })
 })
 
 test('should display only a button to add if there are no surveys returned', async () => {
   const container = renderControl('someAppId')
   await waitFor(() => {
-    expect(
-      container.getByRole('button', {name: /New Survey/})
-    ).toBeInTheDocument()
+    expect(container.getByRole('button', {name: /New Survey/})).toBeInTheDocument()
     expect(container.queryByRole('link')).toBe(null)
   })
 })

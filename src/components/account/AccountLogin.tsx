@@ -1,14 +1,18 @@
 import {ReactComponent as SynapseLogo} from '@assets/synapse_logo_blue.svg'
+import useFeatureToggles, {FeatureToggles, features} from '@helpers/FeatureToggle'
 import Utility from '@helpers/utility'
-import {Box, Button, Container, Snackbar} from '@mui/material'
+import {Box, BoxProps, Button, Container} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import Alert, {AlertProps} from '@mui/material/Alert'
 import {poppinsFont} from '@style/theme'
+import {useSourceApp} from '@typedefs/sourceAppConfig'
 import clsx from 'clsx'
-import React, {FunctionComponent, useState} from 'react'
+import {FunctionComponent} from 'react'
+import {UseLoginReturn} from 'useLogin'
+import UsernamePasswordForm from './UsernamePasswordForm'
 
 type AccountLoginOwnProps = {
   callbackFn: Function
+  usernameAndPasswordLogin: UseLoginReturn['usernameAndPasswordLogin']
   isArcSignIn?: boolean
 }
 
@@ -54,42 +58,35 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn}) => {
-  const [alertMsg, setAlertMsg] = useState<
-    {msg: string; type: AlertProps['severity']} | undefined
-  >()
-
+const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn, usernameAndPasswordLogin}) => {
+  //const [alertMsg, setAlertMsg] = useState<{msg: string; type: AlertProps['severity']} | undefined>()
+  const sourceApp = useSourceApp()
   const classes = useStyles()
+
+  const featureToggles = useFeatureToggles<FeatureToggles>()
+  const createSignInTextBox = (text: string, sx?: BoxProps['sx']) => {
+    return (
+      <Box className={clsx(classes.text, !isArcSignIn && classes.mtbText)} sx={sx}>
+        {text}
+      </Box>
+    )
+  }
 
   return (
     <>
-      <Snackbar
-        open={alertMsg !== undefined}
-        autoHideDuration={2000}
-        anchorOrigin={{vertical: 'top', horizontal: 'center'}}
-        onClose={() => setAlertMsg(undefined)}>
-        <Alert onClose={() => setAlertMsg(undefined)} severity={alertMsg?.type}>
-          {alertMsg?.msg}
-        </Alert>
-      </Snackbar>
-
-      <Container
-        component="main"
-        maxWidth="xs"
-        className={classes.buttonContainer}>
-        <Box className={clsx(classes.text, !isArcSignIn && classes.mtbText)}>
-          {isArcSignIn
-            ? 'Please sign in to ARC using your Synapse account.'
-            : 'Please sign in to Mobile Toolbox using your Synapse account.'}
-        </Box>
+      <Container component="main" maxWidth="xs" className={classes.buttonContainer}>
+        {createSignInTextBox(`Please sign in to ${sourceApp.longName} with your Synapse account: `)}
         <div className={classes.paper}>
-          <Button
-            variant="contained"
-            onClick={e => Utility.redirectToSynapseLogin()}
-            className={classes.arcSubmitbutton}>
+          <Button variant="contained" href={Utility.getRedirectLinkToOneSage()} className={classes.arcSubmitbutton}>
             <SynapseLogo />
           </Button>
         </div>
+        {featureToggles[features.USERNAME_PASSWORD_LOGIN] && (
+          <>
+            {createSignInTextBox('or with your Bridge credentials:', {mt: 4})}
+            <UsernamePasswordForm {...usernameAndPasswordLogin} />
+          </>
+        )}
       </Container>
     </>
   )

@@ -1,53 +1,29 @@
-import {ReactComponent as BackIcon} from '@assets/arrow_l.svg'
-import {Breadcrumbs, Typography} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import clsx from 'clsx'
+import ArrowRightAltTwoToneIcon from '@mui/icons-material/ArrowRightAltTwoTone'
+import {Box, Breadcrumbs, SxProps, Typography} from '@mui/material'
+import {theme} from '@style/theme'
 import React from 'react'
-import {NavLink} from 'react-router-dom'
+import {StyledLink} from './StyledComponents'
 
 export interface BreadCrumbProps {
   links: {url: string; text: string}[]
   currentItem?: string
+  sx?: SxProps
 }
 
-const useStyles = makeStyles(theme => ({
-  text: {
-    fontFamily: 'poppins',
-    fontSize: '12px',
-    lineHeight: '20px',
-  },
-  addMargin: {
-    marginLeft: theme.spacing(1.25),
-  },
-  backIcon: {
-    width: '18px',
-  },
-  link: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-}))
-
-const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({
-  links,
-  currentItem = '',
-}: BreadCrumbProps) => {
-  const classes = useStyles()
+const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({links, currentItem = '', sx}: BreadCrumbProps) => {
+  console.log(sx)
   return (
-    <Breadcrumbs aria-label="breadcrumb" separator={currentItem ? '/' : ''}>
+    <Breadcrumbs aria-label="breadcrumb" separator={currentItem ? '/' : ''} sx={{...sx}}>
       {links.map((link, index) => (
-        <NavLink to={link.url} key={link.url} className={classes.link}>
-          {index === 0 && <BackIcon className={classes.backIcon} />}
-          <div className={clsx(classes.text, index > 0 && classes.addMargin)}>
-            {link.text}
-          </div>
-        </NavLink>
+        <StyledLink to={link.url} key={link.url} sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+          {index === 0 && (
+            <ArrowRightAltTwoToneIcon sx={{transform: 'rotate(180deg)', color: theme.palette.primary.main}} />
+          )}
+          <Box sx={{marginLeft: index > 0 ? theme.spacing(1.5) : 0}}>{link.text}</Box>
+        </StyledLink>
       ))}
 
-      <Typography className={classes.text} color="textPrimary">
-        {currentItem}
-      </Typography>
+      <Typography>{currentItem}</Typography>
     </Breadcrumbs>
   )
 }

@@ -1,11 +1,9 @@
-import {
-  DisappearingInput,
-  FakeInput,
-} from '@components/surveys/widgets/SharedStyled'
-import {styled, Typography} from '@mui/material'
+import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
+import {SimpleTextInput} from '@components/widgets/StyledComponents'
+import {styled} from '@mui/material'
 import {Theme} from '@mui/system'
-import {latoFont, theme} from '@style/theme'
-import {NumericQuestion, YearQuestion} from '@typedefs/surveys'
+import {latoFont} from '@style/theme'
+import {InputItem, NumericQuestion, YearQuestion} from '@typedefs/surveys'
 
 const labelStyles = (theme: Theme): React.CSSProperties => ({
   fontFamily: latoFont,
@@ -31,49 +29,37 @@ const StyledLabel = styled(DisappearingInput, {
   '& > input': {
     padding: theme.spacing(0.125, 1),
     textAlign: 'center',
+    backgroundColor: '#fff',
   },
 }))
 
-const Label: React.FunctionComponent<{
-  step: NumericQuestion | YearQuestion
-  onChange?: (iItem: NumericQuestion) => void
-}> = ({step, onChange}) => {
-  if (step.inputItem.type === 'year') {
-    return <Typography sx={{...labelStyles(theme)}}>Year</Typography>
-  }
-  const label = step.inputItem.fieldLabel
-
-  const onUpdate = (value: string) => {
-    if (step.inputItem.type === 'integer' && onChange) {
-      const inputItem = {
-        ...step.inputItem,
-
-        fieldLabel: value,
-      }
-      onChange({...step, inputItem})
-    }
-  }
-
-  return (
-    <StyledLabel
-      area-label={label}
-      sx={{fontWeight: 'bold'}}
-      id={label}
-      value={label}
-      placeholder="Field Label"
-      onChange={e => onUpdate(e.target.value)}
-    />
-  )
-}
-
 const Numeric: React.FunctionComponent<{
-  step: NumericQuestion
-  onChange: (step: NumericQuestion) => void
-}> = ({step, onChange}) => {
+  step: NumericQuestion | YearQuestion
+  isReadOnly?: boolean
+  onChange: (step: NumericQuestion | YearQuestion) => void
+}> = ({step, isReadOnly, onChange}) => {
+  const updateStep = (inputItem: InputItem) => {
+    inputItem.type = step.inputItem.type
+    // @ts-ignore
+    onChange({...step, inputItem})
+  }
   return (
     <StyledContainer>
-      <Label step={step} onChange={onChange} />
-      <FakeInput>{step.inputItem.type === 'integer' ? '' : 'YYYY'}</FakeInput>
+      <StyledLabel
+        aria-label="fieldLabel"
+        sx={{fontWeight: 'bold'}}
+        id="fieldLabel"
+        value={step.inputItem.fieldLabel}
+        placeholder="Field Label"
+        readOnly={isReadOnly}
+        onChange={e => updateStep({...step.inputItem, fieldLabel: e.target.value})}
+      />
+      <SimpleTextInput
+        sx={{width: '80px'}}
+        aria-label="min"
+        disabled={step.inputItem.type === 'integer' || isReadOnly}
+        placeholder={step.inputItem.placeholder}
+        onChange={e => updateStep({...step.inputItem, placeholder: e.target.value})}></SimpleTextInput>
     </StyledContainer>
   )
 }

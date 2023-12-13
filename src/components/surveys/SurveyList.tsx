@@ -1,130 +1,54 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
 import Utility from '@helpers/utility'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import {
-  Box,
-  Button,
-  Card,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  styled,
-} from '@mui/material'
-import {
-  useAssessments,
-  useUpdateSurveyAssessment,
-} from '@services/assessmentHooks'
-import {latoFont, poppinsFont, theme} from '@style/theme'
+import {Alert, Box, Button, Container, Menu, MenuItem, styled} from '@mui/material'
+import Link from '@mui/material/Link'
+import {useAssessments, useUpdateSurveyAssessment} from '@services/assessmentHooks'
+import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
-import {Assessment} from '@typedefs/types'
-import React from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {Link, Redirect, useHistory} from 'react-router-dom'
+import {Assessment, AssessmentEditPhase} from '@typedefs/types'
+import React, { FunctionComponent } from 'react'
+import {Redirect, useHistory} from 'react-router-dom'
+import SurveyCard from './SurveyCard'
+import CollapsableMenu from './widgets/MenuDropdown'
 
-const StyledSurveysContainer = styled('div', {label: 'StyledSurveyContainer'})(
-  ({theme}) => ({
-    display: 'grid',
-    padding: theme.spacing(4, 0),
+type SurveySublistProps = {
+  status: AssessmentEditPhase | null
+  surveys: Assessment[]
+  onCardClick: Function
+  renameId: string
+  highlightedId: string | null
+  menuAnchor: {
+    survey: Assessment
+    anchorEl: HTMLElement
+  } | null
+}
+
+const cardWidth = '357'
+
+const StyledSurveysContainer = styled(Box, {label: 'StyledStudyListGrid'})(({theme}) => ({
+  display: 'grid',
+  padding: theme.spacing(0),
+  gridTemplateColumns: `repeat(auto-fill,${cardWidth}px)`,
+  gridColumnGap: theme.spacing(2),
+  gridRowGap: theme.spacing(2),
+  justifyContent: 'center',
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(3),
     justifyContent: 'center',
-    margin: theme.spacing(3, 0),
-    borderTop: '1px solid rgba(116, 116, 116, 0.5)',
-    gridTemplateColumns: `repeat(auto-fill,220px)`,
-    gridColumnGap: theme.spacing(3),
-    gridRowGap: theme.spacing(3),
-    [theme.breakpoints.down('md')]: {
-      padding: theme.spacing(3),
-      justifyContent: 'center',
-      gridRowGap: theme.spacing(4),
-    },
-  })
-)
-
-const StyledSurveysCard = styled(Card, {
-  label: 'StyledSurveysCard',
-  shouldForwardProp: prop => prop !== 'isMenuOpen',
-})<{
-  isMenuOpen: boolean
-}>(({theme, isMenuOpen}) => ({
-  background: '#FCFCFC',
-  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-  height: '374px',
-  width: '220px',
-  '&>div': {
-    padding: theme.spacing(2),
-  },
-
-  '& > div.top': {
-    height: '172px',
-    backgroundColor: '#F6F6F6',
-  },
-  '& h3': {
-    fontFamily: poppinsFont,
-    fontStyle: 'normal',
-    fontWeight: '600',
-    fontSize: '16px',
-    marginBottom: theme.spacing(1),
-  },
-  '& h5': {
-    marginTop: theme.spacing(1),
-    fontFamily: latoFont,
-    fontStyle: 'normal',
-    fontWeight: '400',
-    fontSize: '12px',
-  },
-  ' .MuiIconButton-root': {
-    padding: 0,
-    margin: theme.spacing(-1, 0, 0, -1),
-    '&:hover': {
-      backgroundColor: 'transparent',
-    },
-    '>div': {
-      boxShadow: isMenuOpen ? '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)' : '',
-    },
+    gridRowGap: theme.spacing(4),
   },
 }))
 
-const AssessmentCard: React.FunctionComponent<{
-  assessment: Assessment
-  onClick: (e: HTMLElement) => void
-  isMenuOpen: boolean
-}> = ({isMenuOpen, onClick, assessment}) => {
-  const _onClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    e.stopPropagation()
-    e.preventDefault()
-    onClick(e.currentTarget)
-  }
-
-  return (
-    <Link
-      style={{textDecoration: 'none'}}
-      key={assessment.identifier}
-      to={`/surveys/${assessment.guid!}/design`}>
-      <StyledSurveysCard isMenuOpen={isMenuOpen}>
-        <div className="top">
-          <IconButton onClick={_onClick} size="large">
-            <div>
-              <MoreVertIcon />
-            </div>
-          </IconButton>
-        </div>
-        <div>
-          <h3> {assessment.title}</h3>
-          <h5>Survey ID: {assessment.identifier}</h5>
-        </div>
-      </StyledSurveysCard>
-    </Link>
-  )
-}
-
 const AssessmentMenu: React.FunctionComponent<{
-  anchorEl: Element
+  anchorEl: Element,
+  survey: Assessment,
   onDelete: () => void
   onView: () => void
   onClose: () => void
   onDuplicate: () => void
-}> = ({onDelete, onView, onDuplicate, onClose, anchorEl}) => {
+  onRename: () => void
+}> = ({onDelete, onView, onDuplicate, onClose, onRename, anchorEl, survey}) => {
   return (
     <Menu
       id="assessment-menu"
@@ -143,47 +67,104 @@ const AssessmentMenu: React.FunctionComponent<{
       <MenuItem onClick={onView} key="view">
         View
       </MenuItem>
+      { !survey.isReadOnly && 
+      <MenuItem onClick={onRename} key="rename">
+        Rename
+      </MenuItem>
+      }
       <MenuItem onClick={onDuplicate} key="duplicate">
         Duplicate
       </MenuItem>
+      { !survey.isReadOnly && 
       <MenuItem onClick={onDelete} key="delete">
         Delete
       </MenuItem>
+      }
     </Menu>
   )
 }
 
+const sections = [
+  {
+    title: 'All',
+    filterTitle: 'All',
+  },
+  {
+    title: 'Draft',
+    filterTitle: 'Draft',
+    sectionStatus: 'draft' as AssessmentEditPhase,
+  },
+  {
+    title: 'Published',
+    filterTitle: 'Published',
+    sectionStatus: 'published' as AssessmentEditPhase,
+  },
+]
+
+type SublistAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME' | 'VIEW' 
+
+const SurveySublist: FunctionComponent<SurveySublistProps> = ({
+  status,
+  surveys,
+  onCardClick,
+  renameId,
+  highlightedId,
+  menuAnchor,
+}: SurveySublistProps) => {
+  const displayItems = status ? surveys.filter(survey => status === survey.phase) : surveys
+
+  if (displayItems?.length === 0) {
+    return <></>
+  }
+
+  return (
+    <StyledSurveysContainer key="container">
+      {displayItems?.map((survey, _index) => (
+        <Link
+          component="button"
+          style={{textDecoration: 'none'}}
+          key={survey.guid}
+          variant="body2"
+          onClick={() => (survey.identifier === '...' ? '' : onCardClick({...survey}, 'VIEW'))}
+          underline="hover">
+          <SurveyCard
+            key={survey.guid}
+            shouldHighlight={highlightedId === survey.guid}
+            survey={survey}
+            isMenuOpen={menuAnchor?.survey?.guid === survey.guid}
+            onSetAnchor={(e: HTMLElement) => {
+              onCardClick(survey, 'ANCHOR', e)
+            }}
+            isRename={renameId === survey.guid}
+            onRename={(newName: string) => onCardClick({...survey, title: newName}, 'RENAME')}
+          />
+        </Link>
+      ))}
+    </StyledSurveysContainer>
+  )
+}
+
 const SurveyList: React.FunctionComponent<{}> = () => {
-  const handleError = useErrorHandler()
   const history = useHistory()
 
   const [isNew, setIsNew] = React.useState(false)
+  const [renameSurveyId, setRenameSurveyId] = React.useState('')
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     survey: Assessment
     anchorEl: HTMLElement
   }>(null)
-  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
-    string | null
-  >(null)
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<
-    'DELETE' | undefined
-  >(undefined)
+  const [highlightedId, setHighlightedId] = React.useState<string | null>(null)
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<'DELETE' | undefined>(undefined)
+  const [statusFilter, setStatusFilter] = React.useState<AssessmentEditPhase | null>(null)
 
   const {
     data: surveys,
-    status,
-    error,
+    status: getSurveysStatus,
+    error: getSurveysError,
   } = useAssessments({isLocal: true, isSurvey: true})
 
-  const {
-    isSuccess: asmntUpdateSuccess,
-    isError: asmntUpdateError,
-    mutate: mutateAssessment,
-  } = useUpdateSurveyAssessment()
+  const {error: asmntUpdateError, mutate: mutateAssessment} = useUpdateSurveyAssessment()
 
-  if (error) {
-    handleError(error)
-  }
   if (isNew) {
     return <Redirect to={`${constants.restrictedPaths.SURVEY_BUILDER}/intro`} />
   }
@@ -197,12 +178,12 @@ const SurveyList: React.FunctionComponent<{}> = () => {
     setMenuAnchor(null)
   }
 
-  const onAction = async (survey: Assessment, type: 'DELETE' | 'DUPLICATE') => {
+  const onAction = async (survey: Assessment, type: 'DELETE' | 'DUPLICATE' | 'RENAME') => {
     handleMenuClose()
     switch (type) {
       case 'DELETE':
         // await mutate({ action: type, study })
-        mutateAssessment(
+        await mutateAssessment(
           {assessment: survey, action: 'DELETE'},
           {
             onSuccess: data => {
@@ -212,15 +193,30 @@ const SurveyList: React.FunctionComponent<{}> = () => {
           }
         )
         break
-
-      case 'DUPLICATE':
-        mutateAssessment(
-          {assessment: survey, action: 'COPY'},
+      case 'RENAME':
+        await mutateAssessment(
+          {assessment: survey, action: 'UPDATE'},
           {
             onSuccess: data => {
-              setHighlightedStudyId(data.guid!)
+              // alert('done')
+            },
+            onError: e => alert(e),
+          }
+        )
+        setRenameSurveyId('')
+
+        return
+      case 'DUPLICATE':
+        await mutateAssessment(
+          {
+            assessment: {...survey, title: `Copy of ${survey.title}`},
+            action: 'COPY',
+          },
+          {
+            onSuccess: data => {
+              setHighlightedId(data.guid!)
               setTimeout(() => {
-                setHighlightedStudyId(null)
+                setHighlightedId(null)
               }, 2000)
               // alert('done')
             },
@@ -235,61 +231,105 @@ const SurveyList: React.FunctionComponent<{}> = () => {
     }
   }
 
+  const resetStatusFilters = () => {
+    setStatusFilter(null)
+  }
+  const isSelectedFilter = (section: typeof sections[1]) => {
+    if (!section.sectionStatus) {
+      return !statusFilter
+    }
+    return statusFilter === section.sectionStatus
+  }
+
+  const navigateToSurvey = (survey?: Assessment) => {
+    if (survey && survey.guid !== renameSurveyId) {
+      history.push(`/surveys/${survey.guid}/design/intro`)
+    }
+  }
+
+  const beginEditingName = (survey: Assessment) => {
+    setRenameSurveyId(survey.guid!)
+    handleMenuClose()
+  }
+
   return (
     <Container maxWidth="xl">
+      {getSurveysError && <Alert severity="error">{getSurveysError.message}</Alert>}
+      {asmntUpdateError && <Alert severity="error">{asmntUpdateError.message}</Alert>}
+
       <Box
+        area-lable="f1"
+        id="menucontainer"
         sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          marginTop: theme.spacing(5),
+          position: 'relative',
+          height: '120px',
+          borderBottom: '1px solid #DFE2E6',
+          padding: theme.spacing(0, 4),
+          paddingTop: [theme.spacing(4), theme.spacing(4), theme.spacing(4), theme.spacing(6.75)],
         }}>
-        <Button
-          disabled={
-            !Utility.isPathAllowed(
-              'any',
-              constants.restrictedPaths.SURVEY_BUILDER
-            )
+        <CollapsableMenu
+          items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
+          selectedFn={section => isSelectedFilter(section)}
+          displayMobileItem={(section, _isSelected) => <>{section.filterTitle}</>}
+          displayDesktopItem={(section, _isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
+          onClick={
+            section => (section.sectionStatus ? setStatusFilter(section.sectionStatus) : resetStatusFilters())
           }
+        />
+
+        <Button
+          disabled={!Utility.isPathAllowed('any', constants.restrictedPaths.SURVEY_BUILDER)}
           variant="contained"
+          sx={{position: 'absolute', top: '34px', right: theme.spacing(4)}}
           onClick={e => setIsNew(true)}>
           + Create New Survey
         </Button>
       </Box>
-      <Loader reqStatusLoading={status === 'loading'}>
-        <StyledSurveysContainer key="container">
-          {surveys?.map((survey, index) => (
-            <Box
-              sx={{
-                border:
-                  highlightedStudyId === survey.guid ? '1px solid #3f51b5' : '',
-              }}>
-              <AssessmentCard
-                key={survey.identifier}
-                assessment={survey}
-                isMenuOpen={
-                  menuAnchor?.survey?.identifier === survey.identifier
+
+      <Loader reqStatusLoading={getSurveysStatus === 'loading'}>
+        <Box sx={{backgroundColor: '#FBFBFC', paddingTop: theme.spacing(7)}}>
+          <Container maxWidth="lg">
+            <SurveySublist 
+              surveys={surveys!}
+              renameId={renameSurveyId}
+              status={statusFilter}
+              onCardClick={(s: Assessment, action: SublistAction, e: any) => {
+                switch (action) {
+                  case 'ANCHOR':
+                    setMenuAnchor({survey: s, anchorEl: e})
+                    break
+                  case 'VIEW':
+                    handleMenuClose()
+                    navigateToSurvey(s)
+                    break
+                  case 'RENAME':
+                    onAction(s, 'RENAME')
+                    break
+                  default:
+                    console.log('unknown study action')
                 }
-                onClick={e => setMenuAnchor({survey, anchorEl: e})}
-              />
-            </Box>
-          ))}
-        </StyledSurveysContainer>
+              }}
+              highlightedId={highlightedId}
+              menuAnchor={menuAnchor}
+            />
+          </Container>
+        </Box>
       </Loader>
       {menuAnchor && (
         <AssessmentMenu
           anchorEl={menuAnchor.anchorEl}
+          survey={menuAnchor!.survey}
           onClose={handleMenuClose}
+          onRename={() => beginEditingName(menuAnchor!.survey)}
           onDelete={() => setIsConfirmDialogOpen('DELETE')}
           onDuplicate={() => onAction(menuAnchor!.survey, 'DUPLICATE')}
-          onView={() =>
-            history.push(`/surveys/${menuAnchor?.survey.guid}/design/intro`)
-          }
+          onView={() => navigateToSurvey(menuAnchor!.survey)}
         />
       )}
 
       <ConfirmationDialog
         isOpen={isConfirmDialogOpen === 'DELETE'}
-        title={'Delete Study'}
+        title={'Delete Survey'}
         type={'DELETE'}
         onCancel={closeConfirmationDialog}
         onConfirm={() => {
@@ -297,8 +337,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
           onAction(menuAnchor!.survey, 'DELETE')
         }}>
         <div>
-          Are you sure you would like to permanently delete:{' '}
-          <p>{menuAnchor?.survey.title}</p>
+          Are you sure you would like to permanently delete: <p>{menuAnchor?.survey.title}</p>
         </div>
       </ConfirmationDialog>
     </Container>

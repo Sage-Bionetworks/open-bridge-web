@@ -1,15 +1,12 @@
-import AdherenceUnfocusIcon from '@assets/adherence/adh_tab_off.svg'
-import AdherenceFocusIcon from '@assets/adherence/adh_tab_on.svg'
-import SummaryUnfocusIcon from '@assets/adherence/sum_tab_off.svg'
-import SummaryFocusIcon from '@assets/adherence/sum_tab_on.svg'
 import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
+import StudyBuilderHeader from '@components/studies/StudyBuilderHeader'
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
-import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {Box, Tab, Tabs} from '@mui/material'
+import ParticipantAdherenceContentShell from '@components/widgets/ParticipantAdherenceContentShell'
+import InsightsIcon from '@mui/icons-material/Insights'
+import {Box, CircularProgress, Tab, Tabs} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useStudy} from '@services/studyHooks'
-import {latoFont, poppinsFont} from '@style/theme'
-import {ExtendedParticipantAccountSummary} from '@typedefs/types'
+import {latoFont, poppinsFont, theme} from '@style/theme'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {ErrorBoundary} from 'react-error-boundary'
@@ -53,18 +50,12 @@ const useStyles = makeStyles(theme => ({
 }))
 
 /** types and constants  */
-type ParticipantData = {
-  items: ExtendedParticipantAccountSummary[]
-  total: number
-}
 
 const TAB_DEFs = [
-  // {type: 'SUMMARY', label: 'Adherence Summary'},
+  {type: 'SUMMARY', label: 'Adherence Summary'},
   {type: 'ENROLLED', label: 'Active Participants'},
 ]
 
-const TAB_ICONS_FOCUS = [SummaryFocusIcon, AdherenceFocusIcon]
-const TAB_ICONS_UNFOCUS = [SummaryUnfocusIcon, AdherenceUnfocusIcon]
 export type AdherenceTabType = 'SUMMARY' | 'ENROLLED'
 
 type AdherenceOwnProps = {
@@ -77,14 +68,11 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
   let {id: studyId} = useParams<{
     id: string
   }>()
-  const isEnrolledTab =
-    new URLSearchParams(useLocation().search)?.get('tab') === 'ENROLLED'
+  const isEnrolledTab = new URLSearchParams(useLocation().search)?.get('tab') === 'ENROLLED'
   const {data: adherenceWeeklyReport} = useAdherenceForWeek(studyId, 0, 5, {})
 
   // Withdrawn or active participants
-  const [tab, setTab] = React.useState<AdherenceTabType>(
-    isEnrolledTab || true ? 'ENROLLED' : 'SUMMARY'
-  )
+  const [tab, setTab] = React.useState<AdherenceTabType>(isEnrolledTab || true ? 'ENROLLED' : 'SUMMARY')
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
@@ -92,54 +80,41 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
 
   const classes = useStyles()
 
-  const {
-    data: study,
-    error: studyError,
-    isLoading: isStudyLoading,
-  } = useStudy(studyId)
+  const {data: study, isLoading: isStudyLoading} = useStudy(studyId)
+  if (!study) {
+    return isStudyLoading ? (
+      <Box mx="auto" my={5} textAlign="center">
+        <CircularProgress />
+      </Box>
+    ) : (
+      <></>
+    )
+  }
 
   return (
-    <Box bgcolor="#F8F8F8" px={5} minHeight="100vh">
-      <Box px={3} py={2} display="flex" alignItems="center">
-        <NonDraftHeaderFunctionComponent study={study} />
-      </Box>
-
-      <Box py={0} pr={3} pl={2}>
+    <Box minHeight="100vh">
+      <StudyBuilderHeader study={study} />
+      <ParticipantAdherenceContentShell title="Adherence Data">
         <Tabs
           value={tab}
-          variant="standard"
           onChange={handleTabChange}
+          color="secondary"
+          variant="standard"
           TabIndicatorProps={{hidden: true}}>
           {TAB_DEFs.map((tabDef, index) => (
             <Tab
               key={`tab_${tabDef.label}`}
               value={tabDef.type}
-              classes={{
-                root: clsx(
-                  classes.tab,
-                  tab === tabDef.type && classes.selectedTab
-                ),
-              }}
+              sx={tab === tabDef.type ? {zIndex: 100, backgroundColor: theme.palette.common.white} : {}}
               icon={
                 <Box
                   display="flex"
                   flexDirection="row"
-                  className={clsx(
-                    classes.tab_icon,
-                    tab !== tabDef.type && classes.unactiveTabIcon
-                  )}>
-                  <img
-                    src={
-                      tab === tabDef.type
-                        ? TAB_ICONS_FOCUS[index]
-                        : TAB_ICONS_UNFOCUS[index]
-                    }
-                    style={{marginRight: '6px'}}></img>
+                  className={clsx(classes.tab_icon, tab !== tabDef.type && classes.unactiveTabIcon)}>
+                  <InsightsIcon sx={{marginRight: '6px'}} />
                   <div>
                     {`${tabDef.label} ${
-                      tab === tabDef.type
-                        ? '(' + (adherenceWeeklyReport?.total || '...') + ')'
-                        : ''
+                      tab === tabDef.type ? '(' + (adherenceWeeklyReport?.total || '...') + ')' : ''
 
                       /*? data 
                               ? `(${data.total})`
@@ -152,17 +127,11 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
             />
           ))}
         </Tabs>
-        <Box bgcolor="white">
-          <ErrorBoundary
-            FallbackComponent={ErrorFallback}
-            onError={ErrorHandler}>
-            {tab === 'SUMMARY' ? (
-              <AdherenceSummary />
-            ) : (
-              <AdherenceParticipants />
-            )}
-          </ErrorBoundary>
-        </Box>
+      </ParticipantAdherenceContentShell>
+      <Box sx={{backgroundColor: '#fff', padding: theme.spacing(4, 7)}}>
+        <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+          {tab === 'SUMMARY' ? <AdherenceSummary /> : <AdherenceParticipants />}
+        </ErrorBoundary>
       </Box>
     </Box>
   )

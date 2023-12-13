@@ -1,14 +1,17 @@
+import {Typography} from '@mui/material'
 import React from 'react'
-import {MTBHeadingH2} from '../../../widgets/Headings'
 
-const Subsection: React.FunctionComponent<{heading: string}> = ({
+const Subsection: React.FunctionComponent<{heading: string; variant?: 'h4' | 'h5'}> = ({
   heading,
   children,
+  variant = 'h4',
 }) => {
   return (
     <li>
       <div style={{width: '100%'}}>
-        <MTBHeadingH2>{heading}</MTBHeadingH2>
+        <Typography variant={variant} sx={{mb: 1}}>
+          {heading}
+        </Typography>
         {children}
       </div>
     </li>

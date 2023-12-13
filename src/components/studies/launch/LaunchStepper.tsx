@@ -1,109 +1,76 @@
-import {StepButton} from '@mui/material'
-import Step from '@mui/material/Step'
-import StepConnector from '@mui/material/StepConnector'
+import {Container, Step, StepButton, StepLabel, stepLabelClasses} from '@mui/material'
+import StepConnector, {stepConnectorClasses} from '@mui/material/StepConnector'
 import {StepIconProps} from '@mui/material/StepIcon'
-import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
-import {Theme} from '@mui/material/styles'
-import createStyles from '@mui/styles/createStyles'
-import makeStyles from '@mui/styles/makeStyles'
-import withStyles from '@mui/styles/withStyles'
-import clsx from 'clsx'
+import {styled} from '@mui/material/styles'
 import React from 'react'
-import {ReactComponent as IrbIcon} from '../../../assets/launch/irb_icon.svg'
-import {ReactComponent as ReviewIcon} from '../../../assets/launch/review_icon.svg'
-import {ReactComponent as RocketIcon} from '../../../assets/launch/rocket_icon.svg'
-import {ReactComponent as TagIcon} from '../../../assets/launch/tag_icon.svg'
-import {ReactComponent as TagIconInactive} from '../../../assets/launch/tag_icon_inactive.svg'
 
-const ColorlibConnector = withStyles({
-  alternativeLabel: {
-    top: 22,
+import AssignmentLateTwoToneIcon from '@mui/icons-material/AssignmentLateTwoTone'
+import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone'
+import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone'
+import PrivacyTipTwoToneIcon from '@mui/icons-material/PrivacyTipTwoTone'
+
+const StyledStepConnector = styled(StepConnector)(({theme}) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 18,
   },
-  active: {
-    '& $line': {
-      /*backgroundImage:
-        'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',*/
-      backgroundColor: '#FFE500',
+  [`&.${stepConnectorClasses.active}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      backgroundColor: '#C22E49',
     },
   },
-  completed: {
-    '& $line': {
-      /*
-      backgroundImage:
-        'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',*/
-      backgroundColor: '#FFE500',
+  [`&.${stepConnectorClasses.completed}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      backgroundColor: '#C22E49',
     },
   },
-  line: {
-    height: 3,
+  [`& .${stepConnectorClasses.line}`]: {
+    height: 4,
     border: 0,
-    backgroundColor: '#E3E1D3',
-    borderRadius: 1,
+    backgroundColor: '#DFE2E6',
+    borderRadius: 0,
   },
-})(StepConnector)
-const useColorlibStepIconStyles = makeStyles({
-  root: {
-    backgroundColor: '#E3E1D3',
-    zIndex: 1,
-    color: '#fff',
-    width: 40,
-    height: 40,
-    display: 'flex',
-    borderRadius: '50%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  active: {
-    backgroundColor: '#FFE500',
-  },
-  completed: {
-    backgroundColor: '#FFE500',
-  },
-})
+}))
+
+const ColorlibStepIconRoot = styled('div')<{
+  ownerState: {completed?: boolean; active?: boolean}
+}>(({theme, ownerState}) => ({
+  backgroundColor: '#DFE2E6;',
+  zIndex: 1,
+  color: '#fff',
+  width: 40,
+  height: 40,
+  display: 'flex',
+  borderRadius: '50%',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  ...(ownerState.active && {
+    backgroundColor: '#C22E49',
+
+    // boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
+  }),
+  ...(ownerState.completed && {
+    backgroundColor: '#C22E49',
+  }),
+}))
 
 function ColorlibStepIcon(props: StepIconProps) {
-  const classes = useColorlibStepIconStyles()
-  const {active, completed} = props
+  const {active, completed, className} = props
 
-  const icons: {
-    [index: string]: {
-      active: React.ReactElement
-      inactive: React.ReactElement
-    }
-  } = {
-    1: {active: <ReviewIcon />, inactive: <ReviewIcon />},
-    2: {active: <TagIcon />, inactive: <TagIconInactive />},
-    3: {active: <IrbIcon />, inactive: <IrbIcon />},
-    4: {active: <RocketIcon />, inactive: <RocketIcon />},
+  const icons: {[index: string]: React.ReactElement} = {
+    1: <AssignmentLateTwoToneIcon />,
+    2: <PrivacyTipTwoToneIcon />,
+    3: <PeopleAltTwoToneIcon />,
+    4: <DescriptionTwoToneIcon />,
   }
-  const iconNode = icons[String(props.icon)]
 
   return (
-    <div
-      className={clsx(classes.root, {
-        [classes.active]: active,
-        [classes.completed]: completed,
-      })}>
-      {active || completed ? iconNode.active : iconNode.inactive}
-    </div>
+    <ColorlibStepIconRoot ownerState={{completed, active}} className={className}>
+      {icons[String(props.icon)]}
+    </ColorlibStepIconRoot>
   )
 }
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: '100%',
-      height: '130px',
-      position: 'relative',
-    },
-    stepperRoot: {
-      position: 'absolute',
-      left: '-150px',
-      width: 'calc(100% + 300px)',
-    },
-  })
-)
 
 type LaunchStepperProps = {
   activeStep: number
@@ -116,29 +83,34 @@ const LaunchStepper: React.FunctionComponent<LaunchStepperProps> = ({
   setActiveStepFn,
   steps,
 }: LaunchStepperProps) => {
-  const classes = useStyles()
-
   return (
-    <div className={classes.root}>
-      <Stepper
-        alternativeLabel
-        activeStep={activeStep}
-        classes={{root: classes.stepperRoot}}
-        connector={<ColorlibConnector />}>
+    <Container maxWidth="md" sx={{position: 'relative', height: '130px'}}>
+      <Stepper alternativeLabel activeStep={activeStep} connector={<StyledStepConnector />}>
         {steps.map((step, index) => (
           <Step key={step.label}>
-            <StepButton
-              onClick={() => setActiveStepFn(index)}
-              completed={step.isComplete}
-              disabled={!step.isComplete}>
-              <StepLabel StepIconComponent={ColorlibStepIcon}>
+            <StepButton onClick={() => setActiveStepFn(index)} disabled={!step.isComplete}>
+              <StepLabel
+                sx={{
+                  [`& .${stepLabelClasses.alternativeLabel}`]: {
+                    color: '#AEB5BC',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    fontSize: '14px',
+                  },
+                  [`& .${stepLabelClasses.alternativeLabel}.${stepLabelClasses.active},
+                  .${stepLabelClasses.alternativeLabel}.${stepLabelClasses.completed}
+                   `]: {
+                    color: '#22252A',
+                  },
+                }}
+                StepIconComponent={ColorlibStepIcon}>
                 {step.label}
               </StepLabel>
             </StepButton>
           </Step>
         ))}
       </Stepper>
-    </div>
+    </Container>
   )
 }
 

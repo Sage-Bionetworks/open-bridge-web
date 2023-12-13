@@ -1,6 +1,13 @@
 import React, {useEffect, useState} from 'react'
 
-export type ToggleKey = 'SURVEY BUILDER' | 'OTHER'
+export const features = {
+  SURVEY_BUILDER: 'SURVEY BUILDER',
+  SURVEY_BRANCHING_LOGIC: 'SURVEY BRANCHING LOGIC',
+  USERNAME_PASSWORD_LOGIN: 'USERNAME PASSWORD LOGIN',
+  SHARED: 'SHARED',
+} as const
+
+export type ToggleKey = typeof features[keyof typeof features]
 
 export type FeatureToggles = Partial<Record<ToggleKey, undefined | boolean>>
 
@@ -10,10 +17,7 @@ export interface FeatureToggleProps {
 
 const Ctx = React.createContext<any>({})
 
-export const FeatureToggleProvider: React.FC<FeatureToggleProps> = ({
-  children,
-  featureToggles: initialToggles,
-}) => {
+export const FeatureToggleProvider: React.FC<FeatureToggleProps> = ({children, featureToggles: initialToggles}) => {
   const [featureToggles, setFeatureToggles] = useState(initialToggles || {})
 
   useEffect(() => {

@@ -43,18 +43,16 @@ export const useCommonStyles = makeStyles(theme => ({
   },
   dayCell: {
     padding: '0',
-    borderRight: '1px solid black',
-    display: 'flex',
-    flexDirection: 'row',
+
     alignContent: 'center',
     alignItems: 'center',
     height: '100%',
-    justifyContent: 'flex-start',
+
     '&.today': {
-      backgroundColor: '#FFFF54',
+      backgroundColor: 'rgba(148, 153, 199, 0.15)',
     },
     '&:first-child': {
-      borderLeft: '1px solid black',
+      borderLeft: '1px solid #EAECEE',
     },
   },
   red: {

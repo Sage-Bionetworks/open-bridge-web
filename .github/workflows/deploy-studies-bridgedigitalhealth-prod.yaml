@@ -1,0 +1,16 @@
+name: deploy-open-bridge-production
+
+on:
+  push:
+    branches: ["production"]
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/build-and-deploy.yaml
+    with:
+      branch: ${{ github.ref_name }}
+      destination_bucket: prod-studies-bridgedigital-health-websitebucket-1rc2pmoctily2
+      distribution_id: E2EZ0TY3ZSTV6O

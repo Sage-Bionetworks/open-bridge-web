@@ -1,81 +1,11 @@
-import {Button} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import {SimpleTextInput} from '@components/widgets/StyledComponents'
+import ClearIcon from '@mui/icons-material/Clear'
+import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone'
+import {Box, FormControl, IconButton, InputAdornment} from '@mui/material'
+import {ParticipantActivityType} from '@typedefs/types'
 import React, {useEffect} from 'react'
-import BlackXIcon from '../../../assets/black_x_icon.svg'
-import SearchIcon from '../../../assets/search_icon.svg'
-import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
-import {latoFont} from '../../../style/theme'
-import {ParticipantActivityType} from '../../../types/types'
 
 const ENTER_KEY = 'Enter'
-
-const useStyles = makeStyles(theme => ({
-  participantIDSearchBar: {
-    backgroundColor: 'white',
-    outline: 'none',
-    height: '38px',
-    width: '220px',
-    borderTopRightRadius: '0px',
-    borderBottomRightRadius: '0px',
-    padding: theme.spacing(0.7),
-    borderTop: '1px solid black',
-    borderBottom: '1px solid black',
-    borderLeft: '1px solid black',
-    borderRight: '0px',
-    fontSize: '13px',
-  },
-  topButtons: {
-    marginRight: theme.spacing(2),
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '36px',
-    fontSize: '14px',
-    fontFamily: latoFont,
-  },
-  buttonImage: {
-    marginRight: theme.spacing(0.75),
-    width: '14px',
-  },
-  searchIconContainer: {
-    width: '42px',
-    height: '38px',
-    backgroundColor: 'black',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '&:hover': {
-      backgroundColor: 'black',
-      boxShadow: '1px 1px 1px rgb(0, 0, 0, 0.75)',
-    },
-    borderRadius: '0px',
-    minWidth: '0px',
-  },
-  blackXIconButton: {
-    marginLeft: '195px',
-    position: 'absolute',
-    minWidth: '0px',
-    width: '18px',
-    height: '18px',
-    minHeight: '8px',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: '15px',
-    '&:hover': {
-      backgroundColor: 'rgb(0, 0, 0, 0.2)',
-    },
-    display: 'flex',
-  },
-  blackXIcon: {
-    width: '10px',
-    height: '10px',
-  },
-  inputRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-}))
 
 type ParticipantSearchProps = {
   onReset: Function
@@ -84,26 +14,16 @@ type ParticipantSearchProps = {
   tab?: ParticipantActivityType
 }
 
-const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
-  onReset,
-  onSearch,
-  isSearchById,
-  tab,
-}) => {
-  const classes = useStyles()
-  const [isSearchingForParticipant, setIsSearchingForParticipant] =
-    React.useState(false)
-
+const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({onReset, onSearch, isSearchById, tab}) => {
   // True if the user is currently trying to search for a particular particpant
   const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)
   // Reference to the input component for searching for a participant using ID.
   const inputComponent = React.useRef<HTMLInputElement>(null)
 
   const handleSearchParticipantRequest = async () => {
-    const searchedValue = inputComponent.current?.value
-      ? inputComponent.current?.value
-      : ''
+    const searchedValue = inputComponent.current?.value ? inputComponent.current?.value : ''
     setIsSearchingUsingID(true)
+
     onSearch(searchedValue)
   }
 
@@ -118,55 +38,38 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
     handleResetSearch()
   }, [tab])
 
-  return isSearchingForParticipant ? (
-    <div className={classes.inputRow}>
-      <input
-        placeholder={
-          isSearchById ? "Participant's ID" : "Participant's Phone Number"
-        }
-        onKeyDown={e => {
-          if (e.key === ENTER_KEY) {
-            handleSearchParticipantRequest()
-          }
-        }}
-        className={classes.participantIDSearchBar}
-        ref={inputComponent}
-        style={{
-          paddingRight: isSearchingUsingId ? '28px' : '4px',
-        }}
-        id="participant-search-bar"
-      />
-      {isSearchingUsingId && (
-        <Button
-          className={classes.blackXIconButton}
-          onClick={handleResetSearch}
-          id="clear-participant-search-text-button">
-          <img
-            src={BlackXIcon}
-            className={classes.blackXIcon}
-            alt="black-x-icon"></img>
-        </Button>
-      )}
-      <Button
-        className={classes.searchIconContainer}
-        onClick={handleSearchParticipantRequest}
-        id="search-participants-button">
-        <img src={WhiteSearchIcon} alt="white-search-icon"></img>
-      </Button>
-    </div>
-  ) : (
-    <Button
-      className={classes.topButtons}
-      onClick={() => {
-        setIsSearchingForParticipant(true)
-      }}
-      id="start-searching-for-participant-button">
-      <img
-        src={SearchIcon}
-        className={classes.buttonImage}
-        alt="seach-icon"></img>
-      Find Participant
-    </Button>
+  return (
+    <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+      <FormControl>
+        <SimpleTextInput
+          id="input-with-icon-textfield"
+          onKeyDown={e => {
+            if (e.key === ENTER_KEY) {
+              handleSearchParticipantRequest()
+            }
+          }}
+          sx={{'& .MuiInputBase-root': {borderRadius: '100px'}, '& input': {height: '28px'}}}
+          placeholder={isSearchById ? "Participant's ID" : "Participant's Phone Number"}
+          inputRef={inputComponent}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                {isSearchingUsingId && (
+                  <IconButton onClick={handleResetSearch} id="clear-participant-search-text-button">
+                    <ClearIcon sx={{color: '#878E95', fontSize: '14px'}} />
+                  </IconButton>
+                )}
+              </InputAdornment>
+            ),
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchTwoToneIcon sx={{color: '#878E95', fontSize: '24px'}} />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </FormControl>
+    </Box>
   )
 }
 

@@ -18,6 +18,7 @@ const useStyles = makeStyles(() =>
       height: '100%',
       position: 'relative',
       display: 'flex',
+
       '& .cellValue': {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -28,15 +29,10 @@ const useStyles = makeStyles(() =>
 )
 
 function isOverflown(element: Element): boolean {
-  return (
-    element.scrollHeight > element.clientHeight ||
-    element.scrollWidth > element.clientWidth
-  )
+  return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth
 }
 
-const GridCellExpand = React.memo(function GridCellExpand(
-  props: GridCellExpandProps
-) {
+const GridCellExpand = React.memo(function GridCellExpand(props: GridCellExpandProps) {
   const {width, value} = props
   const wrapper = React.useRef<HTMLDivElement | null>(null)
   const cellDiv = React.useRef(null)
@@ -77,11 +73,7 @@ const GridCellExpand = React.memo(function GridCellExpand(
   }, [setShowFullCell, showFullCell])
 
   return (
-    <div
-      ref={wrapper}
-      className={classes.root}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}>
+    <div ref={wrapper} className={classes.root} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div
         ref={cellDiv}
         style={{
@@ -96,14 +88,9 @@ const GridCellExpand = React.memo(function GridCellExpand(
         {value}
       </div>
       {showPopper && (
-        <Popper
-          open={showFullCell && anchorEl !== null}
-          anchorEl={anchorEl}
-          style={{width, marginLeft: -17}}>
-          <Paper
-            elevation={1}
-            style={{minHeight: wrapper.current!.offsetHeight - 3}}>
-            <Typography variant="body2" style={{padding: 8}}>
+        <Popper open={showFullCell && anchorEl !== null} anchorEl={anchorEl} style={{width, marginLeft: -17}}>
+          <Paper elevation={1} style={{minHeight: wrapper.current!.offsetHeight - 3}}>
+            <Typography variant="body1" style={{padding: 8}}>
               {value}
             </Typography>
           </Paper>

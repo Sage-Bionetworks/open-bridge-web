@@ -1,169 +1,62 @@
-import CalendarIcon from '@assets/scheduler/calendar_icon.svg'
-import {ReactComponent as PhoneIcon} from '@assets/scheduler/login_phone.svg'
+import {ReactComponent as EditEvent1} from '@assets/scheduler/edit_event_1.svg'
+import {ReactComponent as EditEvent2} from '@assets/scheduler/edit_event_2.svg'
+import {ReactComponent as EditEvent3} from '@assets/scheduler/edit_event_3.svg'
+import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone'
+import DragIndicatorTwoToneIcon from '@mui/icons-material/DragIndicatorTwoTone'
+import KeyboardArrowDownTwoToneIcon from '@mui/icons-material/KeyboardArrowDownTwoTone'
+
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import LoadingComponent from '@components/widgets/Loader'
-import {RedButton} from '@components/widgets/StyledComponents'
-import DeleteIcon from '@mui/icons-material/Close'
-import {Box, FormGroup, IconButton, Theme} from '@mui/material'
-import createStyles from '@mui/styles/createStyles'
-import makeStyles from '@mui/styles/makeStyles'
+import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
+
+import {Box, Button, FormControl, FormGroup, IconButton, styled, Typography} from '@mui/material'
 import EventService from '@services/event.service'
-import {latoFont} from '@style/theme'
+import {useUpdateStudyDetail} from '@services/studyHooks'
+import {theme} from '@style/theme'
 import {SchedulingEvent} from '@typedefs/scheduling'
 import {ExtendedError, Study} from '@typedefs/types'
 import clsx from 'clsx'
 import React from 'react'
-import {
-  DragDropContext,
-  Draggable,
-  DraggableLocation,
-  Droppable,
-  DropResult,
-} from 'react-beautiful-dnd'
-import {useUpdateStudyDetail} from '../../../services/studyHooks'
+import {DragDropContext, Draggable, DraggableLocation, Droppable, DropResult} from 'react-beautiful-dnd'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      padding: theme.spacing(0),
-    },
+const StyledFakeSelect = styled(Box, {label: 'StyledFakeSelect'})(({theme}) => ({
+  background: '#FFFFFF',
+  boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+  width: '157px',
+  height: '24px',
+  marginBottom: theme.spacing(0.5),
+  position: 'relative',
+  fontSize: '7px',
+  lineHeight: '8px',
+  textAlign: 'left',
+  padding: '8px 8px 0 20px',
+  flexShrink: 0,
+  '& > svg': {
+    position: 'absolute',
+    height: '12px',
+  },
+}))
 
-    small: {
-      fontFamily: latoFont,
-      fontSize: '15px',
-      fontStyle: 'italic',
+const StyledDraggableEvent = styled(FormGroup, {label: 'StyledDraggableEvent'})(({theme}) => ({
+  alignItems: 'center',
 
-      lineHeight: '18px',
-    },
+  position: 'relative',
+  width: '317px',
+  background: '#FFFFFF',
+  boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+  padding: theme.spacing(1.5, 1, 1.5, 4.5),
 
-    columnContainer: {
-      padding: theme.spacing(3, 10, 3, 6),
+  '&.dragging': {
+    border: '1px dashed #000',
+    padding: '5px',
+  },
 
-      justifyContent: 'space-between',
-      display: 'flex',
-      textAlign: 'left',
-    },
-    leftCol: {
-      textAlign: 'left',
-      marginRight: theme.spacing(4),
-      flexGrow: 1,
-      '& p': {
-        fontFamily: latoFont,
-        fontSize: '15px',
-      },
-    },
-    rightCol: {
-      width: theme.spacing(25),
-      flexShrink: 0,
-      display: 'flex',
-      flexDirection: 'column',
-      alignContent: 'flex-end',
-      alignItems: 'flex-end',
-    },
+  '&:hover': {
+    border: '1px solid #000',
+  },
 
-    eventText: {
-      width: theme.spacing(16),
-      marginRight: theme.spacing(0.5),
-      padding: theme.spacing(0, 1.25),
-    },
-
-    newEventButton: {
-      width: '100%',
-      marginTop: theme.spacing(2),
-      marginLeft: theme.spacing(0),
-    },
-    input: {
-      width: '100%',
-      border: '1px solid black',
-      height: theme.spacing(6),
-      padding: theme.spacing(2),
-    },
-    errorText: {
-      color: 'red',
-      fontFamily: latoFont,
-      fontSize: '14px',
-      marginTop: theme.spacing(0.75),
-    },
-    eventBox: {
-      marginBottom: theme.spacing(2),
-      justifyContent: 'flex-end',
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-
-    fakeSelect: {
-      marginLeft: '28px',
-      '&$withCalendar': {
-        display: 'flex',
-        alignItems: 'center',
-        flexDirection: 'row',
-        marginLeft: 0,
-      },
-      '& >div': {
-        width: '162px',
-        textAlign: 'left',
-        flexShrink: 0,
-        border: `1px solid ${theme.palette.divider}`,
-        borderBottom: 'none',
-        padding: theme.spacing(2),
-        lineHeight: 1,
-        backgroundColor: theme.palette.primary.dark,
-        position: 'relative',
-
-        '&> svg': {
-          position: 'absolute',
-          top: '10px',
-          right: '5px',
-          width: '20px',
-          height: '20px',
-        },
-      },
-      '&:last-child>div ': {
-        borderBottom: `1px solid ${theme.palette.divider}`,
-      },
-    },
-
-    draggableEvent: {
-      alignItems: 'center',
-      position: 'relative',
-
-      border: '1px solid black',
-      backgroundColor: '#f6f6f6',
-      padding: theme.spacing(1.5, 1, 1.5, 3),
-
-      '&.dragging': {
-        border: '1px dashed #000',
-        padding: '5px',
-      },
-      '& $hoverImage': {
-        display: 'block',
-        position: 'absolute',
-        left: '12px',
-        width: '10px',
-        height: '20px',
-        top: '0',
-        bottom: '0',
-        margin: 'auto',
-      },
-      '&:hover': {
-        border: '2px solid #000',
-      },
-    },
-
-    calendarIcon: {
-      marginRight: theme.spacing(1),
-      width: '20px',
-      height: '20px',
-    },
-    errorTextbox: {
-      border: '1px solid red',
-    },
-    droppable: {},
-    hoverImage: {display: 'none'},
-    withCalendar: {},
-  })
-)
+  marginBottom: theme.spacing(2),
+}))
 
 type SessionStartTabProps = {
   onNavigate: Function
@@ -181,45 +74,29 @@ const ERROR_MSG = {
   empty: 'The name of the event cannot be blank',
 }
 
-const CalendarIconControl: React.FunctionComponent<any> = React.memo(() => {
-  const classes = useStyles()
-  return (
-    <img
-      src={CalendarIcon}
-      className={classes.calendarIcon}
-      alt="calendar"></img>
-  )
-})
-
 const FakeSelect: React.FunctionComponent<{
   evtName: string
   hasCalendar: boolean
   hasCarret?: boolean
 }> = ({evtName, hasCalendar, hasCarret = false}) => {
-  const classes = useStyles()
-
   return (
-    <Box
-      className={clsx(classes.fakeSelect, hasCalendar && classes.withCalendar)}>
-      {hasCalendar && <CalendarIconControl />}
-      <div>
-        {evtName}
-        {hasCarret && (
-          <svg viewBox="0 0 24 24">
-            <path d="M7 10l5 5 5-5z"></path>
-          </svg>
-        )}
-      </div>
-    </Box>
+    <StyledFakeSelect>
+      {hasCalendar && <DragIndicatorTwoToneIcon sx={{color: '#DFE2E6', fontSize: '12px', left: '5px', top: '6px'}} />}
+
+      {evtName}
+      {hasCarret ? (
+        <KeyboardArrowDownTwoToneIcon sx={{color: '#4F527D', fontSize: '12px', right: '7px', top: '6px'}} />
+      ) : (
+        <ClearTwoToneIcon sx={{color: ' #DFE2E6', fontSize: '12px', right: '7px', top: '6px'}} />
+      )}
+    </StyledFakeSelect>
   )
 }
 
-const SessionStartTab: React.ForwardRefRenderFunction<
-  SaveHandle,
-  SessionStartTabProps
-> = ({study, onNavigate, eventIdsInSchedule}: SessionStartTabProps, ref) => {
-  const classes = useStyles()
-
+const SessionStartTab: React.ForwardRefRenderFunction<SaveHandle, SessionStartTabProps> = (
+  {study, onNavigate, eventIdsInSchedule}: SessionStartTabProps,
+  ref
+) => {
   React.useImperativeHandle(ref, () => ({
     async save() {
       setSaveLoader(true)
@@ -239,9 +116,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
 
   const [saveLoader, setSaveLoader] = React.useState(false)
   const [error, setError] = React.useState<string | undefined>(undefined)
-  const [customEvents, setCustomEvents] = React.useState<SchedulingEvent[]>(
-    study.customEvents || []
-  )
+  const [customEvents, setCustomEvents] = React.useState<SchedulingEvent[]>(study.customEvents || [])
 
   const onSave = async () => {
     if (!study) {
@@ -255,13 +130,10 @@ const SessionStartTab: React.ForwardRefRenderFunction<
       await mutateStudy({study: updatedStudy})
     } catch (e) {
       console.log(e)
-      alert(e)
     }
   }
 
-  const [newEvent, setNewEvent] = React.useState(
-    `Event ${customEvents.length + 1}`
-  )
+  const [newEvent, setNewEvent] = React.useState(`Event ${customEvents.length + 1}`)
 
   if (!study) {
     return <>...loading</>
@@ -312,16 +184,10 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   }
 
   const canEdit = (eventId: string): boolean => {
-    return !eventIdsInSchedule
-      .map(e => EventService.formatEventIdForDisplay(e))
-      .includes(eventId)
+    return !eventIdsInSchedule.map(e => EventService.formatEventIdForDisplay(e)).includes(eventId)
   }
 
-  const rearrangeList = (
-    list: any[],
-    source: DraggableLocation,
-    destination: DraggableLocation
-  ) => {
+  const rearrangeList = (list: any[], source: DraggableLocation, destination: DraggableLocation) => {
     const startIndex = source.index
     const endIndex = destination.index
     const result = Array.from(list)
@@ -331,110 +197,108 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     return result
   }
 
-  const reorderEvents = (
-    events: SchedulingEvent[] | undefined,
-    dropResult: DropResult
-  ) => {
+  const reorderEvents = (events: SchedulingEvent[] | undefined, dropResult: DropResult) => {
     if (!dropResult.destination || !events) {
       return
     }
-    const updatedEvents = rearrangeList(
-      events,
-      dropResult.source,
-      dropResult.destination
-    )
+    const updatedEvents = rearrangeList(events, dropResult.source, dropResult.destination)
     setCustomEvents(updatedEvents)
     // onUpdate(updatedEvents)
   }
 
   return (
-    <Box className={classes.root} bgcolor="#F8F8F8">
+    <Box>
       {' '}
-      <LoadingComponent
-        reqStatusLoading={saveLoader}
-        loaderSize="2rem"
-        variant={'small'}
-      />
-      <Box className={classes.columnContainer} bgcolor="#F8F8F8">
-        <div className={classes.leftCol} style={{maxWidth: '300px'}}>
-          <p>
-            <PhoneIcon />
-            <br />
-            By default, sessions start once a participant logs into the study
-            for the first time on their smart phone, known as{' '}
-            <strong>Initial Login</strong>.
-          </p>
+      <LoadingComponent reqStatusLoading={saveLoader} loaderSize="2rem" variant={'small'} />
+      <Box
+        sx={{
+          backgroundColor: '#fbfbfc',
+          marginLeft: theme.spacing(-5),
+          marginRight: theme.spacing(-5),
+          padding: theme.spacing(4, 10, 3, 6),
 
-          <p>
-            <img src={CalendarIcon} />
-            <br />
-            To start a session on calendar date/appointment unique to each
-            participant, create additional <strong>Events</strong> to this
-            Dropdown menu.
-          </p>
-          <p>
-            When you add participants to your study, you will be able to define
-            these dates in the Participant Manager tab.
-          </p>
+          justifyContent: 'space-between',
+          display: 'flex',
+          textAlign: 'left',
+          '& > div': {
+            maxWidth: '160px',
+            flexShrink: 0,
+            fontSize: '16px',
+            lineHeight: '20px',
+          },
+          '&  svg': {
+            height: '170px',
+          },
+        }}>
+        <div>
+          <EditEvent1 />
+          By default, sessions start once a participant logs into the study for the first time on their smart phone,
+          known as{' '}
+          <strong>
+            <i>Initial Login</i>
+          </strong>
+          .
         </div>
-        <div className={classes.rightCol}>
-          <p
-            className={classes.small}
-            style={{width: '170px', marginLeft: '28px'}}>
-            Example: A clinical study might have 2 Events: a Baseline Visit and
-            Final Visit.
-          </p>
-          <div>
-            <FakeSelect
-              evtName="Initial Login"
-              hasCalendar={false}
-              hasCarret={true}
-            />
+
+        <div>
+          <EditEvent2 />
+          To start a session on calendar date/appointment unique to each participant, create additional{' '}
+          <strong>
+            <i>Events</i>
+          </strong>{' '}
+          to this Dropdown menu.
+        </div>
+        <div>
+          <EditEvent3 />
+          When you add participants to your study, you will be able to define these dates in the{' '}
+          <strong>
+            <i>Participant Manager tab.</i>
+          </strong>
+        </div>
+
+        <div>
+          <Box sx={{height: '120px', marginTop: '40px'}}>
+            <FakeSelect evtName="Initial Login" hasCalendar={false} hasCarret={true} />
             <FakeSelect evtName="Baseline Visit" hasCalendar={true} />
             <FakeSelect evtName="Final Visit" hasCalendar={true} />
-          </div>
+          </Box>
+          <p>Example: A clinical study might have 2 Events: a Baseline Visit and Final Visit.</p>
         </div>
       </Box>
       <Box
-        className={classes.columnContainer}
-        bgcolor="#FFF"
-        height={`${customEvents ? customEvents.length * 64 + 24 : 200}px`}>
-        <Box
-          className={classes.leftCol}
-          display="flex"
-          justifyContent="space-between">
-          <div style={{width: '165px'}}>
-            {error && <Box className={classes.errorText}>{error}</Box>}
-            <input
+        sx={{
+          backgroundColor: '#fff',
+          minHeight: `${customEvents ? customEvents.length * 64 + 24 : 200}px`,
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginTop: theme.spacing(5),
+        }}>
+        <Box>
+          <FormControl fullWidth error={!!error}>
+            <SimpleTextLabel htmlFor="new_event">Event Name*</SimpleTextLabel>
+            <SimpleTextInput
               key="new_event"
+              id="new_event"
               value={newEvent}
               onChange={e => {
                 setNewEvent(e.target.value)
                 setError(undefined)
               }}
-              className={clsx(
-                classes.input,
-                error && classes.errorTextbox
-              )}></input>
-            <RedButton
-              variant="contained"
-              onClick={addEvent}
-              className={classes.newEventButton}>
-              + Add New Event
-            </RedButton>
-          </div>
-          {customEvents && customEvents.length > 1 && (
-            <Box className={classes.small} ml={3} width={'130px'}>
-              <strong>Drag</strong> to reorder which event will occur first.
-            </Box>
-          )}
+            />
+            {error && <Typography color="error">{error}</Typography>}
+          </FormControl>
+          <Button variant="outlined" onClick={addEvent} sx={{marginTop: theme.spacing(3)}}>
+            Add New Event
+          </Button>
         </Box>
-        <div className={classes.rightCol} style={{width: '250px'}}>
+
+        <Box style={{width: '325px'}}>
+          {customEvents && customEvents.length > 1 && <strong>Drag to reorder which event will occur first.</strong>}
           <DragDropContext
             onDragEnd={(dropResult: DropResult) => {
               reorderEvents(customEvents, dropResult)
             }}>
-            <div className={classes.droppable}>
+            <Box sx={{marginTop: theme.spacing(2)}}>
               <Droppable droppableId={'eventList'} type="custom_events">
                 {(provided, snapshot) => (
                   <div
@@ -448,55 +312,41 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                         <Draggable
                           draggableId={evt.eventId + index}
                           index={index}
-                          key={evt.eventId + index}>
+                          key={evt.eventId + index}
+                          isDragDisabled={customEvents?.length < 2}>
                           {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}>
-                              <Box
-                                display="block"
-                                key={evt.eventId}
-                                className={classes.eventBox}>
-                                <CalendarIconControl />
-                                <FormGroup
-                                  row={true}
-                                  className={classes.draggableEvent}
-                                  style={{
-                                    alignItems: 'center',
-                                  }}>
-                                  <div className={classes.hoverImage}>
-                                    {' '}
-                                    &#9776;
-                                  </div>
-                                  <div className={classes.eventText}>
-                                    {evt.eventId}
-                                  </div>
+                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                              <StyledDraggableEvent row={true}>
+                                {customEvents?.length > 1 && (
+                                  <DragIndicatorTwoToneIcon
+                                    sx={{position: 'absolute', color: '#DFE2E6', left: '12px'}}
+                                  />
+                                )}
 
-                                  {canEdit(evt.eventId) ? (
-                                    <IconButton
-                                      edge="end"
-                                      size="small"
-                                      style={{padding: 0}}
-                                      onClick={() => deleteEvent(index)}>
-                                      <DeleteIcon></DeleteIcon>
-                                    </IconButton>
-                                  ) : (
-                                    <InfoCircleWithToolTip
-                                      tooltipDescription={
-                                        <span>
-                                          This event is being used in one/more
-                                          session(s) as a Session Start event.
-                                          To <strong>rename or delete</strong>{' '}
-                                          this Event, please unselect it from
-                                          all Session Start events.
-                                        </span>
-                                      }
-                                      variant="info"
-                                    />
-                                  )}
-                                </FormGroup>
-                              </Box>
+                                <div>{evt.eventId}</div>
+
+                                {canEdit(evt.eventId) ? (
+                                  <IconButton
+                                    edge="end"
+                                    size="small"
+                                    sx={{padding: 0, position: 'absolute', right: '16px'}}
+                                    onClick={() => deleteEvent(index)}>
+                                    <ClearTwoToneIcon />
+                                  </IconButton>
+                                ) : (
+                                  <InfoCircleWithToolTip
+                                    sx={{position: 'absolute', right: '16px'}}
+                                    tooltipDescription={
+                                      <span>
+                                        This event is being used in one/more session(s) as a Session Start event. To{' '}
+                                        <strong>rename or delete</strong> this Event, please unselect it from all
+                                        Session Start events.
+                                      </span>
+                                    }
+                                    variant="info"
+                                  />
+                                )}
+                              </StyledDraggableEvent>
                             </div>
                           )}
                         </Draggable>
@@ -504,9 +354,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                   </div>
                 )}
               </Droppable>
-            </div>
+            </Box>
           </DragDropContext>
-        </div>
+        </Box>
       </Box>
     </Box>
   )

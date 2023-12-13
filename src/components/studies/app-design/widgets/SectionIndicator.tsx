@@ -1,8 +1,8 @@
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import {latoFont} from '@style/theme'
 import clsx from 'clsx'
 import React from 'react'
-import {latoFont} from '../../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -12,10 +12,12 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    color: 'white',
-    backgroundColor: 'black',
-    fontWeight: 'bold',
+
+    backgroundColor: '#EAECEE',
+    fontWeight: 600,
     fontSize: '16px',
+
+    color: '#22252A',
     fontStyle: latoFont,
   },
 }))
@@ -25,16 +27,9 @@ type SectionIndicatorProps = {
   className?: string
 }
 
-const SectionIndicator: React.FunctionComponent<SectionIndicatorProps> = ({
-  index,
-  className,
-}) => {
+const SectionIndicator: React.FunctionComponent<SectionIndicatorProps> = ({index, className}) => {
   const classes = useStyles()
-  return (
-    <Box className={clsx(classes.container, className && className)}>
-      {index}
-    </Box>
-  )
+  return <Box className={clsx(classes.container, className && className)}>{index}</Box>
 }
 
 export default SectionIndicator

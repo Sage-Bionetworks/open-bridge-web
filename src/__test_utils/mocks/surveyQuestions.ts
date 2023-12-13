@@ -5,19 +5,14 @@ const steps: (Step | ChoiceQuestion)[] = [
     type: 'overview',
     identifier: 'overview',
     title: 'Example Survey A',
-    detail:
-      'You will be shown a series of example questions. This survey has no additional instructions.',
+    detail: 'You will be shown a series of example questions. This survey has no additional instructions.',
   },
   {
     type: 'choiceQuestion',
     identifier: 'choiceQ1',
-    comment:
-      'Go to the question selected by the participant. If they skip the question then go directly to follow-up.',
+    comment: 'Go to the question selected by the participant. If they skip the question then go directly to follow-up.',
     title: 'Choose which question to answer',
     surveyRules: [
-      {
-        skipToIdentifier: 'followupQ',
-      },
       {
         matchingAnswer: 1,
         skipToIdentifier: 'simpleQ1',
@@ -157,7 +152,7 @@ const steps: (Step | ChoiceQuestion)[] = [
     surveyRules: [
       {
         matchingAnswer: false,
-        skipToIdentifier: 'choiceQ1',
+        skipToIdentifier: 'favoriteFood',
       },
     ],
     baseType: 'boolean',

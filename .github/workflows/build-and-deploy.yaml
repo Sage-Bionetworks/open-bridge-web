@@ -1,0 +1,56 @@
+name: build and deploy app
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+        description: The branch to checkout
+      destination_bucket:
+        required: true
+        type: string
+        description: The bucket to deploy to
+      distribution_id:
+        required: true
+        type: string
+        description: The distribution to invalidate
+
+jobs:
+  build:
+    name: build-deploy
+    runs-on: ubuntu-latest
+    # Allow OIDC Integration (so we can assume the AWS role to deploy)
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3.0.0
+        with:
+          ref: ${{ inputs.branch }}
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: yarn
+      - name: build
+        run: |
+          export CI=false
+          yarn install --check-files
+          yarn build
+      - name: Assume AWS Role
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::797640923903:role/sagebase-github-oidc-bridgedigitalhealth-openbridgeweb
+          role-session-name: GitHubActions-${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ github.run_id }}
+          role-duration-seconds: 1200
+      - name: deploy
+        run: |
+          aws --region us-east-1 s3 sync ./build s3://${{ inputs.destination_bucket }} --delete
+          aws --region us-east-1 cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }} --paths "/*"
+
+
+            
+            

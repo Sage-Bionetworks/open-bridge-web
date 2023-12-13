@@ -1,24 +1,16 @@
 import SelectWithEnum from '@components/widgets/SelectWithEnum'
 import SmallTextBox from '@components/widgets/SmallTextBox'
 import Utility from '@helpers/utility'
-import {IconButton, StandardTextFieldProps} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import ClearIcon from '@mui/icons-material/HighlightOff'
-import moment from 'moment'
+import {Box, IconButton, StandardTextFieldProps, styled} from '@mui/material'
 import React from 'react'
 import {getValueFromPeriodString} from './utility'
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  clear: {
-    minWidth: 'auto',
-    padding: 0,
-    marginRight: theme.spacing(1),
-    marginLeft: theme.spacing(-0.75),
-  },
+const StyledIconButton = styled(IconButton, {label: 'StyledIconButton'})(({theme}) => ({
+  minWidth: 'auto',
+  padding: 0,
+  marginRight: theme.spacing(1),
+  marginLeft: theme.spacing(-0.75),
 }))
 
 export interface DurationProps {
@@ -34,11 +26,14 @@ export interface DurationProps {
   isShowClear?: boolean
   placeHolder?: string
   selectWidth?: number
+  inputWidth?: number
+  /* maxDigits: max number of digits that can be entered for the value, sets width of input field accordingly, defaults to 3
+  ...can override max digits restriction by setting maxDurationDays
+  ...can override input field width by setting inputWidth */
+  maxDigits?: number
 }
 
-const Duration: React.FunctionComponent<
-  DurationProps & StandardTextFieldProps
-> = ({
+const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> = ({
   durationString,
   unitData,
   onChange,
@@ -50,10 +45,11 @@ const Duration: React.FunctionComponent<
   disabled,
   placeHolder,
   selectWidth,
+  inputWidth,
+  maxDigits = 3,
   isShowClear = true,
   ...props
 }: DurationProps) => {
-  const classes = useStyles()
   const [unt, setUnit] = React.useState<string | undefined>(undefined)
   const [num, setNum] = React.useState<number | undefined>(undefined)
 
@@ -76,9 +72,13 @@ const Duration: React.FunctionComponent<
     }
   }, [durationString])
 
+  const hasAppropriateNumberOfDigits = (value: number) => {
+    return `${value}`.length <= maxDigits
+  }
+
   const validate = (value: number, unit: string) => {
     if (!maxDurationDays) {
-      return true
+      return hasAppropriateNumberOfDigits(value)
     }
     const days = unit === 'W' ? value * 7 : value
     return days <= maxDurationDays
@@ -103,28 +103,26 @@ const Duration: React.FunctionComponent<
 
   const triggerChange = (e: any) => {
     const time = unt === 'H' || unt === 'M' ? 'T' : ''
-    const p =
-      unt === undefined || num === undefined
-        ? undefined
-        : `P${time}${num}${unt}`
+    const p = unt === undefined || num === undefined ? undefined : `P${time}${num}${unt}`
 
     onChange({target: {value: p}})
   }
 
   return (
-    <div className={classes.root} onBlur={triggerChange}>
+    <Box aria-label="duration-box" sx={{display: 'flex', alignItems: 'center'}} onBlur={triggerChange}>
       <SmallTextBox
         disabled={!!disabled}
-        style={{width: '60px'}}
+        sx={{marginBottom: 0}}
         value={num || ''}
         aria-label={numberLabel}
         type="number"
         {...props}
-        id={numberLabel.replace(' ', '')}
+        name={numberLabel.replace(' ', '')}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           changeValue(Number(e.target.value as string), unt)
         }}
-        inputWidth={isIntro ? 10 : undefined}></SmallTextBox>
+        // inputWidth is theme.spacing
+        inputWidth={inputWidth || maxDigits + 4}></SmallTextBox>
 
       <SelectWithEnum
         disabled={!!disabled}
@@ -133,22 +131,18 @@ const Duration: React.FunctionComponent<
         value={unt}
         label={placeHolder}
         sourceData={unitData}
-        id={unitLabel.replace(' ', '')}
-        onChange={e =>
-          changeValue(num, e.target.value as moment.unitOfTime.Base)
-        }
-        style={
-          selectWidth ? {width: `${selectWidth}px`} : {width: '100px'}
-        }></SelectWithEnum>
+        name={unitLabel.replace(' ', '')}
+        onChange={e => changeValue(num, e.target.value as string)}
+        sx={{width: `${selectWidth || 100}px`}}></SelectWithEnum>
       {isShowClear && (
-        <IconButton
-          className={classes.clear}
+        <StyledIconButton
+          aria-label="clear-duration-value"
           onClick={_e => onChange({target: {value: undefined}})}
           size="large">
           <ClearIcon />
-        </IconButton>
+        </StyledIconButton>
       )}
-    </div>
+    </Box>
   )
 }
 

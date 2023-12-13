@@ -5,8 +5,9 @@ import React from 'react'
 import {AlertWithText} from './StyledComponents'
 
 type AlertWithTextWrapperProps = {
-  text: string
+  text?: string
   className?: string
+  children?: React.ReactNode
 }
 
 const useStyles = makeStyles(theme => ({
@@ -17,22 +18,16 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const AlertWithTextWrapper: React.FunctionComponent<AlertWithTextWrapperProps> =
-  ({text, className}) => {
-    const classes = useStyles()
-    return (
-      <AlertWithText
-        icon={
-          <img
-            src={Alert_Icon}
-            style={{height: '20px'}}
-            alt={'error-icon'}></img>
-        }
-        severity="error"
-        className={clsx(classes.errorText, className && className)}>
-        {text}
-      </AlertWithText>
-    )
-  }
+const AlertWithTextWrapper: React.FunctionComponent<AlertWithTextWrapperProps> = ({text, children, className}) => {
+  const classes = useStyles()
+  return (
+    <AlertWithText
+      icon={<img src={Alert_Icon} style={{height: '20px'}} alt={'error-icon'}></img>}
+      severity="error"
+      className={clsx(classes.errorText, className && className)}>
+      {text || children}
+    </AlertWithText>
+  )
+}
 
 export default AlertWithTextWrapper

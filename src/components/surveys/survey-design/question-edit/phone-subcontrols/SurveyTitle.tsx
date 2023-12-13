@@ -5,8 +5,8 @@ import {styled} from '@mui/material/styles'
 import {BaseStep} from '@typedefs/surveys'
 import React from 'react'
 
-const TitleIcon = styled('div')(({theme}) => ({
-  height: theme.spacing(6),
+const TitleIcon = styled('div', {label: 'TitleIcon'})(({theme}) => ({
+  height: theme.spacing(8),
   textAlign: 'left',
   marginBottom: theme.spacing(1),
   paddingLeft: theme.spacing(1),
@@ -17,13 +17,11 @@ const TitleIcon = styled('div')(({theme}) => ({
 
 type SurveyTitleProps = {
   step: BaseStep
+  isReadOnly?: boolean
   onChange: (s: BaseStep) => void
 }
 
-const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
-  step,
-  onChange,
-}) => {
+const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({step, isReadOnly, onChange}) => {
   /*{
 	"type": "assessment",
 	"identifier": "foo",
@@ -41,12 +39,7 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
 }*/
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      justifyContent="flex-start"
-      paddingTop="120px"
-      height="100%">
+    <Box display="flex" flexDirection="column" justifyContent="flex-start" paddingTop="120px" height="100%">
       <TitleIcon>
         {step.image?.imageName && (
           <img
@@ -57,9 +50,12 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
       </TitleIcon>
       <FormControl variant="standard" fullWidth sx={{mb: 0}}>
         <DisappearingInput
-          area-label="title"
+          aria-label="title"
           sx={{fontWeight: 'bold'}}
           id="title"
+          multiline={true}
+          minRows={1}
+          readOnly={isReadOnly}
           value={step.title}
           placeholder="Title"
           onChange={e => onChange({...step, title: e.target.value})}
@@ -68,11 +64,12 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
       <FormControl variant="standard" fullWidth>
         <DisappearingInput
           id="summary"
-          area-label="summary"
+          aria-label="summary"
           multiline={true}
           minRows={4}
           sx={{fontSize: '12px'}}
-          placeholder={step.detail}
+          placeholder='Summary'
+          readOnly={isReadOnly}
           value={step.detail}
           onChange={e => onChange({...step, detail: e.target.value})}
         />

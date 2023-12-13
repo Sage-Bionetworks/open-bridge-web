@@ -5,14 +5,7 @@ import {
   SimpleTextInput,
   SimpleTextLabel,
 } from '@components/widgets/StyledComponents'
-import {
-  Box,
-  CircularProgress,
-  DialogActions,
-  DialogContent,
-  FormControl,
-  FormGroup,
-} from '@mui/material'
+import {Box, CircularProgress, DialogActions, DialogContent, FormControl, FormGroup} from '@mui/material'
 import Alert from '@mui/material/Alert'
 import makeStyles from '@mui/styles/makeStyles'
 import {JOINED_EVENT_ID} from '@services/event.service'
@@ -55,29 +48,21 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
 }) => {
   const classes = useStyles()
   const [note, setNotes] = React.useState(participant.note)
-  const [customParticipantEvents, setCustomParticipantEvents] = React.useState<
-    ParticipantEvent[]
-  >([])
-  const [currentTimeZone, setCurrentTimeZone] = React.useState(
-    participant.clientTimeZone || ''
-  )
+  const [customParticipantEvents, setCustomParticipantEvents] = React.useState<ParticipantEvent[]>([])
+  const [currentTimeZone, setCurrentTimeZone] = React.useState(participant.clientTimeZone || '')
 
   React.useEffect(() => {
     setCustomParticipantEvents(participant.events || [])
   }, [])
 
   const isTimeZoneRequired = (): boolean => {
-    return (
-      customParticipantEvents?.filter(
-        event => event.eventId !== JOINED_EVENT_ID
-      ).length > 0
-    )
+    return customParticipantEvents?.filter(event => event.eventId !== JOINED_EVENT_ID).length > 0
   }
 
   return (
     <>
       <DialogContent>
-        <Box mt={0} mb={3}>
+        <Box mt={2} mb={3}>
           <MTBHeadingH3>
             {!isBatchEdit ? (
               isEnrolledById ? (
@@ -124,24 +109,20 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
         </FormGroup>
       </DialogContent>
       {onError && <Alert color="error">{onError.message}</Alert>}
-      <DialogActions style={{justifyContent: 'space-between'}}>
+      <DialogActions style={{justifyContent: isBatchEdit ? 'flex-end' : 'space-between'}}>
         {children && children}
         {!isLoading ? (
           <div>
             <DialogButtonSecondary
               onClick={() => {
                 onCancel()
-              }}
-              color="primary">
+              }}>
               Cancel
             </DialogButtonSecondary>
             <DialogButtonPrimary
               onClick={() => {
-                isBatchEdit
-                  ? onOK(currentTimeZone)
-                  : onOK(note, currentTimeZone, customParticipantEvents)
+                isBatchEdit ? onOK(currentTimeZone) : onOK(note, currentTimeZone, customParticipantEvents)
               }}
-              color="primary"
               disabled={currentTimeZone?.length < 3 && isTimeZoneRequired()}
               autoFocus>
               Save Changes

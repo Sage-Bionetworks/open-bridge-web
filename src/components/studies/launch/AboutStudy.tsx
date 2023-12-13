@@ -1,15 +1,8 @@
 import {Autocomplete} from '@mui/lab'
-import {
-  Box,
-  Chip,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-} from '@mui/material'
+import {Box, Chip, FormControlLabel, Radio, RadioGroup, TextField} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
-import {latoFont, ThemeType} from '../../../style/theme'
+import {ThemeType} from '../../../style/theme'
 import {Study} from '../../../types/types'
 import {MTBHeadingH2} from '../../widgets/Headings'
 import InfoCircleWithToolTip from '../../widgets/InfoCircleWithToolTip'
@@ -38,8 +31,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       display: 'none',
     },
     '& .MuiChip-root': {
-      backgroundColor: '#87D2EA',
-      fontSize: '14px',
       borderColor: 'transparent',
     },
     '& .MuiChip-deleteIcon': {
@@ -50,9 +41,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
   },
   descriptionText: {
-    fontFamily: latoFont,
     fontSize: '16px',
-    lineHeight: '19px',
+    lineHeight: '24px',
     marginBottom: theme.spacing(0.5),
   },
 }))
@@ -82,51 +72,41 @@ const StudyTypeLabel: React.FunctionComponent<{
     case 'intervention':
       label = (
         <Box>
-          An <strong>Experimental study</strong> is a study where an intevention
-          is introduced and the effect of the intervention is studied (example:
-          randomized control trial).
+          An <strong>Experimental study</strong> is a study where an intevention is introduced and the effect of the
+          intervention is studied (example: randomized control trial).
         </Box>
       )
       break
     case 'validation':
       label = (
         <Box>
-          A <strong>Validation study</strong> is a type of study where a
-          comparison in accuracy of a measure is performed compared to a a gold
-          standard measure.
+          A <strong>Validation study</strong> is a type of study where a comparison in accuracy of a measure is
+          performed compared to a a gold standard measure.
         </Box>
       )
       break
     default:
       label = (
         <Box>
-          An <strong>Observational study</strong> is a study where you are
-          trying to study the effect of a risk factor, diagnostic test,
-          treatment or other intervention without trying to change who is or
-          isn’t exposed to it (example: cohort study, case-control study).
+          An <strong>Observational study</strong> is a study where you are trying to study the effect of a risk factor,
+          diagnostic test, treatment or other intervention without trying to change who is or isn’t exposed to it
+          (example: cohort study, case-control study).
         </Box>
       )
   }
 
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
-      <Box mr={1}>{formLabelText}</Box>{' '}
-      <InfoCircleWithToolTip tooltipDescription={label} variant="info" />
+      <Box mr={1}>{formLabelText}</Box> <InfoCircleWithToolTip tooltipDescription={label} variant="info" />
     </Box>
   )
 }
 
-const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
-  study,
-  onChange,
-  onEnableNext,
-}: AboutStudyProps) => {
+const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({study, onChange, onEnableNext}: AboutStudyProps) => {
   const classes = useStyles()
 
   React.useEffect(() => {
-    onEnableNext(
-      study.diseases && study.keywords && study.studyDesignTypes?.length
-    )
+    onEnableNext(study.diseases && study.keywords && study.studyDesignTypes?.length)
   }, [study])
 
   const changeDiseases = (event: any, values: any) => {
@@ -153,18 +133,11 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         name="studyType"
         classes={{root: classes.studyType}}
         value={study.studyDesignTypes ? study.studyDesignTypes[0] : ''}
-        onChange={e =>
-          onChange({...study, studyDesignTypes: [e.target.value]})
-        }>
+        onChange={e => onChange({...study, studyDesignTypes: [e.target.value]})}>
         <FormControlLabel
           value="observation"
           control={<Radio color="secondary" />}
-          label={
-            <StudyTypeLabel
-              formLabelText="Observational/Natural History"
-              type="observation"
-            />
-          }
+          label={<StudyTypeLabel formLabelText="Observational/Natural History" type="observation" />}
         />
         <FormControlLabel
           control={
@@ -172,12 +145,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
               <Radio value="intervention" color="secondary" />{' '}
             </>
           }
-          label={
-            <StudyTypeLabel
-              formLabelText="Interventional/Experimental"
-              type="intervention"
-            />
-          }
+          label={<StudyTypeLabel formLabelText="Interventional/Experimental" type="intervention" />}
         />
         <FormControlLabel
           control={
@@ -185,19 +153,14 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
               <Radio value="validate" color="secondary" />{' '}
             </>
           }
-          label={
-            <StudyTypeLabel formLabelText="Validation" type="validation" />
-          }
+          label={<StudyTypeLabel formLabelText="Validation" type="validation" />}
         />
       </RadioGroup>
 
-      <MTBHeadingH2 className={classes.subhead}>
-        What conditions or diseases is your study targeting?
-      </MTBHeadingH2>
+      <MTBHeadingH2 className={classes.subhead}>What conditions or diseases is your study targeting?</MTBHeadingH2>
       <p className={classes.descriptionText}>
-        These are diseases that participants in your study might be diagnosed
-        with (e.g. MCI, Healthy Adults, Alzheimer's Disease). Please list all
-        that apply.
+        These are diseases that participants in your study might be diagnosed with (e.g. MCI, Healthy Adults,
+        Alzheimer's Disease). Please list all that apply.
       </p>
       <Autocomplete
         multiple
@@ -221,9 +184,8 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         What keywords would you like to associate with this study?
       </MTBHeadingH2>
       <p className={classes.descriptionText}>
-        Keywords help describe your study. Some examples of past keywords
-        assigned are: "neurodegeneration, neurology" and "sleep" and
-        "cardiorespiratory fitness, physical activity, heart rate".
+        Keywords help describe your study. Some examples of past keywords assigned are: "neurodegeneration, neurology"
+        and "sleep" and "cardiorespiratory fitness, physical activity, heart rate".
       </p>
 
       <Autocomplete
@@ -231,6 +193,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         id="keywords"
         options={suggestions.map(option => option)}
         freeSolo
+        autoSelect={true}
         onChange={changeKeywords}
         value={getSplitValue(study.keywords)}
         renderTags={(value: string[], getTagProps) =>

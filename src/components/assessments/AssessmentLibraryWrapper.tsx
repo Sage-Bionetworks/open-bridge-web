@@ -1,71 +1,99 @@
-import {ReactComponent as DemoPhone} from '@assets/preview/demo_phone.svg'
-import {
-  StyledToggleButton,
-  StyledToggleButtonGroup,
-  WhiteButton,
-} from '@components/widgets/StyledComponents'
+import CollapsableMenu from '@components/surveys/widgets/MenuDropdown'
+import {StyledToggleButton, StyledToggleButtonGroup} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
-import {Box, Container} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import {Assessment, AssessmentsType, StringDictionary} from '@typedefs/types'
-import clsx from 'clsx'
+import ViewListIcon from '@mui/icons-material/ViewListTwoTone'
+import ViewModuleIcon from '@mui/icons-material/ViewModuleTwoTone'
+import {Box, Button, Container, styled, Typography} from '@mui/material'
+import {theme} from '@style/theme'
+import {Assessment, AssessmentsType, StringDictionary, ViewType} from '@typedefs/types'
 import {FunctionComponent, ReactNode} from 'react'
 import {NavLink} from 'react-router-dom'
 
 type AssessmentLibraryWrapperProps = {
   assessments: Assessment[]
   tags?: StringDictionary<number>
-  children: ReactNode[]
+  children: ReactNode | ReactNode[]
   onChangeTags: Function
+  onChangeViewMode: (v: ViewType) => void
+  viewMode?: ViewType
   onChangeAssessmentsType: (t: AssessmentsType) => void
   isAssessmentLibrary?: boolean
   assessmentsType: AssessmentsType
 }
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    '&$blue': {
-      backgroundColor: '#BCD5E4',
-    },
-    /*paddingTop: theme.spacing(4),*/
-    // margin: `0 ${theme.spacing(4)}`,
-    minWidth: '1000px',
-    [theme.breakpoints.down('lg')]: {
-      minWidth: '750px',
-    },
-    [theme.breakpoints.down('md')]: {
-      maxWidth: '400px',
-    },
-    paddingTop: theme.spacing(1),
+const StyledOuterContainer = styled(Box, {
+  label: 'StyledOuterContainer',
+  shouldForwardProp: prop => prop !== 'isBlue',
+})<{
+  isBlue: boolean
+}>(({theme, isBlue}) => ({
+  /*
+  flexGrow: 1,
+  backgroundColor: isBlue ? '#BCD5E4' : theme.palette.background.default,
+
+  minWidth: '1000px',
+  [theme.breakpoints.down('lg')]: {
+    minWidth: '750px',
   },
-  blue: {},
-  assessmentContainer: {
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    [theme.breakpoints.down('md')]: {
-      maxWidth: '600px',
-    },
+  [theme.breakpoints.down('md')]: {
+    maxWidth: '400px',
   },
-  cardGrid: {
-    //const cardWidth = 224
-    display: 'grid',
-    padding: theme.spacing(0),
-    gridTemplateColumns: `repeat(auto-fill,224px)`,
-    gridColumnGap: theme.spacing(2),
-    justifyContent: 'center',
-    gridRowGap: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
-      padding: theme.spacing(3),
-      justifyContent: 'center',
-      gridRowGap: theme.spacing(4),
-    },
-    //   style={{ maxWidth: `${(300 + 8) * 5}px`, margin: '0 auto' }}
+paddingTop: theme.spacing(1),}*/
+}))
+
+const StyledAssessmentContainer = styled(Container, {label: 'StyledAssessmentContainer'})(({theme}) => ({
+  padding: theme.spacing(2, 5),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+  [theme.breakpoints.up('md')]: {
+    padding: theme.spacing(2, 5),
+  },
+  [theme.breakpoints.down('md')]: {
+    maxWidth: '600px',
+    padding: theme.spacing(2, 1),
   },
 }))
+
+const StyledCardGrid = styled(Box, {label: 'StyledCardGrid'})<{layoutType?: ViewType}>(({theme, layoutType = 'GRID'}) =>
+  layoutType === 'GRID'
+    ? {
+        display: 'grid',
+        padding: theme.spacing(0),
+        gridTemplateColumns: `repeat(auto-fill,240px)`,
+        gridColumnGap: theme.spacing(2),
+        justifyContent: 'center',
+        gridRowGap: theme.spacing(2),
+        [theme.breakpoints.down('md')]: {
+          padding: theme.spacing(3),
+          justifyContent: 'center',
+          gridRowGap: theme.spacing(4),
+        },
+      }
+    : {display: 'block'}
+)
+
+const StyledToggle = styled(StyledToggleButton, {label: 'StyleToggle1'})<{width?: number}>(({theme, width}) => ({
+  padding: 0,
+  width: '36px',
+  height: '36px',
+  borderRadius: '50%',
+  '&.Mui-selected': {
+    boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.12)',
+  },
+}))
+
+const sections = [
+  {
+    assessmentType: 'SHARED' as AssessmentsType,
+    title: 'All Assessments',
+    filterTitle: 'Assessments',
+  },
+  {
+    assessmentType: 'SURVEY' as AssessmentsType,
+    title: 'All Surveys',
+    filterTitle: 'Surveys',
+  },
+]
 
 const AssessmentTypeToggle: FunctionComponent<{
   assessmentType: AssessmentsType
@@ -79,76 +107,94 @@ const AssessmentTypeToggle: FunctionComponent<{
     onChange(value)
   }
   return (
-    <Box mb={3} mt={1}>
-      <StyledToggleButtonGroup
-        $width={190}
-        value={assessmentType}
-        exclusive
-        onChange={(e, _val) => {
-          sendUpdate(_val)
-        }}
-        aria-label="allow skipping question">
-        <StyledToggleButton value={'OTHER'} aria-label="make required">
-          &nbsp; Assessments
-        </StyledToggleButton>
-
-        <StyledToggleButton value={'SURVEY'} aria-label="allow skip">
-          &nbsp; Surveys
-        </StyledToggleButton>
-      </StyledToggleButtonGroup>
-    </Box>
+    <Box
+    aria-label="choose your assessment category"
+    id="menucontainer"
+    sx={{
+      position: 'relative',
+      height: '120px',
+      borderBottom: '1px solid #DFE2E6',
+      padding: theme.spacing(0, 4),
+      paddingTop: [theme.spacing(0), theme.spacing(4), theme.spacing(4), theme.spacing(6.75)],
+    }}>
+    <CollapsableMenu
+      items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
+      selectedFn={section => assessmentType === section.assessmentType }
+      displayMobileItem={(section, isSelected) => <>{section.filterTitle}</>}
+      displayDesktopItem={(section, isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
+      onClick={section => sendUpdate(section.assessmentType)}
+    />
+  </Box>
   )
 }
 
-const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> =
-  ({
-    children,
-    isAssessmentLibrary = true,
-    assessmentsType = 'OTHER',
-    tags,
-    assessments,
-    onChangeTags,
-    onChangeAssessmentsType,
-  }: AssessmentLibraryWrapperProps) => {
-    const classes = useStyles()
-    const {token} = useUserSessionDataState()
-    const surveyToggle = useFeatureToggles<FeatureToggles>()
+const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> = ({
+  children,
+  isAssessmentLibrary = true,
+  assessmentsType = 'SHARED',
+  onChangeViewMode,
+  viewMode = 'GRID',
+  tags,
+  assessments,
+  onChangeTags,
+  onChangeAssessmentsType,
+}: AssessmentLibraryWrapperProps) => {
+  const {token} = useUserSessionDataState()
 
-    return (
-      <Box
-        className={clsx(
-          classes.root,
-          !token && isAssessmentLibrary && classes.blue
-        )}>
-        {/* Filtering will not be present in the october release */}
-        {/* <AssessmentLibraryFilter
+  return (
+    <StyledOuterContainer isBlue={!token && false /* TODO are they different?*/}>
+      {/* Filtering will not be present in the october release */}
+      {/* <AssessmentLibraryFilter
         tags={tags}
         assessments={assessments}
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
       /> */}
-        <Container className={classes.assessmentContainer} maxWidth="xl">
-          {isAssessmentLibrary && token && (
-            <Box textAlign="right" mx={3.5} mb={6}>
-              <NavLink
-                to={'assessments/preview'}
-                style={{textDecoration: 'none'}}>
-                <WhiteButton variant="contained" style={{fontSize: '15px'}}>
-                  <DemoPhone />
-                  Demo all assessments
-                </WhiteButton>
-              </NavLink>
-            </Box>
-          )}
-          {surveyToggle['SURVEY BUILDER'] && false && (
-            <AssessmentTypeToggle
-              assessmentType={assessmentsType}
-              onChange={t => onChangeAssessmentsType(t)}
-            />
-          )}
-          <Box className={classes.cardGrid}>{children}</Box>
-        </Container>
-      </Box>
-    )
-  }
+      {isAssessmentLibrary && token && (
+        <Box
+          sx={{
+            background: 'linear-gradient(360deg, #EDEEF2 22.68%, #FAFAFB 85.05%)',
+            padding: theme.spacing(5.5, 5, 4.5, 5),
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}>
+          <Box>
+            <Typography variant="h2">
+              Assessments
+            </Typography>
+          </Box>    
+          <NavLink to={'assessments/preview'} style={{textDecoration: 'none'}}>
+            <Button variant="outlined">Demo All Assessments</Button>
+          </NavLink>
+        </Box>
+        )}
+      <StyledAssessmentContainer maxWidth="xl">
+        {!isAssessmentLibrary && (
+          <AssessmentTypeToggle assessmentType={assessmentsType} onChange={t => onChangeAssessmentsType(t)} />
+        )}
+
+        <Box textAlign="right" mt={4} mb={6}>
+          <StyledToggleButtonGroup
+            width={78}
+            value={viewMode}
+            exclusive
+            onChange={(e, _val) => {
+              onChangeViewMode(_val)
+              /* sendUpdate(_val)*/
+            }}
+            aria-label="change viewing mode">
+            <StyledToggle value={'GRID'} aria-label="view as cards">
+              <ViewModuleIcon />
+            </StyledToggle>
+
+            <StyledToggle value={'LIST'} aria-label="view as list">
+              <ViewListIcon />
+            </StyledToggle>
+          </StyledToggleButtonGroup>
+        </Box>
+        <StyledCardGrid layoutType={viewMode}>{children}</StyledCardGrid>
+      </StyledAssessmentContainer>
+    </StyledOuterContainer>
+  )
+}
 
 export default AssessmentLibraryWrapper

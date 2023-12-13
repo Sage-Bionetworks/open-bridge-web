@@ -1,26 +1,17 @@
-import {
-  Box,
-  Checkbox,
-  Divider,
-  FormControlLabel,
-  IconButton,
-  Paper,
-  TextField,
-} from '@mui/material'
+import {SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
+import {Box, FormControl, Paper} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import DeleteIcon from '@mui/icons-material/Close'
+import {latoFont, theme} from '@style/theme'
+import {ScheduleNotification} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
-import {ReactComponent as BellIcon} from '../../../assets/bell.svg'
-import {latoFont} from '../../../style/theme'
-import {ScheduleNotification} from '../../../types/scheduling'
 import NotificationInterval from './NotificationInterval'
-import SchedulingFormSection from './SchedulingFormSection'
+import {StyledSmallSectionHeader} from './SharedComponents'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    backgroundColor: '#ECF1F4',
+    //  backgroundColor: '#ECF1F4',
     paddingBottom: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
@@ -48,12 +39,12 @@ const useStyles = makeStyles(theme => ({
       fontSize: '12px',
     },
   },
-  multilineBodyText: {
+  /* multilineBodyText: {
     backgroundColor: theme.palette.common.white,
     '& textarea': {
       backgroundColor: theme.palette.common.white,
     },
-  },
+  },*/
   divider: {
     margin: theme.spacing(0, 4, 3, 16),
     backgroundColor: '#BBC3CD',
@@ -71,6 +62,7 @@ export interface NotificationWindowProps {
   notification: ScheduleNotification
   children: React.ReactNode
   isError: boolean
+  canDelete?: boolean
 }
 
 const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
@@ -81,6 +73,7 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
   isMultiday,
   children,
   isError,
+  canDelete,
 }: NotificationWindowProps) => {
   const updateMessage = (options: {subject?: string; message?: string}) => {
     const messages = notification.messages || []
@@ -94,76 +87,54 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
   }
   const classes = useStyles()
   return (
-    <Paper
-      className={clsx(classes.root, isError && classes.error)}
-      elevation={2}>
-      <Box position="relative">
-        <Box className={classes.windowTitle}>
-          <BellIcon style={{marginRight: '16px'}} />
-          {`${index + 1}. ${
-            index === 0 ? 'Initial Notification' : 'Follow-up Notification'
-          }`}
-        </Box>
-        {index > 0 && (
-          <IconButton
-            style={{position: 'absolute', top: '12px', right: '16px'}}
-            edge="end"
-            size="small"
-            onClick={() => onDelete()}>
-            <DeleteIcon></DeleteIcon>
-          </IconButton>
-        )}
-      </Box>
-      <Box mx="auto" width="auto">
-        <SchedulingFormSection
-          label={'Subject line: (30 character limit)'}
-          variant="small"
-          border={false}>
-          <TextField
-            color="secondary"
+    <Paper className={clsx(classes.root, isError && classes.error)} elevation={2}>
+      <StyledSmallSectionHeader
+        onClick={() => onDelete()}
+        title={`${index + 1}. ${index === 0 ? 'Initial Notification' : 'Follow-up Notification'}`}
+        canDelete={canDelete}
+      />
+
+      <Box mx="auto" width="auto" sx={{padding: theme.spacing(3, 3, 0, 3)}}>
+        <FormControl fullWidth sx={{marginBottom: theme.spacing(1)}}>
+          <SimpleTextLabel htmlFor={`subject-line-${index}`}>Subject line: (30 character limit)</SimpleTextLabel>
+          <SimpleTextInput
+            id={`subject-line-${index}`}
+            variant="outlined"
             multiline={false}
             fullWidth={true}
-            variant="outlined"
             defaultValue={_.first(notification.messages)?.subject || ''}
             onBlur={e => updateMessage({subject: e.target.value})}
             inputProps={{
               maxLength: 30,
-            }}></TextField>
-        </SchedulingFormSection>
+            }}></SimpleTextInput>
+        </FormControl>
 
-        <SchedulingFormSection
-          label={'Body text: (40 character limit)'}
-          variant="small"
-          border={false}>
-          <TextField
-            color="secondary"
+        <FormControl fullWidth sx={{marginBottom: theme.spacing(1)}}>
+          <SimpleTextLabel htmlFor={`body-text-${index}`}>Body text: (40 character limit)</SimpleTextLabel>
+          <SimpleTextInput
+            id={`body-text-${index}`}
             multiline={true}
             fullWidth={true}
             variant="outlined"
             rows="3"
-            classes={{root: classes.multilineBodyText}}
             defaultValue={_.first(notification.messages)?.message || ''}
             onBlur={e => updateMessage({message: e.target.value})}
             inputProps={{
               maxLength: 40,
-            }}></TextField>
-        </SchedulingFormSection>
-        <Divider className={classes.divider} />
+            }}></SimpleTextInput>
+        </FormControl>
 
         {children}
 
         {index > 0 && isMultiday && (
-          <>
-            <Divider className={classes.divider} />
-            <NotificationInterval
-              repeatInterval={notification.interval}
-              onChange={e =>
-                onChange({
-                  ...notification,
-                  interval: e,
-                })
-              }></NotificationInterval>
-          </>
+          <NotificationInterval
+            repeatInterval={notification.interval}
+            onChange={e =>
+              onChange({
+                ...notification,
+                interval: e,
+              })
+            }></NotificationInterval>
         )}
       </Box>
     </Paper>

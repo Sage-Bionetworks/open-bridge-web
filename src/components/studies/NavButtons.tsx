@@ -1,10 +1,9 @@
-import {Box} from '@mui/material'
+import {Box, Button} from '@mui/material'
 import StudyService from '@services/study.service'
+import {theme} from '@style/theme'
 import {Study} from '@typedefs/types'
 import React from 'react'
 import {NavLink} from 'react-router-dom'
-import {ReactComponent as ArrowIcon} from '../../assets/arrow_long.svg'
-import {NextButton, PrevButton} from '../widgets/StyledComponents'
 import {getStudyBuilderSections, StudySection} from './sections'
 
 export interface NavButtonsProps {
@@ -29,37 +28,25 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
     return <></>
   }
 
-  const sectionLinks = getStudyBuilderSections(
-    StudyService.isStudyInDesign(study)
-  )
+  const sectionLinks = getStudyBuilderSections(StudyService.isStudyInDesign(study))
   const currentIndex = sectionLinks.findIndex(i => i.path === currentSection)
   const prev = currentIndex > 0 ? sectionLinks[currentIndex - 1] : undefined
-  const next =
-    currentIndex + 1 < sectionLinks.length
-      ? sectionLinks[currentIndex + 1]
-      : undefined
+  const next = currentIndex + 1 < sectionLinks.length ? sectionLinks[currentIndex + 1] : undefined
   const prevButton = prev ? (
-    <NavLink
-      to={`/studies/builder/${study.identifier}/${prev.path}`}
-      style={{textDecoration: 'none'}}>
-      <PrevButton variant="outlined" color="primary">
-        <ArrowIcon /> {prev.buttonName || prev.name}
-      </PrevButton>
+    <NavLink to={`/studies/builder/${study.identifier}/${prev.path}`} style={{textDecoration: 'none'}}>
+      <Button variant="outlined" color="primary" disabled={disabled || false}>
+        {prev.buttonName || prev.name}
+      </Button>
     </NavLink>
   ) : (
     <></>
   )
 
   const nextButton = next ? (
-    <NavLink
-      to={disabled ? '#' : `/studies/builder/${study.identifier}/${next.path}`}
-      style={{textDecoration: 'none'}}>
-      <NextButton
-        variant="contained"
-        color="primary"
-        disabled={disabled || false}>
-        {next.buttonName || next.name} <ArrowIcon />
-      </NextButton>
+    <NavLink to={disabled ? '#' : `/studies/builder/${study.identifier}/${next.path}`} style={{textDecoration: 'none'}}>
+      <Button variant="contained" color="primary" disabled={disabled || false}>
+        {next.buttonName || next.name}
+      </Button>
     </NavLink>
   ) : (
     <></>
@@ -73,7 +60,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   }
 
   return (
-    <Box py={2} textAlign="right">
+    <Box sx={{display: 'flex', justifyContent: 'center', padding: theme.spacing(2)}}>
       {prev && <> {prevButton} &nbsp;&nbsp; </>}
       {nextButton}
     </Box>

@@ -1,36 +1,21 @@
-import {ReactComponent as ArrowIcon} from '@assets/arrow_long.svg'
 import {ReactComponent as LockIcon} from '@assets/launch/lock_icon.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import SaveButton from '@components/widgets/SaveButton'
-import {NextButton, PrevButton} from '@components/widgets/StyledComponents'
-import {Box, Button, Paper} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+
+import {Box, Button, Container} from '@mui/material'
+
 import {useSchedule} from '@services/scheduleHooks'
 import StudyService from '@services/study.service'
 import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
-import {ThemeType} from '@style/theme'
 import {Schedule} from '@typedefs/scheduling'
 import {Study} from '@typedefs/types'
 import React, {useState} from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
+import {BuilderWrapper} from '../StudyBuilder'
 import AboutStudy from './AboutStudy'
 import IrbDetails from './IrbDetails'
 import LaunchAlerts from './LaunchAlerts'
 import LaunchStepper from './LaunchStepper'
 import ReadOnlyIrbDetails from './read-only-components/ReadOnlyIrbDetails'
-
-const useStyles = makeStyles((theme: ThemeType) => ({
-  root: {
-    padding: theme.spacing(3, 8),
-  },
-  button: {
-    marginRight: theme.spacing(1),
-  },
-  instructions: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-}))
 
 export interface LaunchProps {
   id: string
@@ -42,12 +27,7 @@ function getSteps(isLive: boolean) {
   if (isLive) {
     return [{label: 'About Study'}, {label: 'IRB Details'}]
   }
-  return [
-    {label: 'Review Alerts'},
-    {label: 'About Study'},
-    {label: 'IRB Details'},
-    {label: 'Study is live'},
-  ]
+  return [{label: 'Review Alerts'}, {label: 'About Study'}, {label: 'IRB Details'}, {label: 'Study is live'}]
 }
 
 type StepContentProps = {
@@ -71,21 +51,9 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
 }) => {
   switch (stepName) {
     case 'Review Alerts':
-      return (
-        <LaunchAlerts
-          study={study}
-          schedule={schedule}
-          onEnableNext={onEnableNext}
-        />
-      )
+      return <LaunchAlerts study={study} schedule={schedule} onEnableNext={onEnableNext} />
     case 'About Study':
-      return (
-        <AboutStudy
-          study={study}
-          onChange={onChange}
-          onEnableNext={onEnableNext}
-        />
-      )
+      return <AboutStudy study={study} onChange={onChange} onEnableNext={onEnableNext} />
     case 'IRB Details':
       return (
         <IrbDetails
@@ -104,12 +72,7 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
   }
 }
 
-const Launch: React.FunctionComponent<LaunchProps> = ({
-  id,
-  children,
-  onShowFeedback,
-}: LaunchProps) => {
-  const classes = useStyles()
+const Launch: React.FunctionComponent<LaunchProps> = ({id, children, onShowFeedback}: LaunchProps) => {
   const {data: sourceStudy} = useStudy(id)
   const {data: schedule} = useSchedule(id, false)
   const [study, setStudy] = React.useState<Study>()
@@ -129,8 +92,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
     if (sourceStudy) {
       setStudy(sourceStudy)
 
-      const isLive =
-        StudyService.getDisplayStatusForStudyPhase(sourceStudy.phase) === 'LIVE'
+      const isLive = StudyService.getDisplayStatusForStudyPhase(sourceStudy.phase) === 'LIVE'
       setIsStudyLive(isLive)
       const steps = getSteps(isLive)
       setSteps(steps)
@@ -142,12 +104,10 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
   }
 
   const onSave = async () => {
-    {
       if (!study) {
         return
       }
-      const missingIrbInfo =
-        !study.irbDecisionType || !study.irbDecisionOn || !study.irbExpiresOn
+      const missingIrbInfo = !study.irbDecisionType || !study.irbDecisionOn || !study.irbExpiresOn
       if (missingIrbInfo) {
         delete study.irbDecisionOn
         delete study.irbExpiresOn
@@ -156,13 +116,13 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
 
       try {
         const result = await mutateStudy({study: study})
+        console.log(`Study ${result.identifier} updated`)
         setHasObjectChanged(false)
       } catch (e) {
         alert(e)
       } finally {
         console.log('finishing update')
       }
-    }
   }
 
   const onUpdate = (study: Study) => {
@@ -171,9 +131,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
   }
 
   const handleNext = () => {
-    const newSteps = steps.map((s, i) =>
-      i === activeStep ? {...s, isComplete: true} : s
-    )
+    const newSteps = steps.map((s, i) => (i === activeStep ? {...s, isComplete: true} : s))
     setSteps(newSteps)
     setActiveStep(prevActiveStep => prevActiveStep + 1)
     onSave()
@@ -199,42 +157,42 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
   if (isReadOnly) {
     return <ReadOnlyIrbDetails study={study} />
   }
-  const showNextButton =
-    !isReadOnly &&
-    ((!isStudyLive && activeStep < 2) || (isStudyLive && activeStep === 0))
+  const showButton = !isReadOnly && ((!isStudyLive && activeStep < 2) || (isStudyLive && activeStep === 0))
 
   return (
-    <Paper className={classes.root} elevation={2} id="container">
+    <>
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
         {({onConfirm, onCancel}) => (
-          <ConfirmationDialog
-            isOpen={hasObjectChanged}
-            type={'NAVIGATE'}
-            onCancel={onCancel}
-            onConfirm={onConfirm}
-          />
+          <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
         )}
       </NavigationPrompt>
-      {!isReadOnly && (
-        <LaunchStepper
-          steps={steps}
-          activeStep={activeStep}
-          setActiveStepFn={handleStepClick}></LaunchStepper>
-      )}
 
-      <div className={classes.instructions}>
-        <StepContent
-          study={study}
-          schedule={schedule}
-          stepName={steps[activeStep]?.label}
-          onShowFeedback={onShowFeedback}
-          isFinished={isFinished}
-          onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}
-          onChange={(study: Study) => {
-            onUpdate(study)
-          }}
-        />{' '}
-        <div>
+      <div>
+        <BuilderWrapper sectionName="Launch Study Requirements">
+          {!isReadOnly && (
+            <LaunchStepper steps={steps} activeStep={activeStep} setActiveStepFn={handleStepClick}></LaunchStepper>
+          )}
+          <Container maxWidth="md">
+            <StepContent
+              study={study}
+              schedule={schedule}
+              stepName={steps[activeStep]?.label}
+              onShowFeedback={onShowFeedback}
+              isFinished={isFinished}
+              onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}
+              onChange={(study: Study) => {
+                onUpdate(study)
+              }}
+            />
+          </Container>
+        </BuilderWrapper>
+        <Container
+          maxWidth="md"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
           {!isFinished && (
             <Box py={2} textAlign="right">
               {activeStep < 3 && (
@@ -242,53 +200,42 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
                   {activeStep === 0 ? (
                     children
                   ) : (
-                    <PrevButton
-                      variant="outlined"
-                      color="primary"
-                      onClick={handleBack}>
-                      <ArrowIcon /> {steps[activeStep - 1]?.label}
-                    </PrevButton>
+                    <Button variant="outlined" color="primary" onClick={handleBack}>
+                      {steps[activeStep - 1]?.label}
+                    </Button>
                   )}
                   &nbsp;&nbsp;
                 </>
               )}
 
-              {showNextButton && (
-                <NextButton
+              {showButton && (
+                <Button
                   variant="contained"
+                  sx={{width: '180px'}}
                   color="primary"
                   onClick={handleNext}
                   disabled={!isNextEnabled}>
-                  {steps[activeStep + 1]?.label}
-                  <ArrowIcon />
-                </NextButton>
+                  Next
+                </Button>
               )}
 
               {activeStep === 2 && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => submitAndLock()}
-                  disabled={!isNextEnabled}>
+                <Button variant="contained" color="primary" onClick={() => submitAndLock()} disabled={!isNextEnabled}>
                   <LockIcon style={{marginRight: '4px'}} />
                   Submit and lock the study
                 </Button>
               )}
 
               {activeStep === 1 && isStudyLive && (
-                <SaveButton
-                  variant="contained"
-                  color="primary"
-                  disabled={!isNextEnabled}
-                  onClick={() => onSave()}>
-                  Save to App
-                </SaveButton>
+                <Button variant="contained" disabled={!isNextEnabled} onClick={() => onSave()}>
+                  Save Changes to App
+                </Button>
               )}
             </Box>
           )}
-        </div>
+        </Container>
       </div>
-    </Paper>
+    </>
   )
 }
 

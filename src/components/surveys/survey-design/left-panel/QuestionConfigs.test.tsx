@@ -6,7 +6,7 @@ import {getQuestionId} from './QuestionConfigs'
 import {Step} from '@typedefs/surveys'
 
 afterEach(cleanup)
-const onChange = jest.fn()
+
 const stepExpectations = [
   'OVERVIEW',
   'SINGLE_SELECT',

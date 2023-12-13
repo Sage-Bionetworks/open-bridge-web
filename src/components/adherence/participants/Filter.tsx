@@ -1,6 +1,4 @@
-import {ReactComponent as FilterIcon} from '@assets/filter.svg'
-import {MTBHeadingH5, MTBHeadingH6} from '@components/widgets/Headings'
-import {WhiteButton} from '@components/widgets/StyledComponents'
+import FilterIcon from '@mui/icons-material/FilterAltTwoTone'
 import {
   Box,
   Button,
@@ -11,9 +9,11 @@ import {
   FormGroup,
   Radio,
   RadioGroup,
+  Typography,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AdherenceService from '@services/adherence.service'
+import {theme} from '@style/theme'
 import {AdherenceStatistics, AdherenceWeeklyReport} from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
@@ -25,20 +25,7 @@ export const useStyles = makeStyles(theme => ({
     backgroundColor: '#BBC3CD',
     marginBottom: theme.spacing(1),
   },
-  button: {
-    flexGrow: 1,
-    padding: theme.spacing(1.5),
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
 
-    '&:first-child': {
-      marginRight: '16px',
-      border: '1px solid black',
-    },
-    '&:last-child': {
-      backgroundColor: '#8FCDE2',
-      border: '1px solid #8FCDE2',
-    },
-  },
   checkbox: {
     padding: theme.spacing(0.6, 1),
   },
@@ -65,11 +52,7 @@ type FilterProps = {
   adherenceReportItems: AdherenceWeeklyReport[]
   adherenceStats: AdherenceStatistics
   selectedLabels?: string[]
-  onFilterChange: (arg: {
-    labels: string[] | undefined
-    min: number
-    max: number
-  }) => void
+  onFilterChange: (arg: {labels: string[] | undefined; min: number; max: number}) => void
 }
 
 function getThreshold(min: number = 0, max: number = 100): ThresholdValue {
@@ -87,10 +70,7 @@ function getDisplayLabels(items: AdherenceWeeklyReport[]) {
   const labels = new Map(
     _.flatten(items.map(i => i.rows))
       .filter(r => !!r)
-      .map(r => [
-        r.searchableLabel,
-        AdherenceUtility.getDisplayFromLabel(r.label, r.studyBurstNum),
-      ])
+      .map(r => [r.searchableLabel, AdherenceUtility.getDisplayFromLabel(r.label, r.studyBurstNum)])
   )
 
   return new Map(labels)
@@ -128,8 +108,7 @@ const Filter: FunctionComponent<FilterProps> = ({
   }, [min, max, adherenceReportItems])
 
   React.useEffect(() => {
-    const isAllSelected =
-      selectedLabels === undefined || selectedLabels.length === 0
+    const isAllSelected = selectedLabels === undefined || selectedLabels.length === 0
     setIsSelectAll(isAllSelected)
     if (isAllSelected) {
       setSearchLabels(Array.from(getDisplayLabels(adherenceReportItems).keys()))
@@ -166,8 +145,7 @@ const Filter: FunctionComponent<FilterProps> = ({
   }
 
   const applyFilterChange = () => {
-    let labels =
-      searchLabels.length === displayLabels.size ? undefined : searchLabels
+    let labels = searchLabels.length === displayLabels.size ? undefined : searchLabels
     let thresh = {min: 0, max: 100}
     if (threshold === 'OVER') {
       thresh.min = AdherenceService.COMPLIANCE_THRESHOLD
@@ -181,26 +159,27 @@ const Filter: FunctionComponent<FilterProps> = ({
   }
 
   const open = Boolean(anchorEl)
-  const id = open ? 'simple-popover' : undefined
-
   return (
     <div key={`next_activity`}>
-      <Button variant="text" onClick={handleClick}>
-        <FilterIcon /> Filter
+      <Button
+        variant="outlined"
+        size="small"
+        sx={{height: '36px', padding: theme.spacing(0, 2)}}
+        onClick={handleClick}
+        startIcon={<FilterIcon />}>
+        Filter
       </Button>
 
       <Drawer anchor={'right'} open={open} onClose={handleClose}>
         <Box p={4} minWidth={416}>
           <Box display="flex" mb={2}>
             <FilterIcon />{' '}
-            <MTBHeadingH6 style={{color: '#3B4141'}}>
+            <Typography variant="h4" sx={{fontSize: '16px'}}>
               Filter Participants by:
-            </MTBHeadingH6>
+            </Typography>
           </Box>
 
-          <MTBHeadingH5 className={classes.subheader}>
-            Schedule Visualizer
-          </MTBHeadingH5>
+          <Typography variant="h4">Schedule Visualizer</Typography>
           <Divider className={classes.divider} />
           <FormGroup className={classes.group}>
             <FormControlLabel
@@ -232,18 +211,14 @@ const Filter: FunctionComponent<FilterProps> = ({
                 label={
                   <FilterLabel
                     label={displayLabels.get(searchKey)}
-                    count={adherenceStats.entries.find(
-                      e => e.searchableLabel === searchKey
-                    )}
+                    count={adherenceStats.entries.find(e => e.searchableLabel === searchKey)}
                   />
                 }
                 labelPlacement="end"
               />
             ))}
           </FormGroup>
-          <MTBHeadingH5 className={classes.subheader}>
-            Adherence Levels
-          </MTBHeadingH5>
+          <Typography variant="h4">Adherence Levels</Typography>
           <Divider className={classes.divider} />
           <RadioGroup
             className={classes.group}
@@ -253,27 +228,13 @@ const Filter: FunctionComponent<FilterProps> = ({
             }}>
             <FormControlLabel
               classes={{label: classes.label}}
-              control={
-                <Radio
-                  color="secondary"
-                  size="small"
-                  value={'ALL'}
-                  className={classes.checkbox}
-                />
-              }
+              control={<Radio color="secondary" size="small" value={'ALL'} className={classes.checkbox} />}
               label={<FilterLabel label="All" count={adherenceStats} />}
             />
 
             <FormControlLabel
               classes={{label: classes.label}}
-              control={
-                <Radio
-                  color="secondary"
-                  size="small"
-                  value={'UNDER'}
-                  className={classes.checkbox}
-                />
-              }
+              control={<Radio color="secondary" size="small" value={'UNDER'} className={classes.checkbox} />}
               label={
                 <FilterLabel
                   label={`x </= ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
@@ -284,14 +245,7 @@ const Filter: FunctionComponent<FilterProps> = ({
 
             <FormControlLabel
               classes={{label: classes.label}}
-              control={
-                <Radio
-                  color="secondary"
-                  size="small"
-                  value={'OVER'}
-                  className={classes.checkbox}
-                />
-              }
+              control={<Radio color="secondary" size="small" value={'OVER'} className={classes.checkbox} />}
               label={
                 <FilterLabel
                   label={`x > ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
@@ -302,15 +256,12 @@ const Filter: FunctionComponent<FilterProps> = ({
           </RadioGroup>
 
           <Box display="flex">
-            <WhiteButton className={classes.button} onClick={handleClose}>
+            <Button variant="outlined" sx={{marginRight: theme.spacing(2)}} onClick={handleClose}>
               Cancel
-            </WhiteButton>{' '}
-            <WhiteButton
-              disabled={searchLabels.length === 0}
-              className={classes.button}
-              onClick={() => applyFilterChange()}>
+            </Button>{' '}
+            <Button variant="contained" color="primary" onClick={() => applyFilterChange()}>
               Apply Filter
-            </WhiteButton>
+            </Button>
           </Box>
         </Box>
       </Drawer>

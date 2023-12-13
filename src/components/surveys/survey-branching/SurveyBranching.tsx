@@ -1,32 +1,34 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {Box, styled} from '@mui/material'
-import {useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
-import {latoFont} from '@style/theme'
-import {SmartStepEdge} from '@tisoap/react-flow-smart-edge'
-import {ChoiceQuestion, Survey} from '@typedefs/surveys'
+import {useSurveyAssessment, useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
+import {latoFont, theme} from '@style/theme'
+import {ChoiceQuestion, Step, Survey} from '@typedefs/surveys'
+import dagre from 'dagre'
 import React, {FunctionComponent} from 'react'
+import 'reactflow/dist/style.css'
+import useFeatureToggles, {FeatureToggles, features} from '@helpers/FeatureToggle'
 
 import ReactFlow, {
-  addEdge,
-  applyEdgeChanges,
   applyNodeChanges,
-  Connection,
+  ConnectionLineType,
   Edge,
-  EdgeChange,
   FitViewOptions,
   Node,
   NodeChange,
-} from 'react-flow-renderer'
+  Position,
+} from 'reactflow'
 
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import BranchingConfig from './BranchingConfig'
-import getNodes, {detectCycle, getEdgesFromSteps} from './GetNodesToPlot'
+import getNodes from './GetNodesToPlot'
 import {useGetPlotWidth} from './UseGetPlotWidth'
+import { Assessment } from '@typedefs/types'
+import ReadOnlyBanner from '@components/widgets/ReadOnlyBanner'
 
-const edgeTypes = {
+/*const edgeTypes = {
   smart: SmartStepEdge,
-}
+}*/
 
 const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
   position: 'relative',
@@ -39,13 +41,13 @@ const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
     backgroundColor: '#fcfcfc',
   },
   '& .react-flow__node-default': {
-    borderRadius: 0,
+    borderRadius: '5px',
     background: '#F2F2F2',
     border: 'none',
     padding: 0,
     textAlign: 'center',
 
-    boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
+    boxShadow: 'none', //1px 2px 3px rgba(42, 42, 42, 0.1)',
     width: '85px',
     height: '48px',
     fontFamily: latoFont,
@@ -71,6 +73,44 @@ const fitViewOptions: FitViewOptions = {
 
 type SurveyBranchingProps = SurveyBranchingOwnProps & RouteComponentProps
 
+const dagreGraph = new dagre.graphlib.Graph()
+dagreGraph.setDefaultEdgeLabel(() => ({}))
+
+const nodeWidth = 70
+const nodeHeight = 60
+
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => {
+  const isHorizontal = direction === 'LR'
+  dagreGraph.setGraph({rankdir: direction, marginy: 40})
+
+  nodes.forEach(node => {
+    dagreGraph.setNode(node.id, {width: nodeWidth, height: nodeHeight})
+  })
+
+  edges.forEach(edge => {
+    dagreGraph.setEdge(edge.source, edge.target)
+  })
+
+  dagre.layout(dagreGraph)
+
+  nodes.forEach(node => {
+    const nodeWithPosition = dagreGraph.node(node.id)
+    node.targetPosition = isHorizontal ? Position.Left : Position.Top
+    node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom
+
+    // We are shifting the dagre node position (anchor=center center) to the top left
+    // so it matches the React Flow node anchor point (top left).
+    node.position = {
+      x: nodeWithPosition.x - nodeWidth / 2,
+      y: nodeWithPosition.y - nodeHeight / 2,
+    }
+
+    return node
+  })
+
+  return {nodes, edges}
+}
+
 const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   let {id: surveyGuid} = useParams<{
     id: string
@@ -79,30 +119,31 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   const ref = React.useRef<HTMLDivElement>(null)
   const {width} = useGetPlotWidth(ref)
   const [survey, setSurvey] = React.useState<Survey | undefined>()
+  const [assessment, setAssessment] = React.useState<Assessment | undefined>()
   const [error, setError] = React.useState('')
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
-  const [currentStepIndex, setCurrentStepIndex] = React.useState<
-    number | undefined
-  >(-1)
+  const [currentStepIndex, setCurrentStepIndex] = React.useState<number | undefined>(-1)
   const [isHideInput, setIsHideInput] = React.useState(true)
-
   const [nodes, setNodes] = React.useState<Node[]>([])
   const [edges, setEdges] = React.useState<Edge[]>([])
+  const featureToggles = useFeatureToggles<FeatureToggles>()
+  const isBranchingLogicUnlocked = (featureToggles[features.SURVEY_BRANCHING_LOGIC] ?? false)
+  const isAssessmentReadOnly = (assessment?.isReadOnly ?? false)
+  const isReadOnly = isAssessmentReadOnly || !isBranchingLogicUnlocked
+
+  //dagre
+  const dagreGraph = new dagre.graphlib.Graph()
+  dagreGraph.setDefaultEdgeLabel(() => ({}))
 
   const onNodesChange = React.useCallback(
     (changes: NodeChange[]) => setNodes(nds => applyNodeChanges(changes, nds)),
     [setNodes]
   )
-  const onEdgesChange = React.useCallback(
-    (changes: EdgeChange[]) => setEdges(eds => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  )
-  const onConnect = React.useCallback(
-    (connection: Connection) => setEdges(eds => addEdge(connection, eds)),
-    [setEdges]
-  )
 
   const {data: _survey} = useSurveyConfig(surveyGuid)
+  const {data: _assessment} = useSurveyAssessment(true, surveyGuid)
+  
+  useSurveyConfig(surveyGuid)
 
   const {mutateAsync: mutateSurvey} = useUpdateSurveyConfig()
 
@@ -113,17 +154,20 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   }, [_survey])
 
   React.useEffect(() => {
+    if (_assessment) {
+      setAssessment(_assessment)
+    }
+  }, [_assessment])
+
+  React.useEffect(() => {
     if (survey) {
-      const plotWidth = width || 0
-      const result = getNodes(
-        survey?.config.steps as ChoiceQuestion[],
-        plotWidth
-      )
+      const result = getNodes(survey?.config.steps as ChoiceQuestion[])
       if (result.error) {
         setError(result.error)
       } else {
-        setNodes(result.nodes)
-        setEdges(result.edges)
+        const {nodes: layoutedNodes, edges: layoutedEdges} = getLayoutedElements(result.nodes, result.edges)
+        setNodes([...layoutedNodes])
+        setEdges([...layoutedEdges])
       }
     }
   }, [survey, survey?.config.steps, width])
@@ -139,26 +183,17 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     }
   }
 
-  const changeBranching = (steps: ChoiceQuestion[]) => {
-    const edges = getEdgesFromSteps(steps)
-    setError('')
-    const cycles = detectCycle(edges.edges)
-    if (cycles) {
-      setError('Cycles detected')
-      return
-    } else {
-      setHasObjectChanged(true)
-      setSurvey({
-        ...survey,
-        config: {...survey!.config, steps: steps},
-      })
-    }
+  const changeBranching = (steps: (ChoiceQuestion | Step)[]) => {
+    setHasObjectChanged(true)
+
+    setSurvey({
+      ...survey,
+      config: {...survey!.config, steps: steps},
+    })
   }
 
   const onNodeClick = (x: any, node: Node) => {
-    const qIndex = survey!.config.steps!.findIndex(
-      q => q.identifier === node.id
-    )
+    const qIndex = survey!.config.steps!.findIndex(q => q.identifier === node.id)
     if (qIndex < survey!.config.steps.length - 1) {
       setCurrentStepIndex(qIndex)
       setIsHideInput(false)
@@ -166,9 +201,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   }
 
   const getCurrentStep = (): ChoiceQuestion | undefined =>
-    survey && currentStepIndex !== undefined
-      ? (survey.config.steps[currentStepIndex] as ChoiceQuestion)
-      : undefined
+    survey && currentStepIndex !== undefined ? (survey.config.steps[currentStepIndex] as ChoiceQuestion) : undefined
 
   const getInvalidTargetStepIds = (): string[] => {
     const currentStep = getCurrentStep()
@@ -192,17 +225,25 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     <>
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
         {({onConfirm, onCancel}) => (
-          <ConfirmationDialog
-            isOpen={hasObjectChanged}
-            type={'NAVIGATE'}
-            onCancel={onCancel}
-            onConfirm={onConfirm}
-          />
+          <ConfirmationDialog isOpen={hasObjectChanged} type={'NAVIGATE'} onCancel={onCancel} onConfirm={onConfirm} />
         )}
       </NavigationPrompt>
 
       <SurveyBranchingContainerBox>
         {error && <span>{error.toString()}</span>}
+        {isAssessmentReadOnly && <ReadOnlyBanner label='survey' />}
+        {!isBranchingLogicUnlocked && 
+          <Box
+            sx={{
+              backgroundColor: 'rgba(255, 168, 37, 0.15)',
+              textAlign: 'left',
+              fontSize: '16px',
+              display: 'flex',
+              padding: theme.spacing(1, 8),
+            }}>
+            Branching logic is under development and can only be edited by the Open Bridge team.
+          </Box>
+        }
         <Box ref={ref}>
           <div
             style={{
@@ -216,17 +257,15 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
               edges={edges}
               onNodeClick={onNodeClick}
               onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
               preventScrolling={false}
-              onConnect={onConnect}
-              edgeTypes={edgeTypes}
+              connectionLineType={ConnectionLineType.SmoothStep}
               fitView={false}
               fitViewOptions={fitViewOptions}
             />
           </div>
         </Box>
 
-        {edges && getCurrentStep() && (
+        {edges && getCurrentStep() !== undefined && (
           <BranchingConfig
             onCancel={() => {
               setSurvey(_survey)
@@ -235,10 +274,11 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
             error={error}
             onSave={() => saveSurvey()}
             isOpen={!isHideInput}
+            isReadOnly={isReadOnly}
             invalidTargetStepIds={getInvalidTargetStepIds()}
             onChange={steps => changeBranching(steps)}
             questions={survey!.config.steps as ChoiceQuestion[]}
-            step={getCurrentStep()}
+            step={getCurrentStep()!}
           />
         )}
       </SurveyBranchingContainerBox>

@@ -1,70 +1,70 @@
 // pick a date util library
 
-import {ReactComponent as PencilIcon} from '@assets/edit_pencil.svg'
-import {ReactComponent as RedPencilIcon} from '@assets/edit_pencil_red.svg'
-import {ReactComponent as UploadIcon} from '@assets/upload.svg'
-import {ReactComponent as RedUploadIcon} from '@assets/upload_red.svg'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import Utility from '@helpers/utility'
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  LinearProgress,
-  Paper,
-  Tab,
-  Tabs,
-} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import {Box, Button, Dialog, DialogActions, DialogContent, LinearProgress, styled, Tab, Tabs} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
-import {poppinsFont, theme} from '@style/theme'
+import {theme} from '@style/theme'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {CSVReader} from 'react-papaparse'
 import {ParticipantEvent, Study} from '../../../../types/types'
-import {BlueButton} from '../../../widgets/StyledComponents'
-import TabPanel from '../../../widgets/TabPanel'
+
 import CsvUtility from '../csv/csvUtility'
 import AddGeneratedParticipant from './AddGeneratedParticipant'
 import AddSingleParticipant from './AddSingleParticipant'
 import ImportParticipantsInstructions from './ImportParticipantsInstuctions'
-const useStyles = makeStyles(theme => ({
-  root: {},
-  tab: {
-    borderBottomWidth: theme.spacing(0.5),
-    borderBottomColor: theme.palette.background.default,
-    borderBottomStyle: 'solid',
-    minHeight: '50px',
-    '& span.MuiTab-wrapper': {
-      flexDirection: 'row',
-      '& > *:first-child': {
-        marginBottom: 0,
-        marginRight: '6px',
-      },
-    },
-    [theme.breakpoints.down('xl')]: {
-      minWidth: `110px`,
-    },
-  },
-  tabIndicator: {
-    backgroundColor: theme.palette.secondary.contrastText,
+
+const StyledTabs = styled(Tabs, {label: 'StyledTabs '})(({theme}) => ({
+  margin: theme.spacing(0),
+  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.05)',
+  padding: theme.spacing(0, 5),
+
+  [`& .MuiTabs-indicator`]: {
+    backgroundColor: '#9499C7',
     height: theme.spacing(0.5),
   },
+}))
+
+const StyledTabPanel = styled(Box, {label: 'StyledTabPanel '})(({theme}) => ({
+  padding: theme.spacing(5, 4, 5, 4),
+  fontSize: '14px',
+}))
+
+const StyledTab = styled(Tab, {label: 'StyledTab '})(({theme}) => ({
+  borderBottomWidth: theme.spacing(0.5),
+  backgroundColor: 'transparent',
+  padding: 0,
+  fontSize: '16px',
+  borderBottomColor: theme.palette.background.default,
+  borderBottomStyle: 'solid',
+  height: '30px',
+  '& span.MuiTab-wrapper': {
+    flexDirection: 'row',
+    '& > *:first-child': {
+      marginBottom: 0,
+      marginRight: '4px',
+    },
+  },
+  [theme.breakpoints.down('xl')]: {
+    minWidth: `100px`,
+  },
+}))
+const useStyles = makeStyles(theme => ({
   titleBar: {
-    height: theme.spacing(6),
-    lineHeight: theme.spacing(6),
+    height: theme.spacing(4),
+    lineHeight: theme.spacing(4),
     textAlign: 'center',
     fontSize: '12px',
     fontWeight: 500,
-    borderBottom: `4px solid ${theme.palette.secondary.contrastText}`,
+    borderBottom: `4px solid #9499C7`,
   },
   dialogTitle: {
     display: 'flex',
-    fontFamily: poppinsFont,
+
     alignItems: 'center',
     fontWeight: 500,
     fontSize: '18px',
@@ -150,18 +150,13 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   const handleOnDrop = async (rows: any) => {
     setImportError([])
     if (!rows[0]?.data) {
-      setImportError([
-        ...importError,
-        'Please check the format of your file. No data',
-      ])
+      setImportError([...importError, 'Please check the format of your file. No data'])
       return
     }
 
-    const customParticipantEvents: ParticipantEvent[] = scheduleEvents.map(
-      event => ({
-        eventId: EventService.formatEventIdForDisplay(event.eventId),
-      })
-    )
+    const customParticipantEvents: ParticipantEvent[] = scheduleEvents.map(event => ({
+      eventId: EventService.formatEventIdForDisplay(event.eventId),
+    }))
 
     const validityCheck = CsvUtility.isImportFileValid(
       isEnrolledById,
@@ -182,21 +177,12 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       const data = row.data
 
       try {
-        await CsvUtility.uploadCsvRow(
-          data,
-          customParticipantEvents,
-          isEnrolledById,
-          study.identifier,
-          token
-        )
+        await CsvUtility.uploadCsvRow(data, customParticipantEvents, isEnrolledById, study.identifier, token)
         setProgress(prev => prev + progressTick)
       } catch (error) {
         console.log('Error', JSON.stringify(error))
         const key = Object.values(row.data)[0]
-        setImportError(prev => [
-          ...prev,
-          `${key}: ${(error as Error).message || error}`,
-        ])
+        setImportError(prev => [...prev, `${key}: ${(error as Error).message || error}`])
       }
     }
     setIsCsvProcessed(true)
@@ -214,11 +200,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
   return (
     <>
-      <Dialog
-        open={isOpenUpload}
-        maxWidth="sm"
-        fullWidth
-        aria-labelledby="form-dialog-title">
+      <Dialog open={isOpenUpload} maxWidth="sm" fullWidth aria-labelledby="form-dialog-title">
         <DialogTitleWithClose
           onCancel={() => setIsOpenUpload(false)}
           icon={<CloudUploadIcon />}
@@ -226,11 +208,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         />
         <DialogContent>
           <>
-            <div
-              className={clsx(
-                classes.dropAreaUploading,
-                isCsvUploaded && classes.dropAreaUploadingWithBorder
-              )}>
+            <div className={clsx(classes.dropAreaUploading, isCsvUploaded && classes.dropAreaUploadingWithBorder)}>
               {!isCsvUploaded && (
                 <CSVReader
                   onDrop={handleOnDrop}
@@ -253,13 +231,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
                       <LinearProgress variant="determinate" value={progress} />
                     </>
                   )}
-                  {isCsvProcessed && (
-                    <span>
-                      {importError.length > 0
-                        ? 'Completed with errors below'
-                        : 'Success'}
-                    </span>
-                  )}
+                  {isCsvProcessed && <span>{importError.length > 0 ? 'Completed with errors below' : 'Success'}</span>}
                 </div>
               )}
             </div>
@@ -275,11 +247,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
           </>
         </DialogContent>
         <DialogActions>
-          <Button
-            disabled={isCsvUploaded}
-            onClick={() => setIsOpenUpload(false)}
-            color="secondary"
-            variant="outlined">
+          <Button disabled={isCsvUploaded} onClick={() => setIsOpenUpload(false)} color="secondary" variant="outlined">
             Cancel
           </Button>
           {isCsvProcessed && (
@@ -296,53 +264,43 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         </DialogActions>
       </Dialog>
 
-      <Paper square style={{whiteSpace: 'break-spaces'}}>
+      <Box sx={{whiteSpace: 'break-spaces', padding: theme.spacing(5, 0, 0, 0)}}>
         {!isAutoGenerated() && (
           <>
-            <Tabs
+            <StyledTabs
               value={tab}
               variant="fullWidth"
               onChange={handleTabChange}
-              aria-label="add participant tabs"
-              classes={{
-                indicator: classes.tabIndicator,
-              }}>
-              <Tab
-                label="Upload .csv "
-                icon={tab === 0 ? <RedUploadIcon /> : <UploadIcon />}
-                className={classes.tab}
-              />
-              <Tab
-                label="Enter details"
-                icon={tab === 1 ? <RedPencilIcon /> : <PencilIcon />}
-                className={classes.tab}
-              />
-            </Tabs>
+              sx={{height: theme.spacing(5)}}
+              aria-label="add participant tabs">
+              <StyledTab label="Upload .csv " />
+              <StyledTab label="Enter Details" />
+            </StyledTabs>
 
-            <TabPanel value={tab} index={0}>
+            <StyledTabPanel sx={{display: tab === 0 ? 'block' : 'none'}}>
               <ImportParticipantsInstructions
                 isEnrolledById={isEnrolledById}
                 scheduleEventIds={scheduleEvents.map(e => e.eventId)}>
-                <BlueButton
+                <Button
                   onClick={() => {
                     setIsCsvUploaded(false)
                     setIsOpenUpload(true)
                   }}
                   color="primary"
                   variant="contained">
-                  <UploadIcon style={{marginRight: '3px', marginTop: '3px'}} />{' '}
-                  Upload CSV File
-                </BlueButton>
+                  Upload .csv File
+                </Button>
               </ImportParticipantsInstructions>
-            </TabPanel>
-            <TabPanel value={tab} index={1}>
+            </StyledTabPanel>
+
+            <StyledTabPanel sx={{display: tab === 1 ? 'block' : 'none'}}>
               <AddSingleParticipant
                 scheduleEvents={scheduleEvents}
                 isEnrolledById={isEnrolledById}
                 token={token}
                 studyIdentifier={study.identifier}
                 onAdded={() => onAdded()}></AddSingleParticipant>
-            </TabPanel>
+            </StyledTabPanel>
           </>
         )}
         {isAutoGenerated() && (
@@ -350,9 +308,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             <Box
               className={classes.titleBar}
               style={{
-                borderColor: isTestAccount
-                  ? '#AEDCC9'
-                  : theme.palette.secondary.contrastText,
+                borderColor: isTestAccount ? '#AEDCC9' : theme.palette.secondary.contrastText,
               }}>
               Generate IDs
             </Box>
@@ -365,7 +321,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             </Box>
           </>
         )}
-      </Paper>
+      </Box>
     </>
   )
 }

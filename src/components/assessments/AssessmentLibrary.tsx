@@ -1,12 +1,14 @@
 import makeStyles from '@mui/styles/makeStyles'
 import {useAssessmentsWithResources} from '@services/assessmentHooks'
 import {FunctionComponent, useState} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {Link, RouteComponentProps} from 'react-router-dom'
-import {Assessment} from '../../types/types'
+
+import {Link, RouteComponentProps, useLocation} from 'react-router-dom'
+import {Assessment, ExtendedError} from '../../types/types'
 import Loader from '../widgets/Loader'
 import AssessmentCard from './AssessmentCard'
 import AssessmentLibraryWrapper from './AssessmentLibraryWrapper'
+import AssessmentTable from './AssessmentsTable'
+import useViewToggle from './ViewHook'
 
 type AssessmentLibraryOwnProps = {
   assessments?: Assessment[]
@@ -21,21 +23,13 @@ const useStyles = makeStyles(theme => ({
 
 type AssessmentLibraryProps = AssessmentLibraryOwnProps & RouteComponentProps
 
-const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
-  match,
-}: AssessmentLibraryProps) => {
+const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({match}: AssessmentLibraryProps) => {
   const classes = useStyles()
-  const handleError = useErrorHandler()
 
-  const [filteredAssessments, setFilteredAssessments] = useState<
-    Assessment[] | undefined
-  >(undefined)
-
-  const {data, isError, error, status, isLoading} = useAssessmentsWithResources(
-    false,
-    false
-  )
-  const {data: surveys} = useAssessmentsWithResources(false, true)
+  const [filteredAssessments, setFilteredAssessments] = useState<Assessment[] | undefined>(undefined)
+  const [viewMode, setViewMode] = useViewToggle(useLocation().search)
+  const {data, isError, error, status, isLoading} = useAssessmentsWithResources(false, false)
+  console.log('data', data)
 
   if (isError) {
     handleError(error!)
@@ -50,35 +44,22 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
       {data && (
         <AssessmentLibraryWrapper
           assessments={data.assessments}
-          assessmentsType="OTHER"
+          assessmentsType='SHARED'
+          viewMode={viewMode}
+          onChangeViewMode={setViewMode}
           onChangeAssessmentsType={() => {}}
-          onChangeTags={
-            (assessments: Assessment[]) =>
-              setFilteredAssessments(assessments) /*setFilterTags(tags)*/
-          }>
-          {/*    {surveys?.assessments &&
-            (surveys?.assessments).map((a, index) => (
-              <Link
-                to={`${match.url}/${a.guid}`}
-                className={classes.cardLink}
-                key={a.guid}>
-                <AssessmentCard
-                  index={index}
-                  assessment={a}
-                  key={a.guid}></AssessmentCard>
-              </Link>
-            ))}*/}
-          {(filteredAssessments || data.assessments).map((a, index) => (
-            <Link
-              to={`${match.url}/${a.guid}`}
-              className={classes.cardLink}
-              key={a.guid}>
-              <AssessmentCard
-                index={index}
-                assessment={a}
-                key={a.guid}></AssessmentCard>
-            </Link>
-          ))}
+          onChangeTags={(assessments: Assessment[]) => setFilteredAssessments(assessments) }>
+          {viewMode === 'GRID' ? (
+            <>
+              {(filteredAssessments || data.assessments).map((a, index) => (
+                <Link to={`${match.url}/${a.guid}`} className={classes.cardLink} key={a.guid}>
+                  <AssessmentCard index={index} assessment={a} key={a.guid}></AssessmentCard>
+                </Link>
+              ))}
+            </>
+          ) : (
+            <AssessmentTable assessments={filteredAssessments || data.assessments} match={match} />
+          )}
         </AssessmentLibraryWrapper>
       )}
     </Loader>
@@ -86,3 +67,6 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
 }
 
 export default AssessmentLibrary
+function handleError(arg0: ExtendedError) {
+  throw new Error('Function not implemented.')
+}

@@ -1,11 +1,18 @@
+import MTBLogoLarge from '@assets/logo_open_bridge_large.svg'
+import appStoreBtn from '@assets/preview/appStoreBtn.png'
+import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
 import QrCode from '@assets/qr_code.png'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import {latoFont, playfairDisplayFont, theme} from '@style/theme'
 import React from 'react'
-import MTBLogoLarge from '../../assets/mtb_logo_large.svg'
-import appStoreBtn from '../../assets/preview/appStoreBtn.png'
-import googlePlayBtn from '../../assets/preview/googlePlayBtn.png'
-import {latoFont, playfairDisplayFont} from '../../style/theme'
+
+
+/**
+ * syoung 12/11/2020 
+ * This is currently hardcoded to hide this component if this is an ARC website which will work
+ * fine until we are supporting any other websites other than ARC and Open Bridge.
+ */
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -39,15 +46,11 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
+const DownloadAppLandingPage: React.FunctionComponent = () => {
   const classes = useStyles()
   return (
     <Box className={classes.container}>
-      <img
-        src={MTBLogoLarge}
-        alt="large mtb logo"
-        style={{width: '100px', height: '100px'}}
-      />
+      <img src={MTBLogoLarge} alt="large logo" style={{width: '100px', height: '100px'}} />
       <Box className={classes.downloadText}>
         <strong>
           <i>App Download Instructions</i>
@@ -60,31 +63,31 @@ const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
         <br></br>
         <ol>
           <li>
-            To download the <strong>Mobile Toolbox App</strong>, search for
-            "Mobile Toolbox App" in your phone's app store or do one of the
-            following:
+            To download the <strong>Open Bridge App</strong>, search for "Open Bridge App" in your phone's app
+            store or do one of the following:
             <ul>
               <li className={classes.listText}>
-                If you're viewing this page from a laptop,{' '}
-                <strong>scan the QR code</strong> below with your phone's camera
-                to be directed to the app.
+                If you're viewing this page from a laptop, <strong>scan the QR code</strong> below with your phone's
+                camera to be directed to the app.
               </li>
               <li className={classes.listText}>
-                If you're viewing this page from the phone that you will be
-                using for the study, <strong>select your app store</strong>{' '}
-                below to be redirected to the iOS or Android app store.
+                If you're viewing this page from the phone that you will be using for the study,{' '}
+                <strong>select your app store</strong> below to be redirected to the iOS or Android app store.
               </li>
             </ul>
           </li>
-          <li>
-            To log into the app, your Research team will need to provide you
-            with a Study ID and Participant ID.
-          </li>
+          <li>To log into the app, your Research team will need to provide you with a Study ID and Participant ID.</li>
         </ol>
       </p>
 
-      <Box m={2} textAlign="center" bgcolor="white" style={{padding: '16px'}}>
-        <img src={QrCode} width="130px" />
+      <Box
+        sx={{
+          margin: theme.spacing(2),
+          padding: theme.spacing(2),
+          textAlign: 'center',
+          bgcolor: 'white',
+        }}>
+        <img src={QrCode} width="130px" alt="QR code" />
       </Box>
       <Box my={3}>
         <a

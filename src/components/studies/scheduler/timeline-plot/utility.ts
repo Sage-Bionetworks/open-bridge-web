@@ -16,9 +16,7 @@ function getSchedulingItemsForWeek(
   schedulingItems: TimelineScheduleItem[],
   weekNumber: number
 ): TimelineScheduleItem[] {
-  return schedulingItems.filter(
-    i => i.startDay >= weekNumber * 7 && i.startDay < (weekNumber + 1) * 7
-  )
+  return schedulingItems.filter(i => i.startDay >= weekNumber * 7 && i.startDay < (weekNumber + 1) * 7)
 }
 
 function getDaysFractionForSingleSessionWeek(
@@ -31,14 +29,11 @@ function getDaysFractionForSingleSessionWeek(
   coords: CoordItem[]
 } {
   let result: CoordItem[] = []
-  const itemsForSessionWithinInterval = getSchedulingItemsForWeek(
-    schedulingItems,
-    weekNumber
-  ).filter(i => i.refGuid === studySessionGuid)
-
-  const grouppedStartDays = _.groupBy(itemsForSessionWithinInterval, i =>
-    Math.floor(i.startDay)
+  const itemsForSessionWithinInterval = getSchedulingItemsForWeek(schedulingItems, weekNumber).filter(
+    i => i.refGuid === studySessionGuid
   )
+
+  const grouppedStartDays = _.groupBy(itemsForSessionWithinInterval, i => Math.floor(i.startDay))
 
   const startEventId = _.first(itemsForSessionWithinInterval)?.startEventId
 

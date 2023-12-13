@@ -1,5 +1,4 @@
 import AccessSettings from '@components/access-settings/AccessSettings'
-import AccountSetup from '@components/account/AccountSetup'
 import Adherence from '@components/adherence/Adherence'
 import AdherenceParticipant from '@components/adherence/participant-detail/AdherenceParticipant'
 import AssessmentDetail from '@components/assessments/AssessmentDetail'
@@ -7,6 +6,7 @@ import AssessmentLibrary from '@components/assessments/AssessmentLibrary'
 import AssessmentsPreview from '@components/assessments/AssessmentsPreview'
 import StudyLive from '@components/studies/launch/Live'
 import ParticipantManager from '@components/studies/participants/ParticipantManager'
+import StudyData from '@components/studies/study-data/StudyData'
 import StudyBuilder from '@components/studies/StudyBuilder'
 import StudyList from '@components/studies/StudyList'
 import SurveyBranching from '@components/surveys/survey-branching/SurveyBranching'
@@ -32,13 +32,13 @@ const PATHS: NavRouteType[] = [
 
   {
     path: '/studies',
-    name: 'MY STUDIES',
+    name: 'My Studies',
     Component: StudyList,
     exact: true,
   },
   {
     path: '/surveys',
-    name: 'SURVEY BUILDER',
+    name: 'Survey Builder',
     toggle: 'SURVEY BUILDER',
     Component: SurveyList,
   },
@@ -80,6 +80,12 @@ const PATHS: NavRouteType[] = [
     Component: ParticipantManager,
   },
   {
+    path: constants.restrictedPaths.STUDY_DATA,
+    name: '',
+    exact: false,
+    Component: StudyData,
+  },
+  {
     path: constants.restrictedPaths.ACCESS_SETTINGS,
     name: '',
     Component: AccessSettings,
@@ -87,7 +93,7 @@ const PATHS: NavRouteType[] = [
 
   {
     path: '/assessments',
-    name: 'ASSESSMENT LIBRARY',
+    name: 'Assessment Library',
     Component: AssessmentLibrary,
     exact: true,
   },
@@ -102,7 +108,7 @@ const PATHS: NavRouteType[] = [
     name: '',
     Component: AssessmentDetail,
     exact: true,
-  },
+  } /*
   {
     path: '/my-account',
     name: 'Edit Profile',
@@ -116,7 +122,7 @@ const PATHS: NavRouteType[] = [
     isRhs: true,
     Component: AccountSetup,
     exact: true,
-  },
+  },*/,
   /* {
     path: '/sessionsLayout',
     name: 'SessionBuilderLayout',

@@ -1,17 +1,10 @@
-import {ReactComponent as DraggableIcon} from '@assets/surveys/draggable.svg'
-import {ReactComponent as SettingsIcon} from '@assets/surveys/settings.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
-import {Box, styled} from '@mui/material'
-import {theme} from '@style/theme'
+import DraggableIcon from '@mui/icons-material/DragIndicatorTwoTone'
+import SettingsIcon from '@mui/icons-material/SettingsTwoTone'
+import {Box, styled, Theme} from '@mui/material'
 import {Step, SurveyConfig} from '@typedefs/surveys'
 import React from 'react'
-import {
-  DragDropContext,
-  Draggable,
-  DraggableProvided,
-  Droppable,
-  DropResult,
-} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from 'react-beautiful-dnd'
 import {NavLink} from 'react-router-dom'
 import QUESTIONS, {getQuestionId} from './QuestionConfigs'
 import {DivContainer} from './QuestionTypeDisplay'
@@ -24,77 +17,62 @@ const linkStyle = {
   },
 }
 
-const leftSideWidth = theme.spacing(37)
+const leftSideWidth = '296'
 
-const Container = styled('div')(() => ({
+const Container = styled('div', {label: 'Container'})(() => ({
   display: 'flex',
   flexGrow: 0,
   flexShrink: 0,
-  width: leftSideWidth,
+  width: `${leftSideWidth}px`,
 
-  backgroundColor: '#FCFCFC',
+  backgroundColor: '#FFF',
   flexDirection: 'column',
   // justifyContent: 'space-between',
-  boxShadow: '2px 5px 5px rgba(42, 42, 42, 0.1)',
+  //boxShadow: '2px 5px 5px rgba(42, 42, 42, 0.1)',
   borderRight: '1px solid #DFDFDF',
 }))
 
-const AddStepMenuContainer = styled('div', {label: 'addStepMenuContainer'})(
-  () => ({
-    width: leftSideWidth,
-    position: 'fixed',
-    bottom: '0px',
-
-    height: '50px',
-  })
-)
-
-const Row = styled('div', {label: 'Row'})(({theme}) => ({
+const RowStyle = (theme: Theme) => ({
   height: theme.spacing(6),
-
   width: '100%',
-  borderTop: '1px solid #DFDFDF',
-
   textDecoration: 'none',
-
   '&:hover, &.current': {
-    backgroundColor: '#565656',
+    backgroundColor: theme.palette.accent.purple,
     color: '#fff',
 
-    '& div': {
+    '& div, a': {
       color: '#fff',
     },
     '& svg, img ': {
-      WebkitFilter: 'invert(1)',
-      filter: 'invert(1)',
+      color: '#fff',
     },
   },
-}))
+})
 
-const TitleStyledRow = styled('div')(({theme}) => ({
+const Row = styled('div', {label: 'Row'})(({theme}) => ({
+  ...RowStyle(theme),
   height: theme.spacing(6),
 
-  width: '100%',
+  borderTop: '1px solid #DFDFDF',
+}))
 
-  color: '#3A3A3A',
-  textDecoration: 'none',
+const TitleStyledRow = styled('div', {label: 'TitleStyledRow'})(({theme}) => ({
+  ...RowStyle(theme),
+
   borderTop: 'none',
   display: 'flex',
   justifyContent: 'space-between',
   paddingRight: 0,
+  paddingLeft: '10px',
+  '& svg': {
+    color: ' #878E95',
+  },
   '&>div, a': {
     display: 'flex',
     alignItems: 'center',
     paddingRight: 0,
     flexGrow: 1,
-    '&:hover': {
-      backgroundColor: '#3A3A3A',
-      color: '#fff',
-      '& >svg, img ': {
-        WebkitFilter: 'invert(1)',
-        filter: 'invert(1)',
-      },
-    },
+    fontWeight: 900,
   },
 }))
 
@@ -108,12 +86,13 @@ const StyledQuestionText = styled('div', {label: 'styledQuestionText'})(() => ({
   overflow: 'hidden',
 }))
 
-const TitleRow: React.FunctionComponent<{surveyId?: string; guid?: string}> = ({
-  surveyId,
-  guid,
-}) => {
+const TitleRow: React.FunctionComponent<{
+  surveyId?: string
+  guid?: string
+  isCurrent?: boolean
+}> = ({surveyId, guid, isCurrent}) => {
   return (
-    <TitleStyledRow id="top">
+    <TitleStyledRow id="top" className={isCurrent ? 'current' : ''}>
       <div>
         <StyledNavLink to={`/surveys/${guid}/design/intro`}>
           <SettingsIcon style={{margin: '10px', maxWidth: '20px'}} />
@@ -130,15 +109,20 @@ const TitleRow: React.FunctionComponent<{surveyId?: string; guid?: string}> = ({
   )
 }
 
+function canDrag(isReadOnly: boolean, size: number, index: number) {
+  return !isReadOnly && size > 3 && index > 0 && index < size - 1
+}
+
 const StepLink: React.FunctionComponent<{
   //guid: string
   index: number
   step: Step
   size: number
   isCurrentStep: boolean
+  isReadOnly: boolean
   provided: DraggableProvided
   onClick: () => void
-}> = ({index, step, size, isCurrentStep, provided, onClick}) => {
+}> = ({index, step, size, isCurrentStep, isReadOnly, provided, onClick}) => {
   let title = `${index < 9 ? '0' : ''}${index}. ${step.title}`
   if (index === size - 1) {
     title = 'Completion Screen'
@@ -166,7 +150,7 @@ const StepLink: React.FunctionComponent<{
             {QUESTIONS.get(getQuestionId(step))?.img}
             <StyledQuestionText>{title}</StyledQuestionText>
           </DivContainer>
-          {size > 3 && index > 0 && index < size - 1 && <DraggableIcon />}
+          {canDrag(isReadOnly, size, index) && <DraggableIcon sx={{color: '#DFE2E6'}} />}
         </DivContainer>
       </StyledNavAnchor>
     </Row>
@@ -178,17 +162,10 @@ const LeftPanel: React.FunctionComponent<{
   surveyId?: string
   surveyConfig?: SurveyConfig
   currentStepIndex?: number
-  onUpdateSteps: (s: Step[]) => void
+  isReadOnly: boolean
+  onReorderSteps: (s: Step[]) => void
   onNavigateStep: (id: number) => void
-}> = ({
-  guid,
-  surveyConfig,
-  children,
-  surveyId,
-  currentStepIndex,
-  onNavigateStep,
-  onUpdateSteps,
-}) => {
+}> = ({guid, surveyConfig, children, surveyId, currentStepIndex, isReadOnly, onNavigateStep, onReorderSteps}) => {
   const onDragEnd = (result: DropResult) => {
     if (!surveyConfig?.steps) {
       return
@@ -199,24 +176,24 @@ const LeftPanel: React.FunctionComponent<{
       resultDesinationIndex = surveyConfig.steps.length - 2
     }
 
-    const items = SurveyUtils.reorder(
-      [...surveyConfig!.steps],
-      result.source.index,
-      resultDesinationIndex
-    )
+    const items = SurveyUtils.reorder([...surveyConfig!.steps], result.source.index, resultDesinationIndex)
 
-    onUpdateSteps(items)
+    onReorderSteps(items)
   }
   return (
     <Container id="left">
+      {surveyConfig && <>{children}</>}
       <DragDropContext onDragEnd={onDragEnd}>
         <Box id="questions">
-          <TitleRow surveyId={surveyId} guid={guid} />
+          <TitleRow surveyId={surveyId} guid={guid} isCurrent={currentStepIndex === undefined} />
+
           <Box
-            sx={{
-              height: 'calc(100vh - 150px)',
-              overflow: 'scroll',
-            }}>
+            sx={
+              {
+                // height: 'calc(100vh - 150px)',
+                //  overflow: 'scroll',
+              }
+            }>
             {surveyConfig?.steps && (
               <>
                 <Droppable droppableId="questions">
@@ -225,15 +202,12 @@ const LeftPanel: React.FunctionComponent<{
                       {surveyConfig!.steps!.map((step, index) => (
                         <Draggable
                           draggableId={step.identifier}
-                          isDragDisabled={
-                            surveyConfig?.steps!.length < 3 ||
-                            step.type === 'overview' ||
-                            step.type === 'completion'
-                          }
+                          isDragDisabled={!canDrag(isReadOnly, surveyConfig?.steps!.length, index)}
                           index={index}
                           key={step.identifier}>
                           {provided => (
                             <StepLink
+                              isReadOnly={isReadOnly}
                               provided={provided}
                               isCurrentStep={currentStepIndex === index}
                               //  guid={guid}
@@ -253,9 +227,6 @@ const LeftPanel: React.FunctionComponent<{
             )}
           </Box>
         </Box>
-        {surveyConfig && (
-          <AddStepMenuContainer>{children}</AddStepMenuContainer>
-        )}
       </DragDropContext>
     </Container>
   )

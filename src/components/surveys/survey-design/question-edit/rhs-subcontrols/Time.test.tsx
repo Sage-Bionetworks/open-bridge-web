@@ -1,0 +1,96 @@
+import {screen} from '@testing-library/react'
+import {TimeQuestion} from '@typedefs/surveys'
+import {renderSurveyQuestionComponent} from '__test_utils/utils'
+import Time from './Time'
+
+//render the component
+const renderComponent = (step: TimeQuestion) => {
+  return renderSurveyQuestionComponent<TimeQuestion>({step, Component: Time})
+}
+//mock the props
+
+const getCheckbox = () => screen.getByRole('checkbox', {name: /no min and max/i})
+const getMinInput = () => screen.getByRole('button', {name: /min/i})
+const getMaxInput = () => screen.getByRole('button', {name: /max/i})
+
+const step: TimeQuestion = {
+  type: 'simpleQuestion',
+  identifier: 'simpleQ6',
+  nextStepIdentifier: 'followupQ',
+  title: 'What time is it on the moon?',
+  inputItem: {
+    type: 'time',
+  },
+}
+
+afterEach(() => {
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
+})
+
+//test the component renders without field label
+test('renders the component without min/max', () => {
+  renderComponent(step)
+  const min = getMinInput()
+  const max = getMaxInput()
+
+  expect(getCheckbox()).toHaveProperty('checked', true)
+  expect(min).toHaveClass('Mui-disabled')
+  expect(max).toHaveClass('Mui-disabled')
+})
+
+//test the component renders without field label
+test('renders the component with min and max', () => {
+  renderComponent({
+    ...step,
+    inputItem: {
+      type: 'time',
+      fieldLabel: 'My Label',
+      formatOptions: {minimumValue: '10:00', maximumValue: '12:00'},
+    },
+  })
+  const min = getMinInput()
+  const max = getMaxInput()
+
+  expect(getCheckbox()).toHaveProperty('checked', false)
+
+  expect(min).toHaveTextContent('10:00')
+
+  expect(max).toHaveTextContent('12:00')
+
+  expect(min).not.toHaveClass('Mui-disabled')
+  expect(max).not.toHaveClass('Mui-disabled')
+})
+
+test('updates values', async () => {
+  const {user} = renderComponent({
+    ...step,
+    inputItem: {
+      type: 'time',
+      fieldLabel: 'My Label',
+      formatOptions: {
+        allowFuture: false,
+        allowPast: true,
+        minimumValue: '10:00',
+        maximumValue: '12:00',
+      },
+    },
+  })
+
+  const min = getMinInput()
+  const max = getMaxInput()
+  await user.click(min)
+  const minItem = screen.getByRole('option', {name: /05:00/i})
+  await user.click(minItem)
+  await user.click(max)
+  const maxItem = screen.getByRole('option', {name: /15:00/i})
+  await user.click(maxItem)
+
+  expect(min).toHaveTextContent('05:00')
+  expect(max).toHaveTextContent('15:00')
+  await user.click(getCheckbox())
+  expect(getCheckbox()).toHaveProperty('checked', true)
+  expect(min).toHaveClass('Mui-disabled')
+  expect(max).toHaveClass('Mui-disabled')
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+}, 20_000)

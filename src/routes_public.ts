@@ -1,9 +1,10 @@
 import AssessmentDetail from '@components/assessments/AssessmentDetail'
 import AssessmentLibrary from '@components/assessments/AssessmentLibrary'
-import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
+import constants from '@typedefs/constants'
 import SignInPage from './SignInPage'
+import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
 
-export default [
+const routes = [
   {
     path: '/',
     name: '',
@@ -21,7 +22,7 @@ export default [
 
   {
     path: '/assessments',
-    name: 'ASSESSMENT LIBRARY',
+    name: 'Assessment Library',
     Component: AssessmentLibrary,
     exact: false,
   },
@@ -33,9 +34,16 @@ export default [
   },
 
   {
-    path: '/sign-in',
+    path: constants.publicPaths.SIGN_IN,
     name: 'SIGN IN',
     Component: SignInPage,
     isRhs: true,
   },
+  {
+    path: constants.publicPaths.RESET_PASSWORD,
+    name: '',
+    Component: SignInPage,
+    exact: true,
+  },
 ]
+export default routes

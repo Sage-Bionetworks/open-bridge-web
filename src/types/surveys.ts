@@ -61,6 +61,8 @@ export type Skip = {
 }
 
 export type ChoiceQuestionChoice = {
+  guid?: string
+
   text: string
   value?: string | number | boolean
 
@@ -68,32 +70,29 @@ export type ChoiceQuestionChoice = {
   icon?: string
 }
 
-export type Instruction = BaseStep & {}
-export type ControlType =
-  | 'radio'
-  | 'checkbox'
-  | 'text'
-  | 'likert'
-  | 'time'
-  | 'date'
+export interface Instruction extends BaseStep {}
+export type ControlType = 'radio' | 'checkbox' | 'text' | 'likert' | 'time' | 'date'
 
-export type Question = BaseStep & {
+export interface Question extends BaseStep {
   optional?: boolean //true,
   inputItem?: InputItem
   skipCheckbox?: Skip
   baseType?: QuestionDataType
-  nextStepIdentifier?: string
+
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
 
-export type ChoiceQuestion = Question & {
+export type SurveyRule = {
+  choiceGuid?: string
+  matchingAnswer?: number | string | boolean
+  skipToIdentifier: string
+  ruleOperator?: SurveyRuleOperator
+}
+
+export interface ChoiceQuestion extends Question {
   baseType: QuestionDataType
 
-  surveyRules?: {
-    matchingAnswer?: number | string | boolean
-    skipToIdentifier: string
-    ruleOperator?: SurveyRuleOperator
-  }[]
+  surveyRules?: SurveyRule[]
 
   choices: ChoiceQuestionChoice[]
   singleChoice?: boolean
@@ -102,59 +101,68 @@ export type ChoiceQuestion = Question & {
     fieldLabel?: string // no column
   }
 }
-export type MultipleInputQuestion = BaseStep & {
+
+export interface MultipleInputQuestion extends Question {
   optional: boolean
   inputItems: InputItem[]
   skipCheckbox?: Skip
 }
-export type ScaleQuestion = Question & {
+
+export interface ScaleQuestion extends Question {
   uiHint: 'likert' | 'slider'
   inputItem: InputItem & {
     type: 'integer'
     formatOptions: FormatOptionsInteger
   }
 }
-export type DurationQuestion = Question & {
+
+export interface DurationQuestion extends Question {
   inputItem: InputItem & {
     type: 'duration'
     displayUnits: ['hour', 'minute']
   }
 }
 
-export type TimeQuestion = Question & {
+export interface TimeQuestion extends Question {
   inputItem: InputItem & {
     type: 'time'
 
-    formatOptions: FormatOptionsTime
+    formatOptions?: FormatOptionsTime
   }
 }
 
-export type NumericQuestion = Question & {
+export interface NumericQuestion extends Question {
   inputItem: InputItem & {
     type: 'integer'
     formatOptions?: FormatOptionsInteger
   }
 }
 
-export type YearQuestion = Question & {
+export interface FreeTextQuestion extends Question {
+  inputItem: InputItem & {
+    type: 'string'
+    characterLimit?: number
+  }
+}
+
+export interface YearQuestion extends Question {
   inputItem: InputItem & {
     type: 'year'
     formatOptions?: FormatOptionsYear
   }
 }
 
-export type BaseStep = {
+export interface BaseStep {
   identifier: string //'step1',
+  nextStepIdentifier?: string
   controlType?: ControlType
   type:
     | 'overview'
     | 'completion'
-    | 'unkonwn'
+    | 'unknown'
     | 'instruction'
     | 'simpleQuestion'
-    //| 'multipleInputQuestion'
     | 'choiceQuestion'
-  //   | 'comboBoxQuestion' //otherInputItem
   title: string //Instruction Step 1',
   subtitle?: string
   detail?: string //Here are the details for this instruction.',
@@ -175,7 +183,6 @@ export type ActionButtonName =
   | 'pause'
   | 'reviewInstructions'
 
-export type WebUISkipOptions = 'SKIP' | 'NO_SKIP' | 'CUSTOMIZE'
 export type InterruptionHandlingType = {
   canResume: boolean
   reviewIdentifier?: 'beginning'
@@ -183,7 +190,6 @@ export type InterruptionHandlingType = {
   canSaveForLater: boolean
 }
 export type SurveyConfig = {
-  webConfig?: {skipOption?: WebUISkipOptions}
   type: string //'assessment',
   interruptionHandling?: InterruptionHandlingType
   identifier: string //'foo',

@@ -1,6 +1,7 @@
+import constants from '@typedefs/constants'
 import * as React from 'react'
 import {UserSessionData} from '../types/types'
-import Utility from './utility'
+import {default as Utility, default as UtilityObject} from './utility'
 
 type ActionType = 'LOGIN' | 'LOGOUT' | 'SET_ALERT' | 'CLEAR_ALERT'
 
@@ -8,27 +9,26 @@ type Action = {type: ActionType; payload?: UserSessionData}
 type Dispatch = (action: Action) => void
 type UserSessionDataProviderProps = {children: React.ReactNode}
 
-const initialState = {
+const initialState: UserSessionData = {
   token: undefined,
+  synapseUserId: undefined,
   orgMembership: undefined,
   dataGroups: [],
   roles: [],
   id: '',
-  appId: '',
+  appId: UtilityObject.getAppId(),
   demoExternalId: '',
+  isVerified: false,
+  lastLoginMethod: undefined,
 }
 
-const UserSessionDataStateContext = React.createContext<
-  UserSessionData | undefined
->(undefined)
-const UserSessionDataDispatchContext = React.createContext<
-  Dispatch | undefined
->(undefined)
+const UserSessionDataStateContext = React.createContext<UserSessionData | undefined>(undefined)
+const UserSessionDataDispatchContext = React.createContext<Dispatch | undefined>(undefined)
 
 function userReducer(state: UserSessionData, action: Action): UserSessionData {
   switch (action.type) {
     case 'SET_ALERT': {
-      const newState = {
+      const newState: UserSessionData = {
         ...state,
         alert: action.payload!.alert!,
       }
@@ -37,7 +37,7 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
     }
 
     case 'CLEAR_ALERT': {
-      const newState = {
+      const newState: UserSessionData = {
         ...state,
         alert: undefined,
       }
@@ -46,18 +46,21 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
     }
 
     case 'LOGIN':
-      const newState = {
+      const newState: UserSessionData = {
         ...state,
         token: action.payload!.token,
         orgMembership: action.payload!.orgMembership,
         appId: action.payload!.appId,
         firstName: action.payload!.firstName,
         lastName: action.payload!.lastName,
-        userName: action.payload!.userName,
+        username: action.payload!.username,
         dataGroups: action.payload!.dataGroups,
         roles: action.payload!.roles,
         id: action.payload!.id,
+        synapseUserId: action.payload!.synapseUserId,
+        isVerified: action.payload!.isVerified,
         demoExternalId: action.payload?.demoExternalId,
+        lastLoginMethod: action.payload?.lastLoginMethod,
       }
 
       Utility.setSession({...newState, token: undefined})
@@ -65,7 +68,7 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
 
     case 'LOGOUT':
       Utility.clearSession()
-      window.location.href = '/sign-in'
+      window.location.href = constants.publicPaths.SIGN_IN
       return {
         ...initialState,
       }
@@ -76,15 +79,10 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
 }
 
 function UserSessionDataProvider({children}: UserSessionDataProviderProps) {
-  const [state, dispatch] = React.useReducer(
-    userReducer,
-    Utility.getSession() || initialState
-  )
+  const [state, dispatch] = React.useReducer(userReducer, Utility.getSession() || initialState)
   return (
     <UserSessionDataStateContext.Provider value={state}>
-      <UserSessionDataDispatchContext.Provider value={dispatch}>
-        {children}
-      </UserSessionDataDispatchContext.Provider>
+      <UserSessionDataDispatchContext.Provider value={dispatch}>{children}</UserSessionDataDispatchContext.Provider>
     </UserSessionDataStateContext.Provider>
   )
 }
@@ -100,16 +98,9 @@ function useUserSessionDataState() {
 function useUserSessionDataDispatch() {
   const context = React.useContext(UserSessionDataDispatchContext)
   if (context === undefined) {
-    throw new Error(
-      'useUserSessionDataDispatch must be used within a AuthContext'
-    )
+    throw new Error('useUserSessionDataDispatch must be used within a AuthContext')
   }
   return context
 }
 
-export {
-  UserSessionDataProvider,
-  useUserSessionDataState,
-  useUserSessionDataDispatch,
-  UserSessionDataStateContext,
-}
+export {UserSessionDataProvider, useUserSessionDataState, useUserSessionDataDispatch, UserSessionDataStateContext}

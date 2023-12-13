@@ -1,3 +1,10 @@
+import Alert_Icon from '@assets/alert_icon.svg'
+import {ReactComponent as ArrowIcon} from '@assets/arrow_long.svg'
+import {ReactComponent as EnvelopeImg} from '@assets/launch/envelope_icon.svg'
+import DatePicker from '@components/widgets/DatePicker'
+import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
+import {AlertWithText, SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
   Button,
@@ -11,24 +18,13 @@ import {
   RadioGroup,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import moment from 'moment'
+import StudyService from '@services/study.service'
+import {theme, ThemeType} from '@style/theme'
+import constants from '@typedefs/constants'
+import {Contact, Study} from '@typedefs/types'
+import dayjs from 'dayjs'
 import React, {useEffect} from 'react'
 import {NavLink, Redirect} from 'react-router-dom'
-import Alert_Icon from '../../../assets/alert_icon.svg'
-import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
-import {ReactComponent as EnvelopeImg} from '../../../assets/launch/envelope_icon.svg'
-import {useUserSessionDataState} from '../../../helpers/AuthContext'
-import StudyService from '../../../services/study.service'
-import {ThemeType} from '../../../style/theme'
-import constants from '../../../types/constants'
-import {Contact, Study} from '../../../types/types'
-import DatePicker from '../../widgets/DatePicker'
-import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
-import {
-  AlertWithText,
-  SimpleTextInput,
-  SimpleTextLabel,
-} from '../../widgets/StyledComponents'
 import LeadInvestigatorDropdown from '../app-design/LeadInvestigatorDropdown'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -95,10 +91,7 @@ const LastScreen: React.FunctionComponent<{
   return (
     <Box textAlign="center">
       <EnvelopeImg />
-      <MTBHeadingH1 style={{margin: '24px 0', textDecoration: 'underline'}}>
-        {' '}
-        Almost there!{' '}
-      </MTBHeadingH1>
+      <MTBHeadingH1 style={{margin: '24px 0', textDecoration: 'underline'}}> Almost there! </MTBHeadingH1>
       <p>
         Please email a copy of your IRB <br />
         Approval/Exempt letter to:
@@ -109,20 +102,12 @@ const LastScreen: React.FunctionComponent<{
       {isLaunching ? (
         <CircularProgress color="primary" />
       ) : (
-        <Button
-          onClick={launchStudy}
-          variant="contained"
-          className={classes.continueButton}
-          color="primary">
+        <Button onClick={launchStudy} variant="contained" className={classes.continueButton} color="primary">
           Continue <ArrowIcon />
         </Button>
       )}
     </Box>
   )
-}
-
-type irbStudyDataType = {
-  irbRecordSameInstitutionalAffiliation: boolean
 }
 
 export const getDateWithTimeZone = (date: Date) => {
@@ -131,14 +116,10 @@ export const getDateWithTimeZone = (date: Date) => {
 }
 
 export const getFormattedDate = (date: Date | null) => {
-  return date ? moment(date).format('YYYY-MM-DD') : ''
+  return date ? dayjs(date).format('YYYY-MM-DD') : ''
 }
 
-type ContactRoleTypes =
-  | 'irb'
-  | 'principal_investigator'
-  | 'study_support'
-  | 'sponsor'
+type ContactRoleTypes = 'irb' | 'principal_investigator' | 'study_support' | 'sponsor'
 
 const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   study,
@@ -153,42 +134,38 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
 
   const classes = useStyles()
   const {token, orgMembership} = useUserSessionDataState()
-  const [irbRecordSameInstAffiliation, setIrbRecordSameInstAffiliation] =
-    React.useState<boolean>(false)
+  const [irbRecordSameInstAffiliation, setIrbRecordSameInstAffiliation] = React.useState<boolean>(false)
   const [certifyStatements, setCertifyStatement] = React.useState({
     isStudyProtocolReviewed: false,
     isStudyConsistentWithLaws: false,
   })
 
   useEffect(() => {
-    const institutionalAffiliation = getContactObject(
-      'principal_investigator'
-    )!.affiliation
+    const institutionalAffiliation = getContactObject('principal_investigator')!.affiliation
     const nameOfIrbRecord = getContactObject('irb')!.name
-    const irbRecordSameInstitutionalAffiliation =
-      nameOfIrbRecord === institutionalAffiliation
+    const irbRecordSameInstitutionalAffiliation = nameOfIrbRecord === institutionalAffiliation
     setIrbRecordSameInstAffiliation(irbRecordSameInstitutionalAffiliation)
   }, [])
 
   useEffect(() => {
-    const certified =
-      certifyStatements.isStudyProtocolReviewed &&
-      certifyStatements.isStudyConsistentWithLaws
+    const certified = certifyStatements.isStudyProtocolReviewed && certifyStatements.isStudyConsistentWithLaws
     if (!certified) {
       onEnableNext(false)
       return
     }
+  }, [certifyStatements])
+
+  useEffect(() => {
     if (study.irbDecisionType === 'approved' || !study.irbDecisionType) {
       const approvalDate = study.irbDecisionOn
       const approvedUntil = study.irbExpiresOn
-      const isCorrectFormat =
-        approvalDate && approvedUntil && approvedUntil >= approvalDate
+      const isCorrectFormat = approvalDate && approvedUntil && approvedUntil >= approvalDate
       if (!isCorrectFormat) {
         onEnableNext(false)
         return
       }
     } else {
-      const exemptDate = study.irbExpiresOn
+      const exemptDate = study.irbDecisionOn
       if (!exemptDate) {
         onEnableNext(false)
         return
@@ -196,11 +173,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     }
     const investigator = getContactObject('principal_investigator')!
     const irb = getContactObject('irb')!
-    const inputFieldsCorrectFormat =
-      investigator.affiliation &&
-      study.irbProtocolId &&
-      irb.name &&
-      study.irbName
+    const inputFieldsCorrectFormat = investigator.affiliation && study.irbProtocolId && irb.name && study.irbName
     onEnableNext(inputFieldsCorrectFormat)
   })
 
@@ -208,29 +181,17 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     return study?.contacts?.find(el => el.role === role)
   }
 
-  const updateContactsArray = (
-    role: ContactRoleTypes,
-    newContactObject: Contact,
-    currentContactsArray: Contact[]
-  ) => {
+  const updateContactsArray = (role: ContactRoleTypes, newContactObject: Contact, currentContactsArray: Contact[]) => {
     const contactIndex = currentContactsArray.findIndex(el => el.role === role)
     const newContactsArray = [...currentContactsArray]
     newContactsArray[contactIndex] = newContactObject
     return newContactsArray
   }
 
-  const displayApprovalDateError =
-    study.irbDecisionOn &&
-    study.irbExpiresOn &&
-    study.irbDecisionOn > study.irbExpiresOn
-  const irbDecisionIsApproved =
-    !study.irbDecisionType || study.irbDecisionType === 'approved'
-  const irbDecisionDate = study.irbDecisionOn
-    ? getDateWithTimeZone(new Date(study.irbDecisionOn))
-    : null
-  const irbExpirationDate = study.irbExpiresOn
-    ? getDateWithTimeZone(new Date(study.irbExpiresOn))
-    : null
+  const displayApprovalDateError = study.irbDecisionOn && study.irbExpiresOn && study.irbDecisionOn > study.irbExpiresOn
+  const irbDecisionIsApproved = !study.irbDecisionType || study.irbDecisionType === 'approved'
+  const irbDecisionDate = study.irbDecisionOn ? getDateWithTimeZone(new Date(study.irbDecisionOn)) : null
+  const irbExpirationDate = study.irbExpiresOn ? getDateWithTimeZone(new Date(study.irbExpiresOn)) : null
   return (
     <>
       {!isFinished && (
@@ -249,8 +210,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     setCertifyStatement(prevState => {
                       return {
                         ...prevState,
-                        isStudyProtocolReviewed:
-                          !prevState.isStudyProtocolReviewed,
+                        isStudyProtocolReviewed: !prevState.isStudyProtocolReviewed,
                       }
                     })
                   }}
@@ -269,8 +229,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     setCertifyStatement(prevState => {
                       return {
                         ...prevState,
-                        isStudyConsistentWithLaws:
-                          !prevState.isStudyConsistentWithLaws,
+                        isStudyConsistentWithLaws: !prevState.isStudyConsistentWithLaws,
                       }
                     })
                   }}
@@ -285,9 +244,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
           <Grid container spacing={4}>
             <Grid item xs={6}>
               <FormControl fullWidth>
-                <SimpleTextLabel htmlFor="protocolTitle">
-                  IRB Protocol Title*
-                </SimpleTextLabel>
+                <SimpleTextLabel htmlFor="protocolTitle">IRB Protocol Title*</SimpleTextLabel>
                 <SimpleTextInput
                   value={study.irbName || ''}
                   placeholder="Official IRB Protocol Name"
@@ -312,9 +269,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
               <LeadInvestigatorDropdown
                 token={token!}
                 orgMembership={orgMembership!}
-                currentInvestigatorSelected={
-                  getContactObject('principal_investigator')?.name || ''
-                }
+                currentInvestigatorSelected={getContactObject('principal_investigator')?.name || ''}
                 onChange={(name: string) => {
                   const newPrincipleInvestigator = {
                     ...getContactObject('principal_investigator')!,
@@ -335,19 +290,14 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             </Grid>
             <Grid item xs={6}>
               <Box fontSize="12px" mt={2}>
-                Principal Investigators must be listed as the "Study
-                Administrator".
+                Principal Investigators must be listed as the "Study Administrator".
                 <br />
                 <br />
-                If your PI is not listed in the dropdown menu, please add them
-                to the study and/or make them a{' '}
+                If your PI is not listed in the dropdown menu, please add them to the study and/or make them a{' '}
                 <strong>Co-Study Administrator</strong>
                 &nbsp;via the &nbsp;
                 <NavLink
-                  to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
-                    ':id',
-                    study.identifier
-                  )}
+                  to={constants.restrictedPaths.ACCESS_SETTINGS.replace(':id', study.identifier)}
                   key={'path-to-access-settings'}>
                   Access Settings
                 </NavLink>
@@ -356,14 +306,9 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             </Grid>
             <Grid item xs={6} style={{marginTop: '-32px'}}>
               <FormControl fullWidth>
-                <SimpleTextLabel htmlFor="affiliation">
-                  Institutional Affiliation*
-                </SimpleTextLabel>
+                <SimpleTextLabel htmlFor="affiliation">Institutional Affiliation*</SimpleTextLabel>
                 <SimpleTextInput
-                  value={
-                    getContactObject('principal_investigator')?.affiliation ||
-                    ''
-                  }
+                  value={getContactObject('principal_investigator')?.affiliation || ''}
                   placeholder="Official IRB Protocol Name"
                   onChange={e => {
                     const newPrincipleInvestigator = {
@@ -380,11 +325,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         ...getContactObject('irb')!,
                       }
                       newIrbRecord!.name = e.target.value
-                      newContactsArray = updateContactsArray(
-                        'irb',
-                        newIrbRecord,
-                        newContactsArray
-                      )
+                      newContactsArray = updateContactsArray('irb', newIrbRecord, newContactsArray)
                     }
                     const newStudy: Study = {
                       ...study,
@@ -407,16 +348,12 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
 
             <Grid item xs={6}>
               <FormControl fullWidth>
-                <Box fontSize="14px" fontFamily="Poppins" mb={-1}>
-                  What is your IRB of record?*
-                </Box>
+                <SimpleTextLabel sx={{marginBottom: theme.spacing(-1)}}>What is your IRB of record?*</SimpleTextLabel>
                 <Box pl={4} mt={2}>
                   <RadioGroup
                     aria-label="irb of record"
                     name="irbOfRecord"
-                    value={
-                      irbRecordSameInstAffiliation ? 'aff_same' : 'aff_other'
-                    }
+                    value={irbRecordSameInstAffiliation ? 'aff_same' : 'aff_other'}
                     onChange={e => {
                       const isSameAsInstitution = e.target.value === 'aff_same'
                       // let irbRecordName = studyData?.nameOfIrbRecord || ''
@@ -424,14 +361,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         const newIrbRecord = {
                           ...getContactObject('irb')!,
                         }
-                        newIrbRecord!.name =
-                          getContactObject('principal_investigator')
-                            ?.affiliation || ''
-                        const newContactsArray = updateContactsArray(
-                          'irb',
-                          newIrbRecord,
-                          study.contacts!
-                        )
+                        newIrbRecord!.name = getContactObject('principal_investigator')?.affiliation || ''
+                        const newContactsArray = updateContactsArray('irb', newIrbRecord, study.contacts!)
                         const newStudy: Study = {
                           ...study,
                           contacts: newContactsArray,
@@ -461,11 +392,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         ...getContactObject('irb')!,
                       }
                       newIrbRecord!.name = e.target.value
-                      const newContactsArray = updateContactsArray(
-                        'irb',
-                        newIrbRecord,
-                        study.contacts!
-                      )
+                      const newContactsArray = updateContactsArray('irb', newIrbRecord, study.contacts!)
                       const newStudy: Study = {
                         ...study,
                         contacts: newContactsArray,
@@ -479,7 +406,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     inputProps={{
                       style: inputStyles,
                     }}
-                    readOnly={irbRecordSameInstAffiliation}
+                    $readOnly={irbRecordSameInstAffiliation}
                   />
                 </Box>
               </FormControl>
@@ -487,9 +414,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             <Grid item xs={6}></Grid>
             <Grid item xs={6}>
               <FormControl>
-                <SimpleTextLabel htmlFor="protocolId">
-                  IRB Protocol ID*
-                </SimpleTextLabel>
+                <SimpleTextLabel htmlFor="protocolId">IRB Protocol ID*</SimpleTextLabel>
                 <SimpleTextInput
                   value={study?.irbProtocolId || ''}
                   placeholder="Protocol ID"
@@ -508,34 +433,24 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             </Grid>
             <Grid item xs={6}></Grid>
             <Grid item xs={6}>
-              <MTBHeadingH2 style={{fontSize: '16px'}}>
-                IRB Decision*:{' '}
-              </MTBHeadingH2>
+              <MTBHeadingH2 style={{fontSize: '16px'}}>IRB Decision*: </MTBHeadingH2>
               <Box pl={3} mt={2}>
                 <FormControl>
                   <RadioGroup
                     aria-label="Irb Decision"
                     name="irbDecision"
-                    value={
-                      irbDecisionIsApproved ? 'irb_approved' : 'irb_exempt'
-                    }
+                    value={irbDecisionIsApproved ? 'irb_approved' : 'irb_exempt'}
                     onChange={e => {
                       const isApproved = e.target.value === 'irb_approved'
                       const newStudy = {...study}
-                      newStudy.irbDecisionType = isApproved
-                        ? 'approved'
-                        : 'exempt'
+                      newStudy.irbDecisionType = isApproved ? 'approved' : 'exempt'
                       onChange(newStudy)
                     }}>
-                    <FormControlLabel
-                      control={<Radio />}
-                      label="Approved"
-                      labelPlacement="end"
-                      value="irb_approved"
-                    />
+                    <FormControlLabel control={<Radio />} label="Approved" labelPlacement="end" value="irb_approved" />
                     <Box style={{display: 'flex', flexDirection: 'row'}}>
                       <FormControl style={{marginRight: '8px'}}>
                         <DatePicker
+                          label="Date of IRB Approval"
                           id="approvalDate"
                           value={irbDecisionIsApproved ? irbDecisionDate : null}
                           onChange={e => {
@@ -550,10 +465,9 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                       </FormControl>
                       <FormControl>
                         <DatePicker
+                          label="Date of Approval Expiration"
                           id="expirationDate"
-                          value={
-                            irbDecisionIsApproved ? irbExpirationDate : null
-                          }
+                          value={irbDecisionIsApproved ? irbExpirationDate : null}
                           onChange={e => {
                             const updatedStudy = {...study}
                             if (!updatedStudy.irbDecisionType) {
@@ -569,11 +483,11 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                       <FormHelperText
                         id="approval-date-validation-error-text"
                         className={classes.dateValidationErrorText}>
-                        Please make sure that expiration date is the same or
-                        after approval date.
+                        Please make sure that expiration date is the same or after approval date.
                       </FormHelperText>
                     )}
                     <FormControlLabel
+                      sx={{marginTop: theme.spacing(2)}}
                       control={<Radio />}
                       label="Exempt"
                       value="irb_exempt"
@@ -581,11 +495,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     <FormControl>
                       <DatePicker
                         id="exemptionDate"
-                        value={
-                          !irbDecisionIsApproved
-                            ? irbDecisionDate || null
-                            : null
-                        }
+                        label="Date of Exemption"
+                        value={!irbDecisionIsApproved ? irbDecisionDate || null : null}
                         onChange={e => {
                           const updatedStudy = {
                             ...study,
@@ -593,8 +504,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                           if (!updatedStudy.irbDecisionType) {
                             updatedStudy.irbDecisionType = 'exempt'
                           }
-                          if (!updatedStudy.irbExpiresOn) {
-                            updatedStudy.irbExpiresOn = getFormattedDate(e)
+                          if (updatedStudy.irbExpiresOn) {
+                            updatedStudy.irbExpiresOn = undefined
                           }
                           updatedStudy.irbDecisionOn = getFormattedDate(e)
                           onChange(updatedStudy)
@@ -610,26 +521,18 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             <Box mt={2}>
               <AlertWithText
                 severity="error"
-                icon={
-                  <img
-                    src={Alert_Icon}
-                    style={{height: '30px'}}
-                    alt={'study-warning'}></img>
-                }
+                icon={<img src={Alert_Icon} style={{height: '30px'}} alt={'study-warning'}></img>}
                 className={classes.alertText}>
-                Once your study is submitted, everything related to
-                sessions/scheduling/enrollment will be <strong>locked</strong>
-                -only <strong>Customize App</strong> and{' '}
-                <strong>Study & IRB</strong> details will be{' '}
+                Once your study is submitted, everything related to sessions/scheduling/enrollment will be{' '}
+                <strong>locked</strong>
+                -only <strong>Customize App</strong> and <strong>Study & IRB</strong> details will be{' '}
                 <strong>editable.</strong>
               </AlertWithText>
             </Box>
           )}
         </Box>
       )}
-      {isFinished && (
-        <LastScreen study={study} onShowFeedback={onShowFeedback}></LastScreen>
-      )}
+      {isFinished && <LastScreen study={study} onShowFeedback={onShowFeedback}></LastScreen>}
     </>
   )
 }

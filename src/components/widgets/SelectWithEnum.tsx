@@ -1,10 +1,4 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectProps,
-} from '@mui/material'
+import {FormControl, InputLabel, MenuItem, Select, SelectProps} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
@@ -30,7 +24,7 @@ export interface SelectWithEnumProps {
   //Enter your props here
   sourceData: object | Array<any>
 
-  id: string
+  name: string
   value?: string | number
   label?: string
   style?: React.CSSProperties
@@ -39,12 +33,10 @@ export interface SelectWithEnumProps {
   size?: 'small' | 'normal'
 }
 
-const SelectWithEnum: React.FunctionComponent<
-  SelectWithEnumProps & SelectProps
-> = ({
+const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps & SelectProps> = ({
   sourceData,
 
-  id,
+  name,
   style,
   variant = 'outlined',
   size = 'small',
@@ -76,15 +68,17 @@ const SelectWithEnum: React.FunctionComponent<
   return (
     <FormControl className={classes.formControl} style={style}>
       {!!!value && (
-        <InputLabel className={classes.inputLabel} shrink={false} htmlFor={id}>
+        <InputLabel className={classes.inputLabel} shrink={false} htmlFor={name}>
           {label}
         </InputLabel>
       )}
       <Select
         variant={variant}
         classes={{select: clsx(size === 'small' && classes.small)}}
-        labelId={`${id}-label`}
-        id={id}
+        labelId={`${name}-label`}
+        id={name}
+        name={name}
+        sx={{minWidth: '80px'}}
         value={value || ''}
         {...rest}>
         {getDropdownItems(sourceData)}

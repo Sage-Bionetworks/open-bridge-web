@@ -1,132 +1,258 @@
-import {ReactComponent as AdherenceRed} from '@assets/adherence/adherence_icon_red.svg'
-import {ReactComponent as CalendarBlue} from '@assets/adherence/calendar_blue.svg'
-import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
-import {ReactComponent as CheckEmpty} from '@assets/adherence/round_check_empty.svg'
-import {ReactComponent as CheckGreen} from '@assets/adherence/round_check_green.svg'
+import {useAdherenceAlerts, useUpdateAdherenceAlerts} from '@components/studies/adherenceHooks'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
-import CommentIcon from '@mui/icons-material/Comment'
-import {Box, Checkbox, styled} from '@mui/material'
-import IconButton from '@mui/material/IconButton'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import {latoFont} from '@style/theme'
-import moment from 'moment'
-import React, {FunctionComponent} from 'react'
+import TablePagination from '@components/widgets/pagination/TablePagination'
+import {DateRange, PersonAddAlt, TrendingDown} from '@mui/icons-material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import NotificationsNoneTwoToneIcon from '@mui/icons-material/NotificationsNoneTwoTone'
+import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined'
+import PublishedWithChangesRoundedIcon from '@mui/icons-material/PublishedWithChangesRounded'
+import {
+  Alert,
+  Avatar,
+  Badge,
+  Box,
+  Checkbox,
+  CircularProgress,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+  styled,
+  Table,
+  TableBody,
+  TableRow,
+  Typography,
+} from '@mui/material'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import ParticipantService from '@services/participants.service'
+import {theme} from '@style/theme'
+import {AdherenceAlert, AdherenceAlertCategory} from '@typedefs/types'
+import dayjs from 'dayjs'
+import React, {FunctionComponent, ReactElement} from 'react'
+import {BorderedTableCell, StyledLink} from '../../widgets/StyledComponents'
 
 type AdherenceAlertsProps = {
-  studyId?: string
+  studyId: string
 }
 
-type AlertType = 'enrollment' | 'adherence' | 'upcoming'
+type Action = 'READ' | 'UNREAD' | 'DELETE'
 
-type AdhAlert = {
-  type: AlertType
-  participantId: string
-  timestamp: Date
-  text: string
-  done?: boolean
+const BoxForFilters = styled(Box)(({theme}) => ({
+  padding: theme.spacing(1, 2),
+  display: 'flex',
+  mt: 0,
+  mb: 1,
+  background: '#F1F3F5',
+}))
+
+const ALERTS = {
+  new_enrollment: {
+    label: 'New Enrollment',
+    icon: <PersonAddAlt />,
+    text: 'has newly enrolled.',
+  },
+  low_adherence: {
+    label: 'Adherence',
+    icon: <TrendingDown />,
+    text: 'has adherence below [threshold]%.',
+  },
+  upcoming_study_burst: {
+    label: 'Upcoming Test Cycle',
+    icon: <DateRange />,
+    text: 'has an upcoming burst.',
+  },
+  study_burst_change: {
+    label: 'Test Window Changes',
+    icon: <PublishedWithChangesRoundedIcon />,
+    text: 'is owed $32.',
+  },
+  timeline_accessed: {
+    label: 'Timeline Retrieved',
+    icon: <PersonPinCircleOutlinedIcon />,
+    text: 'has logged in for the first time.',
+  },
 }
-const _alerts: AdhAlert[] = [
-  {
-    type: 'adherence',
-    participantId: '323132',
-    timestamp: new Date(),
-    text: 'has adherence below 60%.',
-  },
-  {
-    type: 'upcoming',
-    participantId: '3231349',
-    timestamp: new Date(),
-    text: 'has and upcoming Burst in two weeks',
-  },
 
-  {
-    type: 'adherence',
-    timestamp: new Date(),
-    participantId: '3231321',
-    text: 'has adherence below 60%.',
-  },
-  {
-    type: 'upcoming',
-    participantId: '3231340',
-    timestamp: new Date(),
-    text: 'has and upcoming Burst in two weeks',
-  },
-  {
-    type: 'enrollment',
-    participantId: '32311432',
-    timestamp: new Date(),
-    text: 'has enrolled',
-  },
-]
+const AlertIconWithYellowDot: FunctionComponent = () => {
+  return (
+    <Badge
+      sx={{
+        display: 'inline-block',
+        verticalAlign: 'middle',
+        marginRight: theme.spacing(1),
+        '& .MuiBadge-badge': {
+          backgroundColor: '#FFA825',
+        },
+      }}
+      color="warning"
+      overlap="circular"
+      variant="dot">
+      <NotificationsNoneTwoToneIcon
+        sx={{
+          fontSize: theme.typography.h3.fontSize,
+          color: '#878E95',
+        }}
+      />
+    </Badge>
+  )
+}
 
-const UlStyled = styled('ul')(({theme}) => ({
-  listStyleType: 'none',
-  width: '100%',
-  margin: '0',
-  padding: theme.spacing(3),
-  borderTop: '1px solid #CFCFCF',
-  '&> li': {
-    display: 'flex',
-    alignItems: 'center',
-    fontFamily: latoFont,
-    padding: theme.spacing(2, 1, 2, 1),
-    borderBottom: '1px solid #CFCFCF',
-  },
-  '& .MuiCheckbox-root:hover': {
-    backgroundColor: 'transparent',
-  },
-  '& div:nth-of-type(1)': {
-    marginRight: theme.spacing(3),
-  },
-  '& div:nth-of-type(2)': {
-    flexGrow: 1,
-  },
-  '& div:nth-of-type(3)': {
-    position: 'relative',
-    width: '90px',
+const IconWithRoundBackground: FunctionComponent<{icon: ReactElement | undefined; isRead: boolean}> = ({
+  icon,
+  isRead,
+}) => {
+  return (
+    <Box sx={{display: 'inline-block', padding: theme.spacing(1), paddingRight: theme.spacing(5)}}>
+      <Avatar
+        sx={{
+          backgroundColor: isRead ? '#F1F3F5' : '#FFA82526',
+          color: isRead ? '#878E95' : '#FFA825',
+        }}>
+        {icon}
+      </Avatar>
+    </Box>
+  )
+}
 
-    textAlign: 'right',
-
-    '& i': {
-      position: 'absolute',
-      right: '8px',
-      top: '-24px',
-      fontFamily: latoFont,
-      fontSize: '12px',
-      fontStyle: 'italic',
-      fontWeight: 400,
-    },
-  },
-}))
-const DateSpan = styled('span')(({theme}) => ({
-  display: 'block',
-  fontWeight: 500,
-  fontSize: '12px',
-  lineHeight: '14px',
-  color: 'rgba(40, 40, 40, 0.8)',
-}))
-const TextSpan = styled('span')(({theme}) => ({
+const AlertDateText = styled(Typography)(({theme}) => ({
   fontWeight: 400,
-  fontSize: '16px',
-  lineHeight: '19px',
-  color: '#393434',
+  fontSize: '12px',
+  lineHeight: '18px',
+  color: '#878E95',
 }))
 
-const TypeIcons = new Map<AlertType, React.ReactNode>([
-  ['enrollment', <PersonIcon />],
-  ['adherence', <AdherenceRed />],
-  ['upcoming', <CalendarBlue />],
-])
+const AlertSentenceText = styled(Typography)(({theme}) => ({
+  display: 'inline-block',
+  fontSize: '16px',
+  lineHeight: '20px',
+  color: '#353A3F',
+}))
 
-const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
-  const [alerts, setAlerts] = React.useState<AdhAlert[] | undefined>(_alerts)
-  const [checked, setChecked] = React.useState([0])
+const AlertText: FunctionComponent<{alert: AdherenceAlert; studyId: string}> = ({alert, studyId}) => {
+  const alertSentence = ALERTS[alert.category].text
 
-  const handleToggle = (value: number) => () => {
+  return (
+    <Box sx={{display: 'inline-block'}}>
+      <AlertDateText>
+        {`${ALERTS[alert.category].label.toUpperCase()} | 
+        ${dayjs(alert.createdOn).format('M/D/YYYY @ h:mm a')}`}
+      </AlertDateText>
+      <AlertSentenceText sx={{fontWeight: alert.read ? 400 : 700}}>
+        Participant&nbsp;
+        <StyledLink to={`adherence/${alert.participant?.identifier || 'nothing'}`}>
+          {ParticipantService.formatExternalId(studyId, alert.participant.externalId)}
+        </StyledLink>
+        &nbsp;
+        {alert.category === 'low_adherence'
+          ? alertSentence.replace('[threshold]', alert.data!.adherenceThreshold)
+          : alertSentence}
+      </AlertSentenceText>
+    </Box>
+  )
+}
+
+const AlertMenu: FunctionComponent<{
+  alert: AdherenceAlert
+  isLoading: boolean
+  onUpdateAdherenceAlert: (a: Action) => void
+}> = ({alert, isLoading, onUpdateAdherenceAlert}) => {
+  // menu - https://mui.com/material-ui/react-menu/#basic-menu
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  // confirmation diaglog
+  const [isConfirmDialogOpen, setIsConfirmationDialogOpen] = React.useState<'DELETE' | undefined>(undefined)
+
+  const closeConfirmationDialog = () => {
+    setIsConfirmationDialogOpen(undefined)
+  }
+
+  return (
+    <Box sx={{display: 'inline-block', float: 'right'}}>
+      <IconButton
+        aria-label="more"
+        id="adherence-alert-status-button"
+        aria-controls={open ? 'adherence-alert-status-menu' : undefined}
+        aria-expanded={open ? 'true' : undefined}
+        aria-haspopup="true"
+        onClick={handleClick}>
+        {isLoading ? <CircularProgress /> : <MoreVertIcon />}
+      </IconButton>
+      <Menu
+        id="adherence-alert-status-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'adherence-alert-status-button',
+        }}>
+        <MenuItem
+          key={alert.read ? 'unread' : 'read'}
+          onClick={() => {
+            handleClose()
+            // mark unread if currently read, or vice-versa
+            alert.read ? onUpdateAdherenceAlert('UNREAD') : onUpdateAdherenceAlert('READ')
+          }}>
+          {`Mark as ${alert.read ? 'Unread' : 'Read'}`}
+        </MenuItem>
+        <MenuItem
+          key="delete"
+          onClick={() => {
+            handleClose()
+            setIsConfirmationDialogOpen('DELETE')
+          }}>
+          Resolve
+        </MenuItem>
+      </Menu>
+      <ConfirmationDialog
+        isOpen={isConfirmDialogOpen === 'DELETE'}
+        title={'Are you sure you want to resolve this alert?'}
+        type={'DELETE'}
+        actionText={'Resolve Alert'}
+        onCancel={closeConfirmationDialog}
+        onConfirm={() => {
+          closeConfirmationDialog()
+          onUpdateAdherenceAlert('DELETE')
+        }}>
+        <div>
+          <p>
+            Marking this alert as resolved will remove the alert from this list.&nbsp;
+            <strong>
+              <i>This action can not be undone.</i>
+            </strong>
+          </p>
+        </div>
+      </ConfirmationDialog>
+    </Box>
+  )
+}
+
+const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = ({studyId}) => {
+  // set hooks
+  // ...checkboxes
+  const [checked, setChecked] = React.useState(Object.keys(ALERTS) as AdherenceAlertCategory[])
+
+  // ...table
+  const [currentPage, setCurrentPage] = React.useState(0)
+  const [pageSize, setPageSize] = React.useState(50)
+
+  // fetch data
+  const {data, isLoading} = useAdherenceAlerts(studyId, checked, pageSize, currentPage)
+
+  // update alerts state
+  const [updateError, setUpdateError] = React.useState<Error>()
+  const [processingAlertId, setProcessingAlertId] = React.useState<string | undefined>(undefined)
+  const {error: alertUpdateError, mutate} = useUpdateAdherenceAlerts()
+
+  // update checked boxes
+  const handleToggle = (value: AdherenceAlertCategory) => () => {
     const currentIndex = checked.indexOf(value)
     const newChecked = [...checked]
 
@@ -136,83 +262,107 @@ const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
       newChecked.splice(currentIndex, 1)
     }
 
+    setCurrentPage(0)
     setChecked(newChecked)
   }
 
+  const onUpdateAdherenceAlert = async (alertId: string, action: Action) => {
+    setProcessingAlertId(alertId)
+    mutate(
+      {
+        studyId: studyId,
+        alertIds: [alertId],
+        action: action,
+      },
+      {
+        onSuccess(data, variables, context) {
+          setUpdateError(undefined)
+        },
+        onError() {
+          setUpdateError(alertUpdateError as Error)
+        },
+        onSettled() {
+          setTimeout(() => {
+            setProcessingAlertId(undefined)
+          }, 500)
+        },
+      }
+    )
+  }
+
   return (
-    <Loader reqStatusLoading={!alerts}>
-      {alerts && (
-        <Box>
-          <Box>
-            <List
-              sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}>
-              {[0, 1, 2, 3].map(value => {
-                const labelId = `checkbox-list-label-${value}`
-
-                return (
-                  <ListItem
-                    key={value}
-                    secondaryAction={
-                      <IconButton edge="end" aria-label="comments">
-                        <CommentIcon />
-                      </IconButton>
-                    }
-                    disablePadding>
-                    <ListItemButton
-                      role={undefined}
-                      onClick={handleToggle(value)}
-                      dense>
-                      <ListItemIcon>
-                        <Checkbox
-                          edge="start"
-                          checked={checked.indexOf(value) !== -1}
-                          tabIndex={-1}
-                          disableRipple
-                          inputProps={{'aria-labelledby': labelId}}
-                        />
-                      </ListItemIcon>
-                      <ListItemText
-                        id={labelId}
-                        primary={`Line item ${value + 1}`}
+    <>
+      <Typography variant="h3">
+        <AlertIconWithYellowDot />
+        Alerts
+      </Typography>
+      {updateError && <Alert color="error">{updateError}</Alert>}
+      <BoxForFilters>
+        {Object.keys(ALERTS).map(category => (
+          <FormGroup key={category}>
+            <FormControlLabel
+              value={category}
+              control={
+                <Checkbox
+                  checked={checked.indexOf(category as AdherenceAlertCategory) !== -1}
+                  onChange={handleToggle(category as AdherenceAlertCategory)}
+                  // handle case alerts endpoint returns all alerts
+                  // ...when no categories are selected
+                  disabled={checked.length === 1 && category === checked[0]}
+                />
+              }
+              label={ALERTS[category as AdherenceAlertCategory].label}
+              labelPlacement="end"
+            />
+          </FormGroup>
+        ))}
+      </BoxForFilters>
+      <Loader reqStatusLoading={isLoading}>
+        <Table>
+          <TableBody>
+            {data !== undefined &&
+              data.items
+                /* .sort((a, b) => {
+                if (a.read && !b.read) return 1
+                if (b.read && !a.read) return -1
+                if (dayjs(a.createdOn) < dayjs(b.createdOn)) return 1
+                if (dayjs(a.createdOn) > dayjs(b.createdOn)) return -1
+                return 0
+              }) */
+                .map((alert, index) => (
+                  <TableRow key={index}>
+                    <BorderedTableCell
+                      $isDark={index % 2 === 1}
+                      sx={{
+                        padding: theme.spacing(0.5),
+                        borderLeft: 'none',
+                        borderTop: '1px solid #EAECEE',
+                        borderBottom: '1px solid #EAECEE',
+                      }}>
+                      <IconWithRoundBackground icon={ALERTS[alert.category].icon} isRead={alert.read} />
+                      <AlertText alert={alert} studyId={studyId} />
+                      <AlertMenu
+                        alert={alert}
+                        isLoading={processingAlertId === alert.id}
+                        onUpdateAdherenceAlert={(action: Action) => onUpdateAdherenceAlert(alert.id, action)}
                       />
-                    </ListItemButton>
-                  </ListItem>
-                )
-              })}
-            </List>
-          </Box>
-          <UlStyled>
-            {alerts.map((alert, index) => (
-              <li key={index}>
-                <div>{TypeIcons.get(alert.type)}</div>
-                <div>
-                  <DateSpan>
-                    {moment(alert.timestamp).format('MMM Do, YYYY @ h:mm:ss a')}
-                  </DateSpan>
-
-                  <TextSpan>{alert.text}</TextSpan>
-                </div>
-                <div>
-                  {index === 0 && <i>Mark to Resolve</i>}
-                  <Checkbox
-                    icon={<CheckEmpty />}
-                    checkedIcon={<CheckGreen />}
-                    checked={alert.done || false}
-                    onChange={e => {
-                      setAlerts(prev =>
-                        prev?.map((a, i) =>
-                          index === i ? {...alert, done: e.target.checked} : a
-                        )
-                      )
-                    }}
-                  />
-                </div>
-              </li>
-            ))}
-          </UlStyled>
-        </Box>
-      )}
-    </Loader>
+                    </BorderedTableCell>
+                  </TableRow>
+                ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          totalItems={typeof data === 'undefined' ? 0 : data!.total}
+          onPageSelectedChanged={(pageSelected: number) => {
+            setCurrentPage(pageSelected)
+          }}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          counterTextSingular="alerts"
+        />
+      </Loader>
+    </>
   )
 }
 

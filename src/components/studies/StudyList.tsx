@@ -1,18 +1,17 @@
-import ConfirmationDialog, {
-  ConfirmationDialogType,
-} from '@components/widgets/ConfirmationDialog'
-import {MTBHeading} from '@components/widgets/Headings'
+import {default as CollapsableMenu} from '@components/surveys/widgets/MenuDropdown'
+import AlertBanner from '@components/widgets/AlertBanner'
+import ConfirmationDialog, {ConfirmationDialogType} from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Button, Container, Divider, Menu, MenuItem} from '@mui/material'
+import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone'
+import {Box, Button, Container, Menu, MenuItem, styled, Typography} from '@mui/material'
 import Link from '@mui/material/Link'
-import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {useStudies, useUpdateStudyInList} from '@services/studyHooks'
-import {latoFont} from '@style/theme'
+import {latoFont, theme} from '@style/theme'
 import constants from '@typedefs/constants'
-import {AdminRole, DisplayStudyPhase, Study, StudyPhase} from '@typedefs/types'
+import {AdminRole, DisplayStudyPhase, SignInType, Study, StudyPhase} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {Redirect, RouteComponentProps} from 'react-router-dom'
@@ -21,7 +20,7 @@ import StudyCard from './StudyCard'
 type StudyListOwnProps = {}
 
 type StudySublistProps = {
-  status: DisplayStudyPhase
+  status: DisplayStudyPhase | null
   userRoles: AdminRole[]
   studies: Study[]
   onStudyCardClick: Function
@@ -33,87 +32,26 @@ type StudySublistProps = {
   } | null
 }
 
-type StudyAction =
-  | 'DELETE'
-  | 'ANCHOR'
-  | 'DUPLICATE'
-  | 'RENAME'
-  | 'VIEW'
-  | 'WITHDRAW'
-  | 'CLOSE'
+type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME' | 'VIEW' | 'WITHDRAW' | 'CLOSE'
 
-const studyCardWidth = '290'
+const studyCardWidth = '357'
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: '100%',
-    alignItems: 'center',
-    backgroundColor: '#F3EFE5',
-    height: '100%',
-    minHeight: 'calc(100vh - 104px)',
-    [theme.breakpoints.down('lg')]: {
-      minHeight: '100vh',
-    },
+const StyledStudyListGrid = styled(Box, {label: 'StyledStudyListGrid'})(({theme}) => ({
+  display: 'grid',
+  padding: theme.spacing(0),
+  gridTemplateColumns: `repeat(auto-fill,${studyCardWidth}px)`,
+  gridColumnGap: theme.spacing(2),
+  gridRowGap: theme.spacing(2),
+  justifyContent: 'center',
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(3),
+    justifyContent: 'center',
+    gridRowGap: theme.spacing(4),
   },
-  studyContainer: {
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    [theme.breakpoints.down('md')]: {
-      maxWidth: '600px',
-    },
-    height: '100%',
-  },
-  cardGrid: {
-    //const cardWidth = 300
-    display: 'grid',
-    padding: theme.spacing(0),
-    gridTemplateColumns: `repeat(auto-fill,${studyCardWidth}px)`,
-    gridColumnGap: theme.spacing(2),
-    gridRowGap: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
-      padding: theme.spacing(3),
-      justifyContent: 'center',
-      gridRowGap: theme.spacing(4),
-    },
-  },
-  divider: {
-    margin: `${theme.spacing(1)} 0 ${theme.spacing(5)} 0`,
-  },
+}))
 
-  filters: {
-    listStyle: 'none',
-    alignSelf: 'flex-end',
-    margin: '0',
-    paddingLeft: 0,
-  },
-
-  filterItem: {
-    display: 'inline-block',
-  },
-
-  createStudyButton: {
-    margin: theme.spacing(5, 2, 3),
-    borderRadius: '4px',
-    width: '160px',
-    height: '49px',
-    fontSize: '12px',
-    backgroundColor: '#3A3A3A',
-    color: 'white',
-    '&:hover': {
-      transform: 'translateY(1px)',
-      backgroundColor: '#3A3A3A',
-    },
-    fontFamily: 'Lato',
-  },
-  list: {
-    fontFamily: latoFont,
-    fontSize: '14px',
-    lineHeight: '17px',
-    paddingTop: theme.spacing(0),
-    paddingBottom: theme.spacing(0),
-  },
-  paper: {
+const StyledContextMenu = styled(Menu, {label: 'StyledContextMenu'})(({theme}) => ({
+  '& .MuiPaper-root': {
     marginLeft: theme.spacing(3.5),
     borderRadius: '0px',
     '& li': {
@@ -121,9 +59,21 @@ const useStyles = makeStyles(theme => ({
     },
     boxShadow: '2px 1.5px 2px 1px rgba(0, 0, 0, 0.15)',
   },
+  '& .MuiMenu-list': {
+    fontFamily: latoFont,
+    fontSize: '14px',
+    lineHeight: '17px',
+    paddingTop: theme.spacing(0),
+    paddingBottom: theme.spacing(0),
+  },
 }))
 
 const sections = [
+  {
+    studyStatus: [] as StudyPhase[],
+    title: 'All Studies',
+    filterTitle: 'All',
+  },
   {
     studyStatus: ['design'] as StudyPhase[],
     title: 'Draft Studies',
@@ -154,7 +104,7 @@ type StudyListProps = StudyListOwnProps & RouteComponentProps
 
 function getStudyLink(sectionStatus: DisplayStudyPhase, studyId: string) {
   const links = {
-    builder: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
+    builder: `${constants.restrictedPaths.STUDY_BUILDER}/study-details`,
     participants: constants.restrictedPaths.PARTICIPANT_MANAGER,
   }
 
@@ -166,9 +116,7 @@ function getStudyLink(sectionStatus: DisplayStudyPhase, studyId: string) {
       ? links.participants
       : undefined
   } else {
-    link = Utility.isPathAllowed(studyId, links.participants)
-      ? links.participants
-      : undefined
+    link = Utility.isPathAllowed(studyId, links.participants) ? links.participants : undefined
   }
   return link ? link.replace(':id', studyId) : '#'
 }
@@ -181,13 +129,10 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   highlightedStudyId,
   menuAnchor,
 }: StudySublistProps) => {
-  const classes = useStyles()
-  const item = sections.find(section => section.sectionStatus === status)!
-  const displayStudies = studies.filter(study =>
-    item.studyStatus.includes(study.phase)
-  )
+  const section = sections.find(section => section.sectionStatus === status)!
+  const displayStudies = section ? studies.filter(study => section.studyStatus.includes(study.phase)) : studies
 
-  if (!displayStudies.length) {
+  if (!displayStudies.length /*|| !section.sectionStatus*/) {
     return <></>
   }
 
@@ -206,20 +151,13 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   }
   return (
     <>
-      <MTBHeading variant="h2" align={'left'}>
-        {item.title}
-      </MTBHeading>
-      <Box className={classes.cardGrid}>
+      <StyledStudyListGrid>
         {displayStudies.map((study, index) => (
           <Link
             style={{textDecoration: 'none'}}
             key={study.identifier || index}
             variant="body2"
-            onClick={() =>
-              study.identifier === '...'
-                ? ''
-                : onStudyCardClick({...study}, 'VIEW')
-            }
+            onClick={() => (study.identifier === '...' ? '' : onStudyCardClick({...study}, 'VIEW'))}
             underline="hover">
             <StudyCard
               study={study}
@@ -231,19 +169,67 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
                 onStudyCardClick(study, 'ANCHOR', e)
               }}
               isNewlyAddedStudy={highlightedStudyId === study.identifier}
-              section={item.sectionStatus}
-              isMenuOpen={
-                menuAnchor?.study?.identifier === study.identifier
-              }></StudyCard>
+              // section={section.sectionStatus}
+              isMenuOpen={menuAnchor?.study?.identifier === study.identifier}></StudyCard>
           </Link>
         ))}
-      </Box>
+      </StyledStudyListGrid>
     </>
+  )
+}
+
+const VerifyBanner: FunctionComponent = () => {
+  const [displayVerifyBanner, setDisplayVerifyBanner] = React.useState<boolean>(true)
+
+  const displayText = (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+      <Box
+        sx={{
+          mx: 2,
+          width: '60%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+        }}>
+        <strong>Get Verified to launch your studies</strong>
+        <br />
+        You can create studies but will not be able to launch them until you're Verified. Verification can take a bit of
+        time so it's best to start this process early!
+      </Box>
+      <Button sx={{flexShrink: 0, flexGrow: 0}} variant="contained" href={Utility.getRedirectLinkToOneSage('validate')}>
+        Become Verified
+      </Button>
+    </Box>
+  )
+
+  return (
+    <AlertBanner
+      backgroundColor="rgba(255, 242, 222)"
+      textColor="#22252A"
+      onClose={() => {
+        setDisplayVerifyBanner(false)
+      }}
+      isVisible={displayVerifyBanner}
+      icon={<InfoTwoToneIcon sx={{color: '#FFA825'}} />}
+      isSelfClosing={false}
+      displayBottomOfPage={true}
+      displayText={displayText}
+      borderLeftColor="#FFA825"
+      isFullWidthMessage={true}
+    />
   )
 }
 
 const StudyList: FunctionComponent<StudyListProps> = () => {
   const handleError = useErrorHandler()
+  const {isVerified} = useUserSessionDataState()
 
   const {roles} = useUserSessionDataState()
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
@@ -251,7 +237,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     anchorEl: HTMLElement
   }>(null)
   const [renameStudyId, setRenameStudyId] = React.useState('')
-  const classes = useStyles()
+
   const handleMenuClose = () => {
     setMenuAnchor(null)
   }
@@ -259,42 +245,29 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     setIsConfirmDialogOpen(undefined)
     setMenuAnchor(null)
   }
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<
-    ConfirmationDialogType | undefined
-  >(undefined)
 
-  const [statusFilters, setStatusFilters] = React.useState<DisplayStudyPhase[]>(
-    sections.map(section => section.sectionStatus)
-  )
-  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
-    string | null
-  >(null)
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<ConfirmationDialogType | undefined>(undefined)
+
+  const [statusFilter, setStatusFilter] = React.useState<DisplayStudyPhase | null>(null)
+
+  const [highlightedStudyId, setHighlightedStudyId] = React.useState<string | null>(null)
   const [redirectLink, setRedirectLink] = React.useState('')
-  const {
-    data: studies,
-    error: studyError,
-    isLoading: isStudyLoading,
-  } = useStudies()
+  const {data: studies, error: studyError, isLoading: isStudyLoading} = useStudies()
 
-  const {
-    mutate,
-    mutateAsync,
-    isLoading: isStudyUpdating,
-    variables: mutateData,
-  } = useUpdateStudyInList()
+  const {mutate, mutateAsync, isLoading: isStudyUpdating, variables: mutateData} = useUpdateStudyInList()
   if (studyError) {
     handleError(studyError)
   }
 
   const resetStatusFilters = () => {
-    setStatusFilters(sections.map(section => section.sectionStatus))
+    setStatusFilter(null)
   }
   React.useEffect(() => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
     })
-  }, [statusFilters])
+  }, [statusFilter])
 
   const createStudy = async (study?: Study) => {
     //if study is provided -- we are duplicating
@@ -317,7 +290,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         clientData: StudyService.getDefaultClientData(),
         phase: 'design' as StudyPhase,
         name: constants.constants.NEW_STUDY_NAME,
-        signInTypes: [],
+        //agendel 10/6 adding  default to signin with study Id signInTypes: SignInType[]
+        signInTypes: ['external_id_password' as SignInType],
         createdOn: new Date(),
         modifiedOn: new Date(),
       }
@@ -335,10 +309,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const navigateToStudy = (study?: Study) => {
     if (study) {
-      const l = getStudyLink(
-        StudyService.getDisplayStatusForStudyPhase(study.phase),
-        study.identifier
-      )
+      const l = getStudyLink(StudyService.getDisplayStatusForStudyPhase(study.phase), study.identifier)
 
       setRedirectLink(l)
     }
@@ -348,14 +319,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     handleMenuClose()
     switch (type) {
       case 'RENAME':
-        await mutate({action: 'RENAME', study: {...study, name: study.name}})
+        mutate({action: 'RENAME', study: {...study, name: study.name}})
         setRenameStudyId('')
 
         return
       case 'WITHDRAW':
       case 'CLOSE':
       case 'DELETE':
-        await mutate({action: type, study})
+        mutate({action: type, study})
         return
 
       case 'DUPLICATE':
@@ -368,94 +339,64 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     }
   }
 
-  const isSelectedFilter = (filter: DisplayStudyPhase) =>
-    statusFilters.indexOf(filter) > -1 && statusFilters.length === 1
+  const isSelectedFilter = (section: typeof sections[1]) => {
+    if (!section.sectionStatus) {
+      return !statusFilter
+    }
+    return statusFilter === section.sectionStatus
+  }
 
   if (redirectLink) {
     return <Redirect to={redirectLink} />
   }
 
   if (!studies && !isStudyLoading) {
-    return (
-      <div>
-        You currently have no studies created. To begin, please click on Create
-        New Study.
-      </div>
-    )
+    return <div>You currently have no studies created. To begin, please click on Create New Study.</div>
   }
 
-  const getPhase = () =>
-    !menuAnchor
-      ? undefined
-      : StudyService.getDisplayStatusForStudyPhase(menuAnchor.study.phase)
+  const getPhase = () => (!menuAnchor ? undefined : StudyService.getDisplayStatusForStudyPhase(menuAnchor.study.phase))
 
   return (
     <Loader
-      reqStatusLoading={
-        isStudyLoading ||
-        !studies ||
-        (isStudyUpdating && mutateData?.action === 'CREATE')
-      }
+      reqStatusLoading={isStudyLoading || !studies || (isStudyUpdating && mutateData?.action === 'CREATE')}
       variant="full">
-      <Box className={classes.root}>
-        <Container maxWidth="lg" className={classes.studyContainer}>
-          <Box display="flex" justifyContent="space-between" area-lable="f1">
-            <ul className={classes.filters} aria-label="filters">
-              <li className={classes.filterItem}>View by:</li>
+      <Box>
+        <Box
+          area-lable="f1"
+          id="menucontainer"
+          sx={{
+            position: 'relative',
+            height: '120px',
+            borderBottom: '1px solid #DFE2E6',
+            padding: theme.spacing(0, 4),
+            paddingTop: [theme.spacing(4), theme.spacing(4), theme.spacing(4), theme.spacing(6.75)],
+          }}>
+          <CollapsableMenu
+            items={sections.map(s => ({...s, enabled: true, id: s.filterTitle}))}
+            selectedFn={section => isSelectedFilter(section)}
+            displayMobileItem={(section, _isSelected) => <>{section.filterTitle}</>}
+            displayDesktopItem={(section, _isSelected) => <Box sx={{minWidth: '120px'}}> {section.filterTitle}</Box>}
+            onClick={section => (section.sectionStatus ? setStatusFilter(section.sectionStatus) : resetStatusFilters())}
+          />
 
-              <li className={classes.filterItem}>
-                <Button
-                  onClick={resetStatusFilters}
-                  style={{
-                    color: 'inherit',
-                    fontWeight: statusFilters.length > 1 ? 'bolder' : 'normal',
-                    fontFamily: 'Poppins',
-                  }}>
-                  All
-                </Button>
-              </li>
-              {sections.map(section => (
-                <li className={classes.filterItem} key={section.sectionStatus}>
-                  <Button
-                    onClick={() => setStatusFilters([section.sectionStatus])}
-                    style={{
-                      color: 'inherit',
-                      fontWeight: isSelectedFilter(section.sectionStatus)
-                        ? 'bolder'
-                        : 'normal',
-                      fontFamily: 'Poppins',
-                    }}>
-                    {section.filterTitle}
-                  </Button>
-                </li>
-              ))}
-            </ul>
-            <Button
-              disabled={
-                !Utility.isPathAllowed(
-                  'any',
-                  constants.restrictedPaths.STUDY_BUILDER
-                )
-              }
-              variant="contained"
-              onClick={() => createStudy()}
-              className={classes.createStudyButton}>
-              + Create New Study
-            </Button>
-          </Box>
-          <Divider className={classes.divider}></Divider>
+          <Button
+            disabled={!Utility.isPathAllowed('any', constants.restrictedPaths.STUDY_BUILDER)}
+            variant="contained"
+            sx={{position: 'absolute', top: '34px', right: theme.spacing(4)}}
+            onClick={() => createStudy()}>
+            + Create New Study
+          </Button>
+        </Box>
 
-          {studies &&
-            studies.length > 0 &&
-            statusFilters.map((status, index) => (
-              <Box
-                style={{paddingBottom: index < 3 ? '24px' : '0'}}
-                key={status}>
+        <Box sx={{backgroundColor: '#FBFBFC', paddingTop: theme.spacing(7)}}>
+          <Container maxWidth="lg">
+            {studies && studies.length > 0 && (
+              <Box sx={{paddingBottom: '24px'}} key={statusFilter || 'all'}>
                 <StudySublist
                   userRoles={roles}
                   studies={studies!}
                   renameStudyId={renameStudyId}
-                  status={status}
+                  status={statusFilter}
                   onStudyCardClick={(s: Study, action: StudyAction, e: any) => {
                     switch (action) {
                       case 'ANCHOR':
@@ -476,133 +417,119 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   menuAnchor={menuAnchor}
                 />
               </Box>
-            ))}
+            )}
 
-          {menuAnchor && (
-            <Menu
-              id="study-menu"
-              anchorEl={menuAnchor.anchorEl}
-              keepMounted
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(menuAnchor.anchorEl)}
-              onClose={handleMenuClose}
-              classes={{paper: classes.paper, list: classes.list}}>
-              <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>
-                View
-              </MenuItem>
-              {(getPhase() === 'DRAFT' || getPhase() === 'LIVE') && (
-                <MenuItem
-                  onClick={() => {
-                    setRenameStudyId(menuAnchor?.study.identifier)
-                    handleMenuClose()
-                  }}>
-                  Rename
-                </MenuItem>
-              )}
+            {menuAnchor && (
+              <StyledContextMenu
+                id="study-menu"
+                anchorEl={menuAnchor.anchorEl}
+                keepMounted
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                open={Boolean(menuAnchor.anchorEl)}
+                onClose={handleMenuClose}>
+                <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>View</MenuItem>
+                {(getPhase() === 'DRAFT' || getPhase() === 'LIVE') && (
+                  <MenuItem
+                    onClick={() => {
+                      setRenameStudyId(menuAnchor?.study.identifier)
+                      handleMenuClose()
+                    }}>
+                    Rename
+                  </MenuItem>
+                )}
 
-              <MenuItem
-                onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
-                Duplicate
-              </MenuItem>
+                <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>Duplicate</MenuItem>
 
-              {(getPhase() === 'DRAFT' || getPhase() === 'WITHDRAWN') && (
-                <MenuItem onClick={() => setIsConfirmDialogOpen('DELETE')}>
-                  Delete
-                </MenuItem>
-              )}
+                {(getPhase() === 'DRAFT' || getPhase() === 'WITHDRAWN') && (
+                  <MenuItem onClick={() => setIsConfirmDialogOpen('DELETE')}>Delete</MenuItem>
+                )}
 
-              {getPhase() === 'LIVE' && [
-                <MenuItem
-                  onClick={() => setIsConfirmDialogOpen('WITHDRAW_STUDY')}>
-                  Withdraw Study
-                </MenuItem>,
-                <MenuItem onClick={() => setIsConfirmDialogOpen('CLOSE_STUDY')}>
-                  Close Study
-                </MenuItem>,
-              ]}
-            </Menu>
-          )}
+                {getPhase() === 'LIVE' && [
+                  <MenuItem onClick={() => setIsConfirmDialogOpen('WITHDRAW_STUDY')}>Withdraw Study</MenuItem>,
+                  <MenuItem onClick={() => setIsConfirmDialogOpen('CLOSE_STUDY')}>Close Study</MenuItem>,
+                ]}
+              </StyledContextMenu>
+            )}
 
-          <ConfirmationDialog
-            isOpen={isConfirmDialogOpen === 'WITHDRAW_STUDY'}
-            title={'Withdraw a Study'}
-            actionText="Yes, withdraw study"
-            type={'WITHDRAW_STUDY'}
-            onCancel={closeConfirmationDialog}
-            onConfirm={() => {
-              closeConfirmationDialog()
-              onAction(menuAnchor!.study, 'WITHDRAW')
-            }}>
-            <div>
-              <p>
-                By withdrawing this study, you are closing it early and can no
-                longer enroll future participants. Data collection from existing
-                participants will stop.
-              </p>
+            <ConfirmationDialog
+              isOpen={isConfirmDialogOpen === 'WITHDRAW_STUDY'}
+              title={'Withdraw a Study'}
+              actionText="Yes, withdraw study"
+              type={'WITHDRAW_STUDY'}
+              onCancel={closeConfirmationDialog}
+              onConfirm={() => {
+                closeConfirmationDialog()
+                onAction(menuAnchor!.study, 'WITHDRAW')
+              }}>
+              <div>
+                <p>
+                  By withdrawing this study, you are closing it early and can no longer enroll future participants. Data
+                  collection from existing participants will stop.
+                </p>
 
-              <p>
-                {' '}
-                Are you sure you would like to stop the following study early:
-              </p>
-              <p>
-                <strong>{menuAnchor?.study.name}</strong>
-              </p>
-              <p>
-                <strong>This action cannot be undone.</strong>
-              </p>
-            </div>
-          </ConfirmationDialog>
+                <p> Are you sure you would like to stop the following study early:</p>
+                <p>
+                  <strong>{menuAnchor?.study.name}</strong>
+                </p>
+                <p>
+                  <strong>This action cannot be undone.</strong>
+                </p>
+              </div>
+            </ConfirmationDialog>
 
-          <ConfirmationDialog
-            isOpen={isConfirmDialogOpen === 'CLOSE_STUDY'}
-            title={'Close Study'}
-            type={'CLOSE_STUDY'}
-            actionText="Yes, this study is complete"
-            onCancel={closeConfirmationDialog}
-            onConfirm={() => {
-              closeConfirmationDialog()
-              onAction(menuAnchor!.study, 'CLOSE')
-            }}>
-            <div>
-              <p>
-                By closing this study, you are stopping enrollment of new
-                participants and data collection from existing participants will
-                stop.
-              </p>
-              <p>
-                <strong>This action cannot be undone.</strong>
-              </p>
+            <ConfirmationDialog
+              isOpen={isConfirmDialogOpen === 'CLOSE_STUDY'}
+              title={'Close a Study'}
+              type={'CLOSE_STUDY'}
+              actionText="Yes, this study is complete"
+              onCancel={closeConfirmationDialog}
+              onConfirm={() => {
+                closeConfirmationDialog()
+                onAction(menuAnchor!.study, 'CLOSE')
+              }}>
+              <div>
+                <p>
+                  By closing this study, you are stopping enrollment of new participants and data collection from
+                  existing participants will stop.
+                </p>
+                <Typography component="p" sx={{fontSize: '16px', fontWeight: 900, margin: theme.spacing(2, 0)}}>
+                  Are you sure you would like to close the following study?
+                </Typography>
 
-              <p> Close the following study?</p>
-              <p>
-                <strong>{menuAnchor?.study.name}</strong>
-              </p>
-            </div>
-          </ConfirmationDialog>
+                <p>
+                  <Typography sx={{fontSize: '16px'}}>{menuAnchor?.study.name}</Typography>
+                </p>
 
-          <ConfirmationDialog
-            isOpen={isConfirmDialogOpen === 'DELETE'}
-            title={'Delete Study'}
-            type={'DELETE'}
-            onCancel={closeConfirmationDialog}
-            onConfirm={() => {
-              closeConfirmationDialog()
-              onAction(menuAnchor!.study, 'DELETE')
-            }}>
-            <div>
-              Are you sure you would like to permanently delete:{' '}
-              <p>{menuAnchor?.study.name}</p>
-            </div>
-          </ConfirmationDialog>
-        </Container>
+                <Typography component="p" sx={{color: '#FF4164', fontWeight: 700}}>
+                  This action cannot be undone.
+                </Typography>
+              </div>
+            </ConfirmationDialog>
+
+            <ConfirmationDialog
+              isOpen={isConfirmDialogOpen === 'DELETE'}
+              title={'Delete Study'}
+              type={'DELETE'}
+              onCancel={closeConfirmationDialog}
+              onConfirm={() => {
+                closeConfirmationDialog()
+                onAction(menuAnchor!.study, 'DELETE')
+              }}>
+              <div>
+                Are you sure you would like to permanently delete: <p>{menuAnchor?.study.name}</p>
+              </div>
+            </ConfirmationDialog>
+          </Container>
+        </Box>
       </Box>
+      {isVerified !== true && <VerifyBanner />}
     </Loader>
   )
 }

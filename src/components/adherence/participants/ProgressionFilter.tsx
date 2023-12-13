@@ -1,14 +1,6 @@
 import {Checkbox, FormControlLabel, FormGroup} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import {ProgressionStatus} from '@typedefs/types'
-import React, {FunctionComponent} from 'react'
-import {useCommonStyles} from '../styles'
-
-const useStyles = makeStyles(theme => ({
-  mainContainer: {
-    padding: theme.spacing(4),
-  },
-}))
+import {FunctionComponent} from 'react'
 
 type CompletionFilterProps = {
   progressionStatus: ProgressionStatus[] | undefined
@@ -21,17 +13,8 @@ const COMPLETION_STATUS: {label: string; value: ProgressionStatus}[] = [
   {label: 'Completed', value: 'done'},
 ]
 
-const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
-  progressionStatus,
-  onChange,
-  counts,
-}) => {
-  const classes = {...useCommonStyles(), ...useStyles()}
-
-  const updateProgressionStatus = (
-    value: ProgressionStatus,
-    checked: boolean
-  ) => {
+const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({progressionStatus, onChange, counts}) => {
+  const updateProgressionStatus = (value: ProgressionStatus, checked: boolean) => {
     let result
     let cStatus = progressionStatus
     if (cStatus === undefined) {
@@ -60,15 +43,8 @@ const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
             control={
               <Checkbox
                 checked={isChecked(status.value)}
-                disabled={
-                  isChecked(status.value) && progressionStatus?.length === 1
-                }
-                onChange={e =>
-                  updateProgressionStatus(
-                    e.target.value as ProgressionStatus,
-                    e.target.checked
-                  )
-                }
+                disabled={isChecked(status.value) && progressionStatus?.length === 1}
+                onChange={e => updateProgressionStatus(e.target.value as ProgressionStatus, e.target.checked)}
               />
             }
             label={`${status.label} (${counts.get(status.value)})`}
