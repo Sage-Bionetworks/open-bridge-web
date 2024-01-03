@@ -4,7 +4,6 @@ import {UseLoginReturn} from 'useLogin'
 import TopNav from './components/widgets/AppTopNav'
 import {default as Utility, default as UtilityObject} from './helpers/utility'
 import PublicRoutes from './routes_public'
-import SignInPage from './SignInPage'
 
 const UnauthenticatedApp: FunctionComponent<
   RouteComponentProps & {
@@ -16,9 +15,6 @@ const UnauthenticatedApp: FunctionComponent<
   const loc = useLocation()
   const route = PublicRoutes.find(r => r.path === loc.pathname)
 
-  if (UtilityObject.isArcApp(appId)) {
-    return <SignInPage isARCApp={true} usernameAndPasswordLogin={usernameAndPasswordLogin} />
-  }
   return (
     <>
       {!route?.noToolbar && <TopNav routes={PublicRoutes} appId={appId} />}

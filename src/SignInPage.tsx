@@ -52,37 +52,19 @@ const useStyles = makeStyles(theme => ({
 
 type SignInPageProps = {
   usernameAndPasswordLogin: UseLoginReturn['usernameAndPasswordLogin']
-  isARCApp?: boolean
 }
 
-const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp, usernameAndPasswordLogin}) => {
+const SignInPage: React.FunctionComponent<SignInPageProps> = ({usernameAndPasswordLogin}) => {
   const classes = useStyles()
   const location = useLocation()
   const featureToggles = useFeatureToggles<FeatureToggles>()
 
   return (
-    <Box className={clsx(classes.container, !isARCApp && classes.mtbContainer)}>
-      {isARCApp && (
-        <Box
-          className={clsx(
-            classes.leftContainer,
-            isARCApp && classes.arcAppBackground,
-            !isARCApp && classes.mtbAppBackground
-          )}>
-          <img
-            alt="logo"
-            style={{
-              height: isARCApp ? '211px' : '160px',
-              width: isARCApp ? '211px' : '95px',
-            }}
-            src={isARCApp ? ArcLogo : MtbFinalLogo}></img>
-        </Box>
-      )}
-      <Box className={classes.rightContainer} sx={{width: isARCApp ? '50%' : '100%'}}>
+    <Box className={clsx(classes.container, classes.mtbContainer)}>
+      <Box className={classes.rightContainer} sx={{width: '100%'}}>
         {(location.pathname === constants.publicPaths.SIGN_IN || location.pathname === '/') && (
           <AccountLogin
             callbackFn={() => {}}
-            isArcSignIn={isARCApp}
             usernameAndPasswordLogin={usernameAndPasswordLogin}
           />
         )}
