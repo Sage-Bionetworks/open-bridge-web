@@ -50,6 +50,27 @@ const constants = {
   ],
   org_roles: ['org_admin', 'study_designer', 'study_coordinator'] as const,
 
+  appBranding: [
+    {
+      appId: OPEN_BRIDGE_APP_ID,
+      title: 'Open Bridge',
+      iconPrefix: '',
+      logoPrefix: 'open_bridge',
+    },
+    {
+      appId: ARC_APP_ID,
+      title: 'ARC',
+      iconPrefix: 'arc_',
+      logo: 'arc',
+    },
+    {
+      appId: INV_ARC_ID,
+      title: 'INV ARC',
+      iconPrefix: 'arc_',
+      logo: 'arc',
+    },
+  ],
+
   oauth: {
     local_open_bridge: {
       client: '100359',

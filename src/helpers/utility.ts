@@ -2,6 +2,7 @@ import {useState} from 'react'
 import {default as constants, default as CONSTANTS} from '../types/constants'
 import {
   AdminRole,
+  AppBranding,
   OauthEnvironment,
   Phone,
   Response,
@@ -178,6 +179,16 @@ const getOauthEnvironmentFromLocation = (loc: URL): OauthEnvironment => {
 
 const getAppId = () => {
   return getOauthEnvironment().appId
+}
+
+const getAppBranding = (appId?: string): AppBranding => {
+  const _appId = appId || getAppId()
+  for (const branding of constants.appBranding) {
+    if (_appId === branding.appId) {
+      return branding as AppBranding
+    }
+  }
+  throw new Error(`${_appId} is an unknown environment`)
 }
 
 const getSynpaseRedirectUrl = (): string => {
@@ -530,6 +541,7 @@ const Utility = {
   getRandomId,
   useSessionStorage,
   getAppId,
+  getAppBranding,
   setSession,
   clearSession,
   getSession,
