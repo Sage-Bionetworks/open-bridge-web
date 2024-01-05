@@ -60,8 +60,8 @@ export type NavRouteType = {
 export type AppBranding = {
   appId: string
   title: string
+  logo: string
   iconPrefix: string
-  logoPrefix: string
 }
 
 /*

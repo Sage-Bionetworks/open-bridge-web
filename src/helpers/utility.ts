@@ -11,13 +11,6 @@ import {
   UserSessionData,
 } from '../types/types'
 
-import OpenBridgeLogoLarge from '@assets/logo_open_bridge_large.svg'
-import OpenBridgeLogoSmall from '@assets/logo_open_bridge_small.svg'
-import OpenBridgeLogoSymbol from '@assets/logo_open_bridge_symbol.svg'
-import ArcLogoLarge from '@assets/logo_arc_large.svg'
-import ArcLogoSmall from '@assets/logo_arc_small.svg'
-import ArcLogoSymbol from '@assets/logo_arc_symbol.svg'
-
 type RestMethod = 'POST' | 'GET' | 'DELETE'
 
 function makeRequest(method: RestMethod = 'POST', url: string, body: any, token?: string): Promise<any> {
@@ -183,6 +176,7 @@ const getAppId = () => {
 
 const getAppBranding = (appId?: string): AppBranding => {
   const _appId = appId || getAppId()
+
   for (const branding of constants.appBranding) {
     if (_appId === branding.appId) {
       return branding as AppBranding
@@ -505,22 +499,6 @@ function isArcApp(appId?: string) {
   return [constants.constants.ARC_APP_ID, constants.constants.INV_ARC_APP_ID].includes(_appId)
 }
 
-function logoLargeWithName(appId?: string) {
-  return isArcApp(appId) ? ArcLogoLarge : OpenBridgeLogoLarge
-}
-
-function logoSmallWithName(appId?: string) {
-  return isArcApp(appId) ? ArcLogoSmall : OpenBridgeLogoSmall
-}
-
-function logoWithName(hasSubNav?: boolean, appId?: string) {
-  return hasSubNav ? logoSmallWithName(appId) : logoLargeWithName(appId)
-}
-
-function logoSymbolOnly(appId?: string) {
-  return isArcApp(appId) ? ArcLogoSymbol : OpenBridgeLogoSymbol
-}
-
 const Utility = {
   areArraysEqual,
   areObjectsEqual,
@@ -552,10 +530,6 @@ const Utility = {
   getAllPages,
   getOauthEnvironment,
   getOauthEnvironmentFromLocation,
-  logoLargeWithName,
-  logoSmallWithName,
-  logoWithName,
-  logoSymbolOnly,
 }
 
 export default Utility

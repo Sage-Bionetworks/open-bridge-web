@@ -54,20 +54,20 @@ const constants = {
     {
       appId: OPEN_BRIDGE_APP_ID,
       title: 'Open Bridge',
+      logo: 'open_bridge',
       iconPrefix: '',
-      logoPrefix: 'open_bridge',
     },
     {
       appId: ARC_APP_ID,
       title: 'ARC',
-      iconPrefix: 'arc_',
       logo: 'arc',
+      iconPrefix: 'arc_',
     },
     {
       appId: INV_ARC_ID,
       title: 'INV ARC',
-      iconPrefix: 'arc_',
       logo: 'arc',
+      iconPrefix: 'arc_',
     },
   ],
 
