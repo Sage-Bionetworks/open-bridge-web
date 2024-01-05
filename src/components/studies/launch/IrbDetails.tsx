@@ -2,7 +2,7 @@ import Alert_Icon from '@assets/alert_icon.svg'
 import {ReactComponent as ArrowIcon} from '@assets/arrow_long.svg'
 import {ReactComponent as EnvelopeImg} from '@assets/launch/envelope_icon.svg'
 import DatePicker from '@components/widgets/DatePicker'
-import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
+import {DefaultHeadingH1, DefaultHeadingH2} from '@components/widgets/Headings'
 import {AlertWithText, SimpleTextInput, SimpleTextLabel} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
@@ -91,7 +91,7 @@ const LastScreen: React.FunctionComponent<{
   return (
     <Box textAlign="center">
       <EnvelopeImg />
-      <MTBHeadingH1 style={{margin: '24px 0', textDecoration: 'underline'}}> Almost there! </MTBHeadingH1>
+      <DefaultHeadingH1 style={{margin: '24px 0', textDecoration: 'underline'}}> Almost there! </DefaultHeadingH1>
       <p>
         Please email a copy of your IRB <br />
         Approval/Exempt letter to:
@@ -196,7 +196,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     <>
       {!isFinished && (
         <Box textAlign="left">
-          <MTBHeadingH2>IRB Details &amp; Certification</MTBHeadingH2>
+          <DefaultHeadingH2>IRB Details &amp; Certification</DefaultHeadingH2>
           <Box mt={2} mb={2} fontSize="16px" fontFamily="Lato">
             I certify that
           </Box>
@@ -433,7 +433,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             </Grid>
             <Grid item xs={6}></Grid>
             <Grid item xs={6}>
-              <MTBHeadingH2 style={{fontSize: '16px'}}>IRB Decision*: </MTBHeadingH2>
+              <DefaultHeadingH2 style={{fontSize: '16px'}}>IRB Decision*: </DefaultHeadingH2>
               <Box pl={3} mt={2}>
                 <FormControl>
                   <RadioGroup

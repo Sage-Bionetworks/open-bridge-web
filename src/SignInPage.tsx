@@ -7,8 +7,6 @@ import clsx from 'clsx'
 import React from 'react'
 import {useLocation} from 'react-router-dom'
 import {UseLoginReturn} from 'useLogin'
-import ArcLogo from './assets/logo_arc_main.svg'
-import MtbFinalLogo from './assets/logo_open_bridge_large.svg'
 import AccountLogin from './components/account/AccountLogin'
 
 const useStyles = makeStyles(theme => ({
@@ -35,13 +33,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     backgroundColor: 'white',
   },
-  arcAppBackground: {
-    backgroundColor: '#8FCDE2',
-  },
-  mtbAppBackground: {
-    backgroundColor: '#F3EFE5',
-  },
-  mtbContainer: {
+  calculatedContainer: {
     height: 'calc(100vh - 104px)',
     minHeight: '200px',
     [theme.breakpoints.down('lg')]: {
@@ -60,7 +52,7 @@ const SignInPage: React.FunctionComponent<SignInPageProps> = ({usernameAndPasswo
   const featureToggles = useFeatureToggles<FeatureToggles>()
 
   return (
-    <Box className={clsx(classes.container, classes.mtbContainer)}>
+    <Box className={clsx(classes.container, classes.calculatedContainer)}>
       <Box className={classes.rightContainer} sx={{width: '100%'}}>
         {(location.pathname === constants.publicPaths.SIGN_IN || location.pathname === '/') && (
           <AccountLogin

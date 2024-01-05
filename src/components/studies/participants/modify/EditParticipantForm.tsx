@@ -1,4 +1,4 @@
-import {MTBHeadingH3} from '@components/widgets/Headings'
+import {DefaultHeadingH3} from '@components/widgets/Headings'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary,
@@ -63,7 +63,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
     <>
       <DialogContent>
         <Box mt={2} mb={3}>
-          <MTBHeadingH3>
+          <DefaultHeadingH3>
             {!isBatchEdit ? (
               isEnrolledById ? (
                 <span>Participant ID: {participant.externalId}</span>
@@ -73,7 +73,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
             ) : (
               'Assign the same values to selected participants:'
             )}
-          </MTBHeadingH3>
+          </DefaultHeadingH3>
         </Box>
         <FormGroup className={classes.editForm}>
           {!isBatchEdit && (

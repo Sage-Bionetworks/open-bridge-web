@@ -1,7 +1,7 @@
-import MTBLogoLarge from '@assets/logo_open_bridge_large.svg'
 import appStoreBtn from '@assets/preview/appStoreBtn.png'
 import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
 import QrCode from '@assets/qr_code.png'
+import Utility from '@helpers/utility'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, playfairDisplayFont, theme} from '@style/theme'
@@ -50,7 +50,7 @@ const DownloadAppLandingPage: React.FunctionComponent = () => {
   const classes = useStyles()
   return (
     <Box className={classes.container}>
-      <img src={MTBLogoLarge} alt="large logo" style={{width: '100px', height: '100px'}} />
+      <img src={Utility.logoLargeWithName()} alt="large logo" style={{width: '100px', height: '100px'}} />
       <Box className={classes.downloadText}>
         <strong>
           <i>App Download Instructions</i>

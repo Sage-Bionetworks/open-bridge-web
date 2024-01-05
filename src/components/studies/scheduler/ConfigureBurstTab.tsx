@@ -1,4 +1,4 @@
-import {MTBHeadingH1, MTBHeadingH2, MTBHeadingH3, MTBHeadingH4} from '@components/widgets/Headings'
+import {DefaultHeadingH1, DefaultHeadingH2, DefaultHeadingH3, DefaultHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import SessionIcon from '@components/widgets/SessionIcon'
 import SmallTextBox from '@components/widgets/SmallTextBox'
@@ -156,10 +156,10 @@ const HasBurstsSC: React.FunctionComponent<{
     <>
       <Box display="flex" flexDirection="row" alignItems="center">
         <Switch checked={hasBursts} onChange={e => setHasBursts(e.target.checked)} color="primary" />{' '}
-        <MTBHeadingH3>{hasBursts ? 'ON' : 'OFF'}</MTBHeadingH3>
+        <DefaultHeadingH3>{hasBursts ? 'ON' : 'OFF'}</DefaultHeadingH3>
       </Box>
 
-      <MTBHeadingH1 style={{marginBottom: '16px'}}>Burst Design</MTBHeadingH1>
+      <DefaultHeadingH1 style={{marginBottom: '16px'}}>Burst Design</DefaultHeadingH1>
       <Typography component="p" variant="body1">
         A burst design involves repeating multiple study sessions tied to an Event that are spaced out over time at
         regular intervals with long breaks. This is intended to maximize longitudinal participation with minimal burden.
@@ -208,16 +208,16 @@ const BurstSelectorSC: React.FunctionComponent<{
         display: 'flex',
         flexDirection: 'column',
       }}>
-      <MTBHeadingH2 style={{maxWidth: '290px', marginBottom: '40px'}}>
+      <DefaultHeadingH2 style={{maxWidth: '290px', marginBottom: '40px'}}>
         What scheduled session(s) in your study should be repeated as a burst?
-      </MTBHeadingH2>
+      </DefaultHeadingH2>
       {eventKeys.map(key => (
         <Paper
           key={`event_${key}`}
           elevation={3}
           className={clsx(classes.eventSessionCard, isEventSelected(key) && 'selected')}
           onClick={() => selectEvent(key)}>
-          <MTBHeadingH4>Sessions associated with {EventService.formatEventIdForDisplay(key)} </MTBHeadingH4>
+          <DefaultHeadingH4>Sessions associated with {EventService.formatEventIdForDisplay(key)} </DefaultHeadingH4>
           {groups[key].map((s, index) => (
             <FormControlLabel
               key={s.guid}
@@ -260,9 +260,9 @@ const BurstScheduleSC: React.FunctionComponent<{
   const classes = useStyles()
   return (
     <div className={classes.setBurstInfoContainer}>
-      <MTBHeadingH2 style={{textAlign: 'left', maxWidth: '300px'}}>
+      <DefaultHeadingH2 style={{textAlign: 'left', maxWidth: '300px'}}>
         How often should this burst be scheduled to repeat?
-      </MTBHeadingH2>
+      </DefaultHeadingH2>
       <FormGroup className={classes.burstSchedule}>
         <FormControl fullWidth className={classes.row}>
           <InputLabel htmlFor="burst-freq" className={classes.assignBurstText}>
