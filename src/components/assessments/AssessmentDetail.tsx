@@ -1,4 +1,4 @@
-//import {ReactComponent as MtbSymbol} from '@assets/logo_open_bridge_symbol.svg'
+
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import Loader from '@components/widgets/Loader'
 import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone'
@@ -10,7 +10,6 @@ import React, {FunctionComponent, ReactElement} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
 import AssessmentImage from './AssessmentImage'
-import Utility from '@helpers/utility'
 
 /**
  * syoung 12/11/2023 
@@ -18,6 +17,9 @@ import Utility from '@helpers/utility'
  * ARC app. 
  * TODO: figure out what the point is of the symbol and refactor.
  */
+
+//import Utility from '@helpers/utility'
+//import {ReactComponent as MtbSymbol} from '@assets/logo_open_bridge_symbol.svg'
 
 const InfoTextInContainer = styled(Box)(({theme}) => ({
   fontSize: '14px',
