@@ -1,7 +1,7 @@
 export const OPEN_BRIDGE_APP_ID = 'open-bridge'
 export const MTB_APP_ID = 'mobile-toolbox'
 export const ARC_APP_ID = 'arc'
-export const INV_ARC_ID = 'inv-arc'
+export const INV_ARC_ID = 'inv-arc' // TODO: 01/08/2024 syoung rename this const to include 'APP'
 const OPEN_BRIDGE_ONESAGE_APP_ID = 'OPEN-BRIDGE'
 const MTB_ONESAGE_APP_ID = 'MTB'
 const ARC_ONESAGE_APP_ID = 'ARC'
