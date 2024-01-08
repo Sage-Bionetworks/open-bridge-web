@@ -11,7 +11,7 @@ jobs:
       contents: read
     uses: ./.github/workflows/build-and-deploy.yaml
     with:
-      branch: main
+      branch: ${{ github.ref_name }}
       destination_bucket: prod-arcdashboard-sagebionetworks-o-websitebucket-1f1fae0cp8k4e
       distribution_id: E4NMTZ3W9RYFH
 

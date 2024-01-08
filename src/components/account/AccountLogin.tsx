@@ -13,7 +13,6 @@ import UsernamePasswordForm from './UsernamePasswordForm'
 type AccountLoginOwnProps = {
   callbackFn: Function
   usernameAndPasswordLogin: UseLoginReturn['usernameAndPasswordLogin']
-  isArcSignIn?: boolean
 }
 
 type AccountLoginProps = AccountLoginOwnProps
@@ -58,7 +57,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn, usernameAndPasswordLogin}) => {
+const AccountLogin: FunctionComponent<AccountLoginProps> = ({usernameAndPasswordLogin}) => {
   //const [alertMsg, setAlertMsg] = useState<{msg: string; type: AlertProps['severity']} | undefined>()
   const sourceApp = useSourceApp()
   const classes = useStyles()
@@ -66,7 +65,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn, userna
   const featureToggles = useFeatureToggles<FeatureToggles>()
   const createSignInTextBox = (text: string, sx?: BoxProps['sx']) => {
     return (
-      <Box className={clsx(classes.text, !isArcSignIn && classes.mtbText)} sx={sx}>
+      <Box className={clsx(classes.text, classes.mtbText)} sx={sx}>
         {text}
       </Box>
     )
