@@ -1,0 +1,17 @@
+name: deploy-arc-prod
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/build-and-deploy.yaml
+    with:
+      branch: ${{ github.ref_name }}
+      destination_bucket: prod-inv-arcdashboard-sagebionetwor-websitebucket-1jdhcaenu9tlz
+      distribution_id: E3VLOHRGISMQNR
+
