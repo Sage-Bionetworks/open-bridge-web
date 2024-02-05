@@ -1,4 +1,4 @@
-name: deploy-arc-prod
+name: deploy-inv-arc-prod
 
 on:
   push:
