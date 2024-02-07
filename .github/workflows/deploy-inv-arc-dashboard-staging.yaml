@@ -1,0 +1,17 @@
+name: deploy-inv-arc-staging
+
+on:
+  push:
+    branches: ["feature"]
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/build-and-deploy.yaml
+    with:
+      branch: ${{ github.ref_name }}
+      destination_bucket: staging-inv-arcdashboard-sagebionet-websitebucket-vm8ncc5v2r7h
+      distribution_id: E2U03A3USH7ASI
+    
