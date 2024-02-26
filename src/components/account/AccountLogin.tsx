@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  mtbText: {
+  boxText: {
     maxWidth: '330px',
   },
 }))
@@ -65,7 +65,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({usernameAndPassword
   const featureToggles = useFeatureToggles<FeatureToggles>()
   const createSignInTextBox = (text: string, sx?: BoxProps['sx']) => {
     return (
-      <Box className={clsx(classes.text, classes.mtbText)} sx={sx}>
+      <Box className={clsx(classes.text, classes.boxText)} sx={sx}>
         {text}
       </Box>
     )

@@ -97,7 +97,6 @@ const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
           justifyContent: 'space-between',
         }}>
         <div>{`${assessment.minutesToComplete} min`} </div>
-        {/* <img src={mtb_a} alt="mtb official version" /> */}
       </CardActions>
     </StyledCard>
   )

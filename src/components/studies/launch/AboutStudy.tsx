@@ -4,7 +4,7 @@ import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 import {ThemeType} from '../../../style/theme'
 import {Study} from '../../../types/types'
-import {MTBHeadingH2} from '../../widgets/Headings'
+import {DefaultHeadingH2} from '../../widgets/Headings'
 import InfoCircleWithToolTip from '../../widgets/InfoCircleWithToolTip'
 import {diseases} from './diseases'
 
@@ -126,7 +126,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({study, onChange, 
 
   return (
     <div className={classes.root}>
-      <MTBHeadingH2 className={classes.subhead}>Study type:</MTBHeadingH2>
+      <DefaultHeadingH2 className={classes.subhead}>Study type:</DefaultHeadingH2>
 
       <RadioGroup
         aria-label="Study Type"
@@ -157,7 +157,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({study, onChange, 
         />
       </RadioGroup>
 
-      <MTBHeadingH2 className={classes.subhead}>What conditions or diseases is your study targeting?</MTBHeadingH2>
+      <DefaultHeadingH2 className={classes.subhead}>What conditions or diseases is your study targeting?</DefaultHeadingH2>
       <p className={classes.descriptionText}>
         These are diseases that participants in your study might be diagnosed with (e.g. MCI, Healthy Adults,
         Alzheimer's Disease). Please list all that apply.
@@ -180,9 +180,9 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({study, onChange, 
           />
         )}
       />
-      <MTBHeadingH2 className={classes.subhead}>
+      <DefaultHeadingH2 className={classes.subhead}>
         What keywords would you like to associate with this study?
-      </MTBHeadingH2>
+      </DefaultHeadingH2>
       <p className={classes.descriptionText}>
         Keywords help describe your study. Some examples of past keywords assigned are: "neurodegeneration, neurology"
         and "sleep" and "cardiorespiratory fitness, physical activity, heart rate".

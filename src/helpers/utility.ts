@@ -2,6 +2,7 @@ import {useState} from 'react'
 import {default as constants, default as CONSTANTS} from '../types/constants'
 import {
   AdminRole,
+  AppBranding,
   OauthEnvironment,
   Phone,
   Response,
@@ -9,13 +10,6 @@ import {
   StringDictionary,
   UserSessionData,
 } from '../types/types'
-
-import OpenBridgeLogoLarge from '@assets/logo_open_bridge_large.svg'
-import OpenBridgeLogoSmall from '@assets/logo_open_bridge_small.svg'
-import OpenBridgeLogoSymbol from '@assets/logo_open_bridge_symbol.svg'
-import ArcLogoLarge from '@assets/logo_arc_large.svg'
-import ArcLogoSmall from '@assets/logo_arc_small.svg'
-import ArcLogoSymbol from '@assets/logo_arc_symbol.svg'
 
 type RestMethod = 'POST' | 'GET' | 'DELETE'
 
@@ -178,6 +172,17 @@ const getOauthEnvironmentFromLocation = (loc: URL): OauthEnvironment => {
 
 const getAppId = () => {
   return getOauthEnvironment().appId
+}
+
+const getAppBranding = (appId?: string): AppBranding => {
+  const _appId = appId || getAppId()
+
+  for (const branding of constants.appBranding) {
+    if (_appId === branding.appId) {
+      return branding as AppBranding
+    }
+  }
+  throw new Error(`${_appId} is an unknown environment`)
 }
 
 const getSynpaseRedirectUrl = (): string => {
@@ -494,22 +499,6 @@ function isArcApp(appId?: string) {
   return [constants.constants.ARC_APP_ID, constants.constants.INV_ARC_APP_ID].includes(_appId)
 }
 
-function logoLargeWithName(appId?: string) {
-  return isArcApp(appId) ? ArcLogoLarge : OpenBridgeLogoLarge
-}
-
-function logoSmallWithName(appId?: string) {
-  return isArcApp(appId) ? ArcLogoSmall : OpenBridgeLogoSmall
-}
-
-function logoWithName(hasSubNav?: boolean, appId?: string) {
-  return hasSubNav ? logoSmallWithName(appId) : logoLargeWithName(appId)
-}
-
-function logoSymbolOnly(appId?: string) {
-  return isArcApp(appId) ? ArcLogoSymbol : OpenBridgeLogoSymbol
-}
-
 const Utility = {
   areArraysEqual,
   areObjectsEqual,
@@ -530,6 +519,7 @@ const Utility = {
   getRandomId,
   useSessionStorage,
   getAppId,
+  getAppBranding,
   setSession,
   clearSession,
   getSession,
@@ -540,10 +530,6 @@ const Utility = {
   getAllPages,
   getOauthEnvironment,
   getOauthEnvironmentFromLocation,
-  logoLargeWithName,
-  logoSmallWithName,
-  logoWithName,
-  logoSymbolOnly,
 }
 
 export default Utility

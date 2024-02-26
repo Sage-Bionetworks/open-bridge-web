@@ -1,7 +1,7 @@
 import motion from '@assets/passive-features/recorders_motion.svg'
 import noise from '@assets/passive-features/recorders_noise.svg'
 import weather from '@assets/passive-features/recorders_weather.svg'
-import {MTBHeadingH3} from '@components/widgets/Headings'
+import {DefaultHeadingH3} from '@components/widgets/Headings'
 import {
   Box,
   Container,
@@ -212,11 +212,11 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({id, chi
         <Container maxWidth="lg">
           <Box sx={{fontSize: '16px'}}>
             {isReadOnly ? (
-              <MTBHeadingH3 style={{marginBottom: '24px'}}>
+              <DefaultHeadingH3 style={{marginBottom: '24px'}}>
                 {Object.values(features).filter(o => o === true).length > 0
                   ? 'You’ve added the following Optional Monitoring to your study:'
                   : 'No Optional Monitoring was added to your study.'}
-              </MTBHeadingH3>
+              </DefaultHeadingH3>
             ) : (
               <Container maxWidth="md" sx={{textAlign: 'left', marginBottom: theme.spacing(4)}}>
                 <Typography paragraph sx={{fontSize: '16px'}}>

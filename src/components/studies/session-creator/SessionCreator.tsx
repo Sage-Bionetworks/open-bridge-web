@@ -1,4 +1,4 @@
-import {MTBHeadingH1} from '@components/widgets/Headings'
+import {DefaultHeadingH1} from '@components/widgets/Headings'
 import {PrevButton} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import CloseIcon from '@mui/icons-material/Close'
@@ -275,9 +275,9 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
           </div>
         )}
         <DialogTitle>
-          <MTBHeadingH1 className={classes.selectAssessmentsHeading}>
+          <DefaultHeadingH1 className={classes.selectAssessmentsHeading}>
             Select assessment(s) to add to session.
-          </MTBHeadingH1>
+          </DefaultHeadingH1>
           <IconButton
             aria-label="close"
             className={classes.closeButton}

@@ -1,7 +1,8 @@
-import MTBLogoLarge from '@assets/logo_open_bridge_large.svg'
 import appStoreBtn from '@assets/preview/appStoreBtn.png'
 import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
 import QrCode from '@assets/qr_code.png'
+import SiteLogo from '@components/widgets/SiteLogo'
+import Utility from '@helpers/utility'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, playfairDisplayFont, theme} from '@style/theme'
@@ -9,7 +10,7 @@ import React from 'react'
 
 
 /**
- * syoung 12/11/2020 
+ * syoung 12/11/2023 
  * This is currently hardcoded to hide this component if this is an ARC website which will work
  * fine until we are supporting any other websites other than ARC and Open Bridge.
  */
@@ -50,7 +51,7 @@ const DownloadAppLandingPage: React.FunctionComponent = () => {
   const classes = useStyles()
   return (
     <Box className={classes.container}>
-      <img src={MTBLogoLarge} alt="large logo" style={{width: '100px', height: '100px'}} />
+      <SiteLogo appId={Utility.getAppId()} variant={'large'} />
       <Box className={classes.downloadText}>
         <strong>
           <i>App Download Instructions</i>

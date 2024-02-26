@@ -1,7 +1,7 @@
 export const OPEN_BRIDGE_APP_ID = 'open-bridge'
 export const MTB_APP_ID = 'mobile-toolbox'
 export const ARC_APP_ID = 'arc'
-export const INV_ARC_ID = 'inv-arc'
+export const INV_ARC_ID = 'inv-arc' // TODO: 01/08/2024 syoung rename this const to include 'APP'
 const OPEN_BRIDGE_ONESAGE_APP_ID = 'OPEN-BRIDGE'
 const MTB_ONESAGE_APP_ID = 'MTB'
 const ARC_ONESAGE_APP_ID = 'ARC'
@@ -49,6 +49,27 @@ const constants = {
     {value: 'production', label: 'Production'},
   ],
   org_roles: ['org_admin', 'study_designer', 'study_coordinator'] as const,
+
+  appBranding: [
+    {
+      appId: OPEN_BRIDGE_APP_ID,
+      title: 'Open Bridge',
+      logo: 'open_bridge',
+      iconPrefix: '',
+    },
+    {
+      appId: ARC_APP_ID,
+      title: 'ARC',
+      logo: 'arc',
+      iconPrefix: 'arc_',
+    },
+    {
+      appId: INV_ARC_ID,
+      title: 'INV ARC',
+      logo: 'arc',
+      iconPrefix: 'arc_',
+    },
+  ],
 
   oauth: {
     local_open_bridge: {

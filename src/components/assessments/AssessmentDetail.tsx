@@ -1,4 +1,4 @@
-import {ReactComponent as MtbSymbol} from '@assets/logo_open_bridge_symbol.svg'
+
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import Loader from '@components/widgets/Loader'
 import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone'
@@ -10,14 +10,16 @@ import React, {FunctionComponent, ReactElement} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
 import AssessmentImage from './AssessmentImage'
-import Utility from '@helpers/utility'
 
 /**
- * syoung 12/11/2020 
+ * syoung 12/11/2023 
  * This is currently hardcoded to hide the "official open bridge assessment" logo if this is an 
  * ARC app. 
  * TODO: figure out what the point is of the symbol and refactor.
  */
+
+//import Utility from '@helpers/utility'
+//import {ReactComponent as MtbSymbol} from '@assets/logo_open_bridge_symbol.svg'
 
 const InfoTextInContainer = styled(Box)(({theme}) => ({
   fontSize: '14px',
@@ -82,6 +84,8 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
           }}>
           {data.tags.join(', ')}
         </Typography>
+        {/* TODO: syoung 01/05/2024 Figure out appropriate assessment branding
+        
         <Box sx={{display: 'flex'}}>
           {!Utility.isArcApp() &&
             <MtbSymbol
@@ -95,7 +99,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
           }
 
           <Typography component="span">Official Open Bridge version</Typography>
-        </Box>
+        </Box> */}
       </Box>
       <Typography variant="h2" sx={{margin: {lg: theme.spacing(2, 0), md: theme.spacing(4, 0)}}}>
         {data.title}

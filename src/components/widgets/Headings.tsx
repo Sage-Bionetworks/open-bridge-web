@@ -2,7 +2,7 @@ import {styled} from '@mui/material/styles'
 import Heading from '@mui/material/Typography'
 import {latoFont, playfairDisplayFont, poppinsFont, theme} from '../../style/theme'
 
-export const MTBHeading = styled(Heading, {
+export const DefaultHeading = styled(Heading, {
   shouldForwardProp: prop => prop !== 'variant',
 })<{variant: string}>(({variant}) => ({
   fontSize: variant === 'h1' ? '34px' : '14px',
@@ -15,7 +15,7 @@ export const MTBHeading = styled(Heading, {
   lineHeight: '28px',
 }))
 
-export const MTBHeadingH1 = styled(Heading)({
+export const DefaultHeadingH1 = styled(Heading)({
   fontFamily: latoFont,
 
   fontWeight: 700,
@@ -24,7 +24,7 @@ export const MTBHeadingH1 = styled(Heading)({
   color: theme.palette.grey.A100,
 })
 
-export const MTBHeadingH2 = styled(Heading)({
+export const DefaultHeadingH2 = styled(Heading)({
   fontFamily: poppinsFont,
   fontStyle: 'normal',
   fontWeight: 600,
@@ -32,7 +32,7 @@ export const MTBHeadingH2 = styled(Heading)({
   lineHeight: '27px',
   color: '#050505',
 })
-export const MTBHeadingH3 = styled(Heading)({
+export const DefaultHeadingH3 = styled(Heading)({
   fontFamily: latoFont,
   fontStyle: 'normal',
   fontWeight: 'normal',
@@ -41,7 +41,7 @@ export const MTBHeadingH3 = styled(Heading)({
   color: '#050505',
 })
 
-export const MTBHeadingH4 = styled(Heading)({
+export const DefaultHeadingH4 = styled(Heading)({
   fontFamily: latoFont,
   fontStyle: 'normal',
   fontWeight: 'bold',
@@ -50,7 +50,7 @@ export const MTBHeadingH4 = styled(Heading)({
   color: '#050505',
 })
 
-export const MTBHeadingH5 = styled(Heading)({
+export const DefaultHeadingH5 = styled(Heading)({
   fontFamily: poppinsFont,
   fontStyle: 'normal',
   fontWeight: 'normal',
@@ -59,7 +59,7 @@ export const MTBHeadingH5 = styled(Heading)({
   color: '#050505',
 })
 
-export const MTBHeadingH6 = styled(Heading)({
+export const DefaultHeadingH6 = styled(Heading)({
   fontFamily: poppinsFont,
   fontStyle: 'normal',
   fontWeight: 'normal',

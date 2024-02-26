@@ -25,6 +25,7 @@ import React, {FunctionComponent} from 'react'
 import {useLocation} from 'react-router'
 import {NavLink} from 'react-router-dom'
 import Logout from '../account/Logout'
+import SiteLogo from './SiteLogo'
 
 const drawerWidth = '320px'
 
@@ -233,10 +234,10 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             }}>
             {sessionData?.token ? (
               <NavLink to="/studies">
-                <img src={Utility.logoSymbolOnly(appId)} key="Open Bridge" alt="logo" />
+                <SiteLogo variant='symbol' />
               </NavLink>
             ) : (
-              <img src={Utility.logoSymbolOnly(appId)} key="Open Bridge" alt="logo" />
+              <SiteLogo variant='symbol' />
             )}
             <IconButton
               color="inherit"
@@ -263,10 +264,10 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             }}>
             {sessionData?.token ? (
               <NavLink to="/studies">
-                <img src={Utility.logoWithName(hasSubNav, appId)} key="Open Bridge" alt="logo" />
+                <SiteLogo variant={hasSubNav ? 'small' : 'large'} />
               </NavLink>
             ) : (
-              <img src={Utility.logoWithName(hasSubNav, appId)} key="Open Bridge" alt="logo" />
+              <SiteLogo variant={hasSubNav ? 'small' : 'large'} />
             )}
 
             <Box sx={{display: 'flex'}}>

@@ -57,6 +57,13 @@ export type NavRouteType = {
   toggle?: ToggleKey
 }
 
+export type AppBranding = {
+  appId: string
+  title: string
+  logo: string
+  iconPrefix: string
+}
+
 /*
 'legacy	If not set, the study is in the LEGACY phase, and no domain logic will be applied to the study, enrollments, etc.
 'design	Study is being designed and tested and has not begun. All accounts created in this phase are marked as test accounts, and schedules are still mutable. The study is not visible in public registries.

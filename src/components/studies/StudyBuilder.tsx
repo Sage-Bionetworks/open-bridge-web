@@ -128,7 +128,6 @@ export const BuilderWrapper: FunctionComponent<{sectionName: string; isReadOnly?
         paddingRight: theme.spacing(8),
         height: isReadOnly ? '100%' : 'auto',
       }}>
-      {/*<MTBHeadingH1 sx={{textAlign: 'left'}}>{sectionName}</MTBHeadingH1>*/}
 
       <Box pt={3} id="builderContainer" sx={{height: isReadOnly ? '100%' : 'auto', ...sx}}>
         {children}
